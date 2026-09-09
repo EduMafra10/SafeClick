@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conta bloqueada | SafeClick</title>
+</head>
+<body>
+    <main>
+        <h1>Simulação de golpe digital</h1>
+        <p>Esta é uma atividade fictícia para aprender a reconhecer golpes</p>
+
+        <!-- representa o e-mail fictício que o visitante deve analisar nessa atividade -->
+        <section aria-labelledby="titulo-email">
+            <h2 id="titulo-email">Sua conta será bloqueada em 30 minutos!</h2>
+
+            <p>
+                <strong>De:</strong>
+                Equipe de segurança - suporte@verificacao-conta.example
+            </p>
+
+            <p>
+                Identificamos uma atividade suspeita na sua conta.
+                Para evitar o bloqueio da sua conta, confirme imediatamente seus dados pelo link enviado abaixo.
+            </p>
+
+            <!-- o texto imita uma chamada do golpe, sem abrir uma página externa -->
+            <p><strong>CONFIRMAR MEUS DADOS</strong></p>
+
+            <p>
+                Caso a confirmação não realizada em até 30 minutos, seu acesso será bloqueado.
+            </p>
+
+        </section>
+
+        {# esse codigo abaixo exibe a mensagem enviada pelo Flask quando a escolha recebida é inválida #}
+        {% if erro %}
+            <p role="alert">{{erro}}</p>
+        {% endif %}
+
+        <!-- envia a alternativa escolhida pelo usuario por POST para a rota que processa a simulação -->
+        <form 
+        method="post" 
+        action="{{ url_for('simulacoes.conta_bloqueada') }}">
+
+        <fieldset>
+            <legend>Como você agiria ao receber essa mensagem no seu e-mail? </legend>
+
+            {# serve para gerar uma alternativa para cada item do dicionário recebido do Flask #}
+            {% for identificador, opcao in opcoes.items() %}
+                <p>
+                    <label>
+                        <input type="radio" name="opcao" value="{{identificador}}" required>
+                        {{ opcao ["texto"] }}
+                    </label>
+                </p>
+            {% endfor %}
+        </fieldset>
+
+        <button type="submit">Ver consequência</button>
+
+        </form>
+
+        {# mostra o feedback somente quando o Flask encontrar uma alternativa válida #}
+        {% if resultado %}
+            <section aria-labelledby="titulo-resultado">
+                <h2 id="titulo-resultado">Resultado da sua decisão</h2>
+
+                <p>
+                    <strong>Sua escolha</strong>
+                    {{ resultado["texto"] }}
+                </p>
+
+                {# apresenta os textos determinados pelo servidor para a escolha recebida #}
+                <h3>Consequência</h3>
+                <p>{{ resultado["consequencia"] }}</p>
+
+                <h3>Porque isso acontece?</h3>
+                <p>{{ resultado["explicacao"] }}</p>
+
+                <!-- reforça os sinais de risco do cenário, independentemente da opção escolhida -->
+                <h3>Sinais de risco neste exemplo</h3>
+                <ul>
+                    <li>Pressão por uma resposta imediata</li>
+                    <li>Ameaça de bloqueio da conta indicando um prazo para você agir rápido</li>
+                    <li>Solicitação de dados por uma mensagem não verificada</li>
+                    <li>Links suspeitos induzindo o usuário a clicar</li>
+                </ul>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>
