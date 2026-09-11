@@ -1,5 +1,5 @@
 import psycopg
-from flask import Blueprint, render_template, request 
+from flask import Blueprint, redirect, render_template, request, url_for
 
 from safeclick.db import salvar_tentativa_simulacao
 #Blueprint para agrupar as rotas relacionadas as simulaçoes
@@ -77,6 +77,23 @@ def conta_bloqueada(): #na abertura da pagina, ainda nao existe escolha processa
                 )
 
                 status = 503
+            else:
+                #apos salvar, o navegador abre o resultado por GET
+                return redirect(
+                    url_for(
+                        "simulacoes.conta_bloqueada",
+                        resultado=opcao_escolhida
+                    ),
+                    code=303,
+                )
+    elif "resultado" in request.args:
+        #exibe o feedback indicado na URL
+        opcao_resultado = request.args.get("resultado", "")
+        resultado = OPCOES.get(opcao_resultado)
+
+        if resultado is None:
+            erro = "Resultado inválido. Selecione uma alternativa no formulário."
+            status = 400
 
     return render_template(
         "simulacao.html",
