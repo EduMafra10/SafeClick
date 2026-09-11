@@ -21,6 +21,19 @@ def conectar_banco():
         row_factory=dict_row,
     )
 
+#registra a tentativa sem vinculo com usuario nessa etapa
+def salvar_tentativa_simulacao(simulacao, opcao):
+    #gerencia a transaçao e fecha a conexao ao sair do bloco
+    with conectar_banco() as conexao:
+        #envia os valores como parametros separados do comando SQL
+        conexao.execute(
+            """
+            INSERT INTO public.tentativas_simulacao (simulacao, opcao)
+            VALUES (%s, %s)
+            """,
+            (simulacao, opcao),
+        )
+
 #disponibiliza a verifiçao pelo terminal com acesso a config do flask
 @click.command("verificar-banco")
 @with_appcontext
@@ -40,8 +53,8 @@ def verificar_banco():
     #trata erros do Postgre sem exibir mensagem bruta da conexao
     except psycopg.Error:
         raise click.ClickException(
-            "Nao foi possivel acessar o PostgreSQL"
-            "Confira se a configuração da conexão esta correta e a disponibilidade do banco"
+            "Nao foi possivel acessar o PostgreSQL. "
+            "Confira se a configuração da conexão esta correta e a disponibilidade do banco."
         ) from None
 
     click.echo(f"Conexão realizada com sucesso. Banco: {registro['banco']}")
