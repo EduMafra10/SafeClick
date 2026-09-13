@@ -1,4 +1,15 @@
-from flask import Blueprint, abort, render_template, request
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+
+import psycopg
 
 from safeclick.db import conectar_banco
 
@@ -80,8 +91,8 @@ def exibir_quiz(quiz_id):
         questao["alternativas"] = alternativas_por_questao.get(
             questao["id"], []
         )
-        
-        erro = None
+
+    erro = None
     mensagem = None
     respostas = {}
     status = 200
@@ -125,17 +136,39 @@ def exibir_quiz(quiz_id):
                 respostas[questao["id"]] = int(valores[0])
 
             if erro is None:
-                resultado = corrigir_respostas(
-                    quiz_id,
-                    questoes,
-                    respostas,
-                )
+                if not current_app.config.get("SECRET_KEY"):
+                    abort(
+                        503,
+                        description="A configuração da sessão está pendente.",
+                    )
 
-                return render_template(
-                    "quizzes/resultado.html",
-                    quiz=quiz,
-                    resultado=resultado,
-                )
+                try:
+                    resultado = corrigir_respostas(
+                        quiz_id,
+                        questoes,
+                        respostas,
+                    )
+
+                    tentativa_id = salvar_tentativa(
+                        quiz_id,
+                        respostas,
+                        resultado,
+                    )
+
+                except psycopg.Error:
+                    erro = (
+                        "Não foi possível salvar sua tentativa. "
+                        "Tente novamente."
+                    )
+                    status = 503
+
+                else:
+                    session["ultima_tentativa_quiz"] = tentativa_id
+
+                    return redirect(
+                        url_for("quizzes.exibir_resultado"),
+                        code=303,
+                    )
 
     return render_template(
         "quizzes/responder.html",
@@ -228,3 +261,127 @@ def corrigir_respostas(quiz_id, questoes, respostas):
         "total_questoes": len(questoes),
         "detalhes": detalhes,
     }
+
+def salvar_tentativa(quiz_id, respostas, resultado):
+    with conectar_banco() as conexao:
+        tentativa = conexao.execute(
+            """
+            INSERT INTO public.tentativas_quiz (
+                quiz_id,
+                pontuacao,
+                total_questoes
+            )
+            VALUES (%s, %s, %s)
+            RETURNING id
+            """,
+            (
+                quiz_id,
+                resultado["pontuacao"],
+                resultado["total_questoes"],
+            ),
+        ).fetchone()
+
+        tentativa_id = tentativa["id"]
+
+        for questao_id, alternativa_id in respostas.items():
+            conexao.execute(
+                """
+                INSERT INTO public.respostas_tentativa_quiz (
+                    tentativa_id,
+                    questao_id,
+                    alternativa_id
+                )
+                VALUES (%s, %s, %s)
+                """,
+                (
+                    tentativa_id,
+                    questao_id,
+                    alternativa_id,
+                ),
+            )
+
+    return tentativa_id
+
+@quizzes.get("/resultado")
+def exibir_resultado():
+    tentativa_id = session.get("ultima_tentativa_quiz")
+
+    if tentativa_id is None:
+        return redirect(url_for("quizzes.listar_quizzes"))
+
+    with conectar_banco() as conexao:
+        tentativa = conexao.execute(
+            """
+            SELECT
+                tentativa.id,
+                tentativa.quiz_id,
+                tentativa.pontuacao,
+                tentativa.total_questoes,
+                quiz.titulo
+            FROM public.tentativas_quiz AS tentativa
+            JOIN public.quizzes AS quiz
+                ON quiz.id = tentativa.quiz_id
+            WHERE tentativa.id = %s
+            """,
+            (tentativa_id,),
+        ).fetchone()
+
+        if tentativa is None:
+            abort(404)
+
+        detalhes = conexao.execute(
+            """
+            SELECT
+                questao.ordem,
+                questao.enunciado,
+                escolhida.texto AS resposta_escolhida,
+                correta.texto AS resposta_correta,
+                questao.explicacao,
+                (escolhida.id = correta.id) AS acertou
+            FROM public.respostas_tentativa_quiz AS resposta
+            JOIN public.questoes AS questao
+                ON questao.id = resposta.questao_id
+            JOIN public.alternativas AS escolhida
+                ON escolhida.id = resposta.alternativa_id
+                AND escolhida.questao_id = questao.id
+            JOIN public.alternativas AS correta
+                ON correta.questao_id = questao.id
+                AND correta.correta = TRUE
+            WHERE resposta.tentativa_id = %s
+              AND questao.quiz_id = %s
+            ORDER BY questao.ordem
+            """,
+            (
+                tentativa_id,
+                tentativa["quiz_id"],
+            ),
+        ).fetchall()
+
+    if len(detalhes) != tentativa["total_questoes"]:
+        abort(
+            503,
+            description="Não foi possível apresentar o resultado completo.",
+        )
+
+    quiz = {
+        "id": tentativa["quiz_id"],
+        "titulo": tentativa["titulo"],
+    }
+
+    resultado = {
+        "pontuacao": tentativa["pontuacao"],
+        "total_questoes": tentativa["total_questoes"],
+        "detalhes": detalhes,
+    }
+
+    pagina = current_app.make_response(
+        render_template(
+            "quizzes/resultado.html",
+            quiz=quiz,
+            resultado=resultado,
+        )
+    )
+
+    pagina.headers["Cache-Control"] = "no-store"
+
+    return pagina

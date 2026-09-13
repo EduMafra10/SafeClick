@@ -10,7 +10,8 @@ def create_app(): #funçao que inicia o sistema, monta e devolve nossa aplicaça
     app = Flask(__name__) #cria a aplicacao para informar ao flask o modulo ao qual ela pertence, isso ajuda para localizar recursos do nosso projeto
 
     app.config["DATABASE_URL"] = os.getenv("DATABASE_URL")
-
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+    
     app.register_blueprint(simulacoes)
     app.register_blueprint(quizzes)
     app.cli.add_command(verificar_banco)
