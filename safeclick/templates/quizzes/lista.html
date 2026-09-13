@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes | SafeClick</title>
+</head>
+<body>
+    <main>
+        <h1>Quizzes do SafeClick</h1>
+
+        <p>
+            Aprenda sobre phishing e proteção de senhas.
+        </p>
+
+        <ul>
+            {% for quiz in quizzes %}
+               <li>
+    <a href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}">
+        {{ quiz.titulo }}
+    </a>
+</li>
+            {% else %}
+                <li>Nenhum quiz disponível no momento.</li>
+            {% endfor %}
+        </ul>
+    </main>
+</body>
+</html>

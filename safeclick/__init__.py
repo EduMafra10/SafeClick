@@ -2,7 +2,7 @@
 import os
 
 from flask import Flask, redirect, url_for
-
+from safeclick.quizzes import quizzes
 from safeclick.db import verificar_banco
 from safeclick.simulacoes import simulacoes
 
@@ -12,6 +12,7 @@ def create_app(): #funçao que inicia o sistema, monta e devolve nossa aplicaça
     app.config["DATABASE_URL"] = os.getenv("DATABASE_URL")
 
     app.register_blueprint(simulacoes)
+    app.register_blueprint(quizzes)
     app.cli.add_command(verificar_banco)
 
     @app.get("/") #associa o endereço incial do site para a funcao abaixo (inicio), o get é usado para solicitar a informaçao passada
