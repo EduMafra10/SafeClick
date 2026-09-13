@@ -1,0 +1,314 @@
+/* começo do css da pagina de simulacao (ira sofrer mudanças futuras) */
+
+/* define as cores e a fonte da pagina de simulaçao */
+.simulacao-pagina {
+    margin: 0;
+    background-color: #f3f8fc;
+    color: #153849;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* inclui bordas e espaçamentos no tamanho dos elementos */
+.simulacao-pagina,
+.simulacao-pagina * {
+    box-sizing: border-box;
+}
+
+/* centraliza o conteudo e deixa espaço nas laterais */
+.simulacao-container {
+    width: 92%;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+/* afasta o conteudo da tela inicial e do final da pagina */
+.simulacao-conteudo {
+    padding-top: 32px;
+    padding-bottom: 32px;
+}
+
+/* destaca o cabeçalho com azul claro e uma borda inferior */
+.simulacao-cabecalho{
+    background-color: #e2f0fc;
+    border-bottom: 1px solid #c7ddec;
+}
+
+/* organiza marca e frase dentro do cabecalho */
+.simulacao-cabecalho-interno {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    min-height: 84px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+/* define a aparencia do nome safeclick POR ENQUANTO SOMENTE */
+.simulacao-marca {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* mantem um detalhe na identidade do projeto */
+.simulacao-marca span{
+    color: #286b53;
+}
+
+/* deixa a frase menor que o nome do projeto */
+.simulacao-frase {
+    margin: 0;
+    font-size: 14px;
+    color: #526d7e;
+}
+
+/* cria o cartao branco que representa o email */
+.simulacao-email {
+    background-color: #ffffff;
+    border: 1px solid #c7ddec;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* destaca a identificaçao do email com a cor azul claro */
+.simulacao-email-barra {
+    background-color: #e2f0fc;
+    border-bottom: 1px solid #c7ddec;
+    padding: 14px 24px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* aplica o mesmo espaçamento nas duas partes dessas mensagens */
+.simulacao-email-assunto,
+.simulacao-email-corpo {
+    padding: 24px;
+}
+
+/* separa o assunto do corpo do email */
+.simulacao-email-assunto {
+    border-bottom: 1px solid #c7ddec;
+}
+
+/* ajusta o tamanho e o espaçamento do assunto */
+.simulacao-email-assunto h2{
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.3;
+}
+
+/* deixa as infos do remetente menores que o assunto do email */
+.simulacao-remetente {
+    margin: 16px 0 0;
+    font-size: 14px;
+    color: #526d7e;
+}
+
+/* coloca o endereco em outra linha para quebrar textos longos */
+.simulacao-endereco {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+/* remove o espaco extra antes do primeiro paragrafo */
+.simulacao-email-corpo p:first-child {
+    margin-top: 0;
+}
+
+/* da destaque a chamada ficticia dentro da mensagem */
+.simulacao-chamada-ficticia {
+    display: inline-block;
+    background-color: #edf1f4;
+    border: 1px solid #c7ddec;
+    border-radius: 5px;
+    padding: 12px 16px;
+    font-size: 14px;
+}
+
+/* coloca o e-mail e o formulario em duas colunas iguais */
+.simulacao-exercicio {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+    margin-top: 28px;
+}
+
+/* permite que o formulario se ajuste a largua da coluna */
+.simulacao-decisao,
+.simulacao-decisao fieldset {
+    min-width: 0;
+}
+
+/* em telas menores irá colocar o formulario abaixo do e-mail */
+@media (max-width: 800px) {
+    .simulacao-exercicio {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* remove a borda e os espacamentos padrao do grupo de alternativas */
+.simulacao-alternativas {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* destaca a pergunta que orienta a escolha */
+.simulacao-alternativas legend {
+    padding: 0;
+    font-size: 26px;
+    font-weight: bold;
+    line-height: 1.3;
+}
+
+/* distribui as alternativas verticalmente com espaco entre elas */
+.simulacao-opcoes {
+    display: grid;
+    gap: 12px;
+}
+
+/* transforma cada alternativa em um cartao possivel de clicar */
+.simulacao-opcao {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 18px;
+    background-color: #ffffff;
+    border: 1px solid #c7ddec;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ajusta o tamanho e a cor do botao de opcao */
+.simulacao-opcao input {
+    width: 20px;
+    height: 20px;
+    margin: 3px 0 0;
+    flex-shrink: 0;
+    accent-color: #28638d;
+    cursor: pointer;
+}
+
+/* destaca o texto da alternativa selecionada */
+.simulacao-opcao input:checked + span {
+    color: #28638d;
+}
+
+/* destaca o cartao quando o mouse passar sobre ele */
+.simulacao-opcao:hover {
+    background-color:#edf6fd;
+    border-color: #28638d;
+}
+
+/* destaca a acao princial e ocupa a largura do formulario */
+.simulacao-botao {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #153849;
+    color: #ffffff;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* muda a cor do botao ao passar o mouse */
+.simulacao-botao:hover {
+    background-color: #245168;
+}
+
+/* mostra qual controle esta em foco durante a navegacao nessa pagina */
+.simulacao-opcao:focus-within,
+.simulacao-botao:focus-visible {
+    outline: 3px solid #28638d;
+    outline-offset: 3px;
+}
+
+/* separa o resultado da area que o usuario faz sua escolha */
+.simulacao-resultado {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 2px solid #153849;
+}
+
+/* destaca o titulo e cria espacos antes das explicacoes */
+.simulacao-resultado h2 {
+    margin: 0 0 24px;
+    font-size: 26px;
+    line-height: 1.3;
+}
+
+/* coloca a explicacao e os sinais de risco um do lado do outro */
+.simulacao-resultado-conteudo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+/* marca visualmente a alternativa que foi escolhida */
+.simulacao-escolha {
+    border-left: 3px solid #28637d;
+    padding-left: 16px;
+}
+
+/* ajusta o titlo da escolha dentro do destaque */
+.simulacao-escolha h3 {
+    margin-top: 0;
+    color: #28638d;
+}
+
+/* cria o quadro azul claro com os sinais de risco */
+.simulacao-sinais {
+    background-color: #e2f0fc;
+    border: 1px solid #c7ddec;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+/* remove o espaco extra acima do titulo do quadro */
+.simulacao-sinais h3 {
+    margin-top: 0;
+}
+
+/* ajusta o recuo e o espaco final da lista */
+.simulacao-sinais ul {
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+
+/* separa cada sinal de risco do item anterior */
+.simulacao-sinais li + li {
+    margin-top: 12px;
+}
+
+/* separa a orientacao das alternativas e suaviza sua cor */
+.simulacao-instrucao {
+    margin: 12px 0 24px;
+    color: #526d7e;
+}
+
+/* para caber a parte dos sinais da explicacao em telas menores */
+@media (max-width: 800px) {
+    .simulacao-resultado-conteudo {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* destaca os erros de validacao ou algum erro ao gravar alguma tentativa */
+.simulacao-erro {
+    margin: 0 0 20px;
+    padding: 16px;
+    background-color: #fff6f1;
+    color: #833d28;
+    border: 1px solid #dbb4a3;
+    border-left: 4px solid #a64f30;
+    border-radius: 8px;
+}
