@@ -21,6 +21,7 @@ O estado descrito a seguir corresponde à funcionalidade de simulações. As fun
 A versão básica permite:
 
 - Ler um e-mail fictício de conta bloqueada e escolher entre três alternativas.
+- Usar a página com layout responsivo em HTML e CSS, adaptado a telas menores.
 - Receber a consequência da escolha, uma explicação educativa e os sinais de risco do cenário.
 - Registrar no PostgreSQL a identificação da simulação, a alternativa escolhida e a data e hora da tentativa.
 - Rejeitar alternativas ausentes ou inválidas, retornando HTTP 400 sem gravar uma tentativa.
@@ -35,7 +36,7 @@ O e-mail é fictício. A chamada “CONFIRMAR MEUS DADOS” não possui link par
 
 - Python 3
 - Flask e Jinja2
-- HTML5
+- HTML5 e CSS
 - PostgreSQL hospedado no Neon
 - Psycopg 3 para comunicação com o banco
 - python-dotenv, instalado pelo extra `Flask[dotenv]`, para carregar a configuração local ao executar pela CLI do Flask
@@ -49,6 +50,9 @@ safeclick/
 ├── __init__.py
 ├── db.py
 ├── simulacoes.py
+├── static/
+│   └── css/
+│       └── simulacao.css
 └── templates/
     └── simulacao.html
 .env.example
@@ -62,6 +66,7 @@ README.md
 - `db.py`: abre a conexão, salva as tentativas e disponibiliza o comando `verificar-banco`.
 - `simulacoes.py`: define as alternativas, valida as escolhas e controla a apresentação do resultado.
 - `simulacao.html`: apresenta o cenário, o formulário, os resultados e os avisos de erro.
+- `simulacao.css`: define as cores, os espaçamentos, os controles e a adaptação do layout às diferentes larguras de tela.
 - `criar_tentativas_simulacao.sql`: cria a tabela usada pela simulação em um banco ainda não preparado.
 - `.env.example`: modelo de configuração, sem credenciais.
 - `.gitignore`: exclui do versionamento arquivos locais, incluindo `.env` e `.venv`.
@@ -145,6 +150,7 @@ O parâmetro `resultado` seleciona o texto educativo a exibir; abrir essa URL di
 - Envios com alternativa ausente ou inválida retornaram HTTP 400, sem acrescentar registros.
 - Uma falha de gravação foi simulada com um mock: a aplicação retornou HTTP 503 e exibiu o aviso esperado. Esse teste não representa uma indisponibilidade real do Neon.
 - Após um envio bem-sucedido, a página do resultado foi atualizada e a contagem no banco permaneceu igual.
+- O layout foi conferido em larguras de 320 a 1440 pixels, incluindo os resultados e o aviso de erro. A navegação pelas alternativas e pelo botão também foi verificada com teclado.
 
 Para conferir o total de tentativas da simulação no SQL Editor:
 
@@ -156,9 +162,9 @@ WHERE simulacao = 'conta_bloqueada';
 
 ## Próximos passos
 
-- Aplicar e revisar a estilização da página da simulação.
 - Integrar as funcionalidades desenvolvidas pelos demais integrantes.
 - Conferir a versão integrada e preparar a branch `entrega1409` para avaliação.
+- Cada integrante deve gravar seu vídeo individual e enviar o arquivo identificado com seu nome no chat do projeto, antes de 14/09.
 
 ## Integrantes
 
