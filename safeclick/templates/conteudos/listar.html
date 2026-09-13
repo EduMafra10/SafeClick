@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conteúdos educativos | SafeClick</title>
+</head>
+<body>
+    <main>
+        <h1>Conteúdos educativos</h1>
+        <ul>
+            {% for c in conteudos %}
+            <li>
+                <a href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">{{ c.titulo }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </main>
+</body>
+</html>
