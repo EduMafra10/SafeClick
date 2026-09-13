@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, render_template
+from flask import Blueprint, abort, render_template, request
 
 from safeclick.db import conectar_banco
 
@@ -26,7 +26,7 @@ def listar_quizzes():
         quizzes=registros,
     )
 
-@quizzes.get("/<int:quiz_id>")
+@quizzes.route("/<int:quiz_id>", methods=["GET", "POST"])
 def exibir_quiz(quiz_id):
     with conectar_banco() as conexao:
         quiz = conexao.execute(
@@ -80,9 +80,58 @@ def exibir_quiz(quiz_id):
         questao["alternativas"] = alternativas_por_questao.get(
             questao["id"], []
         )
+        
+        erro = None
+    mensagem = None
+    respostas = {}
+    status = 200
+
+
+    if request.method == "POST":
+        campos_esperados = {
+            f"questao_{questao['id']}"
+            for questao in questoes
+        }
+
+        if len(questoes) != 5:
+            erro = "Este quiz está indisponível no momento."
+            status = 503
+
+        elif set(request.form.keys()) != campos_esperados:
+            erro = "Responda todas as perguntas usando as opções apresentadas."
+            status = 400
+
+        else:
+            for questao in questoes:
+                campo = f"questao_{questao['id']}"
+                valores = request.form.getlist(campo)
+
+                alternativas_validas = {
+                    str(alternativa["id"])
+                    for alternativa in questao["alternativas"]
+                }
+
+                if (
+                    len(valores) != 1
+                    or valores[0] not in alternativas_validas
+                ):
+                    erro = (
+                        "Cada pergunta deve receber uma única "
+                        "alternativa válida."
+                    )
+                    status = 400
+                    break
+
+                respostas[questao["id"]] = int(valores[0])
+
+            if erro is None:
+                mensagem = "As cinco respostas foram recebidas."
 
     return render_template(
         "quizzes/responder.html",
         quiz=quiz,
         questoes=questoes,
-    )
+        erro=erro,
+        mensagem=mensagem,
+        respostas=respostas,
+    ), status

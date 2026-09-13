@@ -17,31 +17,51 @@
 
         <p>Selecione uma alternativa para cada pergunta.</p>
 
-        {% for questao in questoes %}
-            <fieldset>
-                <legend>
-                    {{ questao.ordem }}. {{ questao.enunciado }}
-                </legend>
+        {% if erro %}
+            <p role="alert">{{ erro }}</p>
+        {% endif %}
 
-                {% for alternativa in questao.alternativas %}
-                    <p>
-                        <input
-                            type="radio"
-                            id="alternativa_{{ alternativa.id }}"
-                            name="questao_{{ questao.id }}"
-                            value="{{ alternativa.id }}"
-                            required
-                        >
+        {% if mensagem %}
+            <p role="status">{{ mensagem }}</p>
+        {% endif %}
 
-                        <label for="alternativa_{{ alternativa.id }}">
-                            {{ alternativa.texto }}
-                        </label>
-                    </p>
-                {% endfor %}
-            </fieldset>
-        {% else %}
-            <p>Este quiz ainda não possui perguntas disponíveis.</p>
-        {% endfor %}
+        <form
+            method="post"
+            action="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}"
+        >
+            {% for questao in questoes %}
+                <fieldset>
+                    <legend>
+                        {{ questao.ordem }}. {{ questao.enunciado }}
+                    </legend>
+
+                    {% for alternativa in questao.alternativas %}
+                        <p>
+                            <input
+                                type="radio"
+                                id="alternativa_{{ alternativa.id }}"
+                                name="questao_{{ questao.id }}"
+                                value="{{ alternativa.id }}"
+                                {% if respostas.get(questao.id) == alternativa.id %}
+                                    checked
+                                {% endif %}
+                                required
+                            >
+
+                            <label for="alternativa_{{ alternativa.id }}">
+                                {{ alternativa.texto }}
+                            </label>
+                        </p>
+                    {% endfor %}
+                </fieldset>
+            {% else %}
+                <p>Este quiz ainda não possui perguntas disponíveis.</p>
+            {% endfor %}
+
+            {% if questoes %}
+                <button type="submit">Enviar respostas</button>
+            {% endif %}
+        </form>
     </main>
 </body>
 </html>
