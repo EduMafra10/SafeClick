@@ -125,7 +125,17 @@ def exibir_quiz(quiz_id):
                 respostas[questao["id"]] = int(valores[0])
 
             if erro is None:
-                mensagem = "As cinco respostas foram recebidas."
+                resultado = corrigir_respostas(
+                    quiz_id,
+                    questoes,
+                    respostas,
+                )
+
+                return render_template(
+                    "quizzes/resultado.html",
+                    quiz=quiz,
+                    resultado=resultado,
+                )
 
     return render_template(
         "quizzes/responder.html",
@@ -135,3 +145,86 @@ def exibir_quiz(quiz_id):
         mensagem=mensagem,
         respostas=respostas,
     ), status
+
+def corrigir_respostas(quiz_id, questoes, respostas):
+    with conectar_banco() as conexao:
+        gabarito = conexao.execute(
+            """
+            SELECT
+                questao.id AS questao_id,
+                questao.explicacao,
+                alternativa.id AS alternativa_id,
+                alternativa.texto AS texto_correto
+            FROM public.questoes AS questao
+            JOIN public.alternativas AS alternativa
+                ON alternativa.questao_id = questao.id
+            WHERE questao.quiz_id = %s
+              AND alternativa.correta = TRUE
+            ORDER BY questao.ordem
+            """,
+            (quiz_id,),
+        ).fetchall()
+
+    gabarito_por_questao = {
+        registro["questao_id"]: registro
+        for registro in gabarito
+    }
+
+    ids_esperados = {
+        questao["id"]
+        for questao in questoes
+    }
+
+    if (
+        len(gabarito) != len(questoes)
+        or set(gabarito_por_questao) != ids_esperados
+        or any(
+            len(questao["alternativas"]) != 4
+            for questao in questoes
+        )
+    ):
+        abort(
+            503,
+            description="Este quiz está indisponível no momento.",
+        )
+
+    pontuacao = 0
+    detalhes = []
+
+    for questao in questoes:
+        resposta_correta = gabarito_por_questao[questao["id"]]
+        alternativa_escolhida_id = respostas[questao["id"]]
+
+        alternativas_por_id = {
+            alternativa["id"]: alternativa
+            for alternativa in questao["alternativas"]
+        }
+
+        alternativa_escolhida = alternativas_por_id[
+            alternativa_escolhida_id
+        ]
+
+        acertou = (
+            alternativa_escolhida_id
+            == resposta_correta["alternativa_id"]
+        )
+
+        if acertou:
+            pontuacao += 1
+
+        detalhes.append(
+            {
+                "ordem": questao["ordem"],
+                "enunciado": questao["enunciado"],
+                "resposta_escolhida": alternativa_escolhida["texto"],
+                "resposta_correta": resposta_correta["texto_correto"],
+                "explicacao": resposta_correta["explicacao"],
+                "acertou": acertou,
+            }
+        )
+
+    return {
+        "pontuacao": pontuacao,
+        "total_questoes": len(questoes),
+        "detalhes": detalhes,
+    }

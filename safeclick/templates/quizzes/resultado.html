@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado | SafeClick</title>
+</head>
+<body>
+    <main>
+        <h1>Resultado: {{ quiz.titulo }}</h1>
+
+        <p>
+            Você acertou
+            <strong>
+                {{ resultado.pontuacao }} de {{ resultado.total_questoes }}
+            </strong>
+            perguntas.
+        </p>
+
+        {% for detalhe in resultado.detalhes %}
+            <section>
+                <h2>
+                    {{ detalhe.ordem }}. {{ detalhe.enunciado }}
+                </h2>
+
+                {% if detalhe.acertou %}
+                    <p><strong>Você acertou!</strong></p>
+                {% else %}
+                    <p><strong>Resposta incorreta.</strong></p>
+                {% endif %}
+
+                <p>
+                    <strong>Sua resposta:</strong>
+                    {{ detalhe.resposta_escolhida }}
+                </p>
+
+                <p>
+                    <strong>Resposta correta:</strong>
+                    {{ detalhe.resposta_correta }}
+                </p>
+
+                <p>
+                    <strong>Explicação:</strong>
+                    {{ detalhe.explicacao }}
+                </p>
+            </section>
+        {% endfor %}
+
+        <p>
+            <a href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}">
+                Tentar novamente
+            </a>
+        </p>
+
+        <p>
+            <a href="{{ url_for('quizzes.listar_quizzes') }}">
+                Voltar aos quizzes
+            </a>
+        </p>
+    </main>
+</body>
+</html>
