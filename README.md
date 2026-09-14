@@ -1,4 +1,3 @@
-`markdown
 # SafeClick — Aprenda antes de clicar
 
 Projeto de Conclusão de Curso de Sistemas de Informação da Universidade de Mogi das Cruzes (UMC).
@@ -150,4 +149,3 @@ A versão para avaliação é reunida na branch `entrega1409`. Cada integrante d
 - Eduardo Mafra dos Santos
 - Humberto Ribeiro Bezerra
 - João Henrique Alves de Souza
-`
