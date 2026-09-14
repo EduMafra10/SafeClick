@@ -4,12 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ conteudo.titulo }} | SafeClick</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/conteudos.css')}}">
 </head>
-<body>
-    <main>
-        <h1>{{ conteudo.titulo }}</h1>
-        <div>{{ conteudo.texto | safe }}</div>
-        <p><a href="{{ url_for('conteudos.listar') }}">← Voltar</a></p>
+<body class="conteudos-pagina">
+    <header class="conteudos-cabecalho">
+        <div class="conteudos-container conteudos-cabecalho-interno">
+            <p class="conteudos-marca">Safe<span>Click</span></p>
+            <p class="conteudos-frase">Aprenda antes de clicar</p>
+        </div>
+    </header>
+    <main class="conteudos-container conteudos-conteudo">
+        <a class="conteudos-voltar" href="{{url_for('conteudos.listar')}}"> Voltar para conteúdos</a>
+        <article class="conteudos-artigo">
+            <h1>{{conteudo.titulo}}</h1>
+            <div class="conteudos-corpo">
+                {{conteudo.texto | safe}}
+            </div>
+        </article>
     </main>
 </body>
 </html>

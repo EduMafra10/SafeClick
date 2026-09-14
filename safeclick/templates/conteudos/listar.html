@@ -4,17 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conteúdos educativos | SafeClick</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
 </head>
-<body>
-    <main>
+<body class="conteudos-pagina">
+    <header class="conteudos-cabecalho">
+        <div class="conteudos-container conteudos-cabecalho-interno">
+            <p class="conteudos-marca">Safe<span>Click</span></p>
+            <p class="conteudos-frase">Aprenda antes de clicar.</p>
+        </div>
+    </header>
+
+    <main class="conteudos-container conteudos-conteudo">
         <h1>Conteúdos educativos</h1>
-        <ul>
+        <p class="conteudos-instrucao">Escolha um tema para começar a leitura.</p>
+
+        <div class="conteudos-lista">
             {% for c in conteudos %}
-            <li>
-                <a href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">{{ c.titulo }}</a>
-            </li>
+            <a class="conteudos-card" href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">
+                <h2>{{ c.titulo }}</h2>
+                <span class="conteudos-card-link">Ler conteúdo →</span>
+            </a>
             {% endfor %}
-        </ul>
+        </div>
     </main>
 </body>
 </html>
