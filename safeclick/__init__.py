@@ -5,12 +5,13 @@ from flask import Flask, redirect, url_for
 
 from safeclick.db import verificar_banco
 from safeclick.simulacoes import simulacoes
+from safeclick.conteudos import conteudos_bp
 
 def create_app(): #funçao que inicia o sistema, monta e devolve nossa aplicaçao
     app = Flask(__name__) #cria a aplicacao para informar ao flask o modulo ao qual ela pertence, isso ajuda para localizar recursos do nosso projeto
 
     app.config["DATABASE_URL"] = os.getenv("DATABASE_URL")
-
+    app.register_blueprint(conteudos_bp)
     app.register_blueprint(simulacoes)
     app.cli.add_command(verificar_banco)
 
