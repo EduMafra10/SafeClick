@@ -1,23 +1,31 @@
-#Parte feita por Eduardo Mafra, atualizado em 09-09-2026
 import os
 
 from flask import Flask, redirect, url_for
 
-from safeclick.db import verificar_banco
-from safeclick.simulacoes import simulacoes
 from safeclick.conteudos import conteudos_bp
+from safeclick.db import verificar_banco
+from safeclick.quizzes import quizzes
+from safeclick.simulacoes import simulacoes
 
-def create_app(): #funçao que inicia o sistema, monta e devolve nossa aplicaçao
-    app = Flask(__name__) #cria a aplicacao para informar ao flask o modulo ao qual ela pertence, isso ajuda para localizar recursos do nosso projeto
 
+def create_app():
+    app = Flask(__name__)
+
+    # Carrega a conexão do banco e a chave da sessão dos quizzes.
     app.config["DATABASE_URL"] = os.getenv("DATABASE_URL")
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
+    # Registra as três funcionalidades do grupo.
     app.register_blueprint(conteudos_bp)
     app.register_blueprint(simulacoes)
+    app.register_blueprint(quizzes)
+
+    # Disponibiliza o comando de verificação do banco.
     app.cli.add_command(verificar_banco)
 
-    @app.get("/") #associa o endereço incial do site para a funcao abaixo (inicio), o get é usado para solicitar a informaçao passada
+    @app.get("/")
     def inicio():
-        return redirect(url_for("simulacoes.conta_bloqueada")) #pagina que irá exibir de simulacoes
+        # Mantém a simulação como página inicial.
+        return redirect(url_for("simulacoes.conta_bloqueada"))
 
     return app
-

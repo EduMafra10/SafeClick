@@ -1,0 +1,52 @@
+{% extends "quizzes/base.html" %}
+{% block titulo %}{{ quiz.titulo }} | SafeClick{% endblock %}
+
+{% block conteudo %}
+    <nav class="quizzes-navegacao" aria-label="Navegação dos quizzes">
+        <a href="{{ url_for('quizzes.listar_quizzes') }}">← Voltar aos quizzes</a>
+    </nav>
+    <div class="quizzes-introducao">
+        <p class="quizzes-etiqueta">Teste seus conhecimentos</p>
+        <h1>{{ quiz.titulo }}</h1>
+        <p id="orientacao-quiz">Selecione uma alternativa por pergunta. Todas as perguntas são obrigatórias.</p>
+    </div>
+
+    {% if erro %}<p class="quizzes-erro" role="alert">{{ erro }}</p>{% endif %}
+    {% if mensagem %}<p class="quizzes-faixa" role="status">{{ mensagem }}</p>{% endif %}
+
+    <form method="post" action="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}"
+          aria-describedby="orientacao-quiz">
+        <input type="hidden" name="token_envio" value="{{ token_envio or '' }}">
+        <div class="quizzes-grade">
+            {% for questao in questoes %}
+                <div class="quizzes-cartao">
+                    <fieldset class="quizzes-pergunta">
+                        <legend>
+                            <span class="quizzes-etiqueta">Pergunta {{ questao.ordem }} de {{ questoes|length }}</span>
+                            {{ questao.enunciado }}
+                        </legend>
+                        <div class="quizzes-opcoes">
+                            {% for alternativa in questao.alternativas %}
+                                <label class="quizzes-opcao" for="alternativa_{{ alternativa.id }}">
+                                    <input type="radio" id="alternativa_{{ alternativa.id }}"
+                                           name="questao_{{ questao.id }}" value="{{ alternativa.id }}"
+                                           {% if respostas.get(questao.id) == alternativa.id %}checked{% endif %}
+                                           required>
+                                    <span><strong>{{ 'ABCD'[loop.index0] }}.</strong> {{ alternativa.texto }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                </div>
+            {% else %}
+                <p class="quizzes-cartao">Este quiz ainda não possui perguntas disponíveis.</p>
+            {% endfor %}
+        </div>
+        {% if questoes %}
+            <div class="quizzes-envio quizzes-faixa">
+                <p>Terminou? Confira suas escolhas antes de enviar.</p>
+                <button class="quizzes-botao" type="submit">Finalizar quiz</button>
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}

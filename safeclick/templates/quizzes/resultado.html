@@ -1,0 +1,43 @@
+{% extends "quizzes/base.html" %}
+{% block titulo %}Resultado | SafeClick{% endblock %}
+
+{% block conteudo %}
+    <nav class="quizzes-navegacao" aria-label="Navegação dos quizzes">
+        <a href="{{ url_for('quizzes.listar_quizzes') }}">← Voltar aos quizzes</a>
+    </nav>
+    <section class="quizzes-resumo quizzes-faixa" aria-labelledby="titulo-resultado">
+        <div>
+            <p class="quizzes-etiqueta">Quiz concluído</p>
+            <h1 id="titulo-resultado">{{ quiz.titulo }}</h1>
+            <p>Confira suas respostas e aprenda com as explicações.</p>
+        </div>
+        <div class="quizzes-pontuacao">
+            <span>Você acertou</span>
+            <strong>{{ resultado.pontuacao }} de {{ resultado.total_questoes }}</strong>
+            <span>perguntas</span>
+        </div>
+    </section>
+
+    <h2 class="quizzes-titulo-secao">Suas respostas</h2>
+    <div class="quizzes-grade">
+        {% for detalhe in resultado.detalhes %}
+            <section class="quizzes-cartao" aria-labelledby="resposta-{{ loop.index }}">
+                <p class="quizzes-status {% if detalhe.acertou %}quizzes-acerto{% else %}quizzes-revisar{% endif %}">
+                    {% if detalhe.acertou %}Você acertou!{% else %}Resposta incorreta{% endif %}
+                </p>
+                <h2 class="quizzes-enunciado" id="resposta-{{ loop.index }}">{{ detalhe.ordem }}. {{ detalhe.enunciado }}</h2>
+                <p class="quizzes-escolha"><strong>Sua resposta:</strong><br>{{ detalhe.resposta_escolhida }}</p>
+                <p><strong>Resposta correta:</strong><br>{{ detalhe.resposta_correta }}</p>
+                <div class="quizzes-explicacao">
+                    <h3>Por que essa resposta?</h3>
+                    <p>{{ detalhe.explicacao }}</p>
+                </div>
+            </section>
+        {% endfor %}
+    </div>
+
+    <nav class="quizzes-acoes" aria-label="Próximas ações">
+        <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}">Tentar novamente</a>
+        <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.listar_quizzes') }}">Escolher outro quiz</a>
+    </nav>
+{% endblock %}

@@ -4,167 +4,145 @@ Projeto de Conclusão de Curso de Sistemas de Informação da Universidade de Mo
 
 O SafeClick é uma plataforma web educativa voltada a estudantes do ensino médio e universitários. Seu objetivo é ajudar os visitantes a reconhecer golpes digitais e adotar práticas mais seguras na internet.
 
-## Funcionalidades da primeira entrega
+## Funcionalidades
 
-O trabalho está dividido entre os três integrantes:
+- **Conteúdos educativos:** listagem de temas e páginas de leitura sobre phishing e proteção de senhas, consultadas no PostgreSQL.
+- **Quizzes interativos:** dois quizzes com cinco perguntas, quatro alternativas por pergunta e uma resposta correta. O servidor consulta o gabarito, calcula a pontuação e salva a tentativa e suas cinco respostas na mesma transação. O resultado apresenta escolhas e explicações.
+- **Simulações de golpes digitais:** e-mail fictício de conta bloqueada, com três alternativas, consequências, explicações e sinais de risco. Cada envio válido registra a simulação, a escolha e a data e hora.
 
-| Funcionalidade | Escopo planejado |
-| --- | --- |
-| Conteúdos educativos | Listagem de temas e páginas de leitura, com conteúdos consultados no PostgreSQL. Temas iniciais: phishing e proteção de senhas. |
-| Quizzes interativos | Dois quizzes de cinco questões, com alternativas, pontuação e explicações. Consulta das questões e armazenamento das tentativas no PostgreSQL. |
-| Simulações de golpes digitais | E-mail fictício de conta bloqueada, com três escolhas, consequências, explicações educativas e registro das tentativas. |
+As páginas utilizam HTML, Jinja2 e CSS, seguindo o padrão visual do grupo.
 
-O estado descrito a seguir corresponde à funcionalidade de simulações. As funcionalidades dos outros integrantes serão documentadas conforme sua integração ao projeto.
+## Tecnologias
 
-## Estado atual da simulação
+Python, Flask, Jinja2, HTML, CSS, PostgreSQL hospedado no Neon e Psycopg 3, sem ORM.
 
-A versão básica permite:
+As dependências estão em `requirements.txt`. O extra `Flask[dotenv]` permite carregar o arquivo local `.env` ao executar pela CLI do Flask.
 
-- Ler um e-mail fictício de conta bloqueada e escolher entre três alternativas.
-- Usar a página com layout responsivo em HTML e CSS, adaptado a telas menores.
-- Receber a consequência da escolha, uma explicação educativa e os sinais de risco do cenário.
-- Registrar no PostgreSQL a identificação da simulação, a alternativa escolhida e a data e hora da tentativa.
-- Rejeitar alternativas ausentes ou inválidas, retornando HTTP 400 sem gravar uma tentativa.
-- Exibir um aviso e retornar HTTP 503 quando não for possível confirmar a gravação.
-- Redirecionar após uma gravação bem-sucedida, evitando reenviar o formulário ao atualizar a página do resultado.
+## Organização
 
-As tentativas são registradas sem vínculo com usuário nesta etapa. O campo `criada_em` usa `TIMESTAMPTZ`; o horário exibido pode variar conforme o fuso da sessão que consulta o banco.
-
-O e-mail é fictício. A chamada “CONFIRMAR MEUS DADOS” não possui link para uma página externa, e o formulário solicita apenas a alternativa escolhida.
-
-## Tecnologias utilizadas
-
-- Python 3
-- Flask e Jinja2
-- HTML5 e CSS
-- PostgreSQL hospedado no Neon
-- Psycopg 3 para comunicação com o banco
-- python-dotenv, instalado pelo extra `Flask[dotenv]`, para carregar a configuração local ao executar pela CLI do Flask
-
-As versões das dependências estão registradas em `requirements.txt`.
-
-## Estrutura do projeto
-
-```text
-safeclick/
-├── __init__.py
-├── db.py
-├── simulacoes.py
-├── static/
-│   └── css/
-│       └── simulacao.css
-└── templates/
-    └── simulacao.html
-.env.example
-.gitignore
-criar_tentativas_simulacao.sql
-requirements.txt
-README.md
-```
-
-- `__init__.py`: cria a aplicação, carrega a configuração do banco e registra o Blueprint e o comando de verificação.
-- `db.py`: abre a conexão, salva as tentativas e disponibiliza o comando `verificar-banco`.
-- `simulacoes.py`: define as alternativas, valida as escolhas e controla a apresentação do resultado.
-- `simulacao.html`: apresenta o cenário, o formulário, os resultados e os avisos de erro.
-- `simulacao.css`: define as cores, os espaçamentos, os controles e a adaptação do layout às diferentes larguras de tela.
-- `criar_tentativas_simulacao.sql`: cria a tabela usada pela simulação em um banco ainda não preparado.
+- `safeclick/__init__.py`: cria a aplicação, carrega as configurações e registra as três funcionalidades.
+- `safeclick/db.py`: conexão com o banco, gravação das tentativas da simulação e comando de verificação.
+- `safeclick/simulacoes.py`: cenário, validação das escolhas e feedback da simulação.
+- `safeclick/conteudos.py` e `safeclick/conteudos_db.py`: páginas de leitura e consultas dos conteúdos.
+- `safeclick/quizzes.py`: perguntas, validação, correção e gravação dos quizzes.
+- `safeclick/templates/`: páginas HTML.
+- `safeclick/static/css/`: estilos das funcionalidades.
+- `criar_tentativas_simulacao.sql` e `sql/`: scripts de preparação do banco.
 - `.env.example`: modelo de configuração, sem credenciais.
-- `.gitignore`: exclui do versionamento arquivos locais, incluindo `.env` e `.venv`.
 
-## Como executar no Windows
+## Executar no Windows
 
-É necessário ter Python instalado e acesso a um banco PostgreSQL. Após clonar o repositório e selecionar a branch que deseja executar, abra o PowerShell na pasta do projeto.
+Abra o PowerShell na pasta principal do projeto, onde está o arquivo `requirements.txt`.
 
-### 1. Criar o ambiente virtual
+### 1. Preparar o ambiente
 
-Na primeira configuração:
+Se ainda não existir um ambiente virtual:
 
-```powershell
+powershell
 py -m venv .venv
-```
 
-### 2. Instalar as dependências
 
-```powershell
+Instale as dependências:
+
+powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-```
 
-### 3. Configurar a conexão
 
-Se ainda não houver um `.env` local, crie-o a partir do modelo:
+### 2. Configurar o arquivo local
 
-```powershell
+Crie o `.env` somente se ele ainda não existir:
+
+powershell
 if (-not (Test-Path -LiteralPath .env)) {
     Copy-Item -LiteralPath .env.example -Destination .env
 }
-```
 
-No Neon, abra o projeto ao qual você tem acesso e use **Connect** para copiar a string de conexão do banco escolhido. No `.env`, preencha:
 
-```dotenv
-DATABASE_URL="COLE_AQUI_A_STRING_DE_CONEXAO_DO_NEON"
-```
+Preencha as duas configurações, substituindo os textos de exemplo:
 
-Substitua o texto de exemplo pela conexão completa, mantendo os parâmetros de segurança fornecidos pelo Neon. O `.env` fica apenas no computador e não deve ser enviado ao GitHub. O `.env.example` deve permanecer sem credenciais.
+dotenv
+DATABASE_URL="COLE_AQUI_A_CONEXAO_DO_NEON"
+SECRET_KEY="COLE_AQUI_UMA_CHAVE_ALEATORIA"
 
-Cada integrante configura seu próprio arquivo local. Se todos usarem o mesmo banco e branch do Neon, compartilharão as tabelas e os dados, independentemente da branch Git em que estiverem trabalhando.
 
-### 4. Preparar a tabela, se necessário
+Obtenha a conexão pelo botão Connect do Neon, selecionando o projeto, a branch e o banco usados pelo grupo. Mantenha os parâmetros fornecidos na conexão.
 
-Em um banco novo, abra o **SQL Editor** do Neon, selecione o banco e a branch correspondentes à conexão configurada e execute o conteúdo de `criar_tentativas_simulacao.sql`.
+Se ainda não tiver uma SECRET_KEY, gere uma:
 
-Se `public.tentativas_simulacao` já existir, essa etapa já foi realizada. O script atual usa `CREATE TABLE` e não deve ser executado novamente sobre a tabela existente. Versionar o arquivo SQL no Git não executa o comando automaticamente no banco.
+powershell
+.\.venv\Scripts\python.exe -c "import secrets; print(secrets.token_hex(32))"
 
-### 5. Verificar a conexão
 
-```powershell
+Copie o resultado para a SECRET_KEY do seu `.env` e mantenha essa chave entre as execuções. Ela é necessária para a sessão dos quizzes.
+
+Cada integrante configura seu arquivo local. O `.env` e a pasta `.venv` são ignorados pelo Git; o `.env.example` deve permanecer sem valores reais.
+
+### 3. Preparar o banco, quando necessário
+
+Em um banco novo, execute o conteúdo destes arquivos no SQL Editor do Neon, nesta ordem:
+
+1. `criar_tentativas_simulacao.sql`
+2. `sql/criar_conteudos.sql`
+3. `sql/inserir_conteudos_iniciais.sql`
+4. `sql/criar_quizzes.sql`
+5. `sql/inserir_quizzes_iniciais.sql`
+6. `sql/adicionar_token_tentativas.sql`
+
+Se o banco já estiver preparado, confira o que existe antes de executar os scripts. Não repita os scripts de criação da simulação e dos quizzes sobre tabelas existentes. Use `sql/verificar_estrutura_quizzes.sql` para inspecionar a estrutura dos quizzes.
+
+O script de token adiciona a coluna e o índice usados para impedir a gravação duplicada do mesmo formulário de quiz.
+
+Um merge no Git não executa scripts no Neon. Integrantes conectados ao mesmo banco e à mesma branch do Neon compartilham os dados, mesmo trabalhando em branches Git diferentes.
+
+### 4. Verificar a conexão
+
+powershell
 .\.venv\Scripts\python.exe -m flask --app safeclick verificar-banco
-```
 
-O comando deve informar que a conexão foi realizada com sucesso e exibir o nome do banco. Ele verifica o acesso ao banco; a criação da tabela é feita na etapa anterior.
 
-### 6. Iniciar a aplicação
+Esse comando verifica o acesso ao banco; ele não confirma que todas as tabelas e os dados iniciais estão preparados.
 
-```powershell
-.\.venv\Scripts\python.exe -m flask --app safeclick run --debug
-```
+### 5. Iniciar a aplicação
 
-Acesse [a aplicação local](http://127.0.0.1:5000/). A página inicial redireciona para `/simulacoes/conta-bloqueada`.
+powershell
+.\.venv\Scripts\python.exe -m flask --app safeclick run
 
-Mantenha o servidor em execução durante o uso. Para encerrá-lo, pressione `Ctrl+C`. O modo de depuração é destinado ao desenvolvimento local.
 
-## Fluxo de uma tentativa
+Abra os endereços:
 
-1. Um GET apresenta a página da simulação.
-2. O formulário envia a escolha por POST.
-3. O servidor valida a alternativa usando o dicionário `OPCOES`.
-4. Uma escolha válida é gravada por uma consulta SQL parametrizada. A conexão confirma a transação ao sair normalmente do bloco `with`.
-5. Após o sucesso da gravação, a rota responde com HTTP 303 e redireciona para um GET com o parâmetro `resultado`.
-6. O GET apresenta o feedback sem executar uma nova gravação.
+- Simulação: http://127.0.0.1:5000/simulacoes/conta-bloqueada
+- Conteúdos: http://127.0.0.1:5000/conteudos/
+- Quizzes: http://127.0.0.1:5000/quizzes/
 
-O parâmetro `resultado` seleciona o texto educativo a exibir; abrir essa URL diretamente não registra nem comprova uma tentativa. Um novo envio do formulário continua sendo uma nova tentativa. O redirecionamento trata a atualização da página após sucesso, não todos os possíveis envios duplicados.
+A página inicial http://127.0.0.1:5000/ redireciona para a simulação.
 
-## Verificações realizadas
+Mantenha o terminal aberto durante o uso. Para encerrar o servidor, pressione Ctrl+C.
 
-- As três alternativas foram testadas manualmente, com conferência dos resultados e dos registros no Neon.
-- Envios com alternativa ausente ou inválida retornaram HTTP 400, sem acrescentar registros.
-- Uma falha de gravação foi simulada com um mock: a aplicação retornou HTTP 503 e exibiu o aviso esperado. Esse teste não representa uma indisponibilidade real do Neon.
-- Após um envio bem-sucedido, a página do resultado foi atualizada e a contagem no banco permaneceu igual.
-- O layout foi conferido em larguras de 320 a 1440 pixels, incluindo os resultados e o aviso de erro. A navegação pelas alternativas e pelo botão também foi verificada com teclado.
+## Comportamentos e limites desta etapa
 
-Para conferir o total de tentativas da simulação no SQL Editor:
+- As tentativas não possuem vínculo com cadastro ou login. O identificador de uma tentativa não representa um usuário.
+- Na simulação, escolhas ausentes ou inválidas retornam HTTP 400 sem gravação. Uma falha ao confirmar o registro retorna HTTP 503 com um aviso.
+- Após gravar a simulação, o servidor redireciona com HTTP 303. Atualizar a página do resultado não grava outra tentativa; enviar o formulário novamente pode registrar uma nova tentativa.
+- O parâmetro resultado da URL apenas seleciona o feedback educativo. Abrir essa URL diretamente não registra nem comprova uma tentativa.
+- O e-mail da simulação é fictício e sua chamada para confirmar dados não abre uma página externa.
+- Nos quizzes, um token identifica o envio do formulário. O resultado corresponde à última tentativa associada à sessão do navegador; tentar novamente permite um novo envio.
+- Perguntas e gabaritos usados em tentativas devem permanecer estáveis até existir um tratamento para versões do conteúdo.
+- Datas das tentativas usam TIMESTAMPTZ. A exibição do horário depende do fuso usado na consulta.
 
-```sql
-SELECT COUNT(*) AS total
-FROM public.tentativas_simulacao
-WHERE simulacao = 'conta_bloqueada';
-```
+## Verificação da integração
 
-## Próximos passos
+Na simulação, já foram conferidos os três resultados e registros no Neon, a rejeição de escolhas ausentes ou inválidas e a atualização da página sem nova gravação. A resposta HTTP 503 foi verificada com falha simulada por mock. O layout da simulação foi conferido entre 320 e 1440 pixels e com navegação por teclado.
 
-- Integrar as funcionalidades desenvolvidas pelos demais integrantes.
-- Conferir a versão integrada e preparar a branch `entrega1409` para avaliação.
-- Cada integrante deve gravar seu vídeo individual e enviar o arquivo identificado com seu nome no chat do projeto, antes de 14/09.
+Após integrar alterações, conferir:
+
+- A abertura das três funcionalidades.
+- A listagem dos dois temas e suas páginas de leitura.
+- Os dois quizzes, pontuações diferentes e explicações.
+- Uma tentativa e cinco respostas gravadas por envio válido de quiz.
+- A rejeição de respostas inválidas e o comportamento de reenvio do mesmo formulário.
+- A gravação da simulação e a atualização do resultado sem nova tentativa.
+
+A versão para avaliação é reunida na branch `entrega1409`. Cada integrante demonstra a funcionalidade que desenvolveu em seu próprio vídeo.
 
 ## Integrantes
 
