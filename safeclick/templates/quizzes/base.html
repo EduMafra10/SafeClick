@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Quizzes | SafeClick{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quizzes.css') }}">
+</head>
+<body class="quizzes-pagina">
+    <a class="quizzes-pular" href="#conteudo">Pular para o conteúdo</a>
+    <header class="quizzes-cabecalho">
+        <div class="quizzes-container quizzes-cabecalho-interno">
+            <a class="quizzes-marca" href="{{ url_for('quizzes.listar_quizzes') }}">Safe<span>Click</span></a>
+            <p class="quizzes-frase">Aprenda a reconhecer riscos e proteger suas contas.</p>
+        </div>
+    </header>
+    <main id="conteudo" class="quizzes-container quizzes-conteudo" tabindex="-1">
+        {% block conteudo %}{% endblock %}
+    </main>
+    <footer class="quizzes-rodape">
+        <div class="quizzes-container">SafeClick · Educação para a segurança digital</div>
+    </footer>
+</body>
+</html>

@@ -23,6 +23,7 @@ quizzes = Blueprint(
 
 @quizzes.get("/")
 def listar_quizzes():
+    # Lista os quizzes cadastrados no banco.
     with conectar_banco() as conexao:
         registros = conexao.execute(
             """
@@ -39,6 +40,7 @@ def listar_quizzes():
 
 @quizzes.route("/<int:quiz_id>", methods=["GET", "POST"])
 def exibir_quiz(quiz_id):
+    # Exibe as perguntas e processa o envio das respostas.
     with conectar_banco() as conexao:
         quiz = conexao.execute(
             """
@@ -98,6 +100,7 @@ def exibir_quiz(quiz_id):
             description="A configuração da sessão está pendente.",
         )
 
+    # Cada abertura do quiz recebe um código vinculado à sessão.
     chave_token = f"token_quiz_{quiz_id}"
 
     if request.method == "GET":
@@ -112,6 +115,7 @@ def exibir_quiz(quiz_id):
 
 
     if request.method == "POST":
+        # Aceita apenas o token e uma alternativa válida por pergunta.
         campos_esperados = {
             f"questao_{questao['id']}"
             for questao in questoes
@@ -195,6 +199,7 @@ def exibir_quiz(quiz_id):
                 else:
                     session["ultima_tentativa_quiz"] = tentativa_id
 
+                    # O redirecionamento evita reenvio ao atualizar o resultado.
                     return redirect(
                         url_for("quizzes.exibir_resultado"),
                         code=303,
@@ -211,6 +216,7 @@ def exibir_quiz(quiz_id):
     ), status
 
 def corrigir_respostas(quiz_id, questoes, respostas):
+    # Calcula os acertos pelo gabarito e prepara as explicações.
     with conectar_banco() as conexao:
         gabarito = conexao.execute(
             """
@@ -294,6 +300,7 @@ def corrigir_respostas(quiz_id, questoes, respostas):
     }
 
 def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
+    # Grava a tentativa e suas respostas na mesma transação.
     with conectar_banco() as conexao:
         tentativa = conexao.execute(
             """
@@ -315,6 +322,7 @@ def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
             ),
         ).fetchone()
 
+        # Reutiliza a tentativa quando o mesmo envio já foi gravado.
         if tentativa is None:
             tentativa_existente = conexao.execute(
                 """
@@ -360,6 +368,7 @@ def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
 
 @quizzes.get("/resultado")
 def exibir_resultado():
+    # Mostra a última tentativa associada à sessão do navegador.
     tentativa_id = session.get("ultima_tentativa_quiz")
 
     if tentativa_id is None:

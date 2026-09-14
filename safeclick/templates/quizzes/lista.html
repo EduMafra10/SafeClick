@@ -1,29 +1,28 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quizzes | SafeClick</title>
-</head>
-<body>
-    <main>
+{% extends "quizzes/base.html" %}
+
+{% block conteudo %}
+    <div class="quizzes-introducao">
+        <p class="quizzes-etiqueta">Aprenda na prática</p>
         <h1>Quizzes do SafeClick</h1>
+        <p>Escolha um tema e teste seus conhecimentos sobre segurança digital.</p>
+    </div>
 
-        <p>
-            Aprenda sobre phishing e proteção de senhas.
-        </p>
+    <ul class="quizzes-grade quizzes-lista">
+        {% for quiz in quizzes %}
+            <li class="quizzes-cartao quizzes-tema">
+                <p class="quizzes-etiqueta">Quiz {{ loop.index }}</p>
+                <h2>{{ quiz.titulo }}</h2>
+                <p>Responda às cinco perguntas e confira as explicações no final.</p>
+                <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}"
+                   aria-label="Começar quiz: {{ quiz.titulo }}">Começar quiz <span aria-hidden="true">→</span></a>
+            </li>
+        {% else %}
+            <li class="quizzes-cartao">Nenhum quiz disponível no momento.</li>
+        {% endfor %}
+    </ul>
 
-        <ul>
-            {% for quiz in quizzes %}
-               <li>
-    <a href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}">
-        {{ quiz.titulo }}
-    </a>
-</li>
-            {% else %}
-                <li>Nenhum quiz disponível no momento.</li>
-            {% endfor %}
-        </ul>
-    </main>
-</body>
-</html>
+    <aside class="quizzes-faixa">
+        <h2>Um passo de cada vez</h2>
+        <p>Cada pergunta tem uma resposta correta. Leia com calma e use o resultado para aprender.</p>
+    </aside>
+{% endblock %}

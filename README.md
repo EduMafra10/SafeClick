@@ -1,81 +1,93 @@
-SafeClick — Aprenda antes de clicar
+# SafeClick — Quizzes interativos
 
 Projeto de Conclusão de Curso de Sistemas de Informação da Universidade de Mogi das Cruzes (UMC).
 
-O SafeClick é uma plataforma web educativa voltada a estudantes do ensino médio e universitários. Seu objetivo é ajudar os usuários a reconhecer golpes digitais e adotar práticas mais seguras na internet.
+Esta versão contém a funcionalidade de quizzes da primeira entrega. O projeto continua em desenvolvimento.
 
-Estado atual
+## Funcionalidade
 
-O projeto está em desenvolvimento. A primeira entrega está organizada em três funcionalidades, cada uma sob responsabilidade de um integrante.
+- Dois quizzes: phishing e proteção de senhas.
+- Cinco perguntas por quiz, com quatro alternativas e uma resposta correta.
+- Validação e correção no Flask, com gabarito consultado no PostgreSQL.
+- Tentativa e cinco respostas gravadas na mesma transação.
+- Token de envio único para impedir tentativas duplicadas do mesmo formulário.
+- Resultado com pontuação, escolhas e explicações educativas.
+- CSS próprio seguindo o padrão visual do grupo.
 
-| Funcionalidade | Escopo da primeira entrega | Situação |
-| --- | --- | --- |
-| Conteúdos educativos | Listagem dos temas e páginas de leitura, com conteúdos consultados no PostgreSQL. Inicialmente: phishing e proteção de senhas. | Planejada; implementação ainda não iniciada. |
-| Quizzes interativos | Dois quizzes de cinco questões, com perguntas, alternativas, pontuação e explicações. Consulta das questões e armazenamento das tentativas no PostgreSQL. | Planejada; implementação ainda não iniciada. |
-| Simulações de golpes digitais | Cenário fictício de e-mail de conta bloqueada, com escolha de ação, consequências, explicações e registro da tentativa. | Em desenvolvimento, por Eduardo Mafra |
+As tentativas desta etapa não possuem vínculo com cadastro ou login. O resultado apresentado corresponde à última tentativa associada à sessão do navegador.
 
-Até o momento, foi iniciada a estrutura da aplicação Flask e implementado o fluxo de apresentação e processamento das escolhas da primeira simulação.
+## Tecnologias
 
-A gravação das tentativas da simulação no PostgreSQL ainda está pendente. Nesta primeira entrega, elas serão registradas sem vínculo com usuário, conforme o planejamento do grupo.
+Python, Flask, Psycopg, PostgreSQL/Neon, Jinja2, HTML e CSS, sem ORM.
 
-Tecnologias utilizadas nesta etapa
-
-- Python 3
-- Flask
-- Jinja2
-- HTML5
-
-Estrutura do projeto
+## Organização
 
 ```text
 safeclick/
-├── __init__.py
-├── simulacoes.py
-└── templates/
-    └── simulacao.html
-.gitignore
-requirements.txt
-README.md
+├── __init__.py                 # Inicialização e rota inicial
+├── db.py                       # Conexão e verificação do banco
+├── quizzes.py                  # Rotas, validação, correção e gravação
+├── static/css/quizzes.css      # Estilo dos quizzes
+└── templates/quizzes/
+    ├── base.html
+    ├── lista.html
+    ├── responder.html
+    └── resultado.html
+sql/
+├── criar_quizzes.sql
+├── inserir_quizzes_iniciais.sql
+├── adicionar_token_tentativas.sql
+└── verificar_estrutura_quizzes.sql
 ```
 
-- `__init__.py`: inicializa a aplicação e registra as rotas.
-- `simulacoes.py`: define as alternativas e processa a escolha do visitante.
-- `simulacao.html`: apresenta o cenário, o formulário e o resultado.
-- `requirements.txt`: lista as dependências da aplicação.
-- `.gitignore`: define os arquivos locais que não devem ser versionados.
+## Executar no Windows
 
-Como executar no Windows
-
-É necessário ter Python instalado. No PowerShell, abra a pasta do projeto e execute:
-
- 1. Criar o ambiente virtual
+Na raiz do projeto, caso ainda não tenha um ambiente virtual:
 
 ```powershell
 py -m venv .venv
 ```
 
-2. Instalar as dependências
+Instale as dependências:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
- 3. Iniciar a aplicação
+Configure o arquivo local `.env` com `DATABASE_URL` da branch Neon desejada e uma `SECRET_KEY` aleatória e estável. Não envie esse arquivo para o GitHub.
+
+Para gerar a chave:
 
 ```powershell
-.\.venv\Scripts\python.exe -m flask --app safeclick run --debug
+.\.venv\Scripts\python.exe -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-Acesse http://127.0.0.1:5000/ no navegador.
+Em um banco novo, execute os scripts nesta ordem:
 
-Mantenha o servidor em execução durante o uso. Para encerrá-lo, pressione `Ctrl+C` no terminal. O modo de depuração é destinado ao desenvolvimento local.
-Próximas etapas
+1. `sql/criar_quizzes.sql`
+2. `sql/inserir_quizzes_iniciais.sql`
+3. `sql/adicionar_token_tentativas.sql`
 
-- Verificar as três alternativas e o tratamento de escolhas inválidas.
-- Integrar o PostgreSQL por meio do Psycopg.
-- Registrar as tentativas e tratar falhas de gravação.
+Use `sql/verificar_estrutura_quizzes.sql` para inspecionar a estrutura. Não execute novamente o script de criação em um banco que já contém essas tabelas.
 
-Integrantes
+Verifique a conexão e inicie o servidor:
+
+```powershell
+.\.venv\Scripts\python.exe -m flask --app safeclick verificar-banco
+.\.venv\Scripts\python.exe -m flask --app safeclick run
+```
+
+Abra http://127.0.0.1:5000/ — a página inicial encaminha para `/quizzes/`.
+
+## Revisão da entrega
+
+Confira os dois quizzes, notas diferentes, rejeição de respostas inválidas e cinco respostas gravadas por tentativa. Atualizar o resultado não deve criar uma nova tentativa; “Tentar novamente” permite um novo envio.
+
+Os scripts SQL são versionados pelo Git, mas precisam ser executados no banco de destino. Um merge não altera automaticamente a Neon.
+
+As perguntas e o gabarito usados em tentativas devem permanecer estáveis até a implementação de um tratamento para versões do conteúdo.
+
+## Integrantes
 
 - Eduardo Mafra dos Santos
 - Humberto Ribeiro Bezerra
