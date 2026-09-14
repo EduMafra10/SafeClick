@@ -8,7 +8,7 @@ from flask import (
     session,
     url_for,
 )
-
+import secrets
 import psycopg
 
 from safeclick.db import conectar_banco
@@ -92,6 +92,19 @@ def exibir_quiz(quiz_id):
             questao["id"], []
         )
 
+    if not current_app.config.get("SECRET_KEY"):
+        abort(
+            503,
+            description="A configuração da sessão está pendente.",
+        )
+
+    chave_token = f"token_quiz_{quiz_id}"
+
+    if request.method == "GET":
+        session[chave_token] = secrets.token_hex(32)
+
+    token_envio = session.get(chave_token)
+
     erro = None
     mensagem = None
     respostas = {}
@@ -103,8 +116,24 @@ def exibir_quiz(quiz_id):
             f"questao_{questao['id']}"
             for questao in questoes
         }
+        campos_esperados.add("token_envio")
+        tokens_recebidos = request.form.getlist("token_envio")
 
-        if len(questoes) != 5:
+        if (
+            not token_envio
+            or len(tokens_recebidos) != 1
+            or not secrets.compare_digest(
+                tokens_recebidos[0].encode("utf-8"),
+                token_envio.encode("utf-8"),
+            )
+        ):
+            erro = (
+                "Este formulário expirou ou é inválido. "
+                "Volte à lista e abra o quiz novamente."
+            )
+            status = 400
+
+        elif len(questoes) != 5:
             erro = "Este quiz está indisponível no momento."
             status = 503
 
@@ -153,6 +182,7 @@ def exibir_quiz(quiz_id):
                         quiz_id,
                         respostas,
                         resultado,
+                        token_envio,
                     )
 
                 except psycopg.Error:
@@ -177,6 +207,7 @@ def exibir_quiz(quiz_id):
         erro=erro,
         mensagem=mensagem,
         respostas=respostas,
+        token_envio=token_envio,
     ), status
 
 def corrigir_respostas(quiz_id, questoes, respostas):
@@ -262,24 +293,49 @@ def corrigir_respostas(quiz_id, questoes, respostas):
         "detalhes": detalhes,
     }
 
-def salvar_tentativa(quiz_id, respostas, resultado):
+def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
     with conectar_banco() as conexao:
         tentativa = conexao.execute(
             """
             INSERT INTO public.tentativas_quiz (
                 quiz_id,
                 pontuacao,
-                total_questoes
+                total_questoes,
+                token_envio
             )
-            VALUES (%s, %s, %s)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (token_envio) DO NOTHING
             RETURNING id
             """,
             (
                 quiz_id,
                 resultado["pontuacao"],
                 resultado["total_questoes"],
+                token_envio,
             ),
         ).fetchone()
+
+        if tentativa is None:
+            tentativa_existente = conexao.execute(
+                """
+                SELECT id
+                FROM public.tentativas_quiz
+                WHERE token_envio = %s
+                  AND quiz_id = %s
+                """,
+                (
+                    token_envio,
+                    quiz_id,
+                ),
+            ).fetchone()
+
+            if tentativa_existente is None:
+                abort(
+                    409,
+                    description="Não foi possível identificar a tentativa.",
+                )
+
+            return tentativa_existente["id"]
 
         tentativa_id = tentativa["id"]
 

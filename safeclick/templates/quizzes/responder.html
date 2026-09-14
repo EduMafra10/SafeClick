@@ -29,6 +29,12 @@
             method="post"
             action="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}"
         >
+            <input
+                type="hidden"
+                name="token_envio"
+                value="{{ token_envio or '' }}"
+            >
+
             {% for questao in questoes %}
                 <fieldset>
                     <legend>
