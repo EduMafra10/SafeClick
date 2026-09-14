@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conta bloqueada | SafeClick</title>
+
+    <!-- carrega os estilos da página pela pasta static do flask -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/simulacao.css') }}"
+    >
+</head>
+
+<!-- apresenta o nome do projeto e sua frase principal -->
+<body class="simulacao-pagina">
+    <header class="simulacao-cabecalho">
+        <div class="simulacao-container simulacao-cabecalho-interno">
+
+            <p class="simulacao-marca">
+                Safe<span>Click</span>
+            </p>
+
+            <p class="simulacao-frase">
+                Aprenda antes de clicar.
+            </p>
+
+        </div>
+    </header>
+
+
+    <main class="simulacao-container simulacao-conteudo">
+        <h1>Simulação de golpe digital</h1>
+        <p>Esta é uma atividade fictícia para aprender a reconhecer golpes</p>
+
+        <!-- organiza o e-mail e a area de decisao -->
+        <div class="simulacao-exercicio">
+
+        <!-- representa o e-mail fictício que o visitante deve analisar nessa atividade -->
+        <section class="simulacao-email" aria-labelledby="titulo-email">
+
+             <!-- identifica a mensagem como parte da atividade educativa -->
+            <div class="simulacao-email-barra">
+                Mensagem recebida · E-mail fictício
+            </div>
+
+             <!-- apresenta o assunto e o remetente da mensagem -->
+            <div class="simulacao-email-assunto">
+                <h2 id="titulo-email">
+                    Sua conta será bloqueada em 30 minutos!
+                </h2>
+
+                <p class="simulacao-remetente">
+                    <strong>De: Equipe de segurança</strong>
+                    <span class="simulacao-endereco">
+                        suporte@verificacao-conta.example
+                    </span>
+                </p>
+            </div>
+
+             <!-- contem o texto usado para simular o golpe -->
+            <div class="simulacao-email-corpo">
+                <p>
+                    Identificamos uma atividade suspeita na sua conta.
+                </p>
+
+                <p>
+                    Para evitar o bloqueio da sua conta, confirme
+                    imediatamente seus dados pelo link enviado abaixo.
+                </p>
+
+                <!--essa chamada é apenas um texto sem nenhum link externo -->
+                <p class="simulacao-chamada-ficticia">
+                    <strong>CONFIRMAR MEUS DADOS</strong>
+                </p>
+
+                <p>
+                    Caso a confirmação não seja realizada em até 
+                    <strong>30 minutos</strong>, seu acesso será bloqueado.
+                </p>
+        </div>
+    </section>
+
+        <!-- abre a coluna que contem o aviso e o formulario -->
+        <div class="simulacao-decisao">
+
+        {# esse codigo abaixo exibe a mensagem enviada pelo Flask quando a escolha recebida é inválida #}
+        {% if erro %}
+            <p class="simulacao-erro" role="alert">
+                {{ erro }}
+            </p>
+        {% endif %}
+
+        <!-- envia a alternativa escolhida pelo usuario por POST para a rota que processa a simulaçao -->
+        <form
+            method="post"
+            action="{{ url_for('simulacoes.conta_bloqueada') }}"
+        >
+            <fieldset class="simulacao-alternativas">
+                <legend>O que você faria?</legend>
+
+                <p class="simulacao-instrucao">
+                    Selecione uma alternativa para descobrir
+                    a consequência da sua decisão.
+                </p>
+
+                <!-- Agrupa os cartões das alternativas. -->
+                <div class="simulacao-opcoes">
+
+                    {% for identificador, opcao in opcoes.items() %}
+                        <label class="simulacao-opcao">
+                            <input
+                                type="radio"
+                                name="opcao"
+                                value="{{ identificador }}"
+                                required
+                            >
+
+                            <span>{{ opcao["texto"] }}</span>
+                        </label>
+                    {% endfor %}
+
+                </div>
+            </fieldset>
+
+            <button class="simulacao-botao" type="submit">
+                Ver consequência
+            </button>
+        </form>
+
+            </div> <!-- fecha a area de decisao -->
+        </div> <!-- fecha a organizaçao em coluna -->
+
+        {# mostra o feedback somente quando o Flask encontrar uma alternativa válida #}
+        {% if resultado %}
+             <section class="simulacao-resultado" aria-labelledby="titulo-resultado">
+
+        <h2 id="titulo-resultado">Resultado da sua decisão</h2>
+
+        <!-- organiza a explicaçao e os sinais de risco em colunas -->
+        <div class="simulacao-resultado-conteudo">
+
+            <div class="simulacao-feedback">
+
+                <!-- destaca a alternativa escolhida pelo visitante -->
+                <div class="simulacao-escolha">
+                    <h3>Sua escolha</h3>
+                    <p>{{ resultado["texto"] }}</p>
+                </div>
+
+                <h3>Consequência</h3>
+                <p>{{ resultado["consequencia"] }}</p>
+
+                <h3>Por que isso acontece?</h3>
+                <p>{{ resultado["explicacao"] }}</p>
+
+            </div>
+
+            <!-- complementa a explicaçao com os sinais do golpe -->
+            <aside class="simulacao-sinais" aria-labelledby="titulo-sinais">
+                <h3 id="titulo-sinais">Sinais de risco neste exemplo</h3>
+
+                <ul>
+                    <li>Pressão por uma resposta imediata</li>
+                    <li>
+                        Ameaça de bloqueio da conta indicando
+                        um prazo para você agir rápido
+                    </li>
+                    <li>
+                        Solicitação de dados por uma
+                        mensagem não verificada
+                    </li>
+                    <li>
+                        Links suspeitos induzindo o usuário a clicar
+                    </li>
+                </ul>
+            </aside>
+        </div>
+    </section>
+    {% endif %}
+    </main>
+</body>
+</html>
