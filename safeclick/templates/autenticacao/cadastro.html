@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta | SafeClick</title>
+</head>
+<body>
+    <header>
+        <p><strong>SafeClick</strong> — Aprenda antes de clicar</p>
+    </header>
+
+    <main>
+        <h1>Criar conta</h1>
+        <p>Preencha os dados abaixo para criar sua conta no SafeClick</p>
+
+        {% for mensagem in get_flashed_messages(category_filter=["sucesso"]) %}
+            <p role="status">{{ mensagem }}</p>
+        {% endfor %}
+
+        {% if erro %}
+            <p role="alert">{{ erro }}</p>
+        {% endif %}
+
+        {% if formulario.csrf_token.errors %}
+            <p role="alert">
+                Não foi possível validar o formulário.
+                Recarregue a página e tente novamente.
+            </p>
+        {% endif %}
+
+        <p id="orientacao-senha">
+            Use uma senha com 15 a 128 caracteres. Você pode usar uma frase com espaços.
+        </p>
+
+        <form method="post" action="{{ url_for('autenticacao.cadastro') }}">
+            <!--inclui o token de protecao contra CSRF-->
+            {{ formulario.hidden_tag() }}
+
+            {% for campo, preenchimento in [
+                (formulario.nome, "name"),
+                (formulario.email, "email"),
+                (formulario.senha, "new-password"),
+                (formulario.confirmar_senha, "new-password")
+            ] %}
+
+                <p>
+                    {{ campo.label }}<br>
+                    <!--PAREI AQUI NO MOMENTO POIS ESTOU COM ALGUMAS DUVIDAS QUE VOU TIRAR ANTES DE CONTINUAR-->
+                </p>
+
+    </main>
+
+
+</body>
+</html>
