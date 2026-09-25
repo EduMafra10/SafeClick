@@ -7,13 +7,14 @@
 </head>
 <body>
     <header>
-        <p><strong>SafeClick</strong> — Aprenda antes de clicar</p>
+        <p><strong>SafeClick</strong> — Aprenda antes de clicar.</p>
     </header>
 
     <main>
         <h1>Criar conta</h1>
-        <p>Preencha os dados abaixo para criar sua conta no SafeClick</p>
+        <p>Preencha os dados abaixo para criar sua conta no SafeClick.</p>
 
+        <!-- exibe a mensagem após um cadastro bem-sucedido -->
         {% for mensagem in get_flashed_messages(category_filter=["sucesso"]) %}
             <p role="status">{{ mensagem }}</p>
         {% endfor %}
@@ -29,28 +30,56 @@
             </p>
         {% endif %}
 
-        <p id="orientacao-senha">
-            Use uma senha com 15 a 128 caracteres. Você pode usar uma frase com espaços.
-        </p>
-
         <form method="post" action="{{ url_for('autenticacao.cadastro') }}">
-            <!--inclui o token de protecao contra CSRF-->
+            <!-- inclui o token de proteção contra CSRF -->
             {{ formulario.hidden_tag() }}
 
+            <!-- apresenta os quatro campos do cadastro -->
             {% for campo, preenchimento in [
                 (formulario.nome, "name"),
                 (formulario.email, "email"),
                 (formulario.senha, "new-password"),
                 (formulario.confirmar_senha, "new-password")
             ] %}
-
                 <p>
                     {{ campo.label }}<br>
-                    <!--PAREI AQUI NO MOMENTO POIS ESTOU COM ALGUMAS DUVIDAS QUE VOU TIRAR ANTES DE CONTINUAR-->
+
+                    {{ campo(
+                        autocomplete=preenchimento,
+                        aria_invalid="true" if campo.errors else "false",
+                        aria_describedby=(
+                            "orientacao-senha senha-erros"
+                            if campo.name == "senha"
+                            else campo.id ~ "-erros"
+                        )
+                    ) }}
+
+                    <!-- ajustando para a orientação aparecer somente abaixo da senha -->
+                    {% if campo.name == "senha" %}
+                        <br>
+                        <small id="orientacao-senha">
+                            Use pelo menos 15 caracteres.<br>
+                            Evite senhas comuns e informações pessoais.
+                        </small>
+                    {% endif %}
                 </p>
 
+                <!-- exibe os erros do campo correspondente -->
+                <div id="{{ campo.id }}-erros">
+                    {% for mensagem in campo.errors %}
+                        <p role="alert">{{ mensagem }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {{ formulario.enviar() }}
+        </form>
+
+        <p>
+            <a href="{{ url_for('conteudos.listar') }}">
+                Ver conteúdos educativos
+            </a>
+        </p>
     </main>
-
-
 </body>
 </html>

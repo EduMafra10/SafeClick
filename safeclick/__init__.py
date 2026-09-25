@@ -8,6 +8,7 @@ from safeclick.db import verificar_banco
 from safeclick.quizzes import quizzes
 from safeclick.simulacoes import simulacoes
 from safeclick.sessoes import login_manager
+from safeclick.autenticacao import autenticacao
 
 def create_app():
     app = Flask(__name__)
@@ -24,6 +25,9 @@ def create_app():
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
     login_manager.init_app(app)
+
+    # registra as paginas de autenticacao
+    app.register_blueprint(autenticacao)
 
     # registra as tres funcionalidades ja desenvolvidas
     app.register_blueprint(conteudos_bp)
