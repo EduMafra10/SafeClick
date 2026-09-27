@@ -150,3 +150,37 @@
     border-left: 4px solid #a64f30;
     border-radius: 8px;
 }
+/* links para a Política de Privacidade e os Termos de Uso */
+.conteudos-rodape {
+    padding: 8px 0 32px;
+    color: #526d7e;
+    font-size: 14px;
+}
+
+.conteudos-rodape a {
+    color: #28638d;
+}
+
+.privacidade-sumario ol { margin-left: -10px; }
+.privacidade-sumario a {
+    display: inline-block;
+    padding: 4px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    color: #28638d;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.privacidade-sumario a:hover {
+    background-color: #e2f0fc;
+    border-color: #c7ddec;
+}
+
+/* nas tabelas as palavras não são quebradas no meio (ex.: "Obrigatório?") */
+.privacidade-tabela th,
+.privacidade-tabela td {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+}

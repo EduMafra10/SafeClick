@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Privacidade | SafeClick{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/privacidade.css') }}">
+</head>
+<body class="privacidade-pagina">
+    <a class="privacidade-pular" href="#conteudo">Pular para o conteúdo</a>
+    <header class="privacidade-cabecalho">
+        <div class="privacidade-container privacidade-cabecalho-interno">
+            <a class="privacidade-marca" href="{{ url_for('conteudos.listar') }}">Safe<span>Click</span></a>
+            <nav class="privacidade-abas" aria-label="Documentos">
+                <a href="{{ url_for('privacidade.politica') }}"
+                   {% if request.endpoint == 'privacidade.politica' %}aria-current="page"{% endif %}>Política de Privacidade</a>
+                <a href="{{ url_for('privacidade.termos') }}"
+                   {% if request.endpoint == 'privacidade.termos' %}aria-current="page"{% endif %}>Termos de Uso</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="conteudo" class="privacidade-container privacidade-conteudo" tabindex="-1">
+        <article class="privacidade-documento">
+{% block conteudo %}{% endblock %}
+        </article>
+    </main>
+
+    <footer class="privacidade-rodape">
+        <div class="privacidade-container">
+            SafeClick · Projeto Final de Curso · UMC ·
+            Dúvidas sobre seus dados: <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>
+        </div>
+    </footer>
+</body>
+</html>

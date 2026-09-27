@@ -4,6 +4,7 @@ from flask import Flask, redirect, url_for
 
 from safeclick.conteudos import conteudos_bp
 from safeclick.db import verificar_banco
+from safeclick.privacidade import privacidade
 from safeclick.quizzes import quizzes
 from safeclick.simulacoes import simulacoes
 
@@ -19,6 +20,9 @@ def create_app():
     app.register_blueprint(conteudos_bp)
     app.register_blueprint(simulacoes)
     app.register_blueprint(quizzes)
+
+    # Registra as páginas de LGPD (política de privacidade e termos de uso).
+    app.register_blueprint(privacidade)
 
     # Disponibiliza o comando de verificação do banco.
     app.cli.add_command(verificar_banco)

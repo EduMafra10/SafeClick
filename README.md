@@ -25,6 +25,7 @@ As dependências estão em `requirements.txt`. O extra `Flask[dotenv]` permite c
 - `safeclick/simulacoes.py`: cenário, validação das escolhas e feedback da simulação.
 - `safeclick/conteudos.py` e `safeclick/conteudos_db.py`: páginas de leitura e consultas dos conteúdos.
 - `safeclick/quizzes.py`: perguntas, validação, correção e gravação dos quizzes.
+- `safeclick/privacidade.py`: páginas de Política de Privacidade (`/politica-de-privacidade`) e Termos de Uso (`/termos-de-uso`), com versão e canal de privacidade definidos em `DOCUMENTOS`.
 - `safeclick/templates/`: páginas HTML.
 - `safeclick/static/css/`: estilos das funcionalidades.
 - `criar_tentativas_simulacao.sql` e `sql/`: scripts de preparação do banco.

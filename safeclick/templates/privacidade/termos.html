@@ -1,0 +1,93 @@
+{% extends "privacidade/base.html" %}
+{# Texto gerado a partir da mesma fonte do Apêndice B da monografia. Ao alterar aqui, altere também o apêndice e a versão em privacidade.py. #}
+{% block titulo %}Termos de Uso | SafeClick{% endblock %}
+{% block conteudo %}
+        <h1>Termos de Uso</h1>
+        <p class="privacidade-meta">Versão {{ versao }} · vigente desde {{ vigencia }}</p>
+        <nav class="privacidade-sumario" aria-label="Seções">
+            <p>Nesta página</p>
+            <ol>
+                <li><a href="#1-aceitacao">1. Aceitação</a></li>
+                <li><a href="#2-o-servico-e-suas-limitacoes">2. O serviço e suas limitações</a></li>
+                <li><a href="#3-quem-pode-usar">3. Quem pode usar</a></li>
+                <li><a href="#4-sua-conta">4. Sua conta</a></li>
+                <li><a href="#5-condutas-proibidas">5. Condutas proibidas</a></li>
+                <li><a href="#6-conteudo-enviado-por-voce">6. Conteúdo enviado por você</a></li>
+                <li><a href="#7-propriedade-intelectual">7. Propriedade intelectual</a></li>
+                <li><a href="#8-disponibilidade-e-suporte">8. Disponibilidade e suporte</a></li>
+                <li><a href="#9-encerramento-da-conta">9. Encerramento da conta</a></li>
+                <li><a href="#10-responsabilidades">10. Responsabilidades</a></li>
+                <li><a href="#11-legislacao-aplicavel">11. Legislação aplicável</a></li>
+                <li><a href="#12-versao-e-alteracoes">12. Versão e alterações</a></li>
+            </ol>
+        </nav>
+        <section class="privacidade-resumo" aria-labelledby="resumo">
+            <h2 id="resumo">Resumo em linguagem simples</h2>
+            <ul>
+                <li>O SafeClick ensina segurança digital. Ele não é um antivírus e não garante que você nunca cairá em um golpe.</li>
+                <li>Qualquer pessoa pode estudar sem conta. Para criar conta, é preciso ter {{ idade_minima_conta }} anos ou mais; entre {{ idade_minima_conta }} e 17, com ciência do responsável.</li>
+                <li>Cuide da sua senha, não tente acessar contas de outras pessoas e não use as simulações para aplicar golpes de verdade.</li>
+                <li>Você pode excluir sua conta quando quiser. Seus direitos sobre os dados estão na Política de Privacidade.</li>
+            </ul>
+        </section>
+
+        <h2 id="1-aceitacao">1. Aceitação</h2>
+        <p>Estes Termos regulam o uso do SafeClick. Ao criar uma conta, você declara que leu e aceita estes Termos. O tratamento de dados pessoais é explicado separadamente na Política de Privacidade, que não é substituída por estes Termos.</p>
+
+        <h2 id="2-o-servico-e-suas-limitacoes">2. O serviço e suas limitações</h2>
+        <p>O SafeClick é uma plataforma educativa, gratuita e sem fins comerciais, desenvolvida como Projeto Final de Curso da UMC. Oferece conteúdos educativos, quizzes, simulações de golpes digitais e verificação de senhas em vazamentos conhecidos; painel de progresso, conquistas e avaliações estão em desenvolvimento.</p>
+        <ul>
+            <li>O SafeClick tem finalidade educativa. Ele não detecta ameaças em tempo real e não substitui antivírus, atualizações ou os canais oficiais de bancos e serviços.</li>
+            <li>As simulações são <strong>inteiramente fictícias</strong>: nomes, mensagens e endereços são inventados para fins didáticos e não representam nenhuma empresa ou instituição real.</li>
+            <li>No verificador de vazamentos, o resultado "não encontrada" indica apenas que a senha não está na base consultada; isso não garante que ela seja segura.</li>
+        </ul>
+
+        <h2 id="3-quem-pode-usar">3. Quem pode usar</h2>
+        <ul>
+            <li>Os conteúdos, quizzes e simulações podem ser acessados por qualquer pessoa, sem cadastro.</li>
+            <li>A criação de conta é permitida a partir de <strong>{{ idade_minima_conta }} anos</strong>.</li>
+            <li>Se você tem entre {{ idade_minima_conta }} e 17 anos, só pode criar conta com a ciência e a concordância do seu responsável legal, e declara isso no cadastro.</li>
+            <li>Contas de menores de {{ idade_minima_conta }} anos serão excluídas quando identificadas.</li>
+        </ul>
+
+        <h2 id="4-sua-conta">4. Sua conta</h2>
+        <ul>
+            <li>Informe um e-mail que seja seu. No campo de nome, você pode usar um apelido.</li>
+            <li>A senha deve ter pelo menos 15 caracteres. Use uma senha exclusiva e não a compartilhe.</li>
+            <li>Se suspeitar de acesso indevido, troque a senha e avise pelo canal <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</li>
+            <li>Existem dois perfis: <strong>usuário</strong>, criado pelo cadastro público, e <strong>administrador</strong>, criado apenas pela equipe e restrito à manutenção de conteúdos e à segurança da plataforma.</li>
+        </ul>
+
+        <h2 id="5-condutas-proibidas">5. Condutas proibidas</h2>
+        <p>Ao usar o SafeClick, você não pode:</p>
+        <ul>
+            <li>tentar acessar contas ou dados de outras pessoas;</li>
+            <li>testar vulnerabilidades, sobrecarregar ou atacar a plataforma sem autorização da equipe;</li>
+            <li>automatizar cadastros, logins ou envios de quizzes;</li>
+            <li>usar o verificador para testar senhas de outras pessoas;</li>
+            <li>usar as simulações ou os conteúdos como modelo para aplicar golpes reais;</li>
+            <li>inserir dados pessoais de terceiros em avaliações ou comentários.</li>
+        </ul>
+        <p>O descumprimento pode levar à suspensão ou à exclusão da conta, com aviso sempre que possível.</p>
+
+        <h2 id="6-conteudo-enviado-por-voce">6. Conteúdo enviado por você</h2>
+        <p>Quando a avaliação de conteúdos e quizzes estiver disponível, as notas e comentários que você enviar serão usados de forma agregada, sem identificar quem avaliou, para melhorar a plataforma. Não inclua dados pessoais seus ou de outras pessoas nesses campos.</p>
+
+        <h2 id="7-propriedade-intelectual">7. Propriedade intelectual</h2>
+        <p>Os textos, as simulações e o código-fonte do SafeClick são de autoria da equipe e foram produzidos para fins acadêmicos. As fontes consultadas nos conteúdos educativos estão indicadas na monografia do projeto.</p>
+
+        <h2 id="8-disponibilidade-e-suporte">8. Disponibilidade e suporte</h2>
+        <p>Por ser um projeto acadêmico hospedado em planos gratuitos, o SafeClick pode ficar indisponível para manutenção ou por limites dos provedores. Se um serviço externo falhar, como a consulta de senhas vazadas, as demais funcionalidades continuam disponíveis. Dúvidas e suporte: <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</p>
+
+        <h2 id="9-encerramento-da-conta">9. Encerramento da conta</h2>
+        <p>Você pode encerrar sua conta a qualquer momento. As contas criadas em testes e na validação do PFC serão excluídas até 31/12/2026. Se a plataforma continuar em operação depois disso, estes Termos e a Política de Privacidade serão atualizados.</p>
+
+        <h2 id="10-responsabilidades">10. Responsabilidades</h2>
+        <p>A equipe adota as medidas de segurança descritas na Política de Privacidade e responde por falhas nos termos da lei. Você é responsável pelo sigilo da sua senha e pelas condutas realizadas com a sua conta. Nada nestes Termos afasta direitos garantidos pela LGPD, pelo Código de Defesa do Consumidor ou pelo Estatuto da Criança e do Adolescente.</p>
+
+        <h2 id="11-legislacao-aplicavel">11. Legislação aplicável</h2>
+        <p>Estes Termos seguem as leis brasileiras, em especial a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018), o Marco Civil da Internet (Lei nº 12.965/2014), o Estatuto da Criança e do Adolescente (Lei nº 8.069/1990) e o Estatuto Digital da Criança e do Adolescente (Lei nº 15.211/2025).</p>
+
+        <h2 id="12-versao-e-alteracoes">12. Versão e alterações</h2>
+        <p>A versão e a data de vigência aparecem no topo desta página. Quando uma alteração mudar o que foi aceito no cadastro, pediremos um novo aceite.</p>
+{% endblock %}
