@@ -61,7 +61,7 @@
 .privacidade-tabela th { background: #edf6fd; }
 .privacidade-tabela tr:last-child td { border-bottom: 0; }
 
-.privacidade-rodape { padding: 20px 0 32px; color: #526d7e; font-size: 14px; }
+.privacidade-rodape { padding: 20px 0 32px; color: #526d7e; font-size: 14px; text-align: center; }
 .privacidade-rodape a { color: #28638d; }
 
 .privacidade-pagina a:focus-visible, .privacidade-tabela:focus-visible {

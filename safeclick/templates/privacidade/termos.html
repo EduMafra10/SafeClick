@@ -1,5 +1,5 @@
 {% extends "privacidade/base.html" %}
-{# Texto gerado a partir da mesma fonte do Apêndice B da monografia. Ao alterar aqui, altere também o apêndice e a versão em privacidade.py. #}
+{# Texto gerado a partir da mesma fonte dos Apêndices B da monografia. Ao alterar aqui, altere também o apêndice e a versão em privacidade.py. #}
 {% block titulo %}Termos de Uso | SafeClick{% endblock %}
 {% block conteudo %}
         <h1>Termos de Uso</h1>
@@ -25,9 +25,10 @@
             <h2 id="resumo">Resumo em linguagem simples</h2>
             <ul>
                 <li>O SafeClick ensina segurança digital. Ele não é um antivírus e não garante que você nunca cairá em um golpe.</li>
-                <li>Qualquer pessoa pode estudar sem conta. Para criar conta, é preciso ter {{ idade_minima_conta }} anos ou mais; entre {{ idade_minima_conta }} e 17, com ciência do responsável.</li>
+                <li>Para usar é preciso criar uma conta e ter {{ idade_minima_conta }} anos ou mais; entre {{ idade_minima_conta }} e 17, com ciência do responsável.</li>
+                <li>O login pede sua senha e um código de um aplicativo autenticador no celular.</li>
                 <li>Cuide da sua senha, não tente acessar contas de outras pessoas e não use as simulações para aplicar golpes de verdade.</li>
-                <li>Você pode excluir sua conta quando quiser. Seus direitos sobre os dados estão na Política de Privacidade.</li>
+                <li>Você pode pedir a exclusão da sua conta quando quiser. Seus direitos sobre os dados estão na Política de Privacidade.</li>
             </ul>
         </section>
 
@@ -35,17 +36,17 @@
         <p>Estes Termos regulam o uso do SafeClick. Ao criar uma conta, você declara que leu e aceita estes Termos. O tratamento de dados pessoais é explicado separadamente na Política de Privacidade, que não é substituída por estes Termos.</p>
 
         <h2 id="2-o-servico-e-suas-limitacoes">2. O serviço e suas limitações</h2>
-        <p>O SafeClick é uma plataforma educativa, gratuita e sem fins comerciais, desenvolvida como Projeto Final de Curso da UMC. Oferece conteúdos educativos, quizzes, simulações de golpes digitais e verificação de senhas em vazamentos conhecidos; painel de progresso, conquistas e avaliações estão em desenvolvimento.</p>
+        <p>O SafeClick é uma plataforma educativa, gratuita e sem fins comerciais, desenvolvida como Projeto Final de Curso da UMC. Oferece, para usuários com conta, conteúdos educativos, quizzes e simulações de golpes digitais; verificação de senhas vazadas, painel de progresso, conquistas e avaliações estão em desenvolvimento.</p>
         <ul>
             <li>O SafeClick tem finalidade educativa. Ele não detecta ameaças em tempo real e não substitui antivírus, atualizações ou os canais oficiais de bancos e serviços.</li>
             <li>As simulações são <strong>inteiramente fictícias</strong>: nomes, mensagens e endereços são inventados para fins didáticos e não representam nenhuma empresa ou instituição real.</li>
-            <li>No verificador de vazamentos, o resultado "não encontrada" indica apenas que a senha não está na base consultada; isso não garante que ela seja segura.</li>
+            <li>No verificador de vazamentos, quando disponível, o resultado "não encontrada" indicará apenas que a senha não está na base consultada; isso não garante que ela seja segura.</li>
         </ul>
 
         <h2 id="3-quem-pode-usar">3. Quem pode usar</h2>
         <ul>
-            <li>Os conteúdos, quizzes e simulações podem ser acessados por qualquer pessoa, sem cadastro.</li>
-            <li>A criação de conta é permitida a partir de <strong>{{ idade_minima_conta }} anos</strong>.</li>
+            <li>O acesso aos conteúdos, quizzes e simulações exige uma conta.</li>
+            <li>A criação de conta é permitida a partir de <strong>{{ idade_minima_conta }} anos</strong>. Menores de {{ idade_minima_conta }} anos não podem usar a plataforma nesta fase do projeto.</li>
             <li>Se você tem entre {{ idade_minima_conta }} e 17 anos, só pode criar conta com a ciência e a concordância do seu responsável legal, e declara isso no cadastro.</li>
             <li>Contas de menores de {{ idade_minima_conta }} anos serão excluídas quando identificadas.</li>
         </ul>
@@ -54,6 +55,8 @@
         <ul>
             <li>Informe um e-mail que seja seu. No campo de nome, você pode usar um apelido.</li>
             <li>A senha deve ter pelo menos 15 caracteres. Use uma senha exclusiva e não a compartilhe.</li>
+            <li>Para entrar, é preciso configurar um aplicativo autenticador no celular (segundo fator) e informar o código gerado por ele a cada login. Se perder o acesso ao aplicativo, fale conosco pelo canal <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</li>
+            <li>Depois de 5 tentativas de login sem sucesso em 5 minutos, novas tentativas ficam bloqueadas temporariamente. A sessão expira em até 8 horas; saia da conta ao usar um computador compartilhado.</li>
             <li>Se suspeitar de acesso indevido, troque a senha e avise pelo canal <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</li>
             <li>Existem dois perfis: <strong>usuário</strong>, criado pelo cadastro público, e <strong>administrador</strong>, criado apenas pela equipe e restrito à manutenção de conteúdos e à segurança da plataforma.</li>
         </ul>
@@ -77,13 +80,13 @@
         <p>Os textos, as simulações e o código-fonte do SafeClick são de autoria da equipe e foram produzidos para fins acadêmicos. As fontes consultadas nos conteúdos educativos estão indicadas na monografia do projeto.</p>
 
         <h2 id="8-disponibilidade-e-suporte">8. Disponibilidade e suporte</h2>
-        <p>Por ser um projeto acadêmico hospedado em planos gratuitos, o SafeClick pode ficar indisponível para manutenção ou por limites dos provedores. Se um serviço externo falhar, como a consulta de senhas vazadas, as demais funcionalidades continuam disponíveis. Dúvidas e suporte: <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</p>
+        <p>Por ser um projeto acadêmico hospedado em planos gratuitos, o SafeClick pode ficar indisponível para manutenção ou por limites dos provedores. Se o serviço que confere os códigos do autenticador ficar fora do ar, o login pode ficar temporariamente indisponível. Dúvidas e suporte: <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</p>
 
         <h2 id="9-encerramento-da-conta">9. Encerramento da conta</h2>
-        <p>Você pode encerrar sua conta a qualquer momento. As contas criadas em testes e na validação do PFC serão excluídas até 31/12/2026. Se a plataforma continuar em operação depois disso, estes Termos e a Política de Privacidade serão atualizados.</p>
+        <p>Você pode pedir o encerramento da sua conta a qualquer momento pelo canal <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>. As contas criadas em testes e na validação do PFC serão excluídas até 31/12/2026. Se a plataforma continuar em operação depois disso, estes Termos e a Política de Privacidade serão atualizados.</p>
 
         <h2 id="10-responsabilidades">10. Responsabilidades</h2>
-        <p>A equipe adota as medidas de segurança descritas na Política de Privacidade e responde por falhas nos termos da lei. Você é responsável pelo sigilo da sua senha e pelas condutas realizadas com a sua conta. Nada nestes Termos afasta direitos garantidos pela LGPD, pelo Código de Defesa do Consumidor ou pelo Estatuto da Criança e do Adolescente.</p>
+        <p>A equipe adota as medidas de segurança descritas na Política de Privacidade e responde por falhas nos termos da lei. Você é responsável pelo sigilo da sua senha, pela guarda do aplicativo autenticador e pelas condutas realizadas com a sua conta. Nada nestes Termos afasta direitos garantidos pela LGPD, pelo Código de Defesa do Consumidor ou pelo Estatuto da Criança e do Adolescente.</p>
 
         <h2 id="11-legislacao-aplicavel">11. Legislação aplicável</h2>
         <p>Estes Termos seguem as leis brasileiras, em especial a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018), o Marco Civil da Internet (Lei nº 12.965/2014), o Estatuto da Criança e do Adolescente (Lei nº 8.069/1990) e o Estatuto Digital da Criança e do Adolescente (Lei nº 15.211/2025).</p>

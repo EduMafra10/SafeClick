@@ -1,5 +1,5 @@
 {% extends "privacidade/base.html" %}
-{# Texto gerado a partir da mesma fonte do Apêndice A da monografia. Ao alterar aqui, altere também o apêndice e a versão em privacidade.py. #}
+{# Texto gerado a partir da mesma fonte dos Apêndices A da monografia. Ao alterar aqui, altere também o apêndice e a versão em privacidade.py. #}
 {% block titulo %}Política de Privacidade | SafeClick{% endblock %}
 {% block conteudo %}
         <h1>Política de Privacidade</h1>
@@ -23,9 +23,10 @@
         <section class="privacidade-resumo" aria-labelledby="resumo">
             <h2 id="resumo">Resumo em linguagem simples</h2>
             <ul>
-                <li>Você pode ler os conteúdos, fazer os quizzes e as simulações <strong>sem criar conta e sem informar nenhum dado pessoal</strong>.</li>
-                <li>Se criar uma conta (a partir de {{ idade_minima_conta }} anos), guardamos só o necessário: como você quer ser chamado, seu e-mail e sua senha. A senha é guardada embaralhada (hash): nem a equipe consegue lê-la.</li>
-                <li>Não vendemos seus dados, não mostramos anúncios, não criamos ranking público entre usuários e não usamos cookies de rastreamento.</li>
+                <li>Para usar o SafeClick é preciso criar uma conta e ter <strong>{{ idade_minima_conta }} anos ou mais</strong>.</li>
+                <li>Guardamos só o necessário: como você quer ser chamado, seu e-mail, sua senha e os resultados dos seus quizzes e simulações. A senha é guardada embaralhada (hash): nem a equipe consegue lê-la.</li>
+                <li>O login tem uma segunda etapa com um aplicativo autenticador no celular. A empresa que confere esses códigos (Twilio) recebe só um identificador aleatório, nunca seu nome, e-mail ou senha.</li>
+                <li>Não vendemos seus dados, não mostramos anúncios, não criamos ranking entre usuários e não usamos cookies de rastreamento.</li>
                 <li>Você pode pedir para ver, corrigir ou apagar seus dados a qualquer momento pelo e-mail <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</li>
                 <li>O SafeClick é um projeto acadêmico: as contas criadas durante testes e validação serão apagadas até 31/12/2026.</li>
             </ul>
@@ -45,19 +46,24 @@
                     <tr><td data-rotulo="Dado">Nome ou apelido (como você quer ser chamado)</td><td data-rotulo="Quando é coletado">Cadastro</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
                     <tr><td data-rotulo="Dado">E-mail</td><td data-rotulo="Quando é coletado">Cadastro e login</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
                     <tr><td data-rotulo="Dado">Senha, guardada somente como hash scrypt</td><td data-rotulo="Quando é coletado">Cadastro e login</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
-                    <tr><td data-rotulo="Dado">Perfil de acesso (usuário ou administrador)</td><td data-rotulo="Quando é coletado">Definido pelo sistema</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
-                    <tr><td data-rotulo="Dado">Data de criação da conta</td><td data-rotulo="Quando é coletado">Cadastro</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Perfil de acesso (usuário ou administrador) e data de criação da conta</td><td data-rotulo="Quando é coletado">Definidos pelo sistema</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Vínculo com o aplicativo autenticador: identificador aleatório, código do fator na Twilio e data de confirmação</td><td data-rotulo="Quando é coletado">Configuração do segundo fator</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Sessão de acesso: identificador guardado só como hash, datas de início, última atividade e expiração</td><td data-rotulo="Quando é coletado">Login</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Etapa de login em andamento: identificador temporário (hash) e número de tentativas do código</td><td data-rotulo="Quando é coletado">Entre a senha e o código do autenticador</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Controle de tentativas: e-mail digitado transformado em código irreversível (HMAC) e contador</td><td data-rotulo="Quando é coletado">Login e configuração do autenticador</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Tentativas de quizzes: quiz, alternativas escolhidas, pontuação e data</td><td data-rotulo="Quando é coletado">Envio de um quiz</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Escolhas nas simulações: simulação, opção escolhida e data</td><td data-rotulo="Quando é coletado">Uso de uma simulação</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Cookie de sessão</td><td data-rotulo="Quando é coletado">Navegação e login</td><td data-rotulo="Obrigatório?">Necessário</td><td data-rotulo="Situação">Em funcionamento</td></tr>
                     <tr><td data-rotulo="Dado">Versão e data do aceite dos Termos, com declaração de idade</td><td data-rotulo="Quando é coletado">Cadastro</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em implementação</td></tr>
                     <tr><td data-rotulo="Dado">Registros de auditoria: identificador da conta, ação e data/hora</td><td data-rotulo="Quando é coletado">Login, logout, falha de login e alterações na conta</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em implementação</td></tr>
-                    <tr><td data-rotulo="Dado">Cookie de sessão</td><td data-rotulo="Quando é coletado">Navegação e login</td><td data-rotulo="Obrigatório?">Necessário</td><td data-rotulo="Situação">Em funcionamento</td></tr>
-                    <tr><td data-rotulo="Dado">Senha digitada no verificador de vazamentos (não é armazenada)</td><td data-rotulo="Quando é coletado">Ao usar o verificador</td><td data-rotulo="Obrigatório?">Opcional</td><td data-rotulo="Situação">Em implementação</td></tr>
+                    <tr><td data-rotulo="Dado">Senha digitada no verificador de vazamentos (não é armazenada)</td><td data-rotulo="Quando é coletado">Ao usar o verificador</td><td data-rotulo="Obrigatório?">Opcional</td><td data-rotulo="Situação">Em desenvolvimento</td></tr>
                     <tr><td data-rotulo="Dado">Token de recuperação de senha, guardado como hash e válido por 30 minutos</td><td data-rotulo="Quando é coletado">Pedido de recuperação de senha</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em desenvolvimento</td></tr>
-                    <tr><td data-rotulo="Dado">Progresso, conquistas e avaliações de conteúdos e quizzes</td><td data-rotulo="Quando é coletado">Uso da conta</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em desenvolvimento</td></tr>
+                    <tr><td data-rotulo="Dado">Conquistas e avaliações de conteúdos e quizzes</td><td data-rotulo="Quando é coletado">Uso da conta</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em desenvolvimento</td></tr>
                 </tbody>
             </table>
         </div>
-        <p><strong>Não coletamos</strong> CPF, data de nascimento, endereço, telefone, fotografia, localização, endereço IP nos registros de auditoria nem dados pessoais sensíveis (art. 5º, II, da LGPD).</p>
-        <p><strong>O que não é dado pessoal.</strong> As respostas dos quizzes e as escolhas feitas nas simulações são gravadas sem qualquer ligação com uma conta ou pessoa: guardamos apenas a resposta, a pontuação e a data. Esses registros servem para avaliar se os conteúdos estão ensinando bem.</p>
+        <p>O código de 6 dígitos do aplicativo autenticador é enviado para conferência e não é guardado. O QR Code usado para configurar o autenticador é gerado no nosso próprio servidor.</p>
+        <p><strong>Não coletamos</strong> CPF, data de nascimento, endereço, telefone, fotografia, localização nem dados pessoais sensíveis (art. 5º, II, da LGPD). Nosso banco de dados não grava endereço IP; a empresa de hospedagem (seção 6) pode registrar dados técnicos das requisições, como o IP, em seus registros de funcionamento.</p>
         <p>Os itens marcados como "em implementação" ou "em desenvolvimento" ainda não estão disponíveis para todos os usuários. Quando entrarem em funcionamento, esta política será revisada e a versão atualizada.</p>
 
         <h2 id="3-para-que-usamos-os-dados-e-com-qual-base-legal">3. Para que usamos os dados e com qual base legal</h2>
@@ -65,30 +71,31 @@
             <table>
                 <thead><tr><th scope="col">Finalidade</th><th scope="col">Dados usados</th><th scope="col">Base legal (LGPD)</th></tr></thead>
                 <tbody>
-                    <tr><td data-rotulo="Finalidade">Criar e manter sua conta, autenticar seu acesso e proteger sua sessão</td><td data-rotulo="Dados usados">Nome ou apelido, e-mail, hash da senha, perfil, cookie de sessão</td><td data-rotulo="Base legal (LGPD)">Execução de contrato: os Termos de Uso aceitos no cadastro (art. 7º, V)</td></tr>
+                    <tr><td data-rotulo="Finalidade">Criar e manter sua conta, confirmar sua identidade no login (senha e segundo fator) e proteger sua sessão</td><td data-rotulo="Dados usados">Nome ou apelido, e-mail, hash da senha, perfil, vínculo com o autenticador, sessão, etapa de login e cookie de sessão</td><td data-rotulo="Base legal (LGPD)">Execução de contrato: os Termos de Uso aceitos no cadastro (art. 7º, V)</td></tr>
+                    <tr><td data-rotulo="Finalidade">Registrar seus resultados em quizzes e simulações, mostrar o seu desempenho e avaliar, de forma agregada, se os conteúdos ensinam bem</td><td data-rotulo="Dados usados">Tentativas de quizzes e escolhas nas simulações</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V)</td></tr>
+                    <tr><td data-rotulo="Finalidade">Limitar tentativas de login e de configuração do autenticador, para impedir ataques de adivinhação de senha</td><td data-rotulo="Dados usados">Código HMAC do e-mail digitado e contador</td><td data-rotulo="Base legal (LGPD)">Legítimo interesse em segurança (art. 7º, IX), com avaliação documentada pela equipe</td></tr>
                     <tr><td data-rotulo="Finalidade">Registrar o aceite dos Termos e a declaração de idade</td><td data-rotulo="Dados usados">Versão e data do aceite</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V), para demonstrar o cumprimento do art. 14 da LGPD e da Lei nº 15.211/2025</td></tr>
-                    <tr><td data-rotulo="Finalidade">Enviar o e-mail de recuperação de senha quando você pedir</td><td data-rotulo="Dados usados">E-mail e token temporário</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V)</td></tr>
                     <tr><td data-rotulo="Finalidade">Registrar acessos e ações para proteger as contas e investigar falhas</td><td data-rotulo="Dados usados">Identificador da conta, ação, data e hora</td><td data-rotulo="Base legal (LGPD)">Legítimo interesse (art. 7º, IX), com avaliação documentada pela equipe</td></tr>
+                    <tr><td data-rotulo="Finalidade">Enviar o e-mail de recuperação de senha quando você pedir</td><td data-rotulo="Dados usados">E-mail e token temporário</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V)</td></tr>
                     <tr><td data-rotulo="Finalidade">Verificar, a seu pedido, se uma senha já apareceu em vazamentos</td><td data-rotulo="Dados usados">Senha digitada, processada apenas durante a consulta</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V)</td></tr>
-                    <tr><td data-rotulo="Finalidade">Mostrar seu progresso e suas conquistas</td><td data-rotulo="Dados usados">Progresso vinculado à conta</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V)</td></tr>
                     <tr><td data-rotulo="Finalidade">Atender pedidos de privacidade</td><td data-rotulo="Dados usados">E-mail e conteúdo do pedido</td><td data-rotulo="Base legal (LGPD)">Cumprimento de obrigação legal (art. 7º, II, e art. 18)</td></tr>
                 </tbody>
             </table>
         </div>
-        <p>Não usamos o consentimento como base para essas operações. Por isso, a revogação de consentimento (art. 18, IX) não se aplica ao SafeClick; no lugar dela, você pode excluir sua conta a qualquer momento, e os dados vinculados a ela são apagados.</p>
+        <p>Não usamos o consentimento como base para essas operações. Por isso, a revogação de consentimento (art. 18, IX) não se aplica ao SafeClick; no lugar dela, você pode pedir a exclusão da sua conta a qualquer momento, e os dados vinculados a ela são apagados.</p>
 
         <h2 id="4-adolescentes">4. Adolescentes</h2>
-        <p>O SafeClick é voltado a estudantes do ensino médio e universitários, e parte desse público tem menos de 18 anos. Tratamos os dados de adolescentes em seu melhor interesse (art. 14 da LGPD) e seguimos o Estatuto Digital da Criança e do Adolescente (Lei nº 15.211/2025):</p>
+        <p>O SafeClick é voltado a estudantes a partir de {{ idade_minima_conta }} anos, do ensino médio e universitários, e parte desse público tem 16 ou 17 anos. Tratamos os dados de adolescentes em seu melhor interesse (art. 14 da LGPD) e seguimos o Estatuto Digital da Criança e do Adolescente (Lei nº 15.211/2025):</p>
         <ul>
-            <li>Os conteúdos, quizzes e simulações podem ser usados por qualquer pessoa, <strong>sem conta e sem fornecer dados pessoais</strong>.</li>
-            <li>A criação de conta é permitida a partir de <strong>{{ idade_minima_conta }} anos</strong>. Entre {{ idade_minima_conta }} e 17 anos, o cadastro exige declarar que o responsável legal está ciente e de acordo com o uso da plataforma.</li>
-            <li>Não criamos contas para menores de {{ idade_minima_conta }} anos. Se identificarmos uma conta nessa situação, ela será excluída; o responsável pode pedir informações pelo canal <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</li>
-            <li>Todos os usuários recebem as configurações mais protetivas por padrão: não há perfil público, ranking entre usuários, chat, publicidade, perfilamento ou cookies de rastreamento.</li>
+            <li>Todo o conteúdo do SafeClick exige conta, e a conta só pode ser criada a partir de <strong>{{ idade_minima_conta }} anos</strong>. Menores de {{ idade_minima_conta }} anos não podem usar a plataforma nesta fase do projeto.</li>
+            <li>Entre {{ idade_minima_conta }} e 17 anos, o cadastro exige declarar que o responsável legal está ciente e de acordo com o uso da plataforma.</li>
+            <li>Se identificarmos uma conta de menor de {{ idade_minima_conta }} anos, ela será excluída; o responsável pode pedir informações pelo canal <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>.</li>
+            <li>Todos os usuários recebem as configurações mais protetivas por padrão: não há perfil público, ranking entre usuários, chat, publicidade, perfilamento ou cookies de rastreamento. Seus resultados em quizzes e simulações não são mostrados a outros usuários.</li>
             <li>As conquistas não usam sequências diárias obrigatórias nem notificações que incentivem o uso compulsivo.</li>
         </ul>
 
         <h2 id="5-cookies">5. Cookies</h2>
-        <p>Usamos apenas um <strong>cookie de sessão, estritamente necessário</strong>: ele mantém você conectado, protege formulários contra envios forjados (CSRF) e evita que um quiz seja enviado duas vezes. O cookie é assinado, inacessível a scripts da página (HttpOnly), restrito ao próprio site (SameSite=Lax), enviado somente por HTTPS em produção e expira quando você sai da conta ou fecha o navegador.</p>
+        <p>Usamos apenas um <strong>cookie de sessão, estritamente necessário</strong>: ele mantém você conectado, protege formulários contra envios forjados (CSRF) e evita que um quiz seja enviado duas vezes. O cookie é assinado, inacessível a scripts da página (HttpOnly), restrito ao próprio site (SameSite=Lax), enviado somente por HTTPS em produção e apagado quando você fecha o navegador. Do lado do servidor, a sessão expira em até 8 horas e é encerrada imediatamente quando você sai da conta. As páginas de conta e de login não são guardadas em cache pelo navegador.</p>
         <p>Não usamos cookies de análise, publicidade ou rastreamento. Por isso, não exibimos banner de cookies.</p>
 
         <h2 id="6-com-quem-compartilhamos">6. Com quem compartilhamos</h2>
@@ -98,20 +105,24 @@
                 <thead><tr><th scope="col">Serviço</th><th scope="col">Para quê</th><th scope="col">O que recebe</th><th scope="col">Onde</th></tr></thead>
                 <tbody>
                     <tr><td data-rotulo="Serviço">Neon (PostgreSQL)</td><td data-rotulo="Para quê">Armazenar o banco de dados</td><td data-rotulo="O que recebe">Os dados guardados listados na seção 2</td><td data-rotulo="Onde">Brasil (AWS São Paulo), com conexão criptografada</td></tr>
-                    <tr><td data-rotulo="Serviço">Vercel</td><td data-rotulo="Para quê">Hospedar a aplicação</td><td data-rotulo="O que recebe">As requisições enquanto são processadas (formulários e cookie de sessão)</td><td data-rotulo="Onde">Execução configurada em São Paulo (gru1); empresa sediada nos EUA</td></tr>
-                    <tr><td data-rotulo="Serviço">Provedor de e-mail ({{ provedor_email }})</td><td data-rotulo="Para quê">Enviar o e-mail de recuperação de senha</td><td data-rotulo="O que recebe">Seu e-mail e o link temporário</td><td data-rotulo="Onde">Fora do Brasil</td></tr>
-                    <tr><td data-rotulo="Serviço">Have I Been Pwned – Pwned Passwords</td><td data-rotulo="Para quê">Verificar se uma senha vazou</td><td data-rotulo="O que recebe">Somente os 5 primeiros caracteres do hash SHA-1 da senha; nada da sua conta</td><td data-rotulo="Onde">Fora do Brasil</td></tr>
+                    <tr><td data-rotulo="Serviço">Vercel</td><td data-rotulo="Para quê">Hospedar a aplicação</td><td data-rotulo="O que recebe">As requisições enquanto são processadas (formulários e cookie de sessão) e dados técnicos de acesso</td><td data-rotulo="Onde">Execução configurada em São Paulo (gru1); empresa sediada nos EUA</td></tr>
+                    <tr><td data-rotulo="Serviço">Twilio (Verify)</td><td data-rotulo="Para quê">Conferir os códigos do aplicativo autenticador (segundo fator)</td><td data-rotulo="O que recebe">Um identificador aleatório que não revela quem você é, o código de 6 dígitos digitado e a chave secreta do autenticador, criada e guardada pela própria Twilio. Não recebe nome, e-mail nem senha</td><td data-rotulo="Onde">EUA</td></tr>
+                    <tr><td data-rotulo="Serviço">Provedor de e-mail ({{ provedor_email }})</td><td data-rotulo="Para quê">Enviar o e-mail de recuperação de senha (em desenvolvimento)</td><td data-rotulo="O que recebe">Seu e-mail e o link temporário</td><td data-rotulo="Onde">Fora do Brasil</td></tr>
+                    <tr><td data-rotulo="Serviço">Have I Been Pwned – Pwned Passwords</td><td data-rotulo="Para quê">Verificar se uma senha vazou (em desenvolvimento)</td><td data-rotulo="O que recebe">Somente os 5 primeiros caracteres do hash SHA-1 da senha; nada da sua conta</td><td data-rotulo="Onde">Fora do Brasil</td></tr>
                 </tbody>
             </table>
         </div>
         <p>O código-fonte fica no GitHub, que não recebe dados de usuários: senhas de acesso e chaves ficam em variáveis de ambiente, fora do repositório.</p>
 
         <h2 id="7-transferencia-internacional">7. Transferência internacional</h2>
-        <p>O banco de dados fica no Brasil. A Vercel e o provedor de e-mail são empresas estrangeiras e podem processar dados técnicos fora do país, o que caracteriza transferência internacional (art. 33 da LGPD). Em uma implantação real, o controlador deverá formalizar essas transferências por um dos mecanismos do art. 33, como as cláusulas-padrão contratuais da ANPD (Resolução CD/ANPD nº 19/2024).</p>
+        <p>O banco de dados fica no Brasil. A Twilio, a Vercel e o provedor de e-mail são empresas estrangeiras e podem processar dados fora do país, o que caracteriza transferência internacional (art. 33 da LGPD). Para reduzir esse risco, a Twilio recebe apenas um identificador aleatório, sem dados que identifiquem você diretamente. Em uma implantação real, o controlador deverá formalizar essas transferências por um dos mecanismos do art. 33, como as cláusulas-padrão contratuais da ANPD (Resolução CD/ANPD nº 19/2024).</p>
 
         <h2 id="8-por-quanto-tempo-guardamos">8. Por quanto tempo guardamos</h2>
         <ul>
-            <li><strong>Conta e dados vinculados:</strong> até você excluir a conta. As contas criadas em testes e na validação do PFC serão excluídas até 31/12/2026.</li>
+            <li><strong>Conta, resultados de quizzes e simulações e vínculo com o autenticador:</strong> até a exclusão da conta. As contas criadas em testes e na validação do PFC serão excluídas até 31/12/2026.</li>
+            <li><strong>Sessão de acesso:</strong> até 8 horas ou até você sair da conta. Registros vencidos são apagados automaticamente.</li>
+            <li><strong>Etapa de login em andamento:</strong> 5 minutos; o registro é substituído no próximo login e apagado com a conta.</li>
+            <li><strong>Controle de tentativas:</strong> janela de 5 minutos; o registro é apagado automaticamente um dia depois de vencer.</li>
             <li><strong>Registros de auditoria:</strong> 6 meses. Quando a conta é excluída, os registros deixam de apontar para ela (são anonimizados).</li>
             <li><strong>Token de recuperação de senha:</strong> 30 minutos, com uso único.</li>
             <li><strong>Senha digitada no verificador de vazamentos:</strong> não é armazenada.</li>
@@ -125,7 +136,7 @@
             <li>confirmação de que tratamos seus dados e acesso a eles;</li>
             <li>correção de dados incompletos, inexatos ou desatualizados;</li>
             <li>anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade com a lei;</li>
-            <li>portabilidade, recebendo os dados da sua conta em formato legível;</li>
+            <li>portabilidade, recebendo os dados da sua conta e os seus resultados em formato legível;</li>
             <li>informação sobre com quem compartilhamos dados (seção 6);</li>
             <li>eliminação dos seus dados, com a exclusão da conta.</li>
         </ul>
@@ -133,7 +144,7 @@
         <p>Você também pode apresentar reclamação à Autoridade Nacional de Proteção de Dados (ANPD), em www.gov.br/anpd.</p>
 
         <h2 id="10-seguranca">10. Segurança</h2>
-        <p>Adotamos medidas técnicas para proteger os dados (art. 46 da LGPD): senhas guardadas apenas como hash scrypt com salt, comunicação por HTTPS, controle de acesso verificado no servidor em cada operação, proteção de formulários contra CSRF, consultas parametrizadas ao banco, credenciais fora do código-fonte e registros de auditoria sem senhas nem tokens. A verificação de senhas vazadas usa o modelo k-anonymity, que nunca envia a senha nem o hash completo.</p>
+        <p>Adotamos medidas técnicas para proteger os dados (art. 46 da LGPD): senhas guardadas apenas como hash scrypt com salt; login em duas etapas com aplicativo autenticador; limite de 5 tentativas de login a cada 5 minutos; sessões registradas no servidor, com identificadores guardados apenas como hash, expiração em 8 horas e encerramento no logout; exigência de login e verificação do perfil no servidor em todas as páginas de conteúdo; proteção de formulários contra CSRF; comunicação por HTTPS; consultas parametrizadas ao banco; e credenciais fora do código-fonte.</p>
         <p>Se ocorrer um incidente de segurança que possa causar risco ou dano relevante, comunicaremos a ANPD e as pessoas afetadas no prazo de três dias úteis, conforme a Resolução CD/ANPD nº 15/2024 (art. 48 da LGPD).</p>
 
         <h2 id="11-alteracoes-nesta-politica">11. Alterações nesta política</h2>
