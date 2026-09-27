@@ -1,5 +1,6 @@
 from werkzeug.security import generate_password_hash
 
+from safeclick.auditoria_db import registrar_evento
 from safeclick.db import conectar_banco
 
 def buscar_usuario_por_email(email):
@@ -43,5 +44,14 @@ def criar_usuario(nome, email, senha):
             """,
             (nome, email, senha_hash),
         ).fetchone()
+
+        registrar_evento(
+            usuario_id=registro["id"],
+            evento="usuario.cadastrado",
+            resultado="sucesso",
+            recurso_tipo="usuario",
+            recurso_id=registro["id"],
+            conexao=conexao,
+        )
 
     return registro["id"]

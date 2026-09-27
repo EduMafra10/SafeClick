@@ -23,16 +23,30 @@ def conectar_banco():
 
 #registra a tentativa sem vinculo com usuario nessa etapa
 def salvar_tentativa_simulacao(simulacao, opcao):
-    #gerencia a transaçao e fecha a conexao ao sair do bloco
+    # Importação aqui evita um ciclo entre db.py e auditoria_db.py.
+    from safeclick.auditoria_db import registrar_evento, usuario_autenticado_id
+
     with conectar_banco() as conexao:
-        #envia os valores como parametros separados do comando SQL
-        conexao.execute(
+        tentativa = conexao.execute(
             """
             INSERT INTO public.tentativas_simulacao (simulacao, opcao)
             VALUES (%s, %s)
+            RETURNING id
             """,
             (simulacao, opcao),
+        ).fetchone()
+
+        registrar_evento(
+            usuario_id=usuario_autenticado_id(),
+            evento="simulacao.concluida",
+            resultado="sucesso",
+            recurso_tipo="tentativa_simulacao",
+            recurso_id=tentativa["id"],
+            detalhes={"simulacao": simulacao, "opcao": opcao},
+            conexao=conexao,
         )
+
+    return tentativa["id"]
 
 #disponibiliza a verifiçao pelo terminal com acesso a config do flask
 @click.command("verificar-banco")

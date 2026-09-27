@@ -9,6 +9,7 @@ from safeclick.quizzes import quizzes
 from safeclick.simulacoes import simulacoes
 from safeclick.sessoes import login_manager
 from safeclick.autenticacao import autenticacao
+from safeclick.auditoria import auditoria
 
 def create_app():
     app = Flask(__name__)
@@ -33,6 +34,7 @@ def create_app():
     app.register_blueprint(conteudos_bp)
     app.register_blueprint(simulacoes)
     app.register_blueprint(quizzes)
+    app.register_blueprint(auditoria)
 
     # disponibiliza o comando de verificacao do banco
     app.cli.add_command(verificar_banco)

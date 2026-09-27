@@ -12,7 +12,7 @@ import secrets
 import psycopg
 
 from safeclick.db import conectar_banco
-from safeclick.auditoria_db import registrar_evento
+from safeclick.auditoria_db import registrar_evento, usuario_autenticado_id
 
 
 quizzes = Blueprint(
@@ -366,7 +366,7 @@ def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
             )
 
         registrar_evento(
-            usuario_id=None,
+            usuario_id=usuario_autenticado_id(),
             evento="quiz.concluido",
             resultado="sucesso",
             recurso_tipo="tentativa_quiz",

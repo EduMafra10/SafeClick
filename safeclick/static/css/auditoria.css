@@ -1,0 +1,33 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f3f8fc; color: #153849; font: 16px/1.6 Arial, sans-serif; }
+.container { width: 92%; max-width: 1180px; margin: 0 auto; }
+.cabecalho { background: #e2f0fc; border-bottom: 1px solid #c7ddec; }
+.cabecalho-interno { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 84px; }
+.marca { color: #153849; font-size: 24px; font-weight: bold; text-decoration: none; }
+.marca span { color: #286b53; }
+main { padding: 32px 0 40px; }
+h1 { margin: 0 0 8px; font-size: 32px; }
+.cartao { margin-top: 24px; padding: 24px; border: 1px solid #c7ddec; border-radius: 10px; background: #fff; }
+.filtros { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: end; }
+label { display: grid; gap: 6px; font-weight: bold; }
+input, select, button { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid #94b8ce; border-radius: 8px; font: inherit; }
+button { background: #153849; color: white; cursor: pointer; }
+button:hover { background: #245168; }
+.acoes { display: flex; align-items: center; gap: 12px; }
+.acoes button { width: auto; }
+a { color: #153849; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #28638d; outline-offset: 2px; }
+.tabela-rolagem { overflow-x: auto; }
+.total { margin-top: 0; }
+table { width: 100%; min-width: 850px; border-collapse: collapse; text-align: left; }
+th, td { padding: 12px; border-bottom: 1px solid #c7ddec; vertical-align: top; }
+th { background: #e2f0fc; }
+td code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.paginacao { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 24px; }
+.pular { position: absolute; left: 4%; top: -100px; background: #153849; color: white; padding: 10px; }
+.pular:focus { top: 8px; }
+@media (max-width: 800px) {
+    .filtros { grid-template-columns: 1fr; }
+    .cabecalho-interno { flex-wrap: wrap; padding: 16px 0; }
+    h1 { font-size: 26px; }
+}

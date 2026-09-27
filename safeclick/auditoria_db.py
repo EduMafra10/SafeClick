@@ -1,3 +1,5 @@
+from flask import has_request_context
+from flask_login import current_user
 from psycopg.types.json import Jsonb
 
 from safeclick.db import conectar_banco
@@ -22,6 +24,14 @@ RESULTADOS_PERMITIDOS = {
     "falha",
     "negado",
 }
+
+
+def usuario_autenticado_id():
+    """Identifica o usuário da requisição, quando houver login."""
+
+    if has_request_context() and current_user.is_authenticated:
+        return int(current_user.id)
+    return None
 
 
 def _validar_evento(evento, resultado, detalhes):
@@ -110,3 +120,44 @@ def registrar_evento(
             recurso_id,
             detalhes,
         )
+
+
+def listar_eventos(conexao, *, pagina, por_pagina, evento=None, usuario_id=None,
+                   data_inicio=None, data_fim=None):
+    """Consulta os eventos com filtros e paginação."""
+
+    condicoes = []
+    parametros = []
+
+    if evento:
+        condicoes.append("logs.evento = %s")
+        parametros.append(evento)
+    if usuario_id is not None:
+        condicoes.append("logs.usuario_id = %s")
+        parametros.append(usuario_id)
+    if data_inicio is not None:
+        condicoes.append("logs.criado_em >= %s")
+        parametros.append(data_inicio)
+    if data_fim is not None:
+        condicoes.append("logs.criado_em < %s")
+        parametros.append(data_fim)
+
+    filtro_sql = " WHERE " + " AND ".join(condicoes) if condicoes else ""
+    total = conexao.execute(
+        "SELECT COUNT(*) AS total FROM public.logs_auditoria AS logs" + filtro_sql,
+        parametros,
+    ).fetchone()["total"]
+
+    registros = conexao.execute(
+        """
+        SELECT logs.id, logs.criado_em, logs.usuario_id, usuario.nome AS usuario_nome,
+               logs.evento, logs.resultado, logs.recurso_tipo, logs.recurso_id,
+               logs.detalhes
+        FROM public.logs_auditoria AS logs
+        LEFT JOIN public.usuarios AS usuario ON usuario.id = logs.usuario_id
+        """ + filtro_sql + " ORDER BY logs.criado_em DESC, logs.id DESC"
+        " LIMIT %s OFFSET %s",
+        [*parametros, por_pagina, (pagina - 1) * por_pagina],
+    ).fetchall()
+
+    return registros, total
