@@ -21,17 +21,16 @@ def conectar_banco():
         row_factory=dict_row,
     )
 
-#registra a tentativa sem vinculo com usuario nessa etapa
-def salvar_tentativa_simulacao(simulacao, opcao):
+def salvar_tentativa_simulacao(usuario_id, simulacao, opcao):
     #gerencia a transaçao e fecha a conexao ao sair do bloco
     with conectar_banco() as conexao:
         #envia os valores como parametros separados do comando SQL
         conexao.execute(
             """
-            INSERT INTO public.tentativas_simulacao (simulacao, opcao)
-            VALUES (%s, %s)
+            INSERT INTO public.tentativas_simulacao (usuario_id, simulacao, opcao)
+            VALUES (%s, %s, %s)
             """,
-            (simulacao, opcao),
+            (usuario_id, simulacao, opcao),
         )
 
 #disponibiliza a verifiçao pelo terminal com acesso a config do flask

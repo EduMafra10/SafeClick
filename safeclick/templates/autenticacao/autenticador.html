@@ -1,0 +1,96 @@
+{% extends "autenticacao/base.html" %}
+
+{% set titulo = "Verificação em duas etapas" %}
+{% if limite_atingido %}
+    {% set descricao = "O limite de tentativas desta etapa foi atingido." %}
+{% elif configuracao %}
+    {% set descricao = "No Google Authenticator, adicione uma conta e escaneie este QR Code." %}
+{% elif not usuario.mfa_fator_sid %}
+    {% set descricao = "Configure o aplicativo autenticador para proteger sua conta." %}
+{% else %}
+    {% set descricao = "Informe os seis números exibidos no seu aplicativo autenticador." %}
+{% endif %}
+
+{% block conteudo %}
+    {% if limite_atingido %}
+        <p class="autenticacao-mensagem autenticacao-mensagem-erro" role="alert">
+            Aguarde alguns minutos e entre novamente.
+        </p>
+    {% else %}
+        {% if configuracao %}
+            <div class="autenticacao-qrcode">
+                <img
+                    src="data:image/svg+xml;base64,{{ configuracao.qr_code }}"
+                    alt="QR Code para configurar o autenticador do SafeClick"
+                    width="280"
+                    height="280"
+                >
+            </div>
+
+            <details class="autenticacao-chave">
+                <summary>Não consigo escanear o QR Code</summary>
+                <p>
+                    Adicione a chave abaixo no aplicativo, com o nome
+                    SafeClick e o tipo baseado no tempo.
+                </p>
+                <code>{{ configuracao.chave }}</code>
+            </details>
+        {% endif %}
+
+        {% if usuario.mfa_fator_sid %}
+            <form method="post" action="{{ url_for('autenticacao.autenticador') }}">
+                {{ formulario.hidden_tag() }}
+
+                <div class="autenticacao-campo">
+                    {{ formulario.codigo.label }}
+                    {{ formulario.codigo(
+                        class_="autenticacao-codigo",
+                        aria_invalid="true" if formulario.codigo.errors else "false",
+                        aria_describedby="codigo-erros",
+                        value=""
+                    ) }}
+
+                    <div class="autenticacao-erros" id="codigo-erros">
+                        {% for mensagem in formulario.codigo.errors %}
+                            <p role="alert">{{ mensagem }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {{ formulario.enviar(class_="autenticacao-botao") }}
+            </form>
+        {% endif %}
+
+        {% if not usuario.mfa_confirmado_em and not configuracao %}
+            <div class="autenticacao-configuracao">
+                {% if usuario.mfa_fator_sid %}
+                    <p class="autenticacao-ajuda">
+                        Ainda não adicionou a conta ao aplicativo?
+                        Gere um novo QR Code. Isso substitui somente
+                        uma configuração ainda não ativada.
+                    </p>
+                {% endif %}
+
+                <form method="post" action="{{ url_for('autenticacao.configurar_mfa') }}">
+                    {{ formulario_configuracao.hidden_tag() }}
+
+                    {% if formulario_configuracao.csrf_token.errors %}
+                        <p class="autenticacao-mensagem autenticacao-mensagem-erro" role="alert">
+                            Não foi possível validar o formulário.
+                            Recarregue a página e tente novamente.
+                        </p>
+                    {% endif %}
+
+                    {{ formulario_configuracao.enviar(
+                        class_="autenticacao-botao autenticacao-botao-secundario"
+                        if usuario.mfa_fator_sid else "autenticacao-botao"
+                    ) }}
+                </form>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block rodape %}
+    <a href="{{ url_for('autenticacao.login') }}">Voltar para o login</a>
+{% endblock %}
