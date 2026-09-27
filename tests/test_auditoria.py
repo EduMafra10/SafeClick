@@ -33,7 +33,8 @@ class AuditoriaAcessoTeste(unittest.TestCase):
 
     def test_visitante_nao_acessa_logs(self):
         resposta = self.client.get("/auditoria/")
-        self.assertEqual(resposta.status_code, 401)
+        self.assertEqual(resposta.status_code, 302)
+        self.assertIn("/login", resposta.headers["Location"])
 
     def test_identificacao_usa_a_sessao_autenticada(self):
         self.assertIsNone(usuario_autenticado_id())

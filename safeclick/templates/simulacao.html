@@ -96,6 +96,7 @@
             method="post"
             action="{{ url_for('simulacoes.conta_bloqueada') }}"
         >
+             {{ formulario.hidden_tag() }}
             <fieldset class="simulacao-alternativas">
                 <legend>O que você faria?</legend>
 

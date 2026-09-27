@@ -18,6 +18,19 @@
         <h1>Conteúdos educativos</h1>
         <p class="conteudos-instrucao">Escolha um tema para começar a leitura.</p>
 
+        {% if current_user.is_authenticated %}
+            <p>Olá, {{ current_user.nome }}.</p>
+
+            <form method="post" action="{{ url_for('autenticacao.sair') }}">
+                {{ formulario_saida.hidden_tag() }}
+                {{ formulario_saida.enviar() }}
+            </form>
+        {% else %}
+            <p>
+                <a href="{{ url_for('autenticacao.login') }}">Entrar na conta</a>
+            </p>
+        {% endif %}
+
         <div class="conteudos-lista">
             {% for c in conteudos %}
             <a class="conteudos-card" href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">

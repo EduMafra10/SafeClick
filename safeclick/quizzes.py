@@ -12,7 +12,9 @@ import secrets
 import psycopg
 
 from safeclick.db import conectar_banco
-from safeclick.auditoria_db import registrar_evento, usuario_autenticado_id
+from safeclick.auditoria_db import registrar_evento
+from safeclick.sessoes import exigir_perfis
+from flask_login import current_user
 
 
 quizzes = Blueprint(
@@ -20,6 +22,11 @@ quizzes = Blueprint(
     __name__,
     url_prefix="/quizzes",
 )
+
+@quizzes.before_request
+@exigir_perfis("usuario", "administrador")
+def verificar_acesso_quizzes():
+    return None
 
 
 @quizzes.get("/")
@@ -184,6 +191,7 @@ def exibir_quiz(quiz_id):
                     )
 
                     tentativa_id = salvar_tentativa(
+                        current_user.id,
                         quiz_id,
                         respostas,
                         resultado,
@@ -300,22 +308,23 @@ def corrigir_respostas(quiz_id, questoes, respostas):
         "detalhes": detalhes,
     }
 
-def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
-    # Grava a tentativa e suas respostas na mesma transação.
+def salvar_tentativa(usuario_id, quiz_id, respostas, resultado, token_envio):
     with conectar_banco() as conexao:
         tentativa = conexao.execute(
             """
             INSERT INTO public.tentativas_quiz (
+                usuario_id,
                 quiz_id,
                 pontuacao,
                 total_questoes,
                 token_envio
             )
-            VALUES (%s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s)
             ON CONFLICT (token_envio) DO NOTHING
             RETURNING id
             """,
             (
+                usuario_id,
                 quiz_id,
                 resultado["pontuacao"],
                 resultado["total_questoes"],
@@ -323,7 +332,6 @@ def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
             ),
         ).fetchone()
 
-        # Reutiliza a tentativa quando o mesmo envio já foi gravado.
         if tentativa is None:
             tentativa_existente = conexao.execute(
                 """
@@ -331,10 +339,12 @@ def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
                 FROM public.tentativas_quiz
                 WHERE token_envio = %s
                   AND quiz_id = %s
+                  AND usuario_id = %s
                 """,
                 (
                     token_envio,
                     quiz_id,
+                    usuario_id,
                 ),
             ).fetchone()
 
@@ -366,7 +376,7 @@ def salvar_tentativa(quiz_id, respostas, resultado, token_envio):
             )
 
         registrar_evento(
-            usuario_id=usuario_autenticado_id(),
+            usuario_id=usuario_id,
             evento="quiz.concluido",
             resultado="sucesso",
             recurso_tipo="tentativa_quiz",
@@ -402,8 +412,9 @@ def exibir_resultado():
             JOIN public.quizzes AS quiz
                 ON quiz.id = tentativa.quiz_id
             WHERE tentativa.id = %s
+              AND tentativa.usuario_id = %s
             """,
-            (tentativa_id,),
+            (tentativa_id, current_user.id),
         ).fetchone()
 
         if tentativa is None:

@@ -2,7 +2,7 @@
 
 A aplicação grava os eventos em `public.logs_auditoria`, no PostgreSQL. A página
 `/auditoria/` mostra o histórico apenas ao perfil `administrador`. Visitantes
-recebem HTTP 401 e usuários autenticados sem esse perfil recebem HTTP 403.
+são redirecionados ao login e usuários autenticados sem esse perfil recebem HTTP 403.
 A consulta permite filtrar por evento, ID do usuário e intervalo de datas em UTC,
 com 50 registros por página. Cada consulta administrativa também é auditada.
 

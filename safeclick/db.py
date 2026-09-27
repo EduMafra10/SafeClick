@@ -21,23 +21,22 @@ def conectar_banco():
         row_factory=dict_row,
     )
 
-#registra a tentativa sem vinculo com usuario nessa etapa
-def salvar_tentativa_simulacao(simulacao, opcao):
+def salvar_tentativa_simulacao(usuario_id, simulacao, opcao):
     # Importação aqui evita um ciclo entre db.py e auditoria_db.py.
-    from safeclick.auditoria_db import registrar_evento, usuario_autenticado_id
+    from safeclick.auditoria_db import registrar_evento
 
     with conectar_banco() as conexao:
         tentativa = conexao.execute(
             """
-            INSERT INTO public.tentativas_simulacao (simulacao, opcao)
-            VALUES (%s, %s)
+            INSERT INTO public.tentativas_simulacao (usuario_id, simulacao, opcao)
+            VALUES (%s, %s, %s)
             RETURNING id
             """,
-            (simulacao, opcao),
+            (usuario_id, simulacao, opcao),
         ).fetchone()
 
         registrar_evento(
-            usuario_id=usuario_autenticado_id(),
+            usuario_id=usuario_id,
             evento="simulacao.concluida",
             resultado="sucesso",
             recurso_tipo="tentativa_simulacao",
