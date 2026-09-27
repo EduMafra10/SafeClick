@@ -13,7 +13,7 @@ DOCUMENTOS = {
     "email_privacidade": "safeclick.privacidade@gmail.com",
     # integrante que responde pelo canal de privacidade
     "encarregado": "João Souza",
-    # abaixo dessa idade o conteúdo continua livre, mas sem conta
+    # idade mínima para criar conta e usar a plataforma
     "idade_minima_conta": 16,
     "provedor_email": "a definir",
 }
