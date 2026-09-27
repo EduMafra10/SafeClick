@@ -15,6 +15,7 @@ A versão desta etapa está reunida na branch **`entrega2809`**.
 - **Quizzes interativos:** perguntas de múltipla escolha, correção no servidor, pontuação, explicações e gravação das respostas.
 - **Simulação de golpe digital:** cenário de e-mail fictício de conta bloqueada, com alternativas, consequências e orientações.
 - **Registro das atividades:** novas tentativas de quizzes e simulações vinculadas ao usuário autenticado.
+- **Auditoria:** registro de cadastro, login, saída, acessos negados, atividades educativas e consultas à Twilio, com página de consulta restrita ao administrador.
 
 As telas de login, cadastro e segundo fator seguem o mesmo padrão visual. Os campos de senha possuem opção para mostrar ou ocultar o conteúdo digitado.
 
@@ -45,6 +46,7 @@ As versões das dependências estão registradas em `requirements.txt`.
 | `safeclick/twilio_api.py` | Comunicação com a API Twilio Verify. |
 | `safeclick/sessoes.py` | Sessões autenticadas e verificação de perfis. |
 | `safeclick/limites.py` | Limites de tentativas de login e configuração do autenticador. |
+| `safeclick/auditoria.py` e `safeclick/auditoria_db.py` | Página administrativa, consulta e gravação dos eventos de auditoria. |
 | `safeclick/db.py` | Conexão com o banco e registro das tentativas de simulação. |
 | `safeclick/conteudos.py` e `safeclick/conteudos_db.py` | Páginas e consultas dos conteúdos educativos. |
 | `safeclick/quizzes.py` | Exibição, correção e gravação dos quizzes. |
@@ -118,16 +120,17 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 **Em um banco novo**, execute os scripts no SQL Editor do Neon nesta ordem:
 
 1. `sql/criar_usuarios.sql`
-2. `sql/adicionar_mfa_usuarios.sql`
-3. `sql/criar_logins_pendentes.sql`
-4. `sql/criar_controle_autenticacao.sql`
-5. `criar_tentativas_simulacao.sql`
-6. `sql/criar_conteudos.sql`
-7. `sql/inserir_conteudos_iniciais.sql`
-8. `sql/criar_quizzes.sql`
-9. `sql/inserir_quizzes_iniciais.sql`
-10. `sql/adicionar_token_tentativas.sql`
-11. `sql/vincular_tentativas_usuarios.sql`
+2. `sql/criar_logs_auditoria.sql`
+3. `sql/adicionar_mfa_usuarios.sql`
+4. `sql/criar_logins_pendentes.sql`
+5. `sql/criar_controle_autenticacao.sql`
+6. `criar_tentativas_simulacao.sql`
+7. `sql/criar_conteudos.sql`
+8. `sql/inserir_conteudos_iniciais.sql`
+9. `sql/criar_quizzes.sql`
+10. `sql/inserir_quizzes_iniciais.sql`
+11. `sql/adicionar_token_tentativas.sql`
+12. `sql/vincular_tentativas_usuarios.sql`
 
 Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
 
@@ -172,6 +175,7 @@ Acesse:
 | Simulação | [Abrir simulação](http://127.0.0.1:5000/simulacoes/conta-bloqueada) |
 | Conteúdos | [Abrir conteúdos](http://127.0.0.1:5000/conteudos/) |
 | Quizzes | [Abrir quizzes](http://127.0.0.1:5000/quizzes/) |
+| Auditoria (administrador) | [Consultar auditoria](http://127.0.0.1:5000/auditoria/) |
 
 As páginas educativas exigem autenticação. A página inicial direciona para a simulação; usuários sem sessão são encaminhados ao login.
 
@@ -222,6 +226,7 @@ O login com segundo fator depende da disponibilidade da API e das condições da
 - Cabeçalho `Cache-Control: no-store` nas respostas de autenticação e páginas autenticadas.
 - Verificação de sessão e perfil antes do acesso aos módulos educativos.
 - Consulta do resultado do quiz restrita ao usuário proprietário da tentativa.
+- Histórico de auditoria restrito ao perfil `administrador`.
 
 O cadastro público cria contas com perfil `usuario`. O perfil `administrador` não pode ser escolhido pelo formulário de cadastro.
 
@@ -260,6 +265,7 @@ Após uma nova integração, confira:
 6. Acesso autenticado a conteúdos, quizzes e simulações.
 7. Gravação das novas tentativas com `usuario_id`.
 8. Encerramento da sessão e bloqueio do acesso direto às páginas protegidas.
+9. Consulta dos registros na página `/auditoria/` com uma conta administrativa.
 
 Validações com falhas simuladas não substituem a conferência do ambiente final com Neon e Twilio.
 
@@ -267,7 +273,7 @@ Validações com falhas simuladas não substituem a conferência do ambiente fin
 
 - Recuperação de senha por e-mail adiada; serviço ainda não definido.
 - Recuperação de acesso após perda do autenticador pendente.
-- Integração da página administrativa de auditoria com o trabalho do grupo.
+- Registro de `termo.aceito` junto da futura integração do Termo de Aceite.
 - Conferência e integração dos termos de uso e da política de privacidade na versão conjunta.
 - Inclusão da documentação técnica detalhada da integração no repositório.
 - Validação do ambiente publicado e das configurações de HTTPS.

@@ -15,6 +15,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 from psycopg import Error
 from psycopg.errors import UniqueViolation
 from werkzeug.security import check_password_hash, generate_password_hash
+from safeclick.auditoria_db import registrar_evento
 from safeclick.limites import permitir_tentativa
 
 from safeclick.formularios import (
@@ -22,6 +23,7 @@ from safeclick.formularios import (
     FormularioLogin,
     FormularioMFA,
     FormularioConfigurarMFA,
+    FormularioSair,
 )
 
 from safeclick.logins_db import buscar_login_pendente, iniciar_login_pendente
@@ -38,18 +40,21 @@ from safeclick.usuarios_db import (
     criar_usuario,
 )
 
-from safeclick.formularios import (
-    FormularioCadastro,
-    FormularioLogin,
-    FormularioMFA,
-    FormularioConfigurarMFA,
-    FormularioSair,
-)
-
 autenticacao = Blueprint("autenticacao", __name__)
 
 # tambem realiza a comparacao com de hash quando o email nao existe
 _HASH_LOGIN = generate_password_hash(secrets.token_urlsafe(32), method="scrypt")
+
+
+def _registrar_falha_login(etapa, motivo, usuario_id=None):
+    # Registra a etapa e o motivo sem guardar dados informados no formulário.
+    registrar_evento(
+        usuario_id=usuario_id,
+        evento="login.falha",
+        resultado="falha",
+        recurso_tipo="autenticacao",
+        detalhes={"etapa": etapa, "motivo": motivo},
+    )
 
 @autenticacao.after_request
 def evitar_cache_autenticacao(resposta):
@@ -105,6 +110,7 @@ def login():
         session.pop("login_pendente", None)
         try:
             if not permitir_tentativa("login", formulario.email.data, 5):
+                _registrar_falha_login("senha", "limite_tentativas")
                 return render_template(
                     "autenticacao/login.html",
                     formulario=formulario,
@@ -119,12 +125,14 @@ def login():
             )
 
             if usuario is None or not senha_valida:
+                _registrar_falha_login("senha", "credenciais_invalidas")
                 erro = "E-mail ou senha inválidos."
                 status = 401
             else:
                 token = iniciar_login_pendente(usuario["id"])
 
                 if token is None:
+                    _registrar_falha_login("senha", "limite_tentativas", usuario["id"])
                     erro = "Aguarde alguns minutos e tente entrar novamente."
                     status = 429
                 else:
@@ -204,7 +212,12 @@ def autenticador():
     formulario = FormularioMFA()
 
     if formulario.validate_on_submit():
+        usuario_id_pendente = None
         try:
+            pendencia = buscar_login_pendente(session.get("login_pendente"))
+            if pendencia is not None:
+                usuario_id_pendente = pendencia["usuario_id"]
+
             usuario = confirmar_autenticador(
                 session.get("login_pendente"),
                 formulario.codigo.data,
@@ -214,6 +227,13 @@ def autenticador():
                 token_sessao = criar_sessao(usuario["id"])
 
         except ErroMFA as erro:
+            if erro.status < 500:
+                try:
+                    _registrar_falha_login(
+                        "autenticador", "codigo_ou_prazo_rejeitado", usuario_id_pendente
+                    )
+                except (Error, RuntimeError):
+                    abort(503, description="Não foi possível registrar a tentativa de login.")
             return _tela_autenticador(
                 formulario,
                 str(erro),

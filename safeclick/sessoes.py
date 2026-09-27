@@ -4,11 +4,12 @@ import hashlib
 import secrets
 from functools import wraps
 
-from flask import abort, session
+from flask import abort, current_app, request, session
 from flask_login import LoginManager, UserMixin, current_user
 from psycopg import Error
 
 from safeclick.db import conectar_banco
+from safeclick.auditoria_db import registrar_evento
 
 
 login_manager = LoginManager()
@@ -53,6 +54,15 @@ def criar_sessao(usuario_id):
             """,
             (_hash_sessao(token), usuario_id),
         ).fetchone()
+
+        if registro is not None:
+            registrar_evento(
+                usuario_id=usuario_id,
+                evento="login.sucesso",
+                resultado="sucesso",
+                recurso_tipo="sessao",
+                conexao=conexao,
+            )
 
     if registro is None:
         raise RuntimeError("Não foi possível iniciar a sessão.")
@@ -101,13 +111,22 @@ def carregar_usuario(usuario_id):
 
 
 def revogar_sessao():
+    usuario_id = int(current_user.id)
+
     with conectar_banco() as conexao:
         conexao.execute(
             """
             DELETE FROM public.sessoes_autenticadas
             WHERE token_hash = %s AND usuario_id = %s
             """,
-            (_hash_sessao(session.get("sessao_token")), current_user.id),
+            (_hash_sessao(session.get("sessao_token")), usuario_id),
+        )
+        registrar_evento(
+            usuario_id=usuario_id,
+            evento="logout.realizado",
+            resultado="sucesso",
+            recurso_tipo="sessao",
+            conexao=conexao,
         )
 
 
@@ -119,6 +138,17 @@ def exigir_perfis(*perfis):
                 return login_manager.unauthorized()
 
             if current_user.perfil not in perfis:
+                try:
+                    registrar_evento(
+                        usuario_id=int(current_user.id),
+                        evento="acesso.negado",
+                        resultado="negado",
+                        recurso_tipo="pagina",
+                        detalhes={"area": request.blueprint},
+                    )
+                except (Error, RuntimeError):
+                    current_app.logger.exception("Falha ao registrar acesso negado")
+                    abort(503, description="Não foi possível verificar o acesso agora.")
                 abort(
                     403,
                     description="Você não tem permissão para acessar esta página.",

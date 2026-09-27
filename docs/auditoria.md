@@ -17,31 +17,39 @@ de Privacidade específica do SafeClick.
 
 O módulo `safeclick/auditoria_db.py` fornece `registrar_evento()` e
 `usuario_autenticado_id()`. A segunda função consulta o Flask-Login e retorna
-`None` antes do login. Quizzes, simulações e conteúdos já a utilizam.
+`None` antes do login. Os registros de quizzes, simulações e conteúdos incluem
+o ID do usuário autenticado.
 Para uma ação que grava no banco, passe a conexão existente a `registrar_evento`
 para confirmar a operação e seu log na mesma transação. A importação local em
 `safeclick/db.py` evita um ciclo com `auditoria_db.py`.
 
-## Integrações pendentes do grupo
+## Eventos integrados
 
-- O cadastro já registra `usuario.cadastrado` com a conta na mesma transação.
-- No login, registrar `login.sucesso` após confirmar a identidade. Registrar
-  `login.falha` sem associar a tentativa a uma conta apenas pelo e-mail digitado.
-- No logout, guardar o ID autenticado e registrar `logout.realizado` antes de
-  limpar a sessão.
-- Em acessos proibidos de outras áreas, registrar `acesso.negado`.
-- Na integração externa, registrar `api.consultada` com serviço e resultado,
-  sem copiar credenciais, URL com parâmetros ou dados da resposta.
-- No aceite, registrar `termo.aceito` com a versão aceita, junto do registro
-  do aceite no banco. O log sozinho não substitui o aceite.
+- Cadastro, sessão de login, saída, conclusão de quiz, conclusão de simulação e
+  leitura de conteúdo são registrados com o ID da conta. A criação ou revogação
+  da sessão e o respectivo log usam a mesma transação.
+- Falhas na senha não são vinculadas a uma conta somente pelo e-mail informado.
+  Após a senha correta, uma falha no autenticador pode incluir o ID da conta.
+  Os detalhes registram apenas a etapa e uma categoria de motivo.
+- Acessos de usuários autenticados sem o perfil exigido registram
+  `acesso.negado`. A própria página administrativa registra suas consultas.
+- As chamadas à Twilio registram `api.consultada` com operação e resultado,
+  sem códigos ou dados da resposta. Antes do login, esses eventos não têm ID
+  de usuário. Uma falha ao gravar esse evento não altera o resultado da chamada
+  externa; a falha também fica sinalizada no log do servidor.
 
-Os nomes aceitos estão em `EVENTOS_PERMITIDOS`. A rota de auditoria já registra
-`auditoria.consultada` e uma tentativa de acesso por usuário comum como
-`acesso.negado`.
+## Integração pendente do grupo
+
+Quando o Termo de Aceite estiver integrado, registrar `termo.aceito` com a
+versão aceita na mesma transação do aceite. O log sozinho não substitui o
+registro de consentimento.
+
+Os nomes aceitos estão em `EVENTOS_PERMITIDOS`.
 
 ## Verificação
 
 Execute `python -m unittest discover -s tests -v` com o ambiente virtual ativo.
-Os testes verificam acesso anônimo, perfil comum, perfil administrador, filtros
-inválidos e identificação pela sessão. Depois de integrar o login, teste no
-navegador com contas reais dos dois perfis e confira os registros no Neon.
+Os testes verificam perfis de acesso, filtros, cadastro, login, saída, consultas
+à Twilio e registros de tentativas. No navegador, entre com contas reais dos
+perfis `usuario` e `administrador`, conclua um quiz, saia e confira os eventos
+na página `/auditoria/` com a conta administrativa.

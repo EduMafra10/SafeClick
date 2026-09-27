@@ -1,12 +1,58 @@
 import re
+from functools import wraps
 
 import click
 from flask import current_app
 from flask.cli import with_appcontext
+from psycopg import Error
 from requests.exceptions import RequestException
 from twilio.base.exceptions import TwilioRestException
 from twilio.http.http_client import TwilioHttpClient
 from twilio.rest import Client
+
+from safeclick.auditoria_db import registrar_evento
+
+
+def _codigo_valido(codigo):
+    return isinstance(codigo, str) and bool(re.fullmatch(r"[0-9]{6}", codigo))
+
+
+def auditar_consulta_api(operacao, *, exige_codigo=False):
+    """Registra o resultado da chamada sem incluir dados enviados à Twilio."""
+
+    def decorar(funcao):
+        @wraps(funcao)
+        def executar(*args, **kwargs):
+            codigo = kwargs.get("codigo", args[2] if len(args) > 2 else None)
+            if exige_codigo and not _codigo_valido(codigo):
+                return funcao(*args, **kwargs)
+
+            try:
+                resultado = funcao(*args, **kwargs)
+            except (RuntimeError, TwilioRestException, RequestException):
+                _registrar_consulta_api(operacao, "falha")
+                raise
+
+            _registrar_consulta_api(operacao, "sucesso")
+            return resultado
+
+        return executar
+
+    return decorar
+
+
+def _registrar_consulta_api(operacao, resultado):
+    # Antes do login não há sessão confiável para atribuir a chamada a uma conta.
+    try:
+        registrar_evento(
+            usuario_id=None,
+            evento="api.consultada",
+            resultado=resultado,
+            recurso_tipo="api",
+            detalhes={"servico": "twilio_verify", "operacao": operacao},
+        )
+    except (Error, RuntimeError):
+        current_app.logger.warning("Falha ao registrar consulta da API na auditoria")
 
 def obter_servico_twilio():
     account_sid = current_app.config.get("TWILIO_ACCOUNT_SID")
@@ -49,6 +95,7 @@ def verificar_twilio():
 
     click.echo(f"Conexão realizada com sucesso. Serviço: {servico.friendly_name}")
 
+@auditar_consulta_api("criar_fator_totp")
 def criar_fator_totp(identidade):
     try:
         entidade = obter_servico_twilio().entities(str(identidade))
@@ -70,8 +117,9 @@ def criar_fator_totp(identidade):
 
     return {"sid": fator.sid, "uri": uri}
 
+@auditar_consulta_api("validar_ativacao_totp", exige_codigo=True)
 def validar_ativacao_totp(identidade, fator_sid, codigo):
-    if not isinstance(codigo, str) or not re.fullmatch(r"[0-9]{6}", codigo):
+    if not _codigo_valido(codigo):
         return False
 
     try:
@@ -84,8 +132,9 @@ def validar_ativacao_totp(identidade, fator_sid, codigo):
 
     return fator.status == "verified"
 
+@auditar_consulta_api("validar_codigo_totp", exige_codigo=True)
 def validar_codigo_totp(identidade, fator_sid, codigo):
-    if not isinstance(codigo, str) or not re.fullmatch(r"[0-9]{6}", codigo):
+    if not _codigo_valido(codigo):
         return False
 
     try:
@@ -102,6 +151,7 @@ def validar_codigo_totp(identidade, fator_sid, codigo):
     # apenas um desafio aprovado comprova o segundo fator do login
     return desafio.status == "approved"
 
+@auditar_consulta_api("consultar_fator_totp")
 def consultar_fator_totp(identidade, fator_sid):
     try:
         fator = (
@@ -122,6 +172,7 @@ def consultar_fator_totp(identidade, fator_sid):
 
     return fator.status
 
+@auditar_consulta_api("remover_fator_totp")
 def remover_fator_totp(identidade, fator_sid):
     try:
         (
