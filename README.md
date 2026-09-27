@@ -272,8 +272,6 @@ Validações com falhas simuladas não substituem a conferência do ambiente fin
 - Inclusão da documentação técnica detalhada da integração no repositório.
 - Validação do ambiente publicado e das configurações de HTTPS.
 
-A ficha e a monografia também preveem a Pwned Passwords API para consulta de senhas comprometidas. A integração com a Twilio atende ao segundo fator e não implementa essa consulta. O alinhamento dessa integração com os requisitos da entrega deve ser validado com o orientador.
-
 ## Integrantes
 
 - Eduardo Mafra dos Santos
