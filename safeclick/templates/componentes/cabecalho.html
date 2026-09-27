@@ -1,0 +1,63 @@
+<header class="site-cabecalho">
+    <div class="site-barra">
+        <a class="site-marca" href="{{ url_for('simulacoes.conta_bloqueada') }}">
+            <strong>Safe<span>Click</span></strong>
+            <small>Aprenda antes de clicar.</small>
+        </a>
+
+        <nav class="site-navegacao" aria-label="Navegação principal">
+            {% for grupo, destino, titulo in [
+                ('simulacoes', 'simulacoes.conta_bloqueada', 'Simulações'),
+                ('conteudos', 'conteudos.listar', 'Conteúdos'),
+                ('quizzes', 'quizzes.listar_quizzes', 'Quizzes')
+            ] %}
+                <a href="{{ url_for(destino) }}"
+                   {% if request.blueprint == grupo %}aria-current="page"{% endif %}>
+                    {{ titulo }}
+                </a>
+            {% endfor %}
+        </nav>
+
+        {% if current_user.is_authenticated %}
+            {% set nome = (current_user.nome|default('', true)|trim) or 'Usuário' %}
+            {% set partes = nome.split() %}
+
+            <details class="site-conta">
+                <summary class="site-conta-botao" aria-label="Menu da conta de {{ nome }}">
+                    <span class="site-avatar" aria-hidden="true">
+                        {{ partes[0][0]|upper }}{% if partes|length > 1 %}{{ partes[-1][0]|upper }}{% endif %}
+                    </span>
+
+                    <span class="site-conta-resumo" aria-hidden="true">
+                        <strong>{{ partes[0] }}</strong>
+                        <small>Minha conta</small>
+                    </span>
+
+                    <svg class="site-seta" width="16" height="16" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6" />
+                    </svg>
+                </summary>
+
+                <div class="site-conta-painel">
+                    <div class="site-conta-dados">
+                        <strong>{{ nome }}</strong>
+                        <span>{{ current_user.email }}</span>
+                    </div>
+
+                    <form method="post" action="{{ url_for('autenticacao.sair') }}">
+                        {{ formulario_saida.csrf_token(id='csrf-saida') }}
+
+                        <button class="site-sair" type="submit">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M10 12h10m-4-4 4 4-4 4" />
+                            </svg>
+                            Sair da conta
+                        </button>
+                    </form>
+                </div>
+            </details>
+        {% endif %}
+    </div>
+</header>

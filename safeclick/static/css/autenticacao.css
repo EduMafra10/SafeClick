@@ -1,0 +1,345 @@
+/* estou começando a aprimorar nosso CSS, vamos se basear nesse estilo */
+.autenticacao-pagina,
+.autenticacao-pagina * {
+    box-sizing: border-box;
+}
+
+.autenticacao-pagina {
+    margin: 0;
+    min-height: 100vh;
+    padding: 32px;
+    display: grid;
+    place-items: center;
+    background-color: #edf3f7;
+    color: #153849;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.autenticacao-layout {
+    width: 100%;
+    max-width: 1120px;
+    min-height: 700px;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    background-color: #ffffff;
+    border: 1px solid #d6e3ec;
+    border-radius: 26px;
+    box-shadow: 0 24px 64px rgba(21, 56, 73, 0.12);
+}
+
+.autenticacao-acesso {
+    min-width: 0;
+    padding: 28px 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.autenticacao-marca {
+    margin: 0;
+    font-size: 26px;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+}
+
+.autenticacao-marca span {
+    color: #286b53;
+}
+
+.autenticacao-frase {
+    margin: 2px 0 0;
+    color: #526d7e;
+    font-size: 13px;
+}
+
+.autenticacao-formulario {
+    width: 100%;
+    max-width: 360px;
+    margin: auto;
+    padding: 48px 0 24px;
+}
+
+.autenticacao-formulario h1 {
+    margin: 0;
+    font-size: 30px;
+    line-height: 1.25;
+    letter-spacing: -0.6px;
+}
+
+.autenticacao-introducao {
+    margin: 12px 0 32px;
+    color: #526d7e;
+    font-size: 15px;
+}
+
+.autenticacao-campo {
+    margin-bottom: 22px;
+}
+
+.autenticacao-campo label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.autenticacao-campo input {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 14px;
+    border: 1px solid #718fa1;
+    border-radius: 9px;
+    background-color: #f7fafc;
+    color: #153849;
+    font: inherit;
+}
+
+.autenticacao-campo input:hover,
+.autenticacao-campo input:focus {
+    border-color: #28638d;
+    background-color: #ffffff;
+}
+
+.autenticacao-campo input[aria-invalid="true"] {
+    border-color: #a64f30;
+}
+
+.autenticacao-senha {
+    position: relative;
+}
+
+.autenticacao-senha input {
+    padding-right: 92px;
+}
+
+.autenticacao-mostrar-senha {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    min-width: 76px;
+    min-height: 44px;
+    padding: 8px;
+    border: 0;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #28638d;
+    font: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.autenticacao-mostrar-senha:hover {
+    background-color: #e2f0fc;
+}
+
+.autenticacao-ajuda,
+.autenticacao-erros p {
+    display: block;
+    margin: 6px 0 0;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.autenticacao-ajuda {
+    color: #526d7e;
+}
+
+.autenticacao-erros p {
+    color: #833d28;
+}
+
+.autenticacao-mensagem {
+    margin: 0 0 20px;
+    padding: 12px 14px;
+    border: 1px solid #c7ddec;
+    border-left: 3px solid #28638d;
+    border-radius: 8px;
+    background-color: #edf6fd;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.autenticacao-mensagem-erro {
+    border-color: #dbb4a3;
+    border-left-color: #a64f30;
+    background-color: #fff6f1;
+    color: #833d28;
+}
+
+.autenticacao-botao {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 24px;
+    border: 1px solid #153849;
+    border-radius: 9px;
+    background-color: #153849;
+    color: #ffffff;
+    font: inherit;
+    font-weight: bold;
+    box-shadow: 0 5px 12px rgba(21, 56, 73, 0.15);
+    cursor: pointer;
+}
+
+.autenticacao-botao:hover {
+    background-color: #245168;
+    border-color: #245168;
+}
+
+.autenticacao-botao:active {
+    box-shadow: none;
+}
+
+.autenticacao-formulario a {
+    color: #286b53;
+    font-weight: bold;
+    text-underline-offset: 3px;
+}
+
+.autenticacao-formulario a:hover {
+    color: #153849;
+}
+
+.autenticacao-campo input:focus-visible,
+.autenticacao-botao:focus-visible,
+.autenticacao-mostrar-senha:focus-visible,
+.autenticacao-formulario a:focus-visible {
+    outline: 3px solid #28638d;
+    outline-offset: 3px;
+}
+
+.autenticacao-rodape {
+    margin: 32px 0 0;
+    padding-top: 24px;
+    border-top: 1px solid #d6e3ec;
+    text-align: center;
+    font-size: 14px;
+}
+
+.autenticacao-apresentacao {
+    min-width: 0;
+    padding: 48px 40px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #153849, #245168 65%, #286b53);
+    color: #ffffff;
+}
+
+.autenticacao-apresentacao h2 {
+    margin: 0 0 20px;
+    font-size: 44px;
+    line-height: 1.12;
+    letter-spacing: -1px;
+}
+
+.autenticacao-apresentacao p {
+    max-width: 350px;
+    margin: 0;
+    color: #d3e8ef;
+}
+
+.autenticacao-ilustracao {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 28px;
+}
+
+.autenticacao-qrcode {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 20px;
+    padding: 12px;
+    border: 1px solid #d6e3ec;
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.autenticacao-qrcode img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.autenticacao-chave {
+    margin-bottom: 24px;
+    padding: 12px 14px;
+    border: 1px solid #d6e3ec;
+    border-radius: 9px;
+    background-color: #f7fafc;
+    font-size: 14px;
+}
+
+.autenticacao-chave summary {
+    color: #28638d;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.autenticacao-chave summary:focus-visible {
+    outline: 3px solid #28638d;
+    outline-offset: 3px;
+}
+
+.autenticacao-chave code {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.autenticacao-campo .autenticacao-codigo {
+    text-align: center;
+    font-size: 24px;
+    letter-spacing: 0.2em;
+}
+
+.autenticacao-configuracao .autenticacao-ajuda {
+    margin: 24px 0 12px;
+}
+
+.autenticacao-botao-secundario {
+    background-color: #ffffff;
+    color: #153849;
+    box-shadow: none;
+}
+
+.autenticacao-botao-secundario:hover {
+    background-color: #edf6fd;
+}
+
+@media (max-width: 840px) {
+    .autenticacao-pagina {
+        padding: 24px 16px;
+    }
+
+    .autenticacao-layout {
+        max-width: 520px;
+        min-height: auto;
+        grid-template-columns: 1fr;
+        padding: 8px;
+        border-radius: 20px;
+    }
+
+    .autenticacao-acesso {
+        padding: 24px;
+    }
+
+    .autenticacao-apresentacao {
+        display: none;
+    }
+}
+
+@media (max-width: 400px) {
+    .autenticacao-acesso {
+        padding: 20px 12px;
+    }
+
+    .autenticacao-formulario h1 {
+        font-size: 26px;
+    }
+}

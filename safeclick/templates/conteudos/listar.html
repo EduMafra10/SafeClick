@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conteúdos educativos | SafeClick</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>
 <body class="conteudos-pagina">
-    <header class="conteudos-cabecalho">
-        <div class="conteudos-container conteudos-cabecalho-interno">
-            <p class="conteudos-marca">Safe<span>Click</span></p>
-            <p class="conteudos-frase">Aprenda antes de clicar.</p>
-        </div>
-    </header>
+    {% include "componentes/cabecalho.html" %}
 
     <main class="conteudos-container conteudos-conteudo">
         <h1>Conteúdos educativos</h1>
@@ -20,10 +18,10 @@
 
         <div class="conteudos-lista">
             {% for c in conteudos %}
-            <a class="conteudos-card" href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">
-                <h2>{{ c.titulo }}</h2>
-                <span class="conteudos-card-link">Ler conteúdo →</span>
-            </a>
+                <a class="conteudos-card" href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">
+                    <h2>{{ c.titulo }}</h2>
+                    <span class="conteudos-card-link">Ler conteúdo →</span>
+                </a>
             {% endfor %}
         </div>
     </main>

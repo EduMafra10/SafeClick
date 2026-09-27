@@ -1,5 +1,8 @@
 import psycopg
 from flask import Blueprint, redirect, render_template, request, url_for
+from safeclick.sessoes import exigir_perfis
+from flask_login import current_user
+from flask_wtf import FlaskForm
 
 from safeclick.db import salvar_tentativa_simulacao
 #Blueprint para agrupar as rotas relacionadas as simulaçoes
@@ -13,6 +16,11 @@ simulacoes = Blueprint(
     __name__,
     url_prefix="/simulacoes",
 )
+
+@simulacoes.before_request
+@exigir_perfis("usuario", "administrador")
+def verificar_acesso_simulacoes():
+    return None
 
 #definir as alternativas e os feedbacks desse cenario de conta bloqueada
 OPCOES = {
@@ -52,12 +60,18 @@ OPCOES = {
 #declarando a rota
 @simulacoes.route("/conta-bloqueada", methods=["GET", "POST"])
 
-def conta_bloqueada(): #na abertura da pagina, ainda nao existe escolha processada
+#na abertura da pagina, ainda nao existe escolha processada
+def conta_bloqueada():
+    formulario = FlaskForm()                    
     resultado = None
     erro = None
     status = 200
 
-    if request.method == "POST":
+    if request.method == "POST" and not formulario.validate_on_submit():
+        erro = "Recarregue a página e envie sua resposta novamente."
+        status = 400
+
+    elif request.method == "POST":
         opcao_escolhida = request.form.get("opcao", "") #usa uma string vazia caso o formulário nao envie a escolha
         resultado = OPCOES.get(opcao_escolhida) #valida no servidor pois o formulario pode ser enviado com dados alterados
 
@@ -68,7 +82,11 @@ def conta_bloqueada(): #na abertura da pagina, ainda nao existe escolha processa
         else:
             try:
                 #o cenario é definido pela rota e a opcao ja passou pela validacao
-                salvar_tentativa_simulacao("conta_bloqueada", opcao_escolhida)
+                salvar_tentativa_simulacao(
+                    current_user.id,
+                    "conta_bloqueada",
+                    opcao_escolhida,
+                )
             except (psycopg.Error, RuntimeError):
                 #qualquer falha que possa impedir a confirmacao de que a tentativa foi gravada
                 erro = (
@@ -97,9 +115,9 @@ def conta_bloqueada(): #na abertura da pagina, ainda nao existe escolha processa
 
     return render_template(
         "simulacao.html",
+        formulario=formulario,
         opcoes=OPCOES,
         resultado=resultado,
         erro=erro,
     ), status
-
     

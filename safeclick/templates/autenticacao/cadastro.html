@@ -1,0 +1,25 @@
+{% extends "autenticacao/base.html" %}
+
+{% set titulo = "Crie sua conta" %}
+{% set descricao = "Preencha seus dados para começar a aprender com o SafeClick." %}
+{% set categorias_mensagens = ["sucesso"] %}
+
+{% block conteudo %}
+    <form method="post" action="{{ url_for('autenticacao.cadastro') }}">
+        {{ formulario.hidden_tag() }}
+        {{ exibir_campo(formulario.nome, "name") }}
+        {{ exibir_campo(formulario.email, "email") }}
+        {{ exibir_campo(
+            formulario.senha,
+            "new-password",
+            "Use pelo menos 15 caracteres. Evite senhas comuns e informações pessoais."
+        ) }}
+        {{ exibir_campo(formulario.confirmar_senha, "new-password") }}
+        {{ formulario.enviar(class_="autenticacao-botao") }}
+    </form>
+{% endblock %}
+
+{% block rodape %}
+    Já tem uma conta?
+    <a href="{{ url_for('autenticacao.login') }}">Entrar</a>
+{% endblock %}

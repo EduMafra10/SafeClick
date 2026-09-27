@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, abort
+from safeclick.sessoes import exigir_perfis
 import logging
 from . import conteudos_db
 
@@ -23,4 +24,9 @@ def detalhe(slug):
     if not conteudo:
         abort(404)
     return render_template("conteudos/detalhe.html", conteudo=conteudo)
+
+@conteudos_bp.before_request
+@exigir_perfis("usuario", "administrador")
+def verificar_acesso_conteudos():
+    return None
  

@@ -1,0 +1,242 @@
+.site-cabecalho {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    border-bottom: 1px solid #dce7ed;
+    box-shadow: 0 3px 16px #15384906;
+    color: #153849;
+    font-family: Arial, sans-serif;
+}
+
+.site-cabecalho,
+.site-cabecalho * {
+    box-sizing: border-box;
+}
+
+.site-barra {
+    width: 92%;
+    max-width: 1180px;
+    min-height: 92px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 16px 0;
+}
+
+.site-marca {
+    margin-right: auto;
+    color: #153849;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.site-marca strong {
+    display: block;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -.7px;
+}
+
+.site-marca strong span {
+    color: #286b53;
+}
+
+.site-marca small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #526d7e;
+}
+
+.site-navegacao {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.site-navegacao a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: #526d7e;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.site-navegacao a:hover {
+    background: #f3f8fc;
+    color: #153849;
+}
+
+.site-navegacao a[aria-current="page"] {
+    background: #e8f3ed;
+    color: #215940;
+}
+
+.site-conta {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.site-conta-botao {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 4px 8px 4px 4px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    list-style: none;
+    cursor: pointer;
+}
+
+.site-conta-botao::-webkit-details-marker {
+    display: none;
+}
+
+.site-conta-botao:hover,
+.site-conta[open] .site-conta-botao {
+    background: #f3f8fc;
+    border-color: #dce7ed;
+}
+
+.site-avatar {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e8f3ed;
+    color: #215940;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.site-conta-resumo {
+    min-width: 0;
+    max-width: 120px;
+    line-height: 1.4;
+}
+
+.site-conta-resumo strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+}
+
+.site-conta-resumo small {
+    display: block;
+    color: #526d7e;
+    font-size: 11px;
+}
+
+.site-seta {
+    flex-shrink: 0;
+}
+
+.site-conta[open] .site-seta {
+    transform: rotate(180deg);
+}
+
+.site-conta-painel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: min(300px, 92vw);
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #dce7ed;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px #15384924;
+}
+
+.site-conta-dados {
+    padding: 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #e6edf1;
+}
+
+.site-conta-dados strong,
+.site-conta-dados span {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.site-conta-dados strong {
+    font-size: 15px;
+}
+
+.site-conta-dados span {
+    margin: 4px 0 8px;
+    font-size: 13px;
+    color: #526d7e;
+}
+
+.site-conta-painel form {
+    margin: 0;
+}
+
+.site-sair {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #943d36;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.site-sair:hover {
+    background: #fff1ef;
+}
+
+.site-cabecalho a:focus-visible,
+.site-conta-botao:focus-visible,
+.site-sair:focus-visible {
+    outline: 3px solid #28638d;
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .site-barra {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .site-navegacao {
+        order: 3;
+        width: 100%;
+        padding-top: 12px;
+        border-top: 1px solid #e6edf1;
+    }
+
+    .site-navegacao a {
+        flex: 1;
+        padding: 10px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-conta-resumo {
+        display: none;
+    }
+
+    .site-barra {
+        gap: 12px;
+    }
+}

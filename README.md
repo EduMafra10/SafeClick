@@ -2,34 +2,58 @@
 
 Projeto de Conclusão de Curso de Sistemas de Informação da Universidade de Mogi das Cruzes (UMC).
 
-O SafeClick é uma plataforma web educativa voltada a estudantes do ensino médio e universitários. Seu objetivo é ajudar os visitantes a reconhecer golpes digitais e adotar práticas mais seguras na internet.
+O SafeClick é uma plataforma web educativa voltada a estudantes do ensino médio e universitários. Seu objetivo é ajudar os usuários a reconhecer golpes digitais e adotar práticas mais seguras na internet.
 
-## Funcionalidades
+A versão desta etapa está reunida na branch **`entrega2809`**.
 
-- **Conteúdos educativos:** listagem de temas e páginas de leitura sobre phishing e proteção de senhas, consultadas no PostgreSQL.
-- **Quizzes interativos:** dois quizzes com cinco perguntas, quatro alternativas por pergunta e uma resposta correta. O servidor consulta o gabarito, calcula a pontuação e salva a tentativa e suas cinco respostas na mesma transação. O resultado apresenta escolhas e explicações.
-- **Simulações de golpes digitais:** e-mail fictício de conta bloqueada, com três alternativas, consequências, explicações e sinais de risco. Cada envio válido registra a simulação, a escolha e a data e hora.
+## Funcionalidades implementadas
 
-As páginas utilizam HTML, Jinja2 e CSS, seguindo o padrão visual do grupo.
+- **Cadastro:** criação de conta com nome, e-mail e senha, validação dos campos e armazenamento da senha com hash `scrypt`.
+- **Login com autenticação em dois fatores:** validação de e-mail e senha, seguida da confirmação de um código do aplicativo autenticador pela API Twilio Verify.
+- **Controle de sessão e acesso:** encerramento da sessão, expiração por tempo e exigência de autenticação para acessar conteúdos, quizzes e simulações.
+- **Conteúdos educativos:** listagem de temas e páginas de leitura sobre phishing e proteção de senhas.
+- **Quizzes interativos:** perguntas de múltipla escolha, correção no servidor, pontuação, explicações e gravação das respostas.
+- **Simulação de golpe digital:** cenário de e-mail fictício de conta bloqueada, com alternativas, consequências e orientações.
+- **Registro das atividades:** novas tentativas de quizzes e simulações vinculadas ao usuário autenticado.
+
+As telas de login, cadastro e segundo fator seguem o mesmo padrão visual. Os campos de senha possuem opção para mostrar ou ocultar o conteúdo digitado.
 
 ## Tecnologias
 
-Python, Flask, Jinja2, HTML, CSS, PostgreSQL hospedado no Neon e Psycopg 3, sem ORM.
+- Python e Flask.
+- Jinja2, HTML, CSS e JavaScript.
+- PostgreSQL hospedado no Neon.
+- Psycopg 3, com consultas SQL parametrizadas e sem ORM.
+- Flask-Login para integração da autenticação com a aplicação.
+- Flask-WTF para formulários e proteção CSRF.
+- Werkzeug para geração e verificação dos hashes de senha.
+- Twilio Verify para o segundo fator.
+- Biblioteca `qrcode` para gerar o QR Code localmente.
 
-As dependências estão em `requirements.txt`. O extra `Flask[dotenv]` permite carregar o arquivo local `.env` ao executar pela CLI do Flask.
+As versões das dependências estão registradas em `requirements.txt`.
 
-## Organização
+## Organização do projeto
 
-- `safeclick/__init__.py`: cria a aplicação, carrega as configurações e registra as três funcionalidades.
-- `safeclick/db.py`: conexão com o banco, gravação das tentativas da simulação e comando de verificação.
-- `safeclick/simulacoes.py`: cenário, validação das escolhas e feedback da simulação.
-- `safeclick/conteudos.py` e `safeclick/conteudos_db.py`: páginas de leitura e consultas dos conteúdos.
-- `safeclick/quizzes.py`: perguntas, validação, correção e gravação dos quizzes.
-- `safeclick/privacidade.py`: páginas de Política de Privacidade (`/politica-de-privacidade`) e Termos de Uso (`/termos-de-uso`), com versão e canal de privacidade definidos em `DOCUMENTOS`.
-- `safeclick/templates/`: páginas HTML.
-- `safeclick/static/css/`: estilos das funcionalidades.
-- `criar_tentativas_simulacao.sql` e `sql/`: scripts de preparação do banco.
-- `.env.example`: modelo de configuração, sem credenciais.
+| Arquivo ou pasta | Responsabilidade |
+| --- | --- |
+| `safeclick/__init__.py` | Criação da aplicação, configurações e registro das funcionalidades. |
+| `safeclick/autenticacao.py` | Cadastro, login, segundo fator e saída da conta. |
+| `safeclick/formularios.py` | Campos, validações e formulários protegidos por CSRF. |
+| `safeclick/usuarios_db.py` | Cadastro e consultas dos usuários. |
+| `safeclick/logins_db.py` | Pendências entre a senha e a confirmação do segundo fator. |
+| `safeclick/mfa.py` | Configuração e confirmação do autenticador. |
+| `safeclick/twilio_api.py` | Comunicação com a API Twilio Verify. |
+| `safeclick/sessoes.py` | Sessões autenticadas e verificação de perfis. |
+| `safeclick/limites.py` | Limites de tentativas de login e configuração do autenticador. |
+| `safeclick/db.py` | Conexão com o banco e registro das tentativas de simulação. |
+| `safeclick/conteudos.py` e `safeclick/conteudos_db.py` | Páginas e consultas dos conteúdos educativos. |
+| `safeclick/quizzes.py` | Exibição, correção e gravação dos quizzes. |
+| `safeclick/simulacoes.py` | Cenário, escolhas e feedback da simulação. |
+| `safeclick/privacidade.py` | Páginas de Política de Privacidade e Termos de Uso. |
+| `safeclick/templates/` | Templates HTML. |
+| `safeclick/static/` | Estilos e JavaScript. |
+| `sql/` | Scripts de criação e atualização do banco. |
+| `criar_tentativas_simulacao.sql` | Criação inicial da tabela de tentativas da simulação. |
 
 ## Executar no Windows
 
@@ -39,111 +63,215 @@ Abra o PowerShell na pasta principal do projeto, onde está o arquivo `requireme
 
 Se ainda não existir um ambiente virtual:
 
-powershell
+```powershell
 py -m venv .venv
-
+```
 
 Instale as dependências:
 
-powershell
+```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
 
+### 2. Configurar as variáveis de ambiente
 
-### 2. Configurar o arquivo local
+Crie o arquivo `.env` somente se ele ainda não existir:
 
-Crie o `.env` somente se ele ainda não existir:
-
-powershell
+```powershell
 if (-not (Test-Path -LiteralPath .env)) {
     Copy-Item -LiteralPath .env.example -Destination .env
 }
+```
 
+O modelo atual contém as configurações básicas do banco e da chave da aplicação. Acrescente as variáveis da Twilio e do cookie, conforme a estrutura abaixo:
 
-Preencha as duas configurações, substituindo os textos de exemplo:
-
-dotenv
+```dotenv
 DATABASE_URL="COLE_AQUI_A_CONEXAO_DO_NEON"
-SECRET_KEY="COLE_AQUI_UMA_CHAVE_ALEATORIA"
+SECRET_KEY="COLE_AQUI_A_CHAVE_DA_APLICACAO"
 
+TWILIO_ACCOUNT_SID="COLE_AQUI_O_ACCOUNT_SID"
+TWILIO_AUTH_TOKEN="COLE_AQUI_O_AUTH_TOKEN"
+TWILIO_VERIFY_SERVICE_SID="COLE_AQUI_O_SERVICE_SID"
 
-Obtenha a conexão pelo botão Connect do Neon, selecionando o projeto, a branch e o banco usados pelo grupo. Mantenha os parâmetros fornecidos na conexão.
+SESSION_COOKIE_SECURE=false
+```
 
-Se ainda não tiver uma SECRET_KEY, gere uma:
+Os textos acima são exemplos. Substitua-os pelos valores do ambiente utilizado pelo grupo.
 
-powershell
+- **Neon:** obtenha a conexão selecionando o projeto, a branch e o banco corretos. Preserve os parâmetros fornecidos pelo serviço.
+- **Twilio:** utilize as credenciais da conta e o identificador de um serviço Verify configurado para TOTP.
+- **SECRET_KEY:** mantenha a chave existente quando o ambiente já estiver configurado.
+
+Para uma instalação nova, caso ainda não exista uma `SECRET_KEY`, gere uma:
+
+```powershell
 .\.venv\Scripts\python.exe -c "import secrets; print(secrets.token_hex(32))"
+```
 
+Essa chave é utilizada na assinatura do cookie, na proteção CSRF e no controle de tentativas.
 
-Copie o resultado para a SECRET_KEY do seu `.env` e mantenha essa chave entre as execuções. Ela é necessária para a sessão dos quizzes.
+O `.env` e a pasta `.venv` são ignorados pelo Git. Não inclua credenciais reais no `.env.example`, no código ou na documentação.
 
-Cada integrante configura seu arquivo local. O `.env` e a pasta `.venv` são ignorados pelo Git; o `.env.example` deve permanecer sem valores reais.
+No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação por HTTPS, configure `SESSION_COOKIE_SECURE=true`. Essa variável não ativa HTTPS por conta própria.
 
-### 3. Preparar o banco, quando necessário
+### 3. Preparar o banco
 
-Em um banco novo, execute o conteúdo destes arquivos no SQL Editor do Neon, nesta ordem:
+**Em um banco novo**, execute os scripts no SQL Editor do Neon nesta ordem:
 
-1. `criar_tentativas_simulacao.sql`
-2. `sql/criar_conteudos.sql`
-3. `sql/inserir_conteudos_iniciais.sql`
-4. `sql/criar_quizzes.sql`
-5. `sql/inserir_quizzes_iniciais.sql`
-6. `sql/adicionar_token_tentativas.sql`
+1. `sql/criar_usuarios.sql`
+2. `sql/adicionar_mfa_usuarios.sql`
+3. `sql/criar_logins_pendentes.sql`
+4. `sql/criar_controle_autenticacao.sql`
+5. `criar_tentativas_simulacao.sql`
+6. `sql/criar_conteudos.sql`
+7. `sql/inserir_conteudos_iniciais.sql`
+8. `sql/criar_quizzes.sql`
+9. `sql/inserir_quizzes_iniciais.sql`
+10. `sql/adicionar_token_tentativas.sql`
+11. `sql/vincular_tentativas_usuarios.sql`
 
-Se o banco já estiver preparado, confira o que existe antes de executar os scripts. Não repita os scripts de criação da simulação e dos quizzes sobre tabelas existentes. Use `sql/verificar_estrutura_quizzes.sql` para inspecionar a estrutura dos quizzes.
+Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
 
-O script de token adiciona a coluna e o índice usados para impedir a gravação duplicada do mesmo formulário de quiz.
+O arquivo `sql/verificar_estrutura_quizzes.sql` auxilia na inspeção da estrutura dos quizzes.
 
-Um merge no Git não executa scripts no Neon. Integrantes conectados ao mesmo banco e à mesma branch do Neon compartilham os dados, mesmo trabalhando em branches Git diferentes.
+Um commit ou merge no Git não executa scripts no Neon. Integrantes conectados ao mesmo banco e à mesma branch do Neon compartilham os dados, mesmo trabalhando em branches Git diferentes.
 
-### 4. Verificar a conexão
+### 4. Verificar a configuração
 
-powershell
+Confira a conexão com o banco:
+
+```powershell
 .\.venv\Scripts\python.exe -m flask --app safeclick verificar-banco
+```
 
+Confira a comunicação com o serviço Twilio:
 
-Esse comando verifica o acesso ao banco; ele não confirma que todas as tabelas e os dados iniciais estão preparados.
+```powershell
+.\.venv\Scripts\python.exe -m flask --app safeclick verificar-twilio
+```
+
+Confira o carregamento das rotas:
+
+```powershell
+.\.venv\Scripts\python.exe -m flask --app safeclick routes
+```
+
+Esses comandos verificam conexão e carregamento. Eles não substituem o teste completo de cadastro, ativação do autenticador e login.
 
 ### 5. Iniciar a aplicação
 
-powershell
+```powershell
 .\.venv\Scripts\python.exe -m flask --app safeclick run
+```
 
+Acesse:
 
-Abra os endereços:
+| Página | Endereço local |
+| --- | --- |
+| Login | [Abrir login](http://127.0.0.1:5000/login) |
+| Cadastro | [Criar conta](http://127.0.0.1:5000/cadastro) |
+| Simulação | [Abrir simulação](http://127.0.0.1:5000/simulacoes/conta-bloqueada) |
+| Conteúdos | [Abrir conteúdos](http://127.0.0.1:5000/conteudos/) |
+| Quizzes | [Abrir quizzes](http://127.0.0.1:5000/quizzes/) |
 
-- Simulação: http://127.0.0.1:5000/simulacoes/conta-bloqueada
-- Conteúdos: http://127.0.0.1:5000/conteudos/
-- Quizzes: http://127.0.0.1:5000/quizzes/
+As páginas educativas exigem autenticação. A página inicial direciona para a simulação; usuários sem sessão são encaminhados ao login.
 
-A página inicial http://127.0.0.1:5000/ redireciona para a simulação.
+Mantenha o terminal aberto durante o uso. Para encerrar o servidor, pressione `Ctrl + C`.
 
-Mantenha o terminal aberto durante o uso. Para encerrar o servidor, pressione Ctrl+C.
+## Funcionamento do login e da API externa
+Documentação técnica e projeto lógico: [Documentação da integração Twilio](safeclick/docs/integracao-twilio.md)
 
-## Comportamentos e limites desta etapa
+O fluxo principal é:
 
-- As tentativas não possuem vínculo com cadastro ou login. O identificador de uma tentativa não representa um usuário.
-- Na simulação, escolhas ausentes ou inválidas retornam HTTP 400 sem gravação. Uma falha ao confirmar o registro retorna HTTP 503 com um aviso.
-- Após gravar a simulação, o servidor redireciona com HTTP 303. Atualizar a página do resultado não grava outra tentativa; enviar o formulário novamente pode registrar uma nova tentativa.
-- O parâmetro resultado da URL apenas seleciona o feedback educativo. Abrir essa URL diretamente não registra nem comprova uma tentativa.
-- O e-mail da simulação é fictício e sua chamada para confirmar dados não abre uma página externa.
-- Nos quizzes, um token identifica o envio do formulário. O resultado corresponde à última tentativa associada à sessão do navegador; tentar novamente permite um novo envio.
-- Perguntas e gabaritos usados em tentativas devem permanecer estáveis até existir um tratamento para versões do conteúdo.
-- Datas das tentativas usam TIMESTAMPTZ. A exibição do horário depende do fuso usado na consulta.
+**E-mail e senha → código do autenticador → validação pela Twilio Verify → criação da sessão → página de simulação.**
 
-## Verificação da integração
+No primeiro acesso:
 
-Na simulação, já foram conferidos os três resultados e registros no Neon, a rejeição de escolhas ausentes ou inválidas e a atualização da página sem nova gravação. A resposta HTTP 503 foi verificada com falha simulada por mock. O layout da simulação foi conferido entre 320 e 1440 pixels e com navegação por teclado.
+1. O usuário cria uma conta e informa suas credenciais no login.
+2. O SafeClick valida a senha e inicia uma pendência de login.
+3. O usuário solicita o QR Code e o lê em um aplicativo autenticador.
+4. O primeiro código confirma a ativação do aplicativo.
+5. O usuário aguarda o próximo código e o informa para concluir o login.
+6. A sessão é criada após a aprovação do segundo fator.
 
-Após integrar alterações, conferir:
+Nos acessos seguintes, o usuário informa a senha e o código do aplicativo já vinculado. Não é necessário gerar outro QR Code.
 
-- A abertura das três funcionalidades.
-- A listagem dos dois temas e suas páginas de leitura.
-- Os dois quizzes, pontuações diferentes e explicações.
-- Uma tentativa e cinco respostas gravadas por envio válido de quiz.
-- A rejeição de respostas inválidas e o comportamento de reenvio do mesmo formulário.
-- A gravação da simulação e a atualização do resultado sem nova tentativa.
+O servidor do SafeClick realiza as chamadas à API. A senha e seu hash não são enviados à Twilio. O vínculo externo utiliza um UUID associado à conta local.
 
-A versão para avaliação é reunida na branch `entrega1409`. Cada integrante demonstra a funcionalidade que desenvolveu em seu próprio vídeo.
+O QR Code é gerado dentro da aplicação. As credenciais da Twilio permanecem no servidor.
+
+A integração utiliza os recursos de fator e desafio da Verify API. A ativação exige o estado `verified`; a conclusão do login exige um desafio com estado `approved`.
+
+Referências oficiais:
+
+- [Twilio Verify TOTP](https://www.twilio.com/docs/verify/quickstarts/totp)
+- [Recurso Factor](https://www.twilio.com/docs/verify/api/factor)
+- [Recurso Challenge](https://www.twilio.com/docs/verify/api/challenge)
+
+O login com segundo fator depende da disponibilidade da API e das condições da conta Twilio.
+
+## Proteções implementadas
+
+- Senhas entre 15 e 128 caracteres no cadastro, preservando os espaços digitados.
+- Armazenamento das senhas com hash `scrypt`.
+- Validação dos formulários no servidor e proteção CSRF.
+- Limite de cinco envios válidos de formulário de login por e-mail em cinco minutos; envios corretos também contam.
+- Limite de três solicitações de configuração do autenticador por usuário em cinco minutos.
+- Pendência de login com prazo de cinco minutos e até cinco envios de código.
+- Sessões com expiração após 30 minutos de inatividade ou oito horas desde sua criação.
+- Revogação da sessão atual no banco ao sair da conta.
+- Cookies com `HttpOnly`, `SameSite=Lax` e opção `Secure` conforme o ambiente.
+- Cabeçalho `Cache-Control: no-store` nas respostas de autenticação e páginas autenticadas.
+- Verificação de sessão e perfil antes do acesso aos módulos educativos.
+- Consulta do resultado do quiz restrita ao usuário proprietário da tentativa.
+
+O cadastro público cria contas com perfil `usuario`. O perfil `administrador` não pode ser escolhido pelo formulário de cadastro.
+
+## Registro das atividades
+
+As novas tentativas de quizzes e simulações recebem o identificador do usuário autenticado.
+
+Registros antigos, anteriores à inclusão desse vínculo, podem permanecer com `usuario_id` vazio. A atualização do banco não atribui automaticamente esses registros a uma conta.
+
+Nos quizzes:
+
+- O servidor consulta o gabarito e calcula a pontuação.
+- A tentativa e suas respostas são gravadas na mesma transação.
+- Um token identifica o envio para evitar gravação duplicada do mesmo formulário.
+- O resultado corresponde à última tentativa associada à sessão, com conferência do usuário proprietário.
+
+Na simulação:
+
+- Escolhas ausentes ou inválidas são rejeitadas.
+- Após a gravação, o servidor redireciona para o resultado.
+- Atualizar a página do resultado não registra outra tentativa.
+- Um novo envio válido pode registrar outra tentativa.
+- O parâmetro de resultado na URL seleciona o feedback educativo; abrir esse endereço não comprova uma nova tentativa.
+
+## Verificação após integrar alterações
+
+Os testes manuais realizados durante o desenvolvimento confirmaram cadastro, configuração do autenticador, login com segundo fator, bloqueio por limite de login e encerramento da sessão.
+
+Após uma nova integração, confira:
+
+1. Cadastro de uma conta de teste.
+2. Rejeição de credenciais inválidas.
+3. Configuração inicial do autenticador e login com novo código.
+4. Solicitação do segundo fator nos acessos seguintes.
+5. Redirecionamento para a simulação após o login.
+6. Acesso autenticado a conteúdos, quizzes e simulações.
+7. Gravação das novas tentativas com `usuario_id`.
+8. Encerramento da sessão e bloqueio do acesso direto às páginas protegidas.
+
+Validações com falhas simuladas não substituem a conferência do ambiente final com Neon e Twilio.
+
+## Pendências e limites desta etapa
+
+- Recuperação de senha por e-mail adiada; serviço ainda não definido.
+- Recuperação de acesso após perda do autenticador pendente.
+- Integração da página administrativa de auditoria com o trabalho do grupo.
+- Conferência e integração dos termos de uso e da política de privacidade na versão conjunta.
+- Validação do ambiente publicado e das configurações de HTTPS.
 
 ## Integrantes
 
