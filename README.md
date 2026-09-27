@@ -178,7 +178,7 @@ As páginas educativas exigem autenticação. A página inicial direciona para a
 Mantenha o terminal aberto durante o uso. Para encerrar o servidor, pressione `Ctrl + C`.
 
 ## Funcionamento do login e da API externa
-Documentação técnica e projeto lógico: [Integração com a API Twilio Verify](docs/integracao-twilio.md).
+Documentação técnica e projeto lógico: [Documentação da integração Twilio](safeclick/docs/integracao-twilio.md)
 
 O fluxo principal é:
 
