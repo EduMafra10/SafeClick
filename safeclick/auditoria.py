@@ -1,4 +1,5 @@
 from datetime import date, datetime, time, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 import psycopg
 from flask import Blueprint, abort, current_app, render_template, request
@@ -10,6 +11,7 @@ from safeclick.db import conectar_banco
 
 auditoria = Blueprint("auditoria", __name__, url_prefix="/auditoria")
 POR_PAGINA = 50
+FUSO_BRASILIA = ZoneInfo("America/Sao_Paulo")
 
 
 def _inteiro_positivo(valor, *, maximo):
@@ -21,7 +23,7 @@ def _inteiro_positivo(valor, *, maximo):
     return numero
 
 
-def _data_utc(valor):
+def _data_brasilia_em_utc(valor, *, dia_seguinte=False):
     if not valor:
         return None
     try:
@@ -30,7 +32,12 @@ def _data_utc(valor):
         abort(400)
     if dia.isoformat() != valor:
         abort(400)
-    return datetime.combine(dia, time.min, tzinfo=timezone.utc)
+    if dia_seguinte:
+        try:
+            dia += timedelta(days=1)
+        except OverflowError:
+            abort(400)
+    return datetime.combine(dia, time.min, tzinfo=FUSO_BRASILIA).astimezone(timezone.utc)
 
 
 @auditoria.get("/")
@@ -59,13 +66,8 @@ def listar():
     usuario_id = _inteiro_positivo(usuario, maximo=2147483647) if usuario else None
     inicio = request.args.get("inicio", "").strip()
     fim = request.args.get("fim", "").strip()
-    data_inicio = _data_utc(inicio)
-    data_fim = _data_utc(fim)
-    if data_fim is not None:
-        try:
-            data_fim += timedelta(days=1)
-        except OverflowError:
-            abort(400)
+    data_inicio = _data_brasilia_em_utc(inicio)
+    data_fim = _data_brasilia_em_utc(fim, dia_seguinte=True)
     if data_inicio is not None and data_fim is not None and data_inicio >= data_fim:
         abort(400)
 
@@ -98,7 +100,7 @@ def listar():
         pagina=pagina,
         ultima_pagina=max(1, (total + POR_PAGINA - 1) // POR_PAGINA),
         eventos=sorted(EVENTOS_PERMITIDOS),
-        utc=timezone.utc,
+        fuso_brasilia=FUSO_BRASILIA,
         filtros={"evento": evento, "usuario_id": usuario, "inicio": inicio, "fim": fim},
     )
     return resposta, 200, {"Cache-Control": "no-store"}

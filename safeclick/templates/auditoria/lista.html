@@ -17,7 +17,7 @@
 
     <main class="container" id="conteudo">
         <h1>Logs de auditoria</h1>
-        <p>Consulte as ações realizadas no SafeClick. As datas e horas são exibidas em UTC.</p>
+        <p>Consulte as ações realizadas no SafeClick. As datas e horas são exibidas no horário de Brasília.</p>
 
         <form class="cartao filtros" method="get" action="{{ url_for('auditoria.listar') }}">
             <label>Evento
@@ -31,10 +31,10 @@
             <label>ID do usuário
                 <input type="number" name="usuario_id" min="1" value="{{ filtros.usuario_id }}">
             </label>
-            <label>De (UTC)
+            <label>De (Brasília)
                 <input type="date" name="inicio" value="{{ filtros.inicio }}">
             </label>
-            <label>Até (UTC)
+            <label>Até (Brasília)
                 <input type="date" name="fim" value="{{ filtros.fim }}">
             </label>
             <div class="acoes">
@@ -48,7 +48,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th scope="col">Data e hora (UTC)</th>
+                        <th scope="col">Data e hora (Brasília)</th>
                         <th scope="col">Usuário</th>
                         <th scope="col">Evento</th>
                         <th scope="col">Resultado</th>
@@ -59,7 +59,7 @@
                 <tbody>
                     {% for registro in registros %}
                         <tr>
-                            <td>{{ registro.criado_em.astimezone(utc).strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                            <td>{{ registro.criado_em.astimezone(fuso_brasilia).strftime('%d/%m/%Y %H:%M:%S') }}</td>
                             <td>
                                 {% if registro.usuario_id %}
                                     #{{ registro.usuario_id }}{% if registro.usuario_nome %} · {{ registro.usuario_nome }}{% endif %}

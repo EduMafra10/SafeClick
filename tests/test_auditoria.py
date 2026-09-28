@@ -52,7 +52,7 @@ class AuditoriaAcessoTeste(unittest.TestCase):
     def test_administrador_consulta_lista_paginada(self):
         registro = SimpleNamespace(
             id=12,
-            criado_em=datetime(2026, 9, 27, 12, 30, tzinfo=timezone.utc),
+            criado_em=datetime(2026, 9, 29, 2, 14, tzinfo=timezone.utc),
             usuario_id=7,
             usuario_nome="Administrador",
             evento="quiz.concluido",
@@ -72,9 +72,29 @@ class AuditoriaAcessoTeste(unittest.TestCase):
 
         self.assertEqual(resposta.status_code, 200)
         self.assertIn(b"quiz.concluido", resposta.data)
+        self.assertIn(b"28/09/2026 23:14:00", resposta.data)
+        self.assertIn("Data e hora (Brasília)".encode(), resposta.data)
         self.assertEqual(resposta.headers["Cache-Control"], "no-store")
         self.assertEqual(registrar.call_args.kwargs["evento"], "auditoria.consultada")
         self.assertEqual(listar.call_args.kwargs["evento"], "quiz.concluido")
+
+    def test_filtro_de_data_considera_o_dia_inteiro_em_brasilia(self):
+        contexto = MagicMock()
+        with self.autenticar("administrador"), \
+             patch("safeclick.auditoria.conectar_banco", return_value=contexto), \
+             patch("safeclick.auditoria.registrar_evento"), \
+             patch("safeclick.auditoria.listar_eventos", return_value=([], 0)) as listar:
+            resposta = self.client.get("/auditoria/?inicio=2026-09-28&fim=2026-09-28")
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(
+            listar.call_args.kwargs["data_inicio"],
+            datetime(2026, 9, 28, 3, tzinfo=timezone.utc),
+        )
+        self.assertEqual(
+            listar.call_args.kwargs["data_fim"],
+            datetime(2026, 9, 29, 3, tzinfo=timezone.utc),
+        )
 
     def test_filtro_invalido_nao_consulta_o_banco(self):
         with self.autenticar("administrador"), patch("safeclick.auditoria.conectar_banco") as conectar:
