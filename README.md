@@ -182,6 +182,7 @@ As páginas educativas exigem autenticação. A página inicial direciona para a
 Mantenha o terminal aberto durante o uso. Para encerrar o servidor, pressione `Ctrl + C`.
 
 ## Funcionamento do login e da API externa
+Documentação técnica e projeto lógico: [Documentação da integração Twilio](safeclick/docs/integracao-twilio.md)
 
 O fluxo principal é:
 
@@ -275,7 +276,6 @@ Validações com falhas simuladas não substituem a conferência do ambiente fin
 - Recuperação de acesso após perda do autenticador pendente.
 - Registro de `termo.aceito` junto da futura integração do Termo de Aceite.
 - Conferência e integração dos termos de uso e da política de privacidade na versão conjunta.
-- Inclusão da documentação técnica detalhada da integração no repositório.
 - Validação do ambiente publicado e das configurações de HTTPS.
 
 ## Integrantes
