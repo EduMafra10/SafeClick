@@ -26,21 +26,24 @@ O canal implementado é TOTP. Este fluxo não utiliza envio de códigos por SMS,
 
 ```mermaid
 flowchart TD
-    A["Usuário informa e-mail e senha"] --> B{"Flask confirma a senha?"}
+    A["Informar e-mail<br/>e senha"] --> B{"Senha válida?"}
     B -- Não --> X["Acesso não liberado"]
-    B -- Sim --> C["Cria pendência de login"]
-    C --> D{"Fator TOTP verificado?"}
-    D -- Não --> E["Twilio cria fator; Flask apresenta QR Code"]
-    E --> F["Usuário cadastra o QR Code no autenticador"]
-    F --> G["Twilio confirma ativação: verified"]
-    G --> H["Usuário aguarda e informa um novo código"]
-    D -- Sim --> I["Usuário informa o código do autenticador"]
-    H --> J["Flask envia código à Twilio para criar um desafio"]
+    B -- Sim --> C["Criar pendência<br/>de login"]
+    C --> D{"TOTP ativado?"}
+
+    D -- Não --> E["Twilio cria fator<br/>Flask exibe QR Code"]
+    E --> F["Vincular aplicativo<br/>autenticador"]
+    F --> G["Twilio confirma<br/>ativação: verified"]
+    G --> H["Aguardar e informar<br/>um novo código"]
+
+    D -- Sim --> I["Informar código<br/>do autenticador"]
+    H --> J["Enviar código<br/>à API Twilio"]
     I --> J
+
     J --> K{"Desafio approved?"}
     K -- Não --> X
-    K -- Sim --> L["Flask conclui pendência e cria sessão"]
-    L --> M["Redireciona para a simulação"]
+    K -- Sim --> L["Concluir pendência<br/>e criar sessão"]
+    L --> M["Abrir a simulação"]
 ```
 
 O diagrama representa o caminho de sucesso da ativação inicial; erros e limites são tratados conforme a seção 6. A ativação do fator, isoladamente, não cria uma sessão autenticada. Nos acessos seguintes, o usuário reutiliza o fator já configurado.
