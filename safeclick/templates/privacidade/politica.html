@@ -55,7 +55,7 @@
                     <tr><td data-rotulo="Dado">Escolhas nas simulações: simulação, opção escolhida e data</td><td data-rotulo="Quando é coletado">Uso de uma simulação</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
                     <tr><td data-rotulo="Dado">Cookie de sessão</td><td data-rotulo="Quando é coletado">Navegação e login</td><td data-rotulo="Obrigatório?">Necessário</td><td data-rotulo="Situação">Em funcionamento</td></tr>
                     <tr><td data-rotulo="Dado">Versão e data do aceite dos Termos, com declaração de idade</td><td data-rotulo="Quando é coletado">Cadastro</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em implementação</td></tr>
-                    <tr><td data-rotulo="Dado">Registros de auditoria: identificador da conta, ação e data/hora</td><td data-rotulo="Quando é coletado">Login, logout, falha de login e alterações na conta</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em implementação</td></tr>
+                    <tr><td data-rotulo="Dado">Registros de auditoria: identificador da conta, tipo de evento, resultado e data/hora</td><td data-rotulo="Quando é coletado">Cadastro, login, falha de login, logout, acesso negado, conteúdo visualizado e quiz ou simulação concluídos</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
                     <tr><td data-rotulo="Dado">Senha digitada no verificador de vazamentos (não é armazenada)</td><td data-rotulo="Quando é coletado">Ao usar o verificador</td><td data-rotulo="Obrigatório?">Opcional</td><td data-rotulo="Situação">Em desenvolvimento</td></tr>
                     <tr><td data-rotulo="Dado">Token de recuperação de senha, guardado como hash e válido por 30 minutos</td><td data-rotulo="Quando é coletado">Pedido de recuperação de senha</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em desenvolvimento</td></tr>
                     <tr><td data-rotulo="Dado">Conquistas e avaliações de conteúdos e quizzes</td><td data-rotulo="Quando é coletado">Uso da conta</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em desenvolvimento</td></tr>
@@ -95,7 +95,7 @@
         </ul>
 
         <h2 id="5-cookies">5. Cookies</h2>
-        <p>Usamos apenas um <strong>cookie de sessão, estritamente necessário</strong>: ele mantém você conectado, protege formulários contra envios forjados (CSRF) e evita que um quiz seja enviado duas vezes. O cookie é assinado, inacessível a scripts da página (HttpOnly), restrito ao próprio site (SameSite=Lax), enviado somente por HTTPS em produção e apagado quando você fecha o navegador. Do lado do servidor, a sessão expira em até 8 horas e é encerrada imediatamente quando você sai da conta. As páginas de conta e de login não são guardadas em cache pelo navegador.</p>
+        <p>Usamos apenas um <strong>cookie de sessão, estritamente necessário</strong>: ele mantém você conectado, protege formulários contra envios forjados (CSRF) e evita que um quiz seja enviado duas vezes. O cookie é assinado, inacessível a scripts da página (HttpOnly), restrito ao próprio site (SameSite=Lax), enviado somente por HTTPS em produção e apagado quando você fecha o navegador. Do lado do servidor, a sessão expira após 30 minutos sem atividade ou em até 8 horas, e é encerrada imediatamente quando você sai da conta. As páginas de conta e de login não são guardadas em cache pelo navegador.</p>
         <p>Não usamos cookies de análise, publicidade ou rastreamento. Por isso, não exibimos banner de cookies.</p>
 
         <h2 id="6-com-quem-compartilhamos">6. Com quem compartilhamos</h2>
@@ -120,10 +120,10 @@
         <h2 id="8-por-quanto-tempo-guardamos">8. Por quanto tempo guardamos</h2>
         <ul>
             <li><strong>Conta, resultados de quizzes e simulações e vínculo com o autenticador:</strong> até a exclusão da conta. As contas criadas em testes e na validação do PFC serão excluídas até 31/12/2026.</li>
-            <li><strong>Sessão de acesso:</strong> até 8 horas ou até você sair da conta. Registros vencidos são apagados automaticamente.</li>
+            <li><strong>Sessão de acesso:</strong> até 30 minutos sem atividade, no máximo 8 horas, ou até você sair da conta. Registros vencidos são apagados automaticamente.</li>
             <li><strong>Etapa de login em andamento:</strong> 5 minutos; o registro é substituído no próximo login e apagado com a conta.</li>
             <li><strong>Controle de tentativas:</strong> janela de 5 minutos; o registro é apagado automaticamente um dia depois de vencer.</li>
-            <li><strong>Registros de auditoria:</strong> 6 meses. Quando a conta é excluída, os registros deixam de apontar para ela (são anonimizados).</li>
+            <li><strong>Registros de auditoria:</strong> 6 meses. Quando a conta é excluída, os registros deixam de apontar para ela automaticamente (são anonimizados).</li>
             <li><strong>Token de recuperação de senha:</strong> 30 minutos, com uso único.</li>
             <li><strong>Senha digitada no verificador de vazamentos:</strong> não é armazenada.</li>
             <li><strong>Cópias de segurança do banco:</strong> até 6 horas, janela de restauração do plano utilizado no Neon.</li>
@@ -144,7 +144,7 @@
         <p>Você também pode apresentar reclamação à Autoridade Nacional de Proteção de Dados (ANPD), em www.gov.br/anpd.</p>
 
         <h2 id="10-seguranca">10. Segurança</h2>
-        <p>Adotamos medidas técnicas para proteger os dados (art. 46 da LGPD): senhas guardadas apenas como hash scrypt com salt; login em duas etapas com aplicativo autenticador; limite de 5 tentativas de login a cada 5 minutos; sessões registradas no servidor, com identificadores guardados apenas como hash, expiração em 8 horas e encerramento no logout; exigência de login e verificação do perfil no servidor em todas as páginas de conteúdo; proteção de formulários contra CSRF; comunicação por HTTPS; consultas parametrizadas ao banco; e credenciais fora do código-fonte.</p>
+        <p>Adotamos medidas técnicas para proteger os dados (art. 46 da LGPD): senhas guardadas apenas como hash scrypt com salt; login em duas etapas com aplicativo autenticador; limite de 5 tentativas de login a cada 5 minutos; sessões registradas no servidor, com identificadores guardados apenas como hash, expiração após 30 minutos sem atividade ou em 8 horas e encerramento no logout; registros de auditoria sem senhas, códigos, tokens, IP ou dados digitados nos formulários, consultados somente pelo administrador; exigência de login e verificação do perfil no servidor em todas as páginas de conteúdo; proteção de formulários contra CSRF; comunicação por HTTPS; consultas parametrizadas ao banco; e credenciais fora do código-fonte.</p>
         <p>Se ocorrer um incidente de segurança que possa causar risco ou dano relevante, comunicaremos a ANPD e as pessoas afetadas no prazo de três dias úteis, conforme a Resolução CD/ANPD nº 15/2024 (art. 48 da LGPD).</p>
 
         <h2 id="11-alteracoes-nesta-politica">11. Alterações nesta política</h2>
