@@ -150,3 +150,13 @@
     border-left: 4px solid #a64f30;
     border-radius: 8px;
 }
+/* links para a Política de Privacidade e os Termos de Uso */
+.conteudos-rodape {
+    padding: 8px 0 32px;
+    color: #526d7e;
+    font-size: 14px;
+}
+
+.conteudos-rodape a {
+    color: #28638d;
+}

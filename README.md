@@ -51,6 +51,7 @@ As versões das dependências estão registradas em `requirements.txt`.
 | `safeclick/conteudos.py` e `safeclick/conteudos_db.py` | Páginas e consultas dos conteúdos educativos. |
 | `safeclick/quizzes.py` | Exibição, correção e gravação dos quizzes. |
 | `safeclick/simulacoes.py` | Cenário, escolhas e feedback da simulação. |
+| `safeclick/privacidade.py` | Páginas de Política de Privacidade e Termos de Uso. |
 | `safeclick/templates/` | Templates HTML. |
 | `safeclick/static/` | Estilos e JavaScript. |
 | `sql/` | Scripts de criação e atualização do banco. |
