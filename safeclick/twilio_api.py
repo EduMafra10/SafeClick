@@ -12,10 +12,8 @@ from twilio.rest import Client
 
 from safeclick.auditoria_db import registrar_evento
 
-
 def _codigo_valido(codigo):
     return isinstance(codigo, str) and bool(re.fullmatch(r"[0-9]{6}", codigo))
-
 
 def auditar_consulta_api(operacao, *, exige_codigo=False):
     """Registra o resultado da chamada sem incluir dados enviados à Twilio."""
@@ -39,7 +37,6 @@ def auditar_consulta_api(operacao, *, exige_codigo=False):
         return executar
 
     return decorar
-
 
 def _registrar_consulta_api(operacao, resultado):
     # Antes do login não há sessão confiável para atribuir a chamada a uma conta.
@@ -100,7 +97,7 @@ def criar_fator_totp(identidade):
     try:
         entidade = obter_servico_twilio().entities(str(identidade))
         fator = entidade.new_factors.create(
-            friendly_name="SafeClick",
+            friendly_name=f"SafeClick - {identidade}",
             factor_type="totp",
         )
     except (TwilioRestException, RequestException):

@@ -343,3 +343,25 @@
         font-size: 26px;
     }
 }
+
+.autenticacao-senha-login {
+    margin-bottom: 18px;
+}
+
+.autenticacao-senha-login .autenticacao-campo {
+    margin-bottom: 0;
+}
+
+.autenticacao-recuperar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 8px 0 0;
+    font-size: 14px;
+}
+
+.autenticacao-recuperar a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 4px 0;
+}

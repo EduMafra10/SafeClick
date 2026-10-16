@@ -9,17 +9,27 @@ def _hash_token(token):
 
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
-def iniciar_login_pendente(usuario_id):
+def iniciar_login_pendente(usuario_id, senha_hash_verificado):
+    if not isinstance(senha_hash_verificado, str):
+        return None
+
     token = secrets.token_urlsafe(32)
 
     with conectar_banco() as conexao:
         # serializa o inicio de logins para a mesma conta
         usuario = conexao.execute(
-            "SELECT id FROM public.usuarios WHERE id = %s FOR UPDATE",
+            """
+            SELECT id, senha_hash
+            FROM public.usuarios
+            WHERE id = %s
+            FOR NO KEY UPDATE
+            """,
             (usuario_id,),
         ).fetchone()
 
-        if usuario is None:
+        if usuario is None or not secrets.compare_digest(
+            usuario["senha_hash"], senha_hash_verificado
+        ):
             return None
 
         # uma nova janela só irá comecar apos expiracao ou login concluido
@@ -27,15 +37,19 @@ def iniciar_login_pendente(usuario_id):
             """
             DELETE FROM public.logins_pendentes
             WHERE usuario_id = %s
-              AND (expira_em <= CURRENT_TIMESTAMP OR concluido_em IS NOT NULL)
+              AND (expira_em <= clock_timestamp() OR concluido_em IS NOT NULL)
             """,
             (usuario_id,),
         )
 
         registro = conexao.execute(
             """
-            INSERT INTO public.logins_pendentes (usuario_id, token_hash)
-            VALUES (%s, %s)
+            INSERT INTO public.logins_pendentes
+                (usuario_id, token_hash, criado_em, expira_em)
+            VALUES (
+                %s, %s, clock_timestamp(),
+                clock_timestamp() + INTERVAL '5 minutes'
+            )
             ON CONFLICT (usuario_id)
             DO UPDATE SET token_hash = EXCLUDED.token_hash
             WHERE logins_pendentes.tentativas < 5

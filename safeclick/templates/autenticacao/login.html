@@ -7,7 +7,16 @@
     <form method="post" action="{{ url_for('autenticacao.login') }}">
         {{ formulario.hidden_tag() }}
         {{ exibir_campo(formulario.email, "username") }}
-        {{ exibir_campo(formulario.senha, "current-password") }}
+
+        <div class="autenticacao-senha-login">
+            {{ exibir_campo(formulario.senha, "current-password") }}
+            <p class="autenticacao-recuperar">
+                <a href="{{ url_for('recuperacao.solicitar') }}">
+                    Esqueci minha senha
+                </a>
+            </p>
+        </div>
+
         {{ formulario.enviar(class_="autenticacao-botao") }}
     </form>
 {% endblock %}

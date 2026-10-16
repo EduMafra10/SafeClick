@@ -100,3 +100,48 @@ class FormularioConfigurarMFA(FlaskForm):
 
 class FormularioSair(FlaskForm):
     enviar = SubmitField("Sair da conta")
+
+class FormularioRecuperarSenha(FlaskForm):
+    email = EmailField(
+        "E-mail da sua conta",
+        filters=[limpar_texto, str.lower],
+        validators=[
+            DataRequired(message="Informe o seu e-mail."),
+            Length(max=254, message="Use até 254 caracteres no e-mail."),
+            Email(
+                message="Informe um e-mail válido.",
+                check_deliverability=False,
+            ),
+        ],
+        render_kw={"autocomplete": "email", "maxlength": 254},
+    )
+
+    enviar = SubmitField("Enviar link de recuperação")
+
+
+class FormularioRedefinirSenha(FlaskForm):
+    # preserva todos os caracteres da senha, incluindo os espacos
+    senha = PasswordField(
+        "Nova senha",
+        validators=[
+            DataRequired(message="Informe uma nova senha."),
+            Length(
+                min=15,
+                max=128,
+                message="Use uma senha com 15 a 128 caracteres.",
+            ),
+        ],
+        render_kw={"autocomplete": "new-password", "maxlength": 128},
+    )
+
+    confirmar_senha = PasswordField(
+        "Confirme a nova senha",
+        validators=[
+            DataRequired(message="Confirme a nova senha."),
+            Length(max=128, message="Use até 128 caracteres na confirmação."),
+            EqualTo("senha", message="As senhas precisam ser iguais."),
+        ],
+        render_kw={"autocomplete": "new-password", "maxlength": 128},
+    )
+
+    enviar = SubmitField("Salvar nova senha")

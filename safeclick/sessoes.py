@@ -33,39 +33,70 @@ def _hash_sessao(token):
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
-def criar_sessao(usuario_id):
+def criar_sessao(usuario_id, token_pendente):
+    token_pendente_hash = _hash_sessao(token_pendente)
+    if token_pendente_hash is None:
+        return None
+
     token = secrets.token_urlsafe(32)
 
     with conectar_banco() as conexao:
+        # coordena a abertura da sessao com a redefinicao de senha
+        usuario = conexao.execute(
+            """
+            SELECT id FROM public.usuarios
+            WHERE id = %s AND mfa_confirmado_em IS NOT NULL
+            FOR NO KEY UPDATE
+            """,
+            (usuario_id,),
+        ).fetchone()
+
+        if usuario is None:
+            return None
+
+        # uma pendencia aprovada pode criar somente uma sessao
+        pendencia = conexao.execute(
+            """
+            DELETE FROM public.logins_pendentes
+            WHERE usuario_id = %s
+              AND token_hash = %s
+              AND concluido_em IS NOT NULL
+              AND expira_em > clock_timestamp()
+            RETURNING usuario_id
+            """,
+            (usuario_id, token_pendente_hash),
+        ).fetchone()
+
+        if pendencia is None:
+            return None
+
         conexao.execute(
             """
             DELETE FROM public.sessoes_autenticadas
-            WHERE expira_em <= CURRENT_TIMESTAMP
-            """
+            WHERE usuario_id = %s AND expira_em <= clock_timestamp()
+            """,
+            (usuario_id,),
         )
 
-        registro = conexao.execute(
+        conexao.execute(
             """
-            INSERT INTO public.sessoes_autenticadas (token_hash, usuario_id)
-            SELECT %s, id
-            FROM public.usuarios
-            WHERE id = %s AND mfa_confirmado_em IS NOT NULL
-            RETURNING usuario_id
+            INSERT INTO public.sessoes_autenticadas
+                (token_hash, usuario_id, criada_em, ultima_atividade, expira_em)
+            VALUES (
+                %s, %s, clock_timestamp(), clock_timestamp(),
+                clock_timestamp() + INTERVAL '8 hours'
+            )
             """,
             (_hash_sessao(token), usuario_id),
-        ).fetchone()
+        )
 
-        if registro is not None:
-            registrar_evento(
-                usuario_id=usuario_id,
-                evento="login.sucesso",
-                resultado="sucesso",
-                recurso_tipo="sessao",
-                conexao=conexao,
-            )
-
-    if registro is None:
-        raise RuntimeError("Não foi possível iniciar a sessão.")
+        registrar_evento(
+            usuario_id=usuario_id,
+            evento="login.sucesso",
+            resultado="sucesso",
+            recurso_tipo="sessao",
+            conexao=conexao,
+        )
 
     return token
 

@@ -129,12 +129,19 @@ def login():
                 erro = "E-mail ou senha inválidos."
                 status = 401
             else:
-                token = iniciar_login_pendente(usuario["id"])
+                token = iniciar_login_pendente(
+                    usuario["id"], usuario["senha_hash"]
+                )
 
                 if token is None:
-                    _registrar_falha_login("senha", "limite_tentativas", usuario["id"])
-                    erro = "Aguarde alguns minutos e tente entrar novamente."
-                    status = 429
+                    _registrar_falha_login(
+                        "senha", "tentativa_indisponivel", usuario["id"]
+                    )
+                    erro = (
+                        "Esta tentativa não está mais disponível. Confira sua senha "
+                        "atual ou aguarde alguns minutos e tente novamente."
+                    )
+                    status = 409
                 else:
                     # guarda somente a pendencia, o usuário ainda não esta autenticado
                     session.clear()
@@ -224,7 +231,15 @@ def autenticador():
             )
 
             if usuario is not None:
-                token_sessao = criar_sessao(usuario["id"])
+                token_sessao = criar_sessao(
+                    usuario["id"], session.get("login_pendente")
+                )
+
+                if token_sessao is None:
+                    raise ErroMFA(
+                        "Esta tentativa não está mais disponível. Entre novamente.",
+                        401,
+                    )
 
         except ErroMFA as erro:
             if erro.status < 500:

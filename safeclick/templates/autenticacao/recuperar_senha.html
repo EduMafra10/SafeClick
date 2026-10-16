@@ -1,0 +1,20 @@
+{% extends "autenticacao/base.html" %}
+
+{% set titulo = "Esqueci minha senha" %}
+{% set descricao = "Informe o e-mail da sua conta para solicitar um link de recuperação." %}
+
+{% block conteudo %}
+    <form method="post" action="{{ url_for('recuperacao.solicitar') }}">
+        {{ formulario.hidden_tag() }}
+
+        {{ exibir_campo(formulario.email, "email") }}
+
+        {{ formulario.enviar(class_="autenticacao-botao") }}
+    </form>
+{% endblock %}
+
+{% block rodape %}
+    <a href="{{ url_for('autenticacao.login') }}">
+        Voltar para o login
+    </a>
+{% endblock %}
