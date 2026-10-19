@@ -15,7 +15,34 @@
             "Use pelo menos 15 caracteres. Evite senhas comuns e informações pessoais."
         ) }}
         {{ exibir_campo(formulario.confirmar_senha, "new-password") }}
-        {{ formulario.enviar(class_="autenticacao-botao") }}
+
+        <div class="autenticacao-aceite">
+            <div class="autenticacao-aceite-linha">
+                {{ formulario.aceitou_termos(
+                    aria_describedby="orientacao-termos erros-termos",
+                    aria_invalid="true" if formulario.aceitou_termos.errors or formulario.versao_termos.errors else "false"
+                ) }}
+                <label for="aceitou_termos">Li e aceito os Termos de Uso.</label>
+            </div>
+            <p class="autenticacao-ajuda" id="orientacao-termos">
+                <a href="{{ url_for('privacidade.termos', versao=versao_termos) }}"
+                   target="_blank" rel="noopener">Ler os Termos de Uso (versão {{ versao_termos }})</a>.
+                Os documentos abrem em outra aba.
+                Consulte também a
+                <a href="{{ url_for('privacidade.politica') }}"
+                   target="_blank" rel="noopener">Política de Privacidade</a>.
+            </p>
+            <div class="autenticacao-erros" id="erros-termos" aria-live="polite">
+                {% for mensagem in formulario.aceitou_termos.errors %}
+                    <p>{{ mensagem }}</p>
+                {% endfor %}
+                {% for mensagem in formulario.versao_termos.errors %}
+                    <p>{{ mensagem }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {{ formulario.enviar(class_="autenticacao-botao", disabled=not termos_disponiveis) }}
     </form>
 {% endblock %}
 

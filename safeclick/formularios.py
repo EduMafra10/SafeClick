@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, HiddenField, PasswordField, StringField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
+from wtforms import BooleanField, EmailField, HiddenField, PasswordField, StringField, SubmitField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp, ValidationError
 
 def limpar_texto(valor):
     # remove espaços das extremidades de nome e email
@@ -46,6 +46,28 @@ class FormularioCadastro(FlaskForm):
             EqualTo("senha", message="As senhas precisam ser iguais."),
         ],
     )
+
+    versao_termos = HiddenField(
+        validators=[
+            DataRequired(message="Recarregue a página e aceite os Termos de Uso."),
+            Length(max=32, message="Versão dos termos inválida. Recarregue a página."),
+        ],
+    )
+
+    aceitou_termos = BooleanField(
+        "Li e aceito os Termos de Uso.",
+        default=False,
+        false_values=(False, "false", "", "0", "off", "no"),
+        validators=[DataRequired(message="Para criar a conta, aceite os Termos de Uso.")],
+    )
+
+    def validate_versao_termos(self, campo):
+        from safeclick.privacidade import VERSAO_TERMOS
+
+        if campo.data != VERSAO_TERMOS:
+            raise ValidationError(
+                "Os Termos de Uso foram atualizados. Leia a versão atual e marque o aceite novamente."
+            )
 
     enviar = SubmitField("Criar conta")
 

@@ -1,0 +1,6 @@
+{% extends "privacidade/base.html" %}
+{% block titulo %}Termos de Uso | SafeClick{% endblock %}
+{% block conteudo %}
+    {# HTML arquivado pela equipe via SQL. Nunca gravar entradas de usuarios nesse campo. #}
+    {{ conteudo_termos | safe }}
+{% endblock %}

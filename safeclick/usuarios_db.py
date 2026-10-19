@@ -2,6 +2,7 @@ from werkzeug.security import generate_password_hash
 
 from safeclick.auditoria_db import registrar_evento
 from safeclick.db import conectar_banco
+from safeclick.termos_db import TermosDesatualizados, buscar_termos
 
 def buscar_usuario_por_email(email):
     email = email.strip().lower()
@@ -28,7 +29,15 @@ def buscar_usuario_por_id(usuario_id):
             (usuario_id,),
         ).fetchone()
 
-def criar_usuario(nome, email, senha):
+def criar_usuario(nome, email, senha, *, aceitou_termos, versao_termos):
+    from safeclick.privacidade import VERSAO_TERMOS
+
+    # A verificacao no servidor tambem protege chamadas fora do formulario.
+    if aceitou_termos is not True:
+        raise ValueError("O aceite dos Termos de Uso é obrigatório.")
+    if versao_termos != VERSAO_TERMOS:
+        raise TermosDesatualizados("Leia e aceite a versão atual dos Termos de Uso.")
+
     nome = nome.strip()
     email = email.strip().lower()
 
@@ -36,6 +45,10 @@ def criar_usuario(nome, email, senha):
     senha_hash = generate_password_hash(senha, method="scrypt")
 
     with conectar_banco() as conexao:
+        documento = buscar_termos(versao_termos, conexao=conexao)
+        if documento is None:
+            raise RuntimeError("A versão dos Termos de Uso ainda não foi publicada.")
+
         registro = conexao.execute(
             """
             INSERT INTO public.usuarios (nome, email, senha_hash, perfil)
@@ -51,6 +64,26 @@ def criar_usuario(nome, email, senha):
             resultado="sucesso",
             recurso_tipo="usuario",
             recurso_id=registro["id"],
+            conexao=conexao,
+        )
+
+        # Conta, aceite e auditoria sao confirmados ou desfeitos juntos.
+        aceite = conexao.execute(
+            """
+            INSERT INTO public.aceites_termos (usuario_id, versao_termos)
+            VALUES (%s, %s)
+            RETURNING id
+            """,
+            (registro["id"], versao_termos),
+        ).fetchone()
+
+        registrar_evento(
+            usuario_id=registro["id"],
+            evento="termo.aceito",
+            resultado="sucesso",
+            recurso_tipo="aceite_termos",
+            recurso_id=aceite["id"],
+            detalhes={"versao": versao_termos},
             conexao=conexao,
         )
 

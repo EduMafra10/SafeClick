@@ -17,6 +17,8 @@ from psycopg.errors import UniqueViolation
 from werkzeug.security import check_password_hash, generate_password_hash
 from safeclick.auditoria_db import registrar_evento
 from safeclick.limites import permitir_tentativa
+from safeclick.privacidade import VERSAO_TERMOS
+from safeclick.termos_db import TermosDesatualizados, buscar_termos
 
 from safeclick.formularios import (
     FormularioCadastro,
@@ -66,15 +68,31 @@ def cadastro():
     formulario = FormularioCadastro()
     erro = None
     status = 200
+    termos_disponiveis = False
 
-    # valida os campos e o token CSRF antes de gravar no banco
-    if formulario.validate_on_submit():
+    try:
+        termos_disponiveis = buscar_termos(VERSAO_TERMOS) is not None
+    except (Error, RuntimeError):
+        pass
+
+    if not termos_disponiveis:
+        erro = "Não foi possível carregar os termos para o cadastro. Tente novamente em instantes."
+        status = 503
+    # valida os campos, o aceite e o token CSRF antes de gravar no banco
+    elif formulario.validate_on_submit():
         try:
             criar_usuario(
                 formulario.nome.data,
                 formulario.email.data,
                 formulario.senha.data,
+                aceitou_termos=formulario.aceitou_termos.data,
+                versao_termos=formulario.versao_termos.data,
             )
+        except TermosDesatualizados:
+            formulario.versao_termos.errors.append(
+                "Os termos mudaram. Leia a versão atual e marque o aceite novamente."
+            )
+            status = 400
         except UniqueViolation:
             formulario.email.errors.append(
                 "Não foi possível usar este e-mail. Confira os dados informados"
@@ -87,14 +105,19 @@ def cadastro():
             # o redirecionamento evita reenviar o cadastro se atualizarem a pagina
             flash("Cadastro realizado com sucesso!", "sucesso")
             return redirect(url_for("autenticacao.cadastro"), code=303)
-    
     elif request.method == "POST":
         status = 400
 
+    if request.method == "GET" or formulario.versao_termos.errors:
+        formulario.versao_termos.data = VERSAO_TERMOS
+        formulario.aceitou_termos.data = False
+
     return render_template(
         "autenticacao/cadastro.html",
-        formulario = formulario,
-        erro = erro,
+        formulario=formulario,
+        erro=erro,
+        versao_termos=VERSAO_TERMOS,
+        termos_disponiveis=termos_disponiveis,
     ), status
 
 @autenticacao.route("/login", methods=["GET", "POST"])

@@ -365,3 +365,42 @@
     min-height: 32px;
     padding: 4px 0;
 }
+
+/* aceite dos termos no cadastro */
+.autenticacao-aceite {
+    margin: 0 0 24px;
+}
+
+.autenticacao-aceite-linha {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.autenticacao-aceite-linha input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    margin: 12px 0 0;
+    accent-color: #286b53;
+    cursor: pointer;
+}
+
+.autenticacao-aceite-linha label {
+    display: block;
+    min-height: 44px;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.autenticacao-aceite-linha input:focus-visible {
+    outline: 3px solid #28638d;
+    outline-offset: 3px;
+}
+
+.autenticacao-botao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
