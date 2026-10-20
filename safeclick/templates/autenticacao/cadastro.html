@@ -22,7 +22,7 @@
                     aria_describedby="orientacao-termos erros-termos",
                     aria_invalid="true" if formulario.aceitou_termos.errors or formulario.versao_termos.errors else "false"
                 ) }}
-                <label for="aceitou_termos">Li e aceito os Termos de Uso.</label>
+                <label for="aceitou_termos">Tenho {{ idade_minima_conta }} anos ou mais e li e aceito os Termos de Uso. Se tenho {{ idade_minima_conta }} ou 17 anos, meu responsável legal está ciente e de acordo.</label>
             </div>
             <p class="autenticacao-ajuda" id="orientacao-termos">
                 <a href="{{ url_for('privacidade.termos', versao=versao_termos) }}"

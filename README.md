@@ -132,8 +132,15 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 10. `sql/inserir_quizzes_iniciais.sql`
 11. `sql/adicionar_token_tentativas.sql`
 12. `sql/vincular_tentativas_usuarios.sql`
+13. `sql/criar_recuperacoes_senha.sql`
+14. `sql/criar_aceites_termos.sql`
+15. `sql/registrar_termos_1_0.sql`
+16. `sql/criar_politica_e_leis.sql`
+17. `sql/registrar_politica_e_leis.sql`
 
 Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
+
+A Política de Privacidade e os Termos de Uso ficam arquivados no banco (`versoes_politica` e `versoes_termos`), com as leis citadas em `referencias_legais`. Para mudar um texto, publique uma nova versão no banco antes de alterar `VERSAO_POLITICA` ou `VERSAO_TERMOS` em `safeclick/privacidade.py`.
 
 O arquivo `sql/verificar_estrutura_quizzes.sql` auxilia na inspeção da estrutura dos quizzes.
 

@@ -49,6 +49,10 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         self.buscar_patch = patch("safeclick.autenticacao.buscar_termos", return_value=DOCUMENTO)
         self.buscar = self.buscar_patch.start()
         self.addCleanup(self.buscar_patch.stop)
+        # as leis citadas tambem vem do banco; aqui a consulta e simulada
+        self.referencias_patch = patch("safeclick.privacidade.buscar_referencias", return_value=[])
+        self.referencias_patch.start()
+        self.addCleanup(self.referencias_patch.stop)
         self.criar_patch = patch("safeclick.autenticacao.criar_usuario", return_value=11)
         self.criar = self.criar_patch.start()
         self.addCleanup(self.criar_patch.stop)

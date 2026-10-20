@@ -17,7 +17,7 @@ from psycopg.errors import UniqueViolation
 from werkzeug.security import check_password_hash, generate_password_hash
 from safeclick.auditoria_db import registrar_evento
 from safeclick.limites import permitir_tentativa
-from safeclick.privacidade import VERSAO_TERMOS
+from safeclick.privacidade import DOCUMENTOS, VERSAO_TERMOS
 from safeclick.termos_db import TermosDesatualizados, buscar_termos
 
 from safeclick.formularios import (
@@ -118,6 +118,7 @@ def cadastro():
         erro=erro,
         versao_termos=VERSAO_TERMOS,
         termos_disponiveis=termos_disponiveis,
+        idade_minima_conta=DOCUMENTOS["idade_minima_conta"],
     ), status
 
 @autenticacao.route("/login", methods=["GET", "POST"])

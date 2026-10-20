@@ -2,12 +2,30 @@
 # Executar: .\.venv\Scripts\python.exe -m pytest tests
 import os
 from datetime import date
+from pathlib import Path
 from unittest.mock import patch
 
+import psycopg
 import pytest
 
 from safeclick import create_app
-from safeclick.privacidade import DOCUMENTOS
+from safeclick.privacidade import DOCUMENTOS, VERSAO_POLITICA
+
+
+LEI_EXEMPLO = {
+    "norma": "Lei nº 13.709/2018 (LGPD)",
+    "dispositivo": "art. 14",
+    "assunto": "Tratamento de dados de crianças e adolescentes",
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+}
+
+
+def _documento(app, template):
+    with app.test_request_context():
+        from flask import render_template
+        pagina = render_template(template, **DOCUMENTOS)
+    artigo = pagina.split('<article class="privacidade-documento">', 1)[1].split('</article>', 1)[0].strip()
+    return {"versao": DOCUMENTOS["versao"], "vigente_desde": date(2026, 9, 28), "conteudo_html": artigo}
 
 
 @pytest.fixture
@@ -15,13 +33,12 @@ def cliente():
     os.environ.setdefault("SECRET_KEY", "chave-somente-para-testes")
     app = create_app()
     app.config["TESTING"] = True
-    # As paginas usam o documento arquivado; o teste continua sem banco real.
-    with app.test_request_context():
-        from flask import render_template
-        pagina = render_template("privacidade/termos.html", **DOCUMENTOS)
-    artigo = pagina.split('<article class="privacidade-documento">', 1)[1].split('</article>', 1)[0].strip()
-    documento = {"versao": DOCUMENTOS["versao"], "vigente_desde": date(2026, 9, 28), "conteudo_html": artigo}
-    with patch("safeclick.privacidade.buscar_termos", return_value=documento):
+    # As paginas usam os documentos arquivados; o teste continua sem banco real.
+    termos = _documento(app, "privacidade/termos.html")
+    politica = _documento(app, "privacidade/politica.html")
+    with patch("safeclick.privacidade.buscar_termos", return_value=termos), \
+         patch("safeclick.privacidade.buscar_politica", return_value=politica), \
+         patch("safeclick.privacidade.buscar_referencias", return_value=[LEI_EXEMPLO]):
         yield app.test_client()
 
 
@@ -54,3 +71,24 @@ def test_canal_de_privacidade_foi_preenchido():
     # o canal precisa funcionar de verdade: troque os valores PREENCHER em privacidade.py
     assert "PREENCHER" not in DOCUMENTOS["email_privacidade"]
     assert "PREENCHER" not in DOCUMENTOS["encarregado"]
+
+
+@pytest.mark.parametrize("rota", ["/politica-de-privacidade", "/termos-de-uso"])
+def test_paginas_mostram_legislacao_citada_do_banco(cliente, rota):
+    html = cliente.get(rota).get_data(as_text=True)
+    assert "Legislação citada" in html
+    assert "Lei nº 13.709/2018 (LGPD)</a>, art. 14" in html
+
+
+def test_politica_inexistente_404_e_banco_indisponivel_503(cliente):
+    with patch("safeclick.privacidade.buscar_politica", return_value=None):
+        assert cliente.get("/politica-de-privacidade?versao=9.9").status_code == 404
+    with patch("safeclick.privacidade.buscar_politica", side_effect=psycopg.Error):
+        assert cliente.get("/politica-de-privacidade").status_code == 503
+
+
+def test_versao_da_politica_esta_no_script_do_banco():
+    # a versao exibida por padrao precisa existir em registrar_politica_e_leis.sql
+    script = (Path(__file__).resolve().parents[1] / "sql" / "registrar_politica_e_leis.sql").read_text(encoding="utf-8")
+    assert f"VALUES ('{VERSAO_POLITICA}', DATE" in script
+    assert f"Versão {VERSAO_POLITICA} · vigente desde" in script
