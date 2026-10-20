@@ -167,3 +167,31 @@ class FormularioRedefinirSenha(FlaskForm):
     )
 
     enviar = SubmitField("Salvar nova senha")
+
+class FormularioAceiteTermos(FlaskForm):
+    
+    versao_termos = HiddenField(
+        validators=[
+            DataRequired(message="Recarregue a página e confira os Termos de Uso."),
+            Length(max=32, message="Versão dos termos inválida. Recarregue a página."),
+        ],
+    )
+    aceitou_termos = BooleanField(
+        "Li e aceito os Termos de Uso.",
+        default=False,
+        false_values=(False, "false", "", "0", "off", "no"),
+        validators=[
+            DataRequired(message="Para continuar, aceite os Termos de Uso."),
+        ],
+    )
+
+    def validate_versao_termos(self, campo):
+        from safeclick.privacidade import VERSAO_TERMOS
+
+        if campo.data != VERSAO_TERMOS:
+            raise ValidationError(
+                "Os Termos de Uso foram atualizados. "
+                "Leia a versão atual e marque o aceite novamente."
+            )
+
+    enviar = SubmitField("Aceitar e continuar")

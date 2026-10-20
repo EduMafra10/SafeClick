@@ -21,6 +21,12 @@ class AutenticacaoAuditoriaTeste(unittest.TestCase):
             self.app = create_app()
         self.app.config.update(TESTING=True, WTF_CSRF_ENABLED=False)
         self.client = self.app.test_client()
+        aceite = patch(
+            "safeclick.aceite_termos.usuario_aceitou_termos_atuais",
+            return_value=True,
+        )
+        aceite.start()
+        self.addCleanup(aceite.stop)
         self.conexao = MagicMock()
         self.contexto = MagicMock()
         self.contexto.__enter__.return_value = self.conexao

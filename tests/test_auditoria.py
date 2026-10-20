@@ -23,6 +23,12 @@ class AuditoriaAcessoTeste(unittest.TestCase):
             self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
+        aceite = patch(
+            "safeclick.aceite_termos.usuario_aceitou_termos_atuais",
+            return_value=True,
+        )
+        aceite.start()
+        self.addCleanup(aceite.stop)
 
     def autenticar(self, perfil):
         usuario = UsuarioTeste(perfil)
