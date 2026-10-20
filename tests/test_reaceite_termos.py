@@ -191,9 +191,11 @@ class ReaceiteTermosTeste(unittest.TestCase):
         self.conexao.execute.reset_mock()
         documento = {"versao": "1.0", "vigente_desde": date(2026, 9, 28),
                      "conteudo_html": "<p>Termos fictícios.</p>"}
-        with patch("safeclick.privacidade.buscar_termos", return_value=documento):
+        with patch("safeclick.privacidade.buscar_termos", return_value=documento), \
+             patch("safeclick.privacidade.buscar_politica", return_value=documento), \
+             patch("safeclick.privacidade.buscar_referencias", return_value=[]):
             self.assertEqual(self.client.get("/termos-de-uso").status_code, 200)
-        self.assertEqual(self.client.get("/politica-de-privacidade").status_code, 200)
+            self.assertEqual(self.client.get("/politica-de-privacidade").status_code, 200)
         with patch("safeclick.autenticacao.revogar_sessao") as revogar:
             resposta = self.client.post("/sair", data={"csrf_token": dados["csrf_token"]})
         self.assertEqual(resposta.status_code, 303)
