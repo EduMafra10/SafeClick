@@ -3,4 +3,5 @@
 {% block conteudo %}
     {# HTML arquivado pela equipe via SQL. Nunca gravar entradas de usuarios nesse campo. #}
     {{ conteudo_termos | safe }}
+    {% include "privacidade/_legislacao.html" %}
 {% endblock %}
