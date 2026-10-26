@@ -1,8 +1,9 @@
 import psycopg
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, abort, redirect, render_template, request, url_for
 from safeclick.sessoes import exigir_perfis
 from flask_login import current_user
 from flask_wtf import FlaskForm
+from safeclick.cenarios_simulacao import CENARIOS
 
 from safeclick.db import salvar_tentativa_simulacao
 #Blueprint para agrupar as rotas relacionadas as simulaçoes
@@ -11,57 +12,48 @@ from safeclick.db import salvar_tentativa_simulacao
 
 #Agrupa os endereços dessa funcionalidade de simulaçoes
 simulacoes = Blueprint(
-
     "simulacoes",
     __name__,
     url_prefix="/simulacoes",
 )
+
 
 @simulacoes.before_request
 @exigir_perfis("usuario", "administrador")
 def verificar_acesso_simulacoes():
     return None
 
-#definir as alternativas e os feedbacks desse cenario de conta bloqueada
-OPCOES = {
-    "clicar_link": {
-        "texto": "Clicar no link e informar meus dados",
-        "consequencia": (
-            "Nessa situação simulada, seus dados seriam entregues para uma página fraudulenta."
-        ),
-        "explicacao": (
-            "A urgência que o e-mail propoe e a ameaça de bloqueio tentam te induzir a uma ação sem verificação."
-        ),
-    },
-    "responder_email": {
-        "texto": (
-            "Responder ao e-mail enviando meus dados para confirmar minha identidade."
-        ),
-        "consequencia": (
-            "Nessa situação simulada, seus dados seriam enviados ao remetente que está tentando aplicar a fraude."
-        ),
-        "explicacao": (
-            "Responder a mensagem não confirma a identidade do remetente, nem torna seguro compartilhar informações, principalmente pessoais."
-        ),
-    },
-    "acessar_canal_oficial": {
-        "texto": (
-            "Abrir o aplicativo ou acessar o site oficial que já tenho conhecimento para verificar se está tudo certo com a conta."
-        ),
-        "consequencia": (
-            "Dessa forma, você evita fornecer seus dados por essa mensagem suspeita e verifica a situação por um canal válido."
-        ),
-        "explicacao": (
-            "A conferência acontece sem depender dos links suspeitos ou dos contatos fornecidos pelo próprio e-mail."
-        ),
-    },
-}
 
-#declarando a rota
+@simulacoes.get("/")
+def listar():
+    return render_template("lista_simulacoes.html", cenarios=CENARIOS)
+
+
+# Mantem o endereço e o nome da rota que o sistema ja utiliza
 @simulacoes.route("/conta-bloqueada", methods=["GET", "POST"])
-
-#na abertura da pagina, ainda nao existe escolha processada
 def conta_bloqueada():
+    return _processar_cenario("conta_bloqueada")
+
+
+# Identifica os outros cenarios pelo trecho final do endereço.
+@simulacoes.route("/<slug>", methods=["GET", "POST"])
+def executar(slug):
+    for identificador, cenario in CENARIOS.items():
+        if cenario["slug"] == slug:
+            return _processar_cenario(identificador)
+
+    abort(404)
+
+
+# Usa o mesmo processamento para todos os cenarios cadastrados.
+def _processar_cenario(identificador):
+    cenario = CENARIOS[identificador]
+
+    #define as alternativas e os feedbacks desse cenario
+    opcoes = cenario["opcoes"]
+    url_simulacao = url_for("simulacoes.executar", slug=cenario["slug"])
+
+    #na abertura da pagina, ainda nao existe escolha processada
     formulario = FlaskForm()
     resultado = None
     erro = None
@@ -72,42 +64,47 @@ def conta_bloqueada():
         status = 400
 
     elif request.method == "POST":
-        opcao_escolhida = request.form.get("opcao", "") #usa uma string vazia caso o formulário nao envie a escolha
-        resultado = OPCOES.get(opcao_escolhida) #valida no servidor pois o formulario pode ser enviado com dados alterados
+        #usa uma string vazia caso o formulário nao envie a escolha
+        opcao_escolhida = request.form.get("opcao", "")
+
+        #valida no servidor pois o formulario pode ser enviado com dados alterados
+        resultado = opcoes.get(opcao_escolhida)
 
         if resultado is None:
             erro = "Selecione uma opção válida para responder à simulação."
             status = 400
-
         else:
             try:
                 #o cenario é definido pela rota e a opcao ja passou pela validacao
                 salvar_tentativa_simulacao(
                     current_user.id,
-                    "conta_bloqueada",
+                    identificador,
                     opcao_escolhida,
                 )
             except (psycopg.Error, RuntimeError):
                 #qualquer falha que possa impedir a confirmacao de que a tentativa foi gravada
+                resultado = None
                 erro = (
                     "Nao foi possivel confirmar o registro da sua tentativa. "
                     "Tente novamente mais tarde."
                 )
-
                 status = 503
             else:
                 #apos salvar, o navegador abre o resultado por GET
                 return redirect(
                     url_for(
-                        "simulacoes.conta_bloqueada",
-                        resultado=opcao_escolhida
+                        "simulacoes.executar",
+                        slug=cenario["slug"],
+                        resultado=opcao_escolhida,
+                        _anchor="titulo-resultado",
                     ),
                     code=303,
                 )
+
     elif "resultado" in request.args:
-        #exibe o feedback indicado na URL
+        #exibe o feedback indicado na URL para uma alternativa deste cenario
         opcao_resultado = request.args.get("resultado", "")
-        resultado = OPCOES.get(opcao_resultado)
+        resultado = opcoes.get(opcao_resultado)
 
         if resultado is None:
             erro = "Resultado inválido. Selecione uma alternativa no formulário."
@@ -115,9 +112,10 @@ def conta_bloqueada():
 
     return render_template(
         "simulacao.html",
+        cenario=cenario,
+        url_simulacao=url_simulacao,
         formulario=formulario,
-        opcoes=OPCOES,
+        opcoes=opcoes,
         resultado=resultado,
         erro=erro,
     ), status
-

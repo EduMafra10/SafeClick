@@ -3,172 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conta bloqueada | SafeClick</title>
-
-    <!-- carrega os estilos da página pela pasta static do flask -->
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/simulacao.css') }}"
-    >
+    <title>{{ cenario["titulo"] }} | SafeClick</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/simulacao.css') }}">
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>
-
-<!-- apresenta o nome do projeto e sua frase principal -->
-<body class="simulacao-pagina">
+<body class="site-visual simulacao-pagina">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
     {% include "componentes/cabecalho.html" %}
 
-    <main class="simulacao-container simulacao-conteudo">
-        <h1>Simulação de golpe digital</h1>
-        <p>Esta é uma atividade fictícia para aprender a reconhecer golpes</p>
+    <main id="conteudo" class="visual-container simulacao-conteudo" tabindex="-1">
+        <a class="simulacao-voltar" href="{{ url_for('simulacoes.listar') }}">
+            ← Todas as simulações
+        </a>
 
-        <!-- organiza o e-mail e a area de decisao -->
+        <header class="simulacao-introducao">
+            <p class="visual-etiqueta">{{ cenario["canal"] }} · Simulação</p>
+            <h1>{{ cenario["titulo"] }}</h1>
+            <p class="simulacao-instrucao">
+                Observe a mensagem. O que você faria se recebesse algo assim?
+            </p>
+        </header>
+
+        {% set mostrando_resultado = resultado and not erro %}
+
+        <!-- O slug identifica a aparência de cada cenário. -->
         <div class="simulacao-exercicio">
+            <section
+                class="simulacao-mensagem mensagem--{{ cenario['slug'] }}"
+                aria-labelledby="titulo-mensagem"
+            >
+                <div class="mensagem-barra">{{ cenario["canal"] }}</div>
 
-            <!-- representa o e-mail fictício que o visitante deve analisar nessa atividade -->
-            <section class="simulacao-email" aria-labelledby="titulo-email">
+                {% if cenario["slug"] == "loja-falsa" and cenario.get("produto") %}
+                    <div class="mensagem-produto">
+                        <div class="produto-celular" aria-hidden="true"></div>
+                        <div>
+                            <p class="produto-nome">{{ cenario["produto"]["nome"] }}</p>
+                            <p class="produto-preco-anterior">
+                                De <s>{{ cenario["produto"]["preco_anterior"] }}</s>
+                            </p>
+                            <p class="produto-preco">{{ cenario["produto"]["preco_atual"] }}</p>
+                        </div>
+                    </div>
+                {% endif %}
 
-                <!-- identifica a mensagem como parte da atividade educativa -->
-                <div class="simulacao-email-barra">
-                    Mensagem recebida · E-mail fictício
+                <div class="mensagem-cabecalho">
+                    <h2 id="titulo-mensagem">{{ cenario["assunto"] }}</h2>
+                    <p class="mensagem-origem">{{ cenario["origem"] }}</p>
                 </div>
 
-                <!-- apresenta o assunto e o remetente da mensagem -->
-                <div class="simulacao-email-assunto">
-                    <h2 id="titulo-email">
-                        Sua conta será bloqueada em 30 minutos!
-                    </h2>
+                <!-- Cada parágrafo vira um balão no cenário de conversa. -->
+                <div class="mensagem-corpo">
+                    {% for paragrafo in cenario["mensagem"] %}
+                        <p class="mensagem-paragrafo">{{ paragrafo }}</p>
+                    {% endfor %}
 
-                    <p class="simulacao-remetente">
-                        <strong>De: Equipe de segurança</strong>
-                        <span class="simulacao-endereco">
-                            suporte@verificacao-conta.example
-                        </span>
-                    </p>
-                </div>
-
-                <!-- contem o texto usado para simular o golpe -->
-                <div class="simulacao-email-corpo">
-                    <p>
-                        Identificamos uma atividade suspeita na sua conta.
-                    </p>
-
-                    <p>
-                        Para evitar o bloqueio da sua conta, confirme
-                        imediatamente seus dados pelo link enviado abaixo.
-                    </p>
-
-                    <!--essa chamada é apenas um texto sem nenhum link externo -->
-                    <p class="simulacao-chamada-ficticia">
-                        <strong>CONFIRMAR MEUS DADOS</strong>
-                    </p>
-
-                    <p>
-                        Caso a confirmação não seja realizada em até
-                        <strong>30 minutos</strong>, seu acesso será bloqueado.
-                    </p>
+                    {% if cenario["slug"] != "falso-conhecido" %}
+                        <!-- Chamada fictícia: somente texto, sem link externo. -->
+                        <p class="mensagem-chamada">{{ cenario["chamada"] }}</p>
+                    {% endif %}
                 </div>
             </section>
 
-            <!-- abre a coluna que contem o aviso e o formulario -->
             <div class="simulacao-decisao">
-
-                {# esse codigo abaixo exibe a mensagem enviada pelo Flask quando a escolha recebida é inválida #}
                 {% if erro %}
-                    <p class="simulacao-erro" role="alert">
-                        {{ erro }}
-                    </p>
+                    <p class="simulacao-erro" role="alert">{{ erro }}</p>
                 {% endif %}
 
-                <!-- envia a alternativa escolhida pelo usuario por POST para a rota que processa a simulaçao -->
-                <form
-                    method="post"
-                    action="{{ url_for('simulacoes.conta_bloqueada') }}"
-                >
+                <!-- Preserva o envio por POST e a proteção CSRF. -->
+                <form method="post" action="{{ url_simulacao }}">
                     {{ formulario.hidden_tag() }}
 
-                    <fieldset class="simulacao-alternativas">
-                        <legend>O que você faria?</legend>
+                    <fieldset
+                        class="simulacao-alternativas"
+                        {% if mostrando_resultado %}disabled{% endif %}
+                    >
+                        <legend>
+                            {% if mostrando_resultado %}
+                                Sua resposta
+                            {% else %}
+                                O que você faria?
+                            {% endif %}
+                        </legend>
 
                         <p class="simulacao-instrucao">
-                            Selecione uma alternativa para descobrir
-                            a consequência da sua decisão.
+                            {% if mostrando_resultado %}
+                                A alternativa marcada corresponde ao resultado abaixo.
+                            {% else %}
+                                Escolha uma alternativa para ver a consequência.
+                            {% endif %}
                         </p>
 
-                        <!-- Agrupa os cartões das alternativas. -->
                         <div class="simulacao-opcoes">
-
                             {% for identificador, opcao in opcoes.items() %}
                                 <label class="simulacao-opcao">
                                     <input
                                         type="radio"
                                         name="opcao"
                                         value="{{ identificador }}"
+                                        {% if mostrando_resultado and opcao == resultado %}checked{% endif %}
                                         required
                                     >
-
                                     <span>{{ opcao["texto"] }}</span>
                                 </label>
                             {% endfor %}
-
                         </div>
                     </fieldset>
 
-                    <button class="simulacao-botao" type="submit">
-                        Ver consequência
-                    </button>
+                    {% if not mostrando_resultado %}
+                        <button class="simulacao-botao" type="submit">
+                            Ver consequência
+                        </button>
+                    {% endif %}
                 </form>
+            </div>
+        </div>
 
-            </div> <!-- fecha a area de decisao -->
-        </div> <!-- fecha a organizaçao em coluna -->
+        {# O resultado ocupa a largura das duas colunas e só aparece sem erro. #}
+        {% if mostrando_resultado %}
+            <section
+                class="simulacao-resultado{% if resultado['segura'] %} simulacao-resultado--segura{% endif %}"
+                aria-labelledby="titulo-resultado"
+            >
+                <p class="simulacao-resultado-rotulo">
+                    Resultado da sua decisão
+                </p>
 
-        {# mostra o feedback somente quando o Flask encontrar uma alternativa válida #}
-        {% if resultado %}
-            <section class="simulacao-resultado" aria-labelledby="titulo-resultado">
+                <h2 id="titulo-resultado">
+                    {% if resultado["segura"] %}
+                        Escolha segura
+                    {% else %}
+                        Escolha de risco
+                    {% endif %}
+                </h2>
 
-                <h2 id="titulo-resultado">Resultado da sua decisão</h2>
-
-                <!-- organiza a explicaçao e os sinais de risco em colunas -->
-                <div class="simulacao-resultado-conteudo">
-
-                    <div class="simulacao-feedback">
-
-                        <!-- destaca a alternativa escolhida pelo visitante -->
-                        <div class="simulacao-escolha">
-                            <h3>Sua escolha</h3>
-                            <p>{{ resultado["texto"] }}</p>
-                        </div>
-
+                <div class="simulacao-resultado-detalhes">
+                    <div>
                         <h3>Consequência</h3>
                         <p>{{ resultado["consequencia"] }}</p>
-
-                        <h3>Por que isso acontece?</h3>
-                        <p>{{ resultado["explicacao"] }}</p>
-
                     </div>
 
-                    <!-- complementa a explicaçao com os sinais do golpe -->
-                    <aside class="simulacao-sinais" aria-labelledby="titulo-sinais">
-                        <h3 id="titulo-sinais">Sinais de risco neste exemplo</h3>
-
-                        <ul>
-                            <li>Pressão por uma resposta imediata</li>
-                            <li>
-                                Ameaça de bloqueio da conta indicando
-                                um prazo para você agir rápido
-                            </li>
-                            <li>
-                                Solicitação de dados por uma
-                                mensagem não verificada
-                            </li>
-                            <li>
-                                Links suspeitos induzindo o usuário a clicar
-                            </li>
-                        </ul>
-                    </aside>
+                    <div>
+                        <h3>Por que isso acontece?</h3>
+                        <p>{{ resultado["explicacao"] }}</p>
+                    </div>
                 </div>
             </section>
+
+            <aside class="simulacao-sinais" aria-labelledby="titulo-sinais">
+                <h2 id="titulo-sinais">Sinais de risco neste exemplo</h2>
+                <ul>
+                    {% for sinal in cenario["sinais"] %}
+                        <li>{{ sinal }}</li>
+                    {% endfor %}
+                </ul>
+            </aside>
+
+            <nav class="simulacao-proximos" aria-label="Continuar praticando">
+                <a class="simulacao-continuar" href="{{ url_for('simulacoes.listar') }}">
+                    Explorar outro cenário →
+                </a>
+
+                <a class="simulacao-repetir" href="{{ url_simulacao }}">
+                    Tentar novamente
+                </a>
+            </nav>
         {% endif %}
+
+        <p class="simulacao-aviso">
+            Atividade educativa. Todas as mensagens e ofertas são fictícias.
+            Você não envia dados nem faz pagamentos.
+        </p>
     </main>
+
+    <footer class="visual-rodape">
+        <div class="visual-container">
+            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
+            <p>Educação para uma vida digital mais segura.</p>
+        </div>
+    </footer>
 </body>
 </html>

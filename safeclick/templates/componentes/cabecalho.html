@@ -1,13 +1,13 @@
 <header class="site-cabecalho">
     <div class="site-barra">
-        <a class="site-marca" href="{{ url_for('simulacoes.conta_bloqueada') }}">
+        <a class="site-marca" href="{{ url_for('simulacoes.listar') }}">
             <strong>Safe<span>Click</span></strong>
             <small>Aprenda antes de clicar.</small>
         </a>
 
         <nav class="site-navegacao" aria-label="Navegação principal">
             {% for grupo, destino, titulo in [
-                ('simulacoes', 'simulacoes.conta_bloqueada', 'Simulações'),
+                ('simulacoes', 'simulacoes.listar', 'Simulações'),
                 ('conteudos', 'conteudos.listar', 'Conteúdos'),
                 ('quizzes', 'quizzes.listar_quizzes', 'Quizzes')
             ] %}
