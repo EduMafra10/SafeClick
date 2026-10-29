@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar senha | SafeClick</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/senhas.css') }}">
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/senhas.js') }}" defer></script>
+</head>
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+    {% include "componentes/cabecalho.html" %}
+
+    <main id="conteudo" class="visual-container senhas-conteudo" tabindex="-1">
+        <header class="senhas-introducao">
+            <p class="visual-etiqueta">Segurança das senhas</p>
+            <h1>Essa senha já apareceu em um vazamento?</h1>
+            <p>Consulte a base do Pwned Passwords e entenda o que fazer com o resultado.</p>
+        </header>
+
+        <div class="senhas-organizacao">
+            <section class="senhas-painel" aria-labelledby="titulo-consulta">
+                <h2 id="titulo-consulta">Verifique uma senha</h2>
+
+                <form id="formulario-senha" method="post"
+                      action="{{ url_for('senhas.consultar') }}">
+                    {{ formulario.csrf_token(id='csrf-consulta-senha') }}
+
+                    <label for="senha-consulta">Senha para consultar</label>
+                    <input id="senha-consulta" type="password" maxlength="128"
+                           autocomplete="off" spellcheck="false" autocapitalize="none"
+                           aria-describedby="privacidade-consulta" required disabled>
+
+                    <p id="privacidade-consulta" class="senhas-ajuda">
+                        A senha fica neste navegador. Apenas uma pequena parte do
+                        hash é enviada para consulta. O campo é limpo após o envio.
+                    </p>
+
+                    <button id="consultar-senha" type="submit" disabled>
+                        Verificar senha
+                    </button>
+                </form>
+
+                <p id="aviso-javascript" class="senhas-ajuda">
+                    A ferramenta precisa de JavaScript habilitado para funcionar.
+                </p>
+
+                <section id="resultado-senha" class="senhas-resultado" role="status"
+                         aria-live="polite" aria-atomic="true" hidden>
+                    <h3 id="titulo-resultado-senha"></h3>
+                    <p id="texto-resultado-senha"></p>
+                </section>
+            </section>
+
+            <aside class="senhas-orientacao" aria-labelledby="titulo-orientacao">
+                <h2 id="titulo-orientacao">Como interpretar</h2>
+                <p>
+                    <strong>Encontrada:</strong> essa combinação aparece na base.
+                    Se você a utiliza, troque-a por uma senha única.
+                </p>
+                <p>
+                    <strong>Não encontrada:</strong> não houve correspondência
+                    nessa base. Isso não garante que a senha seja segura.
+                </p>
+                <p>
+                    A consulta não identifica em qual conta ou site você utiliza essa senha.
+                </p>
+                <p class="senhas-ajuda">
+                    Limite de cinco consultas a cada cinco minutos.
+                </p>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="visual-rodape">
+        <div class="visual-container">
+            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
+            <p>Consulta à base Pwned Passwords, do Have I Been Pwned.</p>
+        </div>
+    </footer>
+</body>
+</html>

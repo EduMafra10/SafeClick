@@ -15,6 +15,7 @@ from safeclick.twilio_api import verificar_twilio
 from safeclick.emails import verificar_email
 from safeclick.recuperacao import recuperacao
 from safeclick.aceite_termos import aceite_termos
+from safeclick.senhas import senhas
 
 def create_app():
     app = Flask(__name__)
@@ -63,6 +64,7 @@ def create_app():
     # Registra as páginas de LGPD (política de privacidade e termos de uso).
     app.register_blueprint(privacidade)
     app.register_blueprint(aceite_termos)
+    app.register_blueprint(senhas)
 
     # Disponibiliza o comando de verificação do banco.
     app.cli.add_command(verificar_banco)

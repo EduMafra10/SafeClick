@@ -195,3 +195,14 @@ class FormularioAceiteTermos(FlaskForm):
             )
 
     enviar = SubmitField("Aceitar e continuar")
+
+class FormularioConsultaSenha(FlaskForm):
+    prefixo = HiddenField(
+        validators=[
+            DataRequired(message="Não foi possível preparar a consulta."),
+            Regexp(
+                r"\A[A-Fa-f0-9]{5}\Z",
+                message="O prefixo da consulta é inválido.",
+            ),
+        ],
+    )

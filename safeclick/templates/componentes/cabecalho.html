@@ -9,7 +9,8 @@
             {% for grupo, destino, titulo in [
                 ('simulacoes', 'simulacoes.listar', 'Simulações'),
                 ('conteudos', 'conteudos.listar', 'Conteúdos'),
-                ('quizzes', 'quizzes.listar_quizzes', 'Quizzes')
+                ('quizzes', 'quizzes.listar_quizzes', 'Quizzes'),
+                ('senhas', 'senhas.pagina', 'Senhas')
             ] %}
                 <a href="{{ url_for(destino) }}"
                    {% if request.blueprint == grupo %}aria-current="page"{% endif %}>
