@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ cenario["titulo"] }} | SafeClick</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/simulacao.css') }}">
+
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>
 <body class="site-visual simulacao-pagina">
     <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+
     {% include "componentes/cabecalho.html" %}
 
     <main id="conteudo" class="visual-container simulacao-conteudo" tabindex="-1">
@@ -28,23 +31,35 @@
 
         {% set mostrando_resultado = resultado and not erro %}
 
-        <!-- O slug identifica a aparência de cada cenário. -->
+        <!-- O tipo permite reutilizar os modelos nos novos cenários. -->
+        {% set modelos_visuais = {
+            'email': 'conta-bloqueada',
+            'sms': 'entrega-sms',
+            'conversa': 'falso-conhecido',
+            'loja': 'loja-falsa'
+        } %}
+
         <div class="simulacao-exercicio">
             <section
-                class="simulacao-mensagem mensagem--{{ cenario['slug'] }}"
+                class="simulacao-mensagem mensagem--{{ modelos_visuais.get(cenario['tipo'], 'conta-bloqueada') }}"
                 aria-labelledby="titulo-mensagem"
             >
                 <div class="mensagem-barra">{{ cenario["canal"] }}</div>
 
-                {% if cenario["slug"] == "loja-falsa" and cenario.get("produto") %}
+                {% if cenario["tipo"] == "loja" and cenario.get("produto") %}
                     <div class="mensagem-produto">
                         <div class="produto-celular" aria-hidden="true"></div>
+
                         <div>
-                            <p class="produto-nome">{{ cenario["produto"]["nome"] }}</p>
+                            <p class="produto-nome">
+                                {{ cenario["produto"]["nome"] }}
+                            </p>
                             <p class="produto-preco-anterior">
                                 De <s>{{ cenario["produto"]["preco_anterior"] }}</s>
                             </p>
-                            <p class="produto-preco">{{ cenario["produto"]["preco_atual"] }}</p>
+                            <p class="produto-preco">
+                                {{ cenario["produto"]["preco_atual"] }}
+                            </p>
                         </div>
                     </div>
                 {% endif %}
@@ -54,14 +69,14 @@
                     <p class="mensagem-origem">{{ cenario["origem"] }}</p>
                 </div>
 
-                <!-- Cada parágrafo vira um balão no cenário de conversa. -->
+                
                 <div class="mensagem-corpo">
                     {% for paragrafo in cenario["mensagem"] %}
                         <p class="mensagem-paragrafo">{{ paragrafo }}</p>
                     {% endfor %}
 
-                    {% if cenario["slug"] != "falso-conhecido" %}
-                        <!-- Chamada fictícia: somente texto, sem link externo. -->
+                    {% if cenario["tipo"] != "conversa" %}
+                        
                         <p class="mensagem-chamada">{{ cenario["chamada"] }}</p>
                     {% endif %}
                 </div>
@@ -72,9 +87,15 @@
                     <p class="simulacao-erro" role="alert">{{ erro }}</p>
                 {% endif %}
 
-                <!-- Preserva o envio por POST e a proteção CSRF. -->
+                
                 <form method="post" action="{{ url_simulacao }}">
                     {{ formulario.hidden_tag() }}
+
+                    <input
+                        type="hidden"
+                        name="versao_id"
+                        value="{{ cenario['versao_id'] }}"
+                    >
 
                     <fieldset
                         class="simulacao-alternativas"
@@ -154,6 +175,7 @@
 
             <aside class="simulacao-sinais" aria-labelledby="titulo-sinais">
                 <h2 id="titulo-sinais">Sinais de risco neste exemplo</h2>
+
                 <ul>
                     {% for sinal in cenario["sinais"] %}
                         <li>{{ sinal }}</li>
@@ -162,13 +184,23 @@
             </aside>
 
             <nav class="simulacao-proximos" aria-label="Continuar praticando">
-                <a class="simulacao-continuar" href="{{ url_for('simulacoes.listar') }}">
+                <a
+                    class="simulacao-continuar"
+                    href="{{ url_for('simulacoes.listar') }}"
+                >
                     Explorar outro cenário →
                 </a>
 
-                <a class="simulacao-repetir" href="{{ url_simulacao }}">
-                    Tentar novamente
-                </a>
+                {% if pode_repetir %}
+                    <a class="simulacao-repetir" href="{{ url_simulacao }}">
+                        Tentar novamente
+                    </a>
+                {% else %}
+                    <p>
+                        Este cenário foi arquivado.
+                        O resultado da sua tentativa continua disponível.
+                    </p>
+                {% endif %}
             </nav>
         {% endif %}
 

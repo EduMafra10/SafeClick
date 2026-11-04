@@ -1,0 +1,214 @@
+{# Desenha um anel de percentual em SVG. r=30 -> circunferência = 2 x pi x 30 = 188.5 #}
+{% macro anel(percentual, tipo) %}
+    <svg class="painel-anel painel-anel--{{ tipo }}" width="76" height="76" viewBox="0 0 76 76" aria-hidden="true">
+        <circle class="painel-anel-trilha" cx="38" cy="38" r="30"></circle>
+        {% if percentual %}
+            <circle
+                class="painel-anel-progresso"
+                cx="38" cy="38" r="30"
+                stroke-dasharray="{{ (188.5 * percentual / 100)|round(1) }} 188.5"
+                transform="rotate(-90 38 38)"
+            ></circle>
+        {% endif %}
+    </svg>
+{% endmacro %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu progresso | SafeClick</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/painel.css') }}">
+
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/vendor/chart.umd.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/painel.js') }}" defer></script>
+</head>
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+
+    {% include "componentes/cabecalho.html" %}
+
+    {% set nome = (current_user.nome|default('', true)|trim) or 'Usuário' %}
+    {% set quizzes = dados.quizzes %}
+    {% set simulacoes = dados.simulacoes %}
+
+    <main id="conteudo" class="visual-container painel-conteudo" tabindex="-1">
+        <header class="painel-introducao">
+            <div>
+                <p class="visual-etiqueta">Meu progresso</p>
+                <h1>Olá, {{ nome.split()[0] }}.</h1>
+                <p class="painel-descricao">
+                    Acompanhe como você está indo nos quizzes e nas simulações.
+                </p>
+            </div>
+
+            <a class="painel-continuar" href="{{ url_for('simulacoes.listar') }}">
+                Continuar praticando <span aria-hidden="true">→</span>
+            </a>
+        </header>
+
+        {% if quizzes.tentativas == 0 and simulacoes.tentativas == 0 %}
+            <section class="painel-vazio" aria-labelledby="titulo-vazio">
+                <h2 id="titulo-vazio">Você ainda não fez nenhuma atividade.</h2>
+                <p>
+                    Responda um quiz ou explore uma simulação.
+                    Seus resultados aparecem aqui automaticamente.
+                </p>
+                <p class="painel-vazio-acoes">
+                    <a class="painel-botao" href="{{ url_for('simulacoes.listar') }}">Ver simulações</a>
+                    <a class="painel-botao painel-botao--secundario" href="{{ url_for('quizzes.listar_quizzes') }}">Ver quizzes</a>
+                </p>
+            </section>
+        {% else %}
+            <section aria-labelledby="titulo-indicadores">
+                <h2 id="titulo-indicadores" class="painel-oculto">Seus números</h2>
+
+                <ul class="painel-numeros" role="list">
+                    <li class="painel-numero">
+                        <div class="painel-numero-textos">
+                            <span class="painel-numero-etiqueta">01 · Quizzes</span>
+                            <span class="painel-numero-valor">{{ quizzes.tentativas }}</span>
+                            <span class="painel-numero-rotulo">
+                                {{ "quiz respondido" if quizzes.tentativas == 1 else "quizzes respondidos" }}
+                            </span>
+                            <span class="painel-numero-detalhe">
+                                {{ quizzes.quizzes_diferentes }}
+                                {{ "diferente" if quizzes.quizzes_diferentes == 1 else "diferentes" }}
+                            </span>
+                        </div>
+                    </li>
+
+                    <li class="painel-numero">
+                        <div class="painel-numero-textos">
+                            <span class="painel-numero-etiqueta">02 · Acertos</span>
+                            <span class="painel-numero-valor">
+                                {% if quizzes.percentual_acertos is none %}—{% else %}{{ quizzes.percentual_acertos }}%{% endif %}
+                            </span>
+                            <span class="painel-numero-rotulo">média de acertos</span>
+                            <span class="painel-numero-detalhe">em todos os quizzes</span>
+                        </div>
+                        {{ anel(quizzes.percentual_acertos, "quiz") }}
+                    </li>
+
+                    <li class="painel-numero">
+                        <div class="painel-numero-textos">
+                            <span class="painel-numero-etiqueta">03 · Simulações</span>
+                            <span class="painel-numero-valor">{{ simulacoes.tentativas }}</span>
+                            <span class="painel-numero-rotulo">
+                                {{ "simulação realizada" if simulacoes.tentativas == 1 else "simulações realizadas" }}
+                            </span>
+                            <span class="painel-numero-detalhe">contando repetições</span>
+                        </div>
+                    </li>
+
+                    <li class="painel-numero">
+                        <div class="painel-numero-textos">
+                            <span class="painel-numero-etiqueta">04 · Decisões</span>
+                            <span class="painel-numero-valor">
+                                {% if simulacoes.percentual_seguras is none %}—{% else %}{{ simulacoes.percentual_seguras }}%{% endif %}
+                            </span>
+                            <span class="painel-numero-rotulo">escolhas seguras</span>
+                            <span class="painel-numero-detalhe">
+                                {{ simulacoes.seguras }} de {{ simulacoes.seguras + simulacoes.arriscadas }}
+                                nas simulações
+                            </span>
+                        </div>
+                        {{ anel(simulacoes.percentual_seguras, "simulacao") }}
+                    </li>
+                </ul>
+
+                {% if simulacoes.sem_versao %}
+                    <p class="painel-nota">
+                        {{ simulacoes.sem_versao }}
+                        {{ "simulação feita" if simulacoes.sem_versao == 1 else "simulações feitas" }}
+                        antes da atualização do sistema
+                        {{ "entra" if simulacoes.sem_versao == 1 else "entram" }}
+                        no total, mas não no percentual de escolhas seguras.
+                    </p>
+                {% endif %}
+            </section>
+
+            {% set evolucao = dados.evolucao_quizzes %}
+            {% set cenarios = dados.simulacoes_por_cenario %}
+
+            <div class="painel-graficos">
+                <section class="painel-cartao" aria-labelledby="titulo-evolucao">
+                    <div class="painel-cartao-cabecalho">
+                        <div>
+                            <h2 id="titulo-evolucao">Evolução nos quizzes</h2>
+                            <p>Percentual de acertos nas últimas tentativas</p>
+                        </div>
+
+                        {% if evolucao %}
+                            {% set percentuais = evolucao|map(attribute="percentual")|list %}
+                            <dl class="painel-destaques">
+                                <div>
+                                    <dt>Melhor</dt>
+                                    <dd>{{ percentuais|max }}%</dd>
+                                </div>
+                                <div>
+                                    <dt>Última</dt>
+                                    <dd>{{ percentuais[-1] }}%</dd>
+                                </div>
+                            </dl>
+                        {% endif %}
+                    </div>
+
+                    {% if evolucao %}
+                        <div class="painel-grafico">
+                            <canvas
+                                id="grafico-evolucao"
+                                role="img"
+                                aria-label="Evolução nos quizzes: {% for item in evolucao %}{{ item.data }}, {{ item.titulo }}, {{ item.percentual }}%{{ '; ' if not loop.last }}{% endfor %}."
+                            ></canvas>
+                        </div>
+                    {% else %}
+                        <p class="painel-sem-dados">Responda um quiz para acompanhar sua evolução.</p>
+                    {% endif %}
+                </section>
+
+                <section class="painel-cartao" aria-labelledby="titulo-cenarios">
+                    <div class="painel-cartao-cabecalho">
+                        <div>
+                            <h2 id="titulo-cenarios">Escolhas por cenário</h2>
+                            <p>Decisões seguras e arriscadas em cada simulação</p>
+                        </div>
+                    </div>
+
+                    {% if cenarios %}
+                        <div class="painel-grafico painel-grafico--cenarios" style="--linhas: {{ cenarios|length }}">
+                            <canvas
+                                id="grafico-cenarios"
+                                role="img"
+                                aria-label="Escolhas por cenário: {% for item in cenarios %}{{ item.titulo }}, {{ item.seguras }} seguras e {{ item.arriscadas }} arriscadas{{ '; ' if not loop.last }}{% endfor %}."
+                            ></canvas>
+                        </div>
+                    {% else %}
+                        <p class="painel-sem-dados">Faça uma simulação para ver suas escolhas por cenário.</p>
+                    {% endif %}
+                </section>
+            </div>
+
+            {# Dados dos gráficos em JSON. O tojson escapa caracteres perigosos (proteção contra XSS). #}
+            <script type="application/json" id="dados-painel">
+                {{ {
+                    "evolucao": evolucao,
+                    "cenarios": cenarios,
+                    "media": quizzes.percentual_acertos
+                }|tojson }}
+            </script>
+        {% endif %}
+    </main>
+
+    <footer class="visual-rodape">
+        <div class="visual-container">
+            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
+            <p>Educação para uma vida digital mais segura.</p>
+        </div>
+    </footer>
+</body>
+</html>

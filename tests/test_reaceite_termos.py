@@ -1,11 +1,13 @@
 import os
 import unittest
+from copy import deepcopy
 from datetime import date
 from html.parser import HTMLParser
 from unittest.mock import MagicMock, patch
 
 from psycopg import Error
 from safeclick import create_app
+from safeclick.cenarios_simulacao import CENARIOS
 from safeclick.sessoes import Usuario
 from safeclick.termos_db import registrar_aceite_termos
 
@@ -41,6 +43,12 @@ class ReaceiteTermosTeste(unittest.TestCase):
         self.app = create_app()
         self.app.config.update(TESTING=True, WTF_CSRF_ENABLED=True)
         self.client = self.app.test_client()
+        # O teste de aceite usa um cenário fictício, sem consultar o banco real.
+        cenario = deepcopy(CENARIOS["conta_bloqueada"])
+        cenario.update(tipo="email", versao_id=101, versao=1)
+        self.substituir(patch(
+            "safeclick.simulacoes.buscar_simulacao_publicada", return_value=cenario
+        ))
         usuario = Usuario({
             "id": 7, "nome": "Pessoa Teste",
             "email": "pessoa@example.com", "perfil": "usuario",
@@ -83,7 +91,7 @@ class ReaceiteTermosTeste(unittest.TestCase):
         self.registrar.assert_not_called()
 
     def test_post_protegido_redireciona_para_get_sem_gravar(self):
-        with patch("safeclick.simulacoes.salvar_tentativa_simulacao") as salvar:
+        with patch("safeclick.simulacoes.salvar_tentativa_publicada") as salvar:
             resposta = self.client.post(
                 "/simulacoes/conta-bloqueada", follow_redirects=True
             )

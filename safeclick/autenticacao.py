@@ -124,7 +124,7 @@ def cadastro():
 @autenticacao.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("simulacoes.conta_bloqueada"))
+        return redirect(url_for("inicio"))
 
     formulario = FormularioLogin()
     erro = None
@@ -238,7 +238,7 @@ def _tela_autenticador(
 @autenticacao.route("/login/autenticador", methods=["GET", "POST"])
 def autenticador():
     if current_user.is_authenticated:
-        return redirect(url_for("simulacoes.conta_bloqueada"))
+        return redirect(url_for("inicio"))
 
     formulario = FormularioMFA()
 
@@ -301,7 +301,7 @@ def autenticador():
 
         flash("Login realizado com sucesso!", "sucesso")
 
-        return redirect(url_for("simulacoes.conta_bloqueada"), code=303)
+        return redirect(url_for("inicio"), code=303)
 
     return _tela_autenticador(
         formulario,
@@ -312,7 +312,7 @@ def autenticador():
 @autenticacao.post("/login/autenticador/configurar")
 def configurar_mfa():
     if current_user.is_authenticated:
-        return redirect(url_for("simulacoes.conta_bloqueada"))
+        return redirect(url_for("inicio"))
 
     formulario = FormularioConfigurarMFA(prefix="configurar")
 

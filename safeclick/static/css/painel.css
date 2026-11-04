@@ -1,0 +1,300 @@
+
+.painel-conteudo {
+    --painel-azul: #28638d;
+    --painel-azul-suave: #edf3f5;
+    --painel-laranja: #c8743a;
+
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-block: 56px 72px;
+}
+
+/* ---------- introdução ---------- */
+.painel-introducao {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+}
+
+.painel-introducao h1 {
+    margin: 8px 0;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.15;
+    letter-spacing: -1px;
+    font-weight: 700;
+}
+
+.painel-descricao {
+    margin: 0;
+    color: var(--visual-secundario);
+    font-size: 18px;
+}
+
+.painel-continuar {
+    padding-block: 10px;
+    color: var(--visual-verde);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.painel-continuar:hover {
+    color: var(--visual-texto);
+    text-decoration: underline;
+}
+
+/* ---------- Big Numbers ---------- */
+.painel-numeros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: var(--visual-borda);
+    border: 1px solid var(--visual-borda);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.painel-numero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 28px 32px;
+    background: var(--visual-superficie);
+}
+
+.painel-numero-textos {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.painel-numero-etiqueta {
+    color: var(--visual-secundario);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.painel-numero-valor {
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+}
+
+.painel-numero-rotulo {
+    font-size: 15px;
+}
+
+.painel-numero-detalhe {
+    color: var(--visual-secundario);
+    font-size: 13px;
+}
+
+/* ---------- anéis de percentual ---------- */
+.painel-anel {
+    flex: 0 0 auto;
+}
+
+.painel-anel circle {
+    fill: none;
+    stroke-width: 9;
+}
+
+.painel-anel-progresso {
+    stroke-linecap: round;
+}
+
+
+.painel-anel--quiz .painel-anel-trilha {
+    stroke: var(--painel-azul-suave);
+}
+
+.painel-anel--quiz .painel-anel-progresso {
+    stroke: var(--painel-azul);
+}
+
+.painel-anel--simulacao .painel-anel-trilha {
+    stroke: var(--visual-verde-suave);
+}
+
+.painel-anel--simulacao .painel-anel-progresso {
+    stroke: var(--visual-verde);
+}
+
+.painel-nota {
+    margin: 12px 0 0;
+    color: var(--visual-secundario);
+    font-size: 14px;
+}
+
+/* ---------- gráficos ---------- */
+.painel-graficos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+}
+
+.painel-cartao {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+    padding: 28px 32px;
+    background: var(--visual-superficie);
+    border: 1px solid var(--visual-borda);
+    border-radius: 16px;
+}
+
+.painel-cartao-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.painel-cartao h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.painel-cartao-cabecalho p {
+    margin: 4px 0 0;
+    color: var(--visual-secundario);
+    font-size: 14px;
+}
+
+.painel-destaques {
+    display: flex;
+    gap: 20px;
+    margin: 0;
+}
+
+.painel-destaques div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.painel-destaques dt {
+    color: var(--visual-secundario);
+    font-size: 12px;
+}
+
+.painel-destaques dd {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+.painel-grafico {
+    position: relative;
+    height: 280px;
+}
+
+
+.painel-grafico--cenarios {
+    height: calc(90px + var(--linhas, 1) * 56px);
+    min-height: 180px;
+}
+
+.painel-sem-dados {
+    margin: 0;
+    padding: 32px 0;
+    color: var(--visual-secundario);
+    text-align: center;
+}
+
+/* ---------- estado vazio ---------- */
+.painel-vazio {
+    padding: 32px;
+    background: var(--visual-superficie);
+    border: 1px solid var(--visual-borda);
+    border-radius: 16px;
+}
+
+.painel-vazio h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+}
+
+.painel-vazio p {
+    margin: 0;
+    color: var(--visual-secundario);
+}
+
+.painel-vazio .painel-vazio-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.painel-botao {
+    display: inline-block;
+    padding: 12px 22px;
+    border: 1px solid var(--visual-texto);
+    border-radius: 10px;
+    background: var(--visual-texto);
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.painel-botao:hover {
+    background: #0f2a31;
+}
+
+.painel-botao--secundario {
+    background: transparent;
+    color: var(--visual-texto);
+}
+
+.painel-botao--secundario:hover {
+    background: var(--visual-azul-suave);
+}
+
+
+.painel-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* ---------- celular ---------- */
+@media (max-width: 600px) {
+    .painel-conteudo {
+        padding-block: 36px 56px;
+    }
+
+    .painel-descricao {
+        font-size: 16px;
+    }
+
+    .painel-numero {
+        padding: 22px 24px;
+    }
+
+    .painel-numero-valor {
+        font-size: 42px;
+    }
+
+    .painel-graficos {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .painel-cartao {
+        padding: 22px 20px;
+    }
+}

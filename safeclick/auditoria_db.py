@@ -14,6 +14,7 @@ EVENTOS_PERMITIDOS = {
     "acesso.negado",
     "quiz.concluido",
     "simulacao.concluida",
+    "simulacao.criada",
     "conteudo.visualizado",
     "api.consultada",
     "termo.aceito",

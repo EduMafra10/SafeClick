@@ -16,6 +16,8 @@ from safeclick.emails import verificar_email
 from safeclick.recuperacao import recuperacao
 from safeclick.aceite_termos import aceite_termos
 from safeclick.senhas import senhas
+from safeclick.administracao import administracao
+from safeclick.painel import painel
 
 def create_app():
     app = Flask(__name__)
@@ -55,11 +57,13 @@ def create_app():
     app.register_blueprint(autenticacao)
     app.register_blueprint(recuperacao)
 
-    # registra as tres funcionalidades ja desenvolvidas
+    # registra as funcionalidades ja desenvolvidas
     app.register_blueprint(conteudos_bp)
     app.register_blueprint(simulacoes)
     app.register_blueprint(quizzes)
     app.register_blueprint(auditoria)
+    app.register_blueprint(administracao)
+    app.register_blueprint(painel)
 
     # Registra as páginas de LGPD (política de privacidade e termos de uso).
     app.register_blueprint(privacidade)
@@ -80,8 +84,8 @@ def create_app():
 
     @app.get("/")
     def inicio():
-        # coloquei a simulacao como pagina inicial (podem mudar se quiserem)
-        return redirect(url_for("simulacoes.conta_bloqueada"))
+        # O painel de progresso é a página inicial de quem está logado
+        return redirect(url_for("painel.exibir"))
 
     return app
 

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo cenário | SafeClick</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/administracao.css') }}">
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+</head>
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+    {% include "componentes/cabecalho.html" %}
+    <main id="conteudo" class="visual-container admin-conteudo" tabindex="-1">
+        <a class="admin-link" href="{{ url_for('administracao.listar_simulacoes') }}">← Gestão de simulações</a>
+        <header class="admin-introducao">
+            <div>
+                <p class="visual-etiqueta">Administração</p>
+                <h1>Novo cenário</h1>
+                <p>Comece pelas informações básicas. O cenário será salvo como rascunho.</p>
+            </div>
+        </header>
+
+        {% if erro %}<p class="admin-aviso admin-aviso--erro" role="alert">{{ erro }}</p>{% endif %}
+
+        <form class="admin-formulario" method="post" action="{{ url_for('administracao.novo_cenario') }}">
+            {{ formulario.hidden_tag() }}
+            {% if formulario.csrf_token.errors %}
+                <p class="admin-erro-campo" role="alert">Recarregue a página para renovar a proteção do formulário.</p>
+            {% endif %}
+
+            {% set ajudas = {
+                'titulo': 'Nome que será exibido na lista de cenários. Até 120 caracteres.',
+                'slug': 'Exemplo: falso-suporte. Comece com uma letra e use letras minúsculas sem acentos, números e hífens. Até 80 caracteres.',
+                'tipo': 'Escolha o formato da situação fictícia.',
+                'resumo': 'Descreva brevemente a situação, sem revelar a resposta. Até 300 caracteres.'
+            } %}
+            {% for campo in [formulario.titulo, formulario.slug, formulario.tipo, formulario.resumo] %}
+                <div class="admin-campo">
+                    {{ campo.label }}
+                    {{ campo(aria_describedby='ajuda-' ~ campo.id ~ ' erro-' ~ campo.id, aria_invalid='true' if campo.errors else 'false') }}
+                    <p id="ajuda-{{ campo.id }}" class="admin-ajuda-campo">{{ ajudas[campo.name] }}</p>
+                    <div id="erro-{{ campo.id }}">
+                        {% for mensagem in campo.errors %}<p class="admin-erro-campo">{{ mensagem }}</p>{% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <p class="admin-ajuda">Salvar o rascunho não publica o cenário para os usuários.</p>
+            <div class="admin-acoes">
+                <button class="admin-botao" type="submit">Salvar rascunho</button>
+                <a class="admin-link" href="{{ url_for('administracao.listar_simulacoes') }}">Cancelar</a>
+            </div>
+        </form>
+    </main>
+    <footer class="visual-rodape">
+        <div class="visual-container">
+            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
+            <p>Área administrativa</p>
+        </div>
+    </footer>
+</body>
+</html>
