@@ -1,4 +1,5 @@
-
+/* painel de progresso do usuário (Big Numbers e gráficos) */
+/* Mantendo apenas os comentarios de cada bloco apenas para controle, depois vo ajustar corretamente para retirar esses comentarios */
 .painel-conteudo {
     --painel-azul: #28638d;
     --painel-azul-suave: #edf3f5;
@@ -47,32 +48,39 @@
 }
 
 /* ---------- Big Numbers ---------- */
-.painel-numeros {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 1px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    background: var(--visual-borda);
+
+.painel-numeros-moldura {
+    background: var(--visual-superficie);
     border: 1px solid var(--visual-borda);
     border-radius: 16px;
     overflow: hidden;
 }
 
-.painel-numero {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 28px 32px;
-    background: var(--visual-superficie);
+.painel-numeros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin: 0 -1px -1px 0;
+    padding: 0;
+    list-style: none;
 }
 
-.painel-numero-textos {
+.painel-numero {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    padding: 24px;
+    box-shadow:
+        inset -1px 0 0 var(--visual-borda),
+        inset 0 -1px 0 var(--visual-borda);
+}
+
+
+.painel-numero-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
 }
 
 .painel-numero-etiqueta {
@@ -82,7 +90,7 @@
 }
 
 .painel-numero-valor {
-    font-size: 52px;
+    font-size: clamp(36px, 3.4vw, 46px);
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -1.5px;
@@ -104,13 +112,21 @@
 
 .painel-anel circle {
     fill: none;
-    stroke-width: 9;
+    stroke-width: 6;
 }
 
 .painel-anel-progresso {
     stroke-linecap: round;
 }
 
+
+.painel-anel--conteudo .painel-anel-trilha {
+    stroke: var(--visual-azul-suave);
+}
+
+.painel-anel--conteudo .painel-anel-progresso {
+    stroke: var(--visual-texto);
+}
 
 .painel-anel--quiz .painel-anel-trilha {
     stroke: var(--painel-azul-suave);
@@ -287,7 +303,7 @@
     }
 
     .painel-numero-valor {
-        font-size: 42px;
+        font-size: 40px;
     }
 
     .painel-graficos {

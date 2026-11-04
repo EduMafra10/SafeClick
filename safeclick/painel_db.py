@@ -1,7 +1,6 @@
 from safeclick.db import conectar_banco
 
 
-
 _RESUMO_QUIZZES = """
     SELECT
         COUNT(*) AS tentativas,
@@ -61,6 +60,18 @@ _SIMULACOES_POR_CENARIO = """
 """
 
 
+# Conteúdos concluídos pelo usuário e total de conteúdos disponíveis.
+_RESUMO_CONTEUDOS = """
+    SELECT
+        (SELECT COUNT(*) FROM public.conteudos) AS total,
+        (
+            SELECT COUNT(*)
+            FROM public.conclusoes_conteudo
+            WHERE usuario_id = %s
+        ) AS concluidos
+"""
+
+
 def _percentual(parte, total):
     # Evita divisão por zero: sem atividades, não existe percentual.
     if not total:
@@ -71,6 +82,7 @@ def _percentual(parte, total):
 def buscar_painel_usuario(usuario_id):
     """Reúne os indicadores do painel de progresso de um usuário."""
     with conectar_banco() as conexao:
+        conteudos = conexao.execute(_RESUMO_CONTEUDOS, (usuario_id,)).fetchone()
         quizzes = conexao.execute(_RESUMO_QUIZZES, (usuario_id,)).fetchone()
         evolucao = conexao.execute(_EVOLUCAO_QUIZZES, (usuario_id,)).fetchall()
         simulacoes = conexao.execute(_RESUMO_SIMULACOES, (usuario_id,)).fetchone()
@@ -82,6 +94,13 @@ def buscar_painel_usuario(usuario_id):
     arriscadas = sum(linha["arriscadas"] for linha in por_cenario)
 
     return {
+        "conteudos": {
+            "concluidos": conteudos["concluidos"],
+            "total": conteudos["total"],
+            "percentual": _percentual(
+                conteudos["concluidos"], conteudos["total"]
+            ),
+        },
         "quizzes": {
             "tentativas": quizzes["tentativas"],
             "quizzes_diferentes": quizzes["quizzes_diferentes"],

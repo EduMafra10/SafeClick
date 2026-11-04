@@ -25,7 +25,12 @@
             {% for c in conteudos %}
                 <a class="conteudos-card" href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">
                     <h2>{{ c.titulo }}</h2>
-                    <span class="conteudos-card-link">Ler conteúdo →</span>
+                    {% if c.concluido %}
+                        <span class="conteudos-card-selo">✓ Concluído</span>
+                    {% endif %}
+                    <span class="conteudos-card-link">
+                        {{ "Ler novamente →" if c.concluido else "Ler conteúdo →" }}
+                    </span>
                 </a>
             {% endfor %}
         </div>

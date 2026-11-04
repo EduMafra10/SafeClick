@@ -1,13 +1,13 @@
-{# Desenha um anel de percentual em SVG. r=30 -> circunferência = 2 x pi x 30 = 188.5 #}
+{# Desenha um anel de percentual em SVG. r=17 -> circunferência = 2 x pi x 17 = 106.8 #}
 {% macro anel(percentual, tipo) %}
-    <svg class="painel-anel painel-anel--{{ tipo }}" width="76" height="76" viewBox="0 0 76 76" aria-hidden="true">
-        <circle class="painel-anel-trilha" cx="38" cy="38" r="30"></circle>
+    <svg class="painel-anel painel-anel--{{ tipo }}" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+        <circle class="painel-anel-trilha" cx="22" cy="22" r="17"></circle>
         {% if percentual %}
             <circle
                 class="painel-anel-progresso"
-                cx="38" cy="38" r="30"
-                stroke-dasharray="{{ (188.5 * percentual / 100)|round(1) }} 188.5"
-                transform="rotate(-90 38 38)"
+                cx="22" cy="22" r="17"
+                stroke-dasharray="{{ (106.8 * percentual / 100)|round(1) }} 106.8"
+                transform="rotate(-90 22 22)"
             ></circle>
         {% endif %}
     </svg>
@@ -33,6 +33,7 @@
     {% include "componentes/cabecalho.html" %}
 
     {% set nome = (current_user.nome|default('', true)|trim) or 'Usuário' %}
+    {% set conteudos = dados.conteudos %}
     {% set quizzes = dados.quizzes %}
     {% set simulacoes = dados.simulacoes %}
 
@@ -42,7 +43,7 @@
                 <p class="visual-etiqueta">Meu progresso</p>
                 <h1>Olá, {{ nome.split()[0] }}.</h1>
                 <p class="painel-descricao">
-                    Acompanhe como você está indo nos quizzes e nas simulações.
+                    Acompanhe como você está indo nos conteúdos, quizzes e simulações.
                 </p>
             </div>
 
@@ -51,26 +52,41 @@
             </a>
         </header>
 
-        {% if quizzes.tentativas == 0 and simulacoes.tentativas == 0 %}
+        {% if conteudos.concluidos == 0 and quizzes.tentativas == 0 and simulacoes.tentativas == 0 %}
             <section class="painel-vazio" aria-labelledby="titulo-vazio">
                 <h2 id="titulo-vazio">Você ainda não fez nenhuma atividade.</h2>
                 <p>
-                    Responda um quiz ou explore uma simulação.
+                    Leia um conteúdo, responda um quiz ou explore uma simulação.
                     Seus resultados aparecem aqui automaticamente.
                 </p>
                 <p class="painel-vazio-acoes">
                     <a class="painel-botao" href="{{ url_for('simulacoes.listar') }}">Ver simulações</a>
                     <a class="painel-botao painel-botao--secundario" href="{{ url_for('quizzes.listar_quizzes') }}">Ver quizzes</a>
+                    <a class="painel-botao painel-botao--secundario" href="{{ url_for('conteudos.listar') }}">Ver conteúdos</a>
                 </p>
             </section>
         {% else %}
             <section aria-labelledby="titulo-indicadores">
                 <h2 id="titulo-indicadores" class="painel-oculto">Seus números</h2>
 
-                <ul class="painel-numeros" role="list">
-                    <li class="painel-numero">
-                        <div class="painel-numero-textos">
-                            <span class="painel-numero-etiqueta">01 · Quizzes</span>
+                <div class="painel-numeros-moldura">
+                    <ul class="painel-numeros" role="list">
+                        <li class="painel-numero">
+                            <div class="painel-numero-topo">
+                                <span class="painel-numero-etiqueta">01 · Conteúdos</span>
+                                {{ anel(conteudos.percentual, "conteudo") }}
+                            </div>
+                            <span class="painel-numero-valor">{{ conteudos.concluidos }}</span>
+                            <span class="painel-numero-rotulo">
+                                {{ "conteúdo concluído" if conteudos.concluidos == 1 else "conteúdos concluídos" }}
+                            </span>
+                            <span class="painel-numero-detalhe">de {{ conteudos.total }} disponíveis</span>
+                        </li>
+
+                        <li class="painel-numero">
+                            <div class="painel-numero-topo">
+                                <span class="painel-numero-etiqueta">02 · Quizzes</span>
+                            </div>
                             <span class="painel-numero-valor">{{ quizzes.tentativas }}</span>
                             <span class="painel-numero-rotulo">
                                 {{ "quiz respondido" if quizzes.tentativas == 1 else "quizzes respondidos" }}
@@ -79,35 +95,36 @@
                                 {{ quizzes.quizzes_diferentes }}
                                 {{ "diferente" if quizzes.quizzes_diferentes == 1 else "diferentes" }}
                             </span>
-                        </div>
-                    </li>
+                        </li>
 
-                    <li class="painel-numero">
-                        <div class="painel-numero-textos">
-                            <span class="painel-numero-etiqueta">02 · Acertos</span>
+                        <li class="painel-numero">
+                            <div class="painel-numero-topo">
+                                <span class="painel-numero-etiqueta">03 · Acertos</span>
+                                {{ anel(quizzes.percentual_acertos, "quiz") }}
+                            </div>
                             <span class="painel-numero-valor">
                                 {% if quizzes.percentual_acertos is none %}—{% else %}{{ quizzes.percentual_acertos }}%{% endif %}
                             </span>
                             <span class="painel-numero-rotulo">média de acertos</span>
                             <span class="painel-numero-detalhe">em todos os quizzes</span>
-                        </div>
-                        {{ anel(quizzes.percentual_acertos, "quiz") }}
-                    </li>
+                        </li>
 
-                    <li class="painel-numero">
-                        <div class="painel-numero-textos">
-                            <span class="painel-numero-etiqueta">03 · Simulações</span>
+                        <li class="painel-numero">
+                            <div class="painel-numero-topo">
+                                <span class="painel-numero-etiqueta">04 · Simulações</span>
+                            </div>
                             <span class="painel-numero-valor">{{ simulacoes.tentativas }}</span>
                             <span class="painel-numero-rotulo">
                                 {{ "simulação realizada" if simulacoes.tentativas == 1 else "simulações realizadas" }}
                             </span>
                             <span class="painel-numero-detalhe">contando repetições</span>
-                        </div>
-                    </li>
+                        </li>
 
-                    <li class="painel-numero">
-                        <div class="painel-numero-textos">
-                            <span class="painel-numero-etiqueta">04 · Decisões</span>
+                        <li class="painel-numero">
+                            <div class="painel-numero-topo">
+                                <span class="painel-numero-etiqueta">05 · Decisões</span>
+                                {{ anel(simulacoes.percentual_seguras, "simulacao") }}
+                            </div>
                             <span class="painel-numero-valor">
                                 {% if simulacoes.percentual_seguras is none %}—{% else %}{{ simulacoes.percentual_seguras }}%{% endif %}
                             </span>
@@ -116,10 +133,9 @@
                                 {{ simulacoes.seguras }} de {{ simulacoes.seguras + simulacoes.arriscadas }}
                                 nas simulações
                             </span>
-                        </div>
-                        {{ anel(simulacoes.percentual_seguras, "simulacao") }}
-                    </li>
-                </ul>
+                        </li>
+                    </ul>
+                </div>
 
                 {% if simulacoes.sem_versao %}
                     <p class="painel-nota">

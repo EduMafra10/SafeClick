@@ -160,3 +160,57 @@
 .conteudos-rodape a {
     color: #28638d;
 }
+
+/* marcar o conteúdo como concluído */
+.conteudos-conclusao{
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #c7ddec;
+}
+
+.conteudos-conclusao p{
+    margin: 0 0 12px;
+    color: #526d7e;
+}
+
+.conteudos-botao{
+    padding: 12px 22px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #286b53;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.conteudos-botao:hover{
+    background-color: #1f5541;
+}
+
+.conteudos-botao:focus-visible{
+    outline: 3px solid #28638d;
+    outline-offset: 3px;
+}
+
+.conteudos-conclusao .conteudos-concluido{
+    display: inline-block;
+    margin: 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: #eaf3ed;
+    color: #286b53;
+    font-weight: bold;
+}
+
+.conteudos-card-selo{
+    display: table;
+    margin-bottom: 8px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background-color: #eaf3ed;
+    color: #286b53;
+    font-size: 13px;
+    font-weight: bold;
+}

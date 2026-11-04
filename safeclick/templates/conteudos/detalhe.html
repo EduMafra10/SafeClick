@@ -23,6 +23,22 @@
             <div class="conteudos-corpo">
                 {{ conteudo.texto | safe }}
             </div>
+
+            <div class="conteudos-conclusao">
+                {% if conteudo.concluido_em %}
+                    <p class="conteudos-concluido" role="status">
+                        <span aria-hidden="true">✓</span>
+                        Você concluiu este conteúdo em {{ conteudo.concluido_em }}.
+                    </p>
+                {% else %}
+                    <p>Terminou a leitura? Registre para acompanhar no seu progresso.</p>
+
+                    <form method="post" action="{{ url_for('conteudos.concluir', slug=conteudo.slug) }}">
+                        {{ formulario.csrf_token }}
+                        <button class="conteudos-botao" type="submit">Marcar como concluído</button>
+                    </form>
+                {% endif %}
+            </div>
         </article>
     </main>
     <footer class="conteudos-rodape">
