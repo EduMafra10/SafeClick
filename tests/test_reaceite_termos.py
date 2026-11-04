@@ -24,6 +24,18 @@ class CamposHTML(HTMLParser):
             self.campos[atributos.get("name")] = atributos
 
 
+PAINEL_FICTICIO = {
+    "conteudos": {"concluidos": 0, "total": 2, "percentual": 0},
+    "quizzes": {"tentativas": 0, "quizzes_diferentes": 0, "percentual_acertos": None},
+    "simulacoes": {
+        "tentativas": 0, "sem_versao": 0, "seguras": 0,
+        "arriscadas": 0, "percentual_seguras": None,
+    },
+    "evolucao_quizzes": [],
+    "simulacoes_por_cenario": [],
+}
+
+
 class ReaceiteTermosTeste(unittest.TestCase):
     def substituir(self, substituicao):
         resultado = substituicao.start()
@@ -48,6 +60,10 @@ class ReaceiteTermosTeste(unittest.TestCase):
         cenario.update(tipo="email", versao_id=101, versao=1)
         self.substituir(patch(
             "safeclick.simulacoes.buscar_simulacao_publicada", return_value=cenario
+        ))
+        # A página inicial agora é o painel de progresso; os dados dele também são fictícios.
+        self.substituir(patch(
+            "safeclick.painel.buscar_painel_usuario", return_value=PAINEL_FICTICIO
         ))
         usuario = Usuario({
             "id": 7, "nome": "Pessoa Teste",
@@ -131,7 +147,7 @@ class ReaceiteTermosTeste(unittest.TestCase):
         self.registrar.side_effect = registrar
         resposta = self.client.post("/aceitar-termos", data=dados, follow_redirects=True)
         self.assertEqual(resposta.status_code, 200)
-        self.assertEqual(resposta.request.path, "/simulacoes/conta-bloqueada")
+        self.assertEqual(resposta.request.path, "/painel/")
         self.registrar.assert_called_once_with(7, "1.0", aceitou=True)
 
     def test_formulario_invalido_nao_registra(self):
