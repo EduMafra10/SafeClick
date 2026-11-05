@@ -3,100 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auditoria | SafeClick</title>
+    <title>Logs de auditoria | SafeClick</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auditoria.css') }}">
+
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/auditoria.js') }}" defer></script>
 </head>
-<body>
-    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
-    <header class="cabecalho">
-        <div class="container cabecalho-interno">
-            <a class="marca" href="{{ url_for('inicio') }}">Safe<span>Click</span></a>
-            <span>Área administrativa</span>
-        </div>
-    </header>
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
 
-    <main class="container" id="conteudo">
-        <h1>Logs de auditoria</h1>
-        <p>Consulte as ações realizadas no SafeClick. As datas e horas são exibidas em UTC.</p>
+    {% include "componentes/cabecalho.html" %}
 
-        <form class="cartao filtros" method="get" action="{{ url_for('auditoria.listar') }}">
-            <label>Evento
-                <select name="evento">
-                    <option value="">Todos</option>
-                    {% for opcao in eventos %}
-                        <option value="{{ opcao }}" {% if filtros.evento == opcao %}selected{% endif %}>{{ opcao }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label>ID do usuário
-                <input type="number" name="usuario_id" min="1" value="{{ filtros.usuario_id }}">
-            </label>
-            <label>De (UTC)
-                <input type="date" name="inicio" value="{{ filtros.inicio }}">
-            </label>
-            <label>Até (UTC)
-                <input type="date" name="fim" value="{{ filtros.fim }}">
-            </label>
-            <div class="acoes">
-                <button type="submit">Filtrar</button>
-                <a href="{{ url_for('auditoria.listar') }}">Limpar filtros</a>
-            </div>
-        </form>
+    <main id="conteudo" class="visual-container auditoria-conteudo" tabindex="-1">
+        <header class="auditoria-introducao">
+            <p class="visual-etiqueta">Administração</p>
+            <h1>Logs de auditoria</h1>
+            <p class="auditoria-descricao">
+                Tudo o que acontece no SafeClick, do mais recente ao mais antigo.
+                Horários de Brasília.
+            </p>
+        </header>
 
-        <div class="cartao tabela-rolagem">
-            <p class="total">{{ total }} evento{% if total != 1 %}s{% endif %} encontrado{% if total != 1 %}s{% endif %}</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">Data e hora (UTC)</th>
-                        <th scope="col">Usuário</th>
-                        <th scope="col">Evento</th>
-                        <th scope="col">Resultado</th>
-                        <th scope="col">Registro relacionado</th>
-                        <th scope="col">Detalhes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for registro in registros %}
+        <ul class="auditoria-resumo" role="list">
+            <li>
+                <span class="auditoria-resumo-valor">{{ resumo.total }}</span>
+                <span>{{ "evento" if resumo.total == 1 else "eventos" }}</span>
+            </li>
+            <li class="auditoria-resumo--falha">
+                <span class="auditoria-resumo-valor">{{ resumo.falhas }}</span>
+                <span>{{ "falha" if resumo.falhas == 1 else "falhas" }}</span>
+            </li>
+            <li class="auditoria-resumo--negado">
+                <span class="auditoria-resumo-valor">{{ resumo.negados }}</span>
+                <span>{{ "acesso negado" if resumo.negados == 1 else "acessos negados" }}</span>
+            </li>
+            <li>
+                <span class="auditoria-resumo-valor">{{ resumo.usuarios }}</span>
+                <span>{{ "conta envolvida" if resumo.usuarios == 1 else "contas envolvidas" }}</span>
+            </li>
+        </ul>
+
+        <section class="auditoria-filtros-cartao" aria-label="Filtros">
+            <nav class="auditoria-atalhos" aria-label="Períodos rápidos">
+                {% for atalho in atalhos %}
+                    <a class="auditoria-atalho" href="{{ url_for('auditoria.listar', **atalho.parametros) }}"
+                       {% if atalho.ativo %}aria-current="true"{% endif %}>{{ atalho.rotulo }}</a>
+                {% endfor %}
+            </nav>
+
+            <form class="auditoria-filtros" method="get" action="{{ url_for('auditoria.listar') }}">
+                <label>
+                    Evento
+                    <select name="evento">
+                        <option value="">Todos os eventos</option>
+                        {% for chave, rotulo, eventos in grupos %}
+                            <optgroup label="{{ rotulo }}">
+                                <option value="cat:{{ chave }}" {% if filtros.evento == 'cat:' ~ chave %}selected{% endif %}>
+                                    Todos de {{ rotulo|lower }}
+                                </option>
+                                {% for evento, titulo in eventos %}
+                                    <option value="{{ evento }}" {% if filtros.evento == evento %}selected{% endif %}>{{ titulo }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label>
+                    Resultado
+                    <select name="resultado">
+                        <option value="">Todos</option>
+                        {% for valor, rotulo in resultados.items() %}
+                            <option value="{{ valor }}" {% if filtros.resultado == valor %}selected{% endif %}>{{ rotulo }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label>
+                    Usuário
+                    <input type="search" name="usuario" value="{{ filtros.usuario }}"
+                           maxlength="100" placeholder="Nome, e-mail ou nº">
+                </label>
+
+                <label>
+                    De
+                    <input type="date" name="inicio" value="{{ filtros.inicio }}" min="2020-01-01" max="{{ hoje }}">
+                </label>
+
+                <label>
+                    Até
+                    <input type="date" name="fim" value="{{ filtros.fim }}" min="2020-01-01" max="{{ hoje }}">
+                </label>
+
+                <div class="auditoria-filtros-acoes">
+                    <button class="auditoria-botao" type="submit">Filtrar</button>
+                    {% if filtros_ativos %}
+                        <a href="{{ url_for('auditoria.listar') }}">Limpar filtros</a>
+                    {% endif %}
+                </div>
+
+                <label class="auditoria-opcao">
+                    <input type="checkbox" name="consultas" value="1" {% if filtros.consultas %}checked{% endif %}>
+                    Mostrar as consultas a esta página
+                </label>
+            </form>
+        </section>
+
+        {% for aviso in avisos %}
+            <p class="auditoria-aviso" role="alert">{{ aviso }} Esse filtro foi ignorado.</p>
+        {% endfor %}
+
+        <section class="auditoria-tabela" aria-labelledby="titulo-registros">
+            <h2 id="titulo-registros" class="auditoria-oculto">Registros</h2>
+
+            {% if registros %}
+                <table>
+                    <thead>
                         <tr>
-                            <td>{{ registro.criado_em.astimezone(utc).strftime('%d/%m/%Y %H:%M:%S') }}</td>
-                            <td>
-                                {% if registro.usuario_id %}
-                                    #{{ registro.usuario_id }}{% if registro.usuario_nome %} · {{ registro.usuario_nome }}{% endif %}
-                                {% else %}
-                                    Não identificado
-                                {% endif %}
-                            </td>
-                            <td>{{ registro.evento }}</td>
-                            <td>{{ registro.resultado }}</td>
-                            <td>
-                                {% if registro.recurso_tipo %}{{ registro.recurso_tipo }}{% endif %}
-                                {% if registro.recurso_id %} #{{ registro.recurso_id }}{% endif %}
-                            </td>
-                            <td>
-                                {% if registro.detalhes %}
-                                    <code>{{ registro.detalhes | tojson }}</code>
-                                {% else %}
-                                    —
-                                {% endif %}
-                            </td>
+                            <th scope="col">Quando</th>
+                            <th scope="col">Usuário</th>
+                            <th scope="col">Evento</th>
+                            <th scope="col">Resultado</th>
+                            <th scope="col">Detalhes</th>
                         </tr>
-                    {% else %}
-                        <tr><td colspan="6">Nenhum evento encontrado para estes filtros.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {% for registro in registros %}
+                            <tr class="auditoria-linha--{{ registro.resultado }}">
+                                <td data-rotulo="Quando">
+                                    <div>
+                                        <span class="auditoria-data">{{ registro.quando.strftime("%d/%m/%Y") }}</span>
+                                        <span class="auditoria-hora">{{ registro.quando.strftime("%H:%M:%S") }}</span>
+                                    </div>
+                                </td>
+                                <td data-rotulo="Usuário">
+                                    <div>
+                                        {% if registro.usuario_id %}
+                                            <a class="auditoria-nome"
+                                               href="{{ url_for('auditoria.listar', **dict(filtros_ativos, usuario=registro.usuario_id)) }}"
+                                               title="Ver só os eventos desta conta">
+                                                {{ registro.usuario_nome or "Conta excluída" }}
+                                                {% if registro.administrador %}<span class="auditoria-selo">Admin</span>{% endif %}
+                                            </a>
+                                            <span class="auditoria-secundario">
+                                                nº {{ registro.usuario_id }}{% if registro.usuario_email %} · {{ registro.usuario_email }}{% endif %}
+                                            </span>
+                                        {% else %}
+                                            <span class="auditoria-sem-usuario">{{ registro.sem_usuario }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td data-rotulo="Evento">
+                                    <div>
+                                        <span class="auditoria-titulo">{{ registro.titulo }}</span>
+                                        <span class="auditoria-secundario">{{ registro.categoria }} · <code>{{ registro.evento }}</code></span>
+                                    </div>
+                                </td>
+                                <td data-rotulo="Resultado">
+                                    <div>
+                                        <span class="auditoria-resultado auditoria-resultado--{{ registro.resultado }}">
+                                            {{ registro.resultado_rotulo }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td data-rotulo="Detalhes">
+                                    <div>
+                                        {% if registro.detalhes %}
+                                            <ul class="auditoria-detalhes">
+                                                {% for frase in registro.detalhes %}<li>{{ frase }}</li>{% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <span class="auditoria-secundario">—</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="auditoria-vazio">Nenhum evento encontrado para estes filtros.</p>
+            {% endif %}
+        </section>
 
-        <nav class="paginacao" aria-label="Páginas dos logs">
-            {% if pagina > 1 %}
-                <a href="{{ url_for('auditoria.listar', pagina=pagina - 1, **filtros) }}">← Anterior</a>
-            {% endif %}
-            <span>Página {{ pagina }} de {{ ultima_pagina }}</span>
-            {% if pagina < ultima_pagina %}
-                <a href="{{ url_for('auditoria.listar', pagina=pagina + 1, **filtros) }}">Próxima →</a>
-            {% endif %}
-        </nav>
+        {% if ultima_pagina > 1 %}
+            <nav class="auditoria-paginacao" aria-label="Páginas dos logs">
+                {% if pagina > 1 %}
+                    <a href="{{ url_for('auditoria.listar', pagina=pagina - 1, **filtros_ativos) }}">← Anterior</a>
+                {% else %}
+                    <span></span>
+                {% endif %}
+                <span>Página {{ pagina }} de {{ ultima_pagina }}</span>
+                {% if pagina < ultima_pagina %}
+                    <a href="{{ url_for('auditoria.listar', pagina=pagina + 1, **filtros_ativos) }}">Próxima →</a>
+                {% else %}
+                    <span></span>
+                {% endif %}
+            </nav>
+        {% endif %}
     </main>
+
+    <footer class="visual-rodape">
+        <div class="visual-container">
+            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
+            <p>Os registros de auditoria não podem ser alterados.</p>
+        </div>
+    </footer>
 </body>
 </html>

@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from flask_login import UserMixin, login_user
+from twilio.base.exceptions import TwilioRestException
 
 from safeclick import create_app
 from safeclick.mfa import ErroMFA
@@ -71,6 +72,22 @@ class AutenticacaoAuditoriaTeste(unittest.TestCase):
         self.assertEqual(dados["evento"], "login.falha")
         self.assertNotIn("pessoa@example.com", str(dados))
         self.assertNotIn("segredo", str(dados))
+        self.assertEqual(dados["detalhes"]["motivo"], "email_nao_cadastrado")
+
+    def test_senha_incorreta_identifica_a_conta_no_log(self):
+        usuario = {"id": 7, "senha_hash": "hash-qualquer"}
+        with patch("safeclick.autenticacao.permitir_tentativa", return_value=True), \
+             patch("safeclick.autenticacao.buscar_usuario_por_email", return_value=usuario), \
+             patch("safeclick.autenticacao.check_password_hash", return_value=False), \
+             patch("safeclick.autenticacao.render_template", return_value="Login"), \
+             patch("safeclick.autenticacao.registrar_evento") as registrar:
+            resposta = self.client.post("/login", data={"email": "pessoa@example.com", "senha": "segredo"})
+
+        self.assertEqual(resposta.status_code, 401)
+        dados = registrar.call_args.kwargs
+        self.assertEqual(dados["usuario_id"], 7)
+        self.assertEqual(dados["detalhes"], {"etapa": "senha", "motivo": "senha_incorreta"})
+        self.assertNotIn("segredo", str(dados))
 
     def test_codigo_rejeitado_identifica_conta_ja_verificada_por_senha(self):
         with self.client.session_transaction() as sessao:
@@ -119,6 +136,17 @@ class AutenticacaoAuditoriaTeste(unittest.TestCase):
         self.assertNotIn("123456", str(dados))
         self.assertNotIn("identidade-secreta", str(dados))
 
+    def test_consulta_twilio_identifica_a_conta_quando_informada(self):
+        servico = MagicMock()
+        servico.entities.return_value.challenges.create.return_value.status = "approved"
+
+        with self.app.app_context(), \
+             patch("safeclick.twilio_api.obter_servico_twilio", return_value=servico), \
+             patch("safeclick.twilio_api.registrar_evento") as registrar:
+            validar_codigo_totp("identidade", "fator", "123456", usuario_id=7)
+
+        self.assertEqual(registrar.call_args.kwargs["usuario_id"], 7)
+
     def test_falha_twilio_tambem_fica_registrada(self):
         with self.app.app_context(), \
              patch("safeclick.twilio_api.obter_servico_twilio", side_effect=RuntimeError("indisponível")), \
@@ -127,6 +155,32 @@ class AutenticacaoAuditoriaTeste(unittest.TestCase):
                 validar_codigo_totp("identidade-secreta", "fator-secreto", "123456")
 
         self.assertEqual(registrar.call_args.kwargs["resultado"], "falha")
+
+    def test_twilio_sem_configuracao_registra_o_motivo(self):
+        self.app.config["TWILIO_ACCOUNT_SID"] = None
+        with self.app.app_context(), \
+             patch("safeclick.twilio_api.registrar_evento") as registrar:
+            with self.assertRaises(RuntimeError):
+                validar_codigo_totp("identidade", "fator", "123456", usuario_id=7)
+
+        dados = registrar.call_args.kwargs
+        self.assertEqual(dados["detalhes"]["erro"], "configuracao_ausente")
+        self.assertEqual(dados["usuario_id"], 7)
+
+    def test_twilio_recusando_credenciais_registra_o_motivo(self):
+        servico = MagicMock()
+        servico.entities.return_value.challenges.create.side_effect = TwilioRestException(
+            401, "https://verify.twilio.com", msg="Authenticate", code=20003
+        )
+        with self.app.app_context(), \
+             patch("safeclick.twilio_api.obter_servico_twilio", return_value=servico), \
+             patch("safeclick.twilio_api.registrar_evento") as registrar:
+            with self.assertRaises(RuntimeError):
+                validar_codigo_totp("identidade", "fator", "123456")
+
+        detalhes = registrar.call_args.kwargs["detalhes"]
+        self.assertEqual(detalhes["erro"], "credenciais_recusadas")
+        self.assertEqual(detalhes["codigo_twilio"], 20003)
 
     def test_codigo_malformado_nao_e_registrado_como_consulta_api(self):
         with self.app.app_context(), \
