@@ -1,3 +1,4 @@
+import hashlib
 import re
 
 import requests
@@ -54,3 +55,15 @@ def consultar_prefixo_senha(prefixo):
 
     
     return "\r\n".join(linhas).upper()
+
+def contar_vazamentos(senha):
+
+    digest = hashlib.sha1(senha.encode("utf-8"), usedforsecurity=False).hexdigest().upper()
+    texto = consultar_prefixo_senha(digest[:5])
+
+    for linha in texto.splitlines():
+        sufixo, quantidade = linha.split(":")
+        if sufixo == digest[5:]:
+            return int(quantidade)
+
+    return 0

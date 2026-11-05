@@ -18,6 +18,7 @@ EVENTOS_PERMITIDOS = {
     "conteudo.visualizado",
     "conteudo.concluido",
     "api.consultada",
+    "desafio_senha.concluido",
     "termo.aceito",
     "auditoria.consultada",
 }

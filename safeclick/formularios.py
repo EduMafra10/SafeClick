@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, EmailField, HiddenField, PasswordField, StringField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp, ValidationError
+from wtforms import BooleanField, EmailField, HiddenField, IntegerField, PasswordField, StringField, SubmitField
+from wtforms.validators import AnyOf, DataRequired, Email, EqualTo, InputRequired, Length, NumberRange, Regexp, ValidationError
 
 def limpar_texto(valor):
     # remove espaços das extremidades de nome e email
@@ -169,7 +169,6 @@ class FormularioRedefinirSenha(FlaskForm):
     enviar = SubmitField("Salvar nova senha")
 
 class FormularioAceiteTermos(FlaskForm):
-    
     versao_termos = HiddenField(
         validators=[
             DataRequired(message="Recarregue a página e confira os Termos de Uso."),
@@ -196,13 +195,15 @@ class FormularioAceiteTermos(FlaskForm):
 
     enviar = SubmitField("Aceitar e continuar")
 
-class FormularioConsultaSenha(FlaskForm):
-    prefixo = HiddenField(
+class FormularioRespostaDesafio(FlaskForm):
+    # Usado pelo desafio "Qual vazou mais?" do Laboratório de senhas.
+    escolha = HiddenField(
+        validators=[AnyOf(["0", "1"], message="Escolha uma das duas senhas.")],
+    )
+
+    rodada = IntegerField(
         validators=[
-            DataRequired(message="Não foi possível preparar a consulta."),
-            Regexp(
-                r"\A[A-Fa-f0-9]{5}\Z",
-                message="O prefixo da consulta é inválido.",
-            ),
+            InputRequired(message="Rodada inválida."),
+            NumberRange(min=1, max=10, message="Rodada inválida."),
         ],
     )
