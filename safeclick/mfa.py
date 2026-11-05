@@ -42,7 +42,8 @@ def _bloquear_pendencia(token):
                    mfa_fator_sid, mfa_confirmado_em
             FROM public.usuarios
             WHERE id = %s
-            FOR UPDATE
+            -- NO KEY: não impede gravar logs com a chave desta conta
+            FOR NO KEY UPDATE
             """,
             (pendencia["usuario_id"],),
         ).fetchone()
@@ -99,6 +100,7 @@ def configurar_autenticador(token, fator_anterior):
             estado = consultar_fator_totp(
                 usuario["mfa_identidade"],
                 fator_sid,
+                usuario_id=usuario["id"],
             )
 
             if estado == "verified":
@@ -111,9 +113,10 @@ def configurar_autenticador(token, fator_anterior):
                 remover_fator_totp(
                     usuario["mfa_identidade"],
                     fator_sid,
+                    usuario_id=usuario["id"],
                 )
 
-        fator = criar_fator_totp(usuario["mfa_identidade"])
+        fator = criar_fator_totp(usuario["mfa_identidade"], usuario_id=usuario["id"])
 
         chave = parse_qs(
             urlsplit(fator["uri"]).query
@@ -160,7 +163,7 @@ def confirmar_autenticador(token, codigo):
                 "Configure o autenticador antes de informar o código."
             )
 
-        estado = consultar_fator_totp(identidade, fator_sid)
+        estado = consultar_fator_totp(identidade, fator_sid, usuario_id=usuario["id"])
 
         if estado is None:
             raise ErroMFA(
@@ -169,7 +172,7 @@ def confirmar_autenticador(token, codigo):
             )
 
         if estado == "unverified":
-            if not validar_ativacao_totp(identidade, fator_sid, codigo):
+            if not validar_ativacao_totp(identidade, fator_sid, codigo, usuario_id=usuario["id"]):
                 raise ErroMFA(
                     "Código inválido. Confira o aplicativo e tente novamente."
                 )
@@ -187,7 +190,7 @@ def confirmar_autenticador(token, codigo):
             # ativar o aplicativo nao abre uma sessao de login
             return None
 
-        if not validar_codigo_totp(identidade, fator_sid, codigo):
+        if not validar_codigo_totp(identidade, fator_sid, codigo, usuario_id=usuario["id"]):
             raise ErroMFA(
                 "Código inválido. Confira o aplicativo e tente novamente."
             )

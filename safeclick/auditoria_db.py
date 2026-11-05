@@ -126,19 +126,30 @@ def registrar_evento(
         )
 
 
-def listar_eventos(conexao, *, pagina, por_pagina, evento=None, usuario_id=None,
+def listar_eventos(conexao, *, pagina, por_pagina, eventos=None, excluir_eventos=None,
+                   resultado=None, usuario_id=None, busca=None,
                    data_inicio=None, data_fim=None):
-    """Consulta os eventos com filtros e paginação."""
+    """Consulta os eventos com filtros e paginação. Devolve (registros, resumo)."""
 
     condicoes = []
     parametros = []
 
-    if evento:
-        condicoes.append("logs.evento = %s")
-        parametros.append(evento)
+    if eventos:
+        condicoes.append("logs.evento = ANY(%s)")
+        parametros.append(sorted(eventos))
+    if excluir_eventos:
+        condicoes.append("logs.evento <> ALL(%s)")
+        parametros.append(sorted(excluir_eventos))
+    if resultado:
+        condicoes.append("logs.resultado = %s")
+        parametros.append(resultado)
     if usuario_id is not None:
         condicoes.append("logs.usuario_id = %s")
         parametros.append(usuario_id)
+    if busca:
+        termo = "%" + busca.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+        condicoes.append("(usuario.nome ILIKE %s OR usuario.email ILIKE %s)")
+        parametros.extend([termo, termo])
     if data_inicio is not None:
         condicoes.append("logs.criado_em >= %s")
         parametros.append(data_inicio)
@@ -146,22 +157,32 @@ def listar_eventos(conexao, *, pagina, por_pagina, evento=None, usuario_id=None,
         condicoes.append("logs.criado_em < %s")
         parametros.append(data_fim)
 
+    origem = """
+        FROM public.logs_auditoria AS logs
+        LEFT JOIN public.usuarios AS usuario ON usuario.id = logs.usuario_id
+    """
     filtro_sql = " WHERE " + " AND ".join(condicoes) if condicoes else ""
-    total = conexao.execute(
-        "SELECT COUNT(*) AS total FROM public.logs_auditoria AS logs" + filtro_sql,
+
+    resumo = conexao.execute(
+        """
+        SELECT COUNT(*) AS total,
+               COUNT(*) FILTER (WHERE logs.resultado = 'falha') AS falhas,
+               COUNT(*) FILTER (WHERE logs.resultado = 'negado') AS negados,
+               COUNT(DISTINCT logs.usuario_id) AS usuarios
+        """ + origem + filtro_sql,
         parametros,
-    ).fetchone()["total"]
+    ).fetchone()
 
     registros = conexao.execute(
         """
-        SELECT logs.id, logs.criado_em, logs.usuario_id, usuario.nome AS usuario_nome,
+        SELECT logs.id, logs.criado_em, logs.usuario_id,
+               usuario.nome AS usuario_nome, usuario.email AS usuario_email,
+               usuario.perfil AS usuario_perfil,
                logs.evento, logs.resultado, logs.recurso_tipo, logs.recurso_id,
                logs.detalhes
-        FROM public.logs_auditoria AS logs
-        LEFT JOIN public.usuarios AS usuario ON usuario.id = logs.usuario_id
-        """ + filtro_sql + " ORDER BY logs.criado_em DESC, logs.id DESC"
+        """ + origem + filtro_sql + " ORDER BY logs.criado_em DESC, logs.id DESC"
         " LIMIT %s OFFSET %s",
         [*parametros, por_pagina, (pagina - 1) * por_pagina],
     ).fetchall()
 
-    return registros, total
+    return registros, resumo

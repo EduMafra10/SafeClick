@@ -149,7 +149,11 @@ def login():
             )
 
             if usuario is None or not senha_valida:
-                _registrar_falha_login("senha", "credenciais_invalidas")
+                
+                if usuario is None:
+                    _registrar_falha_login("senha", "email_nao_cadastrado")
+                else:
+                    _registrar_falha_login("senha", "senha_incorreta", usuario["id"])
                 erro = "E-mail ou senha inválidos."
                 status = 401
             else:

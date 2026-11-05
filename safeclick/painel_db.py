@@ -1,5 +1,13 @@
 from safeclick.db import conectar_banco
 
+def _filtro_periodo(coluna):
+    return f"""
+        AND (%(inicio)s::date IS NULL
+             OR {coluna} >= (%(inicio)s::date)::timestamp AT TIME ZONE 'America/Sao_Paulo')
+        AND (%(fim)s::date IS NULL
+             OR {coluna} < (%(fim)s::date + 1)::timestamp AT TIME ZONE 'America/Sao_Paulo')
+    """
+
 
 _RESUMO_QUIZZES = """
     SELECT
@@ -8,8 +16,8 @@ _RESUMO_QUIZZES = """
         COALESCE(SUM(pontuacao), 0) AS acertos,
         COALESCE(SUM(total_questoes), 0) AS questoes
     FROM public.tentativas_quiz
-    WHERE usuario_id = %s
-"""
+    WHERE usuario_id = %(usuario_id)s
+""" + _filtro_periodo("criada_em")
 
 
 _EVOLUCAO_QUIZZES = """
@@ -25,7 +33,8 @@ _EVOLUCAO_QUIZZES = """
         FROM public.tentativas_quiz AS t
         JOIN public.quizzes AS q
             ON q.id = t.quiz_id
-        WHERE t.usuario_id = %s
+        WHERE t.usuario_id = %(usuario_id)s
+""" + _filtro_periodo("t.criada_em") + """
         ORDER BY t.criada_em DESC, t.id DESC
         LIMIT 10
     ) AS ultimas
@@ -38,8 +47,8 @@ _RESUMO_SIMULACOES = """
         COUNT(*) AS tentativas,
         COUNT(*) FILTER (WHERE versao_simulacao_id IS NULL) AS sem_versao
     FROM public.tentativas_simulacao
-    WHERE usuario_id = %s
-"""
+    WHERE usuario_id = %(usuario_id)s
+""" + _filtro_periodo("criada_em")
 
 
 _SIMULACOES_POR_CENARIO = """
@@ -54,23 +63,24 @@ _SIMULACOES_POR_CENARIO = """
     FROM public.tentativas_simulacao AS t
     JOIN public.versoes_simulacao AS v
         ON v.id = t.versao_simulacao_id
-    WHERE t.usuario_id = %s
+    WHERE t.usuario_id = %(usuario_id)s
+""" + _filtro_periodo("t.criada_em") + """
     GROUP BY v.simulacao_id
     ORDER BY titulo
 """
 
 
-# Conteúdos concluídos pelo usuário e total de conteúdos disponíveis.
+
 _RESUMO_CONTEUDOS = """
     SELECT
         (SELECT COUNT(*) FROM public.conteudos) AS total,
         (
             SELECT COUNT(*)
             FROM public.conclusoes_conteudo
-            WHERE usuario_id = %s
+            WHERE usuario_id = %(usuario_id)s
+""" + _filtro_periodo("concluido_em") + """
         ) AS concluidos
 """
-
 
 def _percentual(parte, total):
     # Evita divisão por zero: sem atividades, não existe percentual.
@@ -79,16 +89,20 @@ def _percentual(parte, total):
     return round(100 * parte / total)
 
 
-def buscar_painel_usuario(usuario_id):
-    """Reúne os indicadores do painel de progresso de um usuário."""
+def buscar_painel_usuario(usuario_id, inicio=None, fim=None):
+
+    parametros = {
+        "usuario_id": usuario_id,
+        "inicio": inicio.isoformat() if inicio else None,
+        "fim": fim.isoformat() if fim else None,
+    }
+
     with conectar_banco() as conexao:
-        conteudos = conexao.execute(_RESUMO_CONTEUDOS, (usuario_id,)).fetchone()
-        quizzes = conexao.execute(_RESUMO_QUIZZES, (usuario_id,)).fetchone()
-        evolucao = conexao.execute(_EVOLUCAO_QUIZZES, (usuario_id,)).fetchall()
-        simulacoes = conexao.execute(_RESUMO_SIMULACOES, (usuario_id,)).fetchone()
-        por_cenario = conexao.execute(
-            _SIMULACOES_POR_CENARIO, (usuario_id,)
-        ).fetchall()
+        conteudos = conexao.execute(_RESUMO_CONTEUDOS, parametros).fetchone()
+        quizzes = conexao.execute(_RESUMO_QUIZZES, parametros).fetchone()
+        evolucao = conexao.execute(_EVOLUCAO_QUIZZES, parametros).fetchall()
+        simulacoes = conexao.execute(_RESUMO_SIMULACOES, parametros).fetchone()
+        por_cenario = conexao.execute(_SIMULACOES_POR_CENARIO, parametros).fetchall()
 
     seguras = sum(linha["seguras"] for linha in por_cenario)
     arriscadas = sum(linha["arriscadas"] for linha in por_cenario)

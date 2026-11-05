@@ -12,6 +12,29 @@ from twilio.rest import Client
 
 from safeclick.auditoria_db import registrar_evento
 
+
+class ErroTwilio(RuntimeError):
+    """Falha do Twilio com um tipo curto, seguro para o log (sem dados sensíveis)."""
+
+    def __init__(self, mensagem, tipo, codigo=None):
+        super().__init__(mensagem)
+        self.tipo = tipo
+        self.codigo = codigo
+
+
+def _erro_twilio(mensagem, erro):
+    if isinstance(erro, TwilioRestException):
+        if erro.status in (401, 403):
+            tipo = "credenciais_recusadas"
+        elif erro.status == 429:
+            tipo = "limite_twilio"
+        elif erro.status and erro.status >= 500:
+            tipo = "servico_indisponivel"
+        else:
+            tipo = "recusado_pelo_twilio"
+        return ErroTwilio(mensagem, tipo, erro.code)
+    return ErroTwilio(mensagem, "sem_conexao")
+
 def _codigo_valido(codigo):
     return isinstance(codigo, str) and bool(re.fullmatch(r"[0-9]{6}", codigo))
 
@@ -20,33 +43,38 @@ def auditar_consulta_api(operacao, *, exige_codigo=False):
 
     def decorar(funcao):
         @wraps(funcao)
-        def executar(*args, **kwargs):
+        def executar(*args, usuario_id=None, **kwargs):
             codigo = kwargs.get("codigo", args[2] if len(args) > 2 else None)
             if exige_codigo and not _codigo_valido(codigo):
                 return funcao(*args, **kwargs)
 
             try:
                 resultado = funcao(*args, **kwargs)
-            except (RuntimeError, TwilioRestException, RequestException):
-                _registrar_consulta_api(operacao, "falha")
+            except (RuntimeError, TwilioRestException, RequestException) as erro:
+                _registrar_consulta_api(operacao, "falha", usuario_id, erro)
                 raise
 
-            _registrar_consulta_api(operacao, "sucesso")
+            _registrar_consulta_api(operacao, "sucesso", usuario_id)
             return resultado
 
         return executar
 
     return decorar
 
-def _registrar_consulta_api(operacao, resultado):
-    # Antes do login não há sessão confiável para atribuir a chamada a uma conta.
+def _registrar_consulta_api(operacao, resultado, usuario_id=None, erro=None):
+    # usuario_id vem do login pendente: a senha da conta já foi conferida.
+    detalhes = {"servico": "twilio_verify", "operacao": operacao}
+    if erro is not None:
+        detalhes["erro"] = getattr(erro, "tipo", "falha_inesperada")
+        if getattr(erro, "codigo", None):
+            detalhes["codigo_twilio"] = erro.codigo
     try:
         registrar_evento(
-            usuario_id=None,
+            usuario_id=usuario_id,
             evento="api.consultada",
             resultado=resultado,
             recurso_tipo="api",
-            detalhes={"servico": "twilio_verify", "operacao": operacao},
+            detalhes=detalhes,
         )
     except (Error, RuntimeError):
         current_app.logger.warning("Falha ao registrar consulta da API na auditoria")
@@ -57,9 +85,10 @@ def obter_servico_twilio():
     service_sid = current_app.config.get("TWILIO_VERIFY_SERVICE_SID")
 
     if not all((account_sid, auth_token, service_sid)):
-        raise RuntimeError(
+        raise ErroTwilio(
             "Configure TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN e "
-            "TWILIO_VERIFY_SERVICE_SID no .env"
+            "TWILIO_VERIFY_SERVICE_SID no .env",
+            "configuracao_ausente",
         )
 
     # limita o tempo que de espera da resposta da API
@@ -100,9 +129,9 @@ def criar_fator_totp(identidade):
             friendly_name=f"SafeClick - {identidade}",
             factor_type="totp",
         )
-    except (TwilioRestException, RequestException):
-        raise RuntimeError(
-            "Nao foi possivel iniciar a configuraçao do autenticador."
+    except (TwilioRestException, RequestException) as erro:
+        raise _erro_twilio(
+            "Nao foi possivel iniciar a configuraçao do autenticador.", erro
         ) from None
 
     # a URI sera usada para gerar o QRCode da ativaçao
@@ -122,9 +151,9 @@ def validar_ativacao_totp(identidade, fator_sid, codigo):
     try:
         entidade = obter_servico_twilio().entities(str(identidade))
         fator = entidade.factors(fator_sid).update(auth_payload=codigo)
-    except (TwilioRestException, RequestException):
-        raise RuntimeError(
-            "Nao foi possivel confirmar a ativaçao do autenticador."
+    except (TwilioRestException, RequestException) as erro:
+        raise _erro_twilio(
+            "Nao foi possivel confirmar a ativaçao do autenticador.", erro
         ) from None
 
     return fator.status == "verified"
@@ -140,9 +169,9 @@ def validar_codigo_totp(identidade, fator_sid, codigo):
             factor_sid=fator_sid,
             auth_payload=codigo,
         )
-    except (TwilioRestException, RequestException):
-        raise RuntimeError(
-            "Nao foi possivel verificar o código do autenticador."
+    except (TwilioRestException, RequestException) as erro:
+        raise _erro_twilio(
+            "Nao foi possivel verificar o código do autenticador.", erro
         ) from None
 
     # apenas um desafio aprovado comprova o segundo fator do login
@@ -160,9 +189,9 @@ def consultar_fator_totp(identidade, fator_sid):
     except TwilioRestException as erro:
         if erro.status == 404:
             return None
-        raise RuntimeError("Não foi possível consultar o autenticador.") from None
-    except RequestException:
-        raise RuntimeError("Não foi possível consultar o autenticador.") from None
+        raise _erro_twilio("Não foi possível consultar o autenticador.", erro) from None
+    except RequestException as erro:
+        raise _erro_twilio("Não foi possível consultar o autenticador.", erro) from None
 
     if fator.status not in("unverified", "verified"):
         raise RuntimeError("A Twilio retornou uma situação inesperada.")
@@ -180,6 +209,6 @@ def remover_fator_totp(identidade, fator_sid):
         )
     except TwilioRestException as erro:
         if erro.status != 404:
-            raise RuntimeError ("Não foi possível reiniciar a configuração.") from None
-    except RequestException:
-        raise RuntimeError("Não foi possível reiniciar a configuração.") from None
+            raise _erro_twilio("Não foi possível reiniciar a configuração.", erro) from None
+    except RequestException as erro:
+        raise _erro_twilio("Não foi possível reiniciar a configuração.", erro) from None
