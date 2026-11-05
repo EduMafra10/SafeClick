@@ -1,4 +1,4 @@
-{# Desenha um anel de percentual em SVG. r=17 -> circunferência = 2 x pi x 17 = 106.8 #}
+{# Anel de percentual: circunferência = 2 x pi x 17 = 106.8 #}
 {% macro anel(percentual, tipo) %}
     <svg class="painel-anel painel-anel--{{ tipo }}" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
         <circle class="painel-anel-trilha" cx="22" cy="22" r="17"></circle>
@@ -52,7 +52,68 @@
             </a>
         </header>
 
-        {% if conteudos.concluidos == 0 and quizzes.tentativas == 0 and simulacoes.tentativas == 0 %}
+        {% macro data_br(valor) %}{{ valor.strftime("%d/%m/%Y") }}{% endmacro %}
+        <section class="painel-filtro" aria-labelledby="titulo-filtro">
+            <h2 id="titulo-filtro" class="painel-oculto">Filtrar por período</h2>
+
+            <nav class="painel-atalhos" aria-label="Períodos rápidos">
+                {% for atalho in filtro.atalhos %}
+                    <a class="painel-atalho"
+                       href="{{ url_for('painel.exibir', inicio=atalho.inicio, fim=atalho.fim) }}"
+                       {% if atalho.ativo %}aria-current="true"{% endif %}>
+                        {{ atalho.rotulo }}
+                    </a>
+                {% endfor %}
+            </nav>
+
+            <form class="painel-datas" method="get" action="{{ url_for('painel.exibir') }}">
+                <label>
+                    De
+                    <input type="date" name="inicio" value="{{ filtro.inicio or '' }}"
+                           min="2020-01-01" max="{{ filtro.hoje }}">
+                </label>
+                <label>
+                    Até
+                    <input type="date" name="fim" value="{{ filtro.fim or '' }}"
+                           min="2020-01-01" max="{{ filtro.hoje }}">
+                </label>
+                <button class="painel-botao" type="submit">Filtrar</button>
+            </form>
+
+            <p class="painel-filtro-resumo" aria-live="polite">
+                Mostrando:
+                <strong>
+                    {% if filtro.inicio and filtro.fim %}
+                        {% if filtro.inicio == filtro.fim %}{{ data_br(filtro.inicio) }}{% else %}{{ data_br(filtro.inicio) }} a {{ data_br(filtro.fim) }}{% endif %}
+                    {% elif filtro.inicio %}
+                        a partir de {{ data_br(filtro.inicio) }}
+                    {% elif filtro.fim %}
+                        até {{ data_br(filtro.fim) }}
+                    {% else %}
+                        todo o período
+                    {% endif %}
+                </strong>
+                {% if filtro.ativo %}
+                    <a href="{{ url_for('painel.exibir') }}">Limpar filtro</a>
+                {% endif %}
+            </p>
+
+            {% if filtro.erro %}
+                <p class="painel-filtro-erro" role="alert">{{ filtro.erro }} Mostrando todo o período.</p>
+            {% endif %}
+        </section>
+
+        {% set sem_atividade = conteudos.concluidos == 0 and quizzes.tentativas == 0 and simulacoes.tentativas == 0 %}
+
+        {% if sem_atividade and filtro.ativo %}
+            <section class="painel-vazio" aria-labelledby="titulo-vazio">
+                <h2 id="titulo-vazio">Nenhuma atividade neste período.</h2>
+                <p>Escolha outras datas ou veja todo o seu histórico.</p>
+                <p class="painel-vazio-acoes">
+                    <a class="painel-botao" href="{{ url_for('painel.exibir') }}">Ver todo o período</a>
+                </p>
+            </section>
+        {% elif sem_atividade %}
             <section class="painel-vazio" aria-labelledby="titulo-vazio">
                 <h2 id="titulo-vazio">Você ainda não fez nenhuma atividade.</h2>
                 <p>
@@ -106,7 +167,7 @@
                                 {% if quizzes.percentual_acertos is none %}—{% else %}{{ quizzes.percentual_acertos }}%{% endif %}
                             </span>
                             <span class="painel-numero-rotulo">média de acertos</span>
-                            <span class="painel-numero-detalhe">em todos os quizzes</span>
+                            <span class="painel-numero-detalhe">{{ "nos quizzes do período" if filtro.ativo else "em todos os quizzes" }}</span>
                         </li>
 
                         <li class="painel-numero">
@@ -156,7 +217,7 @@
                     <div class="painel-cartao-cabecalho">
                         <div>
                             <h2 id="titulo-evolucao">Evolução nos quizzes</h2>
-                            <p>Percentual de acertos nas últimas tentativas</p>
+                            <p>Percentual de acertos nas últimas tentativas{{ " do período" if filtro.ativo }}</p>
                         </div>
 
                         {% if evolucao %}
@@ -209,7 +270,7 @@
                 </section>
             </div>
 
-            {# Dados dos gráficos em JSON. O tojson escapa caracteres perigosos (proteção contra XSS). #}
+            {# tojson escapa caracteres perigosos (XSS) #}
             <script type="application/json" id="dados-painel">
                 {{ {
                     "evolucao": evolucao,

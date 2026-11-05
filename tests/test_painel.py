@@ -2,6 +2,7 @@ import json
 import os
 import re
 import unittest
+from datetime import date
 from unittest.mock import MagicMock, patch
 
 from psycopg import Error
@@ -56,7 +57,6 @@ class ConsultaPainelTeste(unittest.TestCase):
         self.addCleanup(abrir.stop)
 
     def responder(self, conteudos, quizzes, evolucao, simulacoes, por_cenario):
-        # Cada execute devolve o resultado de uma consulta, na ordem da função.
         respostas = []
         for unico, lista in (
             (conteudos, None), (quizzes, None), (None, evolucao),
@@ -107,8 +107,26 @@ class ConsultaPainelTeste(unittest.TestCase):
         self.assertEqual(len(chamadas), 5)
         for chamada in chamadas:
             with self.subTest(consulta=chamada.args[0][:40]):
-                self.assertEqual(chamada.args[1], (7,))
-                self.assertIn("usuario_id = %s", chamada.args[0])
+                self.assertEqual(
+                    chamada.args[1], {"usuario_id": 7, "inicio": None, "fim": None}
+                )
+                self.assertIn("usuario_id = %(usuario_id)s", chamada.args[0])
+                self.assertIn("%(inicio)s::date", chamada.args[0])
+                self.assertIn("%(fim)s::date + 1", chamada.args[0])
+
+    def test_periodo_vai_para_o_banco_como_data(self):
+        self.responder(
+            {"total": 0, "concluidos": 0},
+            {"tentativas": 0, "quizzes_diferentes": 0, "acertos": 0, "questoes": 0},
+            [], {"tentativas": 0, "sem_versao": 0}, [],
+        )
+
+        buscar_painel_usuario(7, inicio=date(2026, 10, 1), fim=date(2026, 10, 31))
+
+        for chamada in self.conexao.execute.call_args_list:
+            with self.subTest(consulta=chamada.args[0][:40]):
+                self.assertEqual(chamada.args[1]["inicio"], "2026-10-01")
+                self.assertEqual(chamada.args[1]["fim"], "2026-10-31")
 
     def test_escolhas_sao_classificadas_pela_versao_respondida(self):
         self.responder(
@@ -199,11 +217,10 @@ class RotaPainelTeste(unittest.TestCase):
     def test_exibe_indicadores_e_graficos(self):
         self.entrar()
         resposta = self.client.get("/painel/")
-        # Junta os espaços e quebras de linha para comparar os textos com facilidade.
         html = " ".join(resposta.get_data(as_text=True).split())
 
         self.assertEqual(resposta.status_code, 200)
-        self.buscar.assert_called_once_with(7)
+        self.buscar.assert_called_once_with(7, inicio=None, fim=None)
         for trecho in ("01 · Conteúdos", "02 · Quizzes", "03 · Acertos",
                        "04 · Simulações", "05 · Decisões", "40%",
                        "grafico-evolucao", "grafico-cenarios", "chart.umd.js",
@@ -252,6 +269,74 @@ class RotaPainelTeste(unittest.TestCase):
     def test_administrador_tambem_tem_painel(self):
         self.entrar(perfil="administrador")
         self.assertEqual(self.client.get("/painel/").status_code, 200)
+
+    def hoje(self, dia):
+        self.substituir(patch("safeclick.painel._hoje", return_value=dia))
+
+    def test_filtra_pelas_datas_da_url(self):
+        self.entrar()
+        self.hoje(date(2026, 11, 5))
+        resposta = self.client.get("/painel/?inicio=2026-10-01&fim=2026-10-31")
+        html = " ".join(resposta.get_data(as_text=True).split())
+
+        self.assertEqual(resposta.status_code, 200)
+        self.buscar.assert_called_once_with(7, inicio=date(2026, 10, 1), fim=date(2026, 10, 31))
+        self.assertIn("01/10/2026 a 31/10/2026", html)
+        self.assertIn("Limpar filtro", html)
+        self.assertIn('value="2026-10-01"', html)
+
+    def test_atalho_dos_ultimos_7_dias(self):
+        self.entrar()
+        self.hoje(date(2026, 11, 5))
+        html = " ".join(self.client.get(
+            "/painel/?inicio=2026-10-30&fim=2026-11-05"
+        ).get_data(as_text=True).split())
+
+        self.assertIn(
+            'href="/painel/?inicio=2026-10-30&amp;fim=2026-11-05" aria-current="true"', html
+        )
+        self.buscar.assert_called_once_with(7, inicio=date(2026, 10, 30), fim=date(2026, 11, 5))
+
+    def test_sem_filtro_mostra_todo_o_periodo(self):
+        self.entrar()
+        self.hoje(date(2026, 11, 5))
+        html = " ".join(self.client.get("/painel/").get_data(as_text=True).split())
+        self.assertIn("Mostrando: <strong> todo o período </strong>", html)
+        self.assertIn('href="/painel/" aria-current="true"', html)
+        self.assertNotIn("Limpar filtro", html)
+
+    def test_datas_invalidas_mostram_aviso_e_todo_o_periodo(self):
+        self.entrar()
+        self.hoje(date(2026, 11, 5))
+        casos = {
+            "inicio=05/11/2026": "Use datas válidas",
+            "inicio=2026-13-01": "Use datas válidas",
+            "inicio=<script>": "Use datas válidas",
+            "inicio=2019-12-31": "a partir de 2020",
+            "inicio=2026-11-01&fim=2026-10-01": "igual ou anterior",
+        }
+        for consulta, aviso in casos.items():
+            with self.subTest(consulta=consulta):
+                self.buscar.reset_mock()
+                resposta = self.client.get(f"/painel/?{consulta}")
+                self.assertEqual(resposta.status_code, 200)
+                self.assertIn(aviso, resposta.get_data(as_text=True))
+                self.buscar.assert_called_once_with(7, inicio=None, fim=None)
+                self.assertNotIn("<script>", resposta.get_data(as_text=True).split("<main")[1])
+
+    def test_data_final_no_futuro_vira_hoje(self):
+        self.entrar()
+        self.hoje(date(2026, 11, 5))
+        self.client.get("/painel/?inicio=2026-11-01&fim=2030-01-01")
+        self.buscar.assert_called_once_with(7, inicio=date(2026, 11, 1), fim=date(2026, 11, 5))
+
+    def test_periodo_sem_atividade(self):
+        self.entrar()
+        self.hoje(date(2026, 11, 5))
+        self.buscar.return_value = PAINEL_VAZIO
+        html = self.client.get("/painel/?inicio=2026-11-01").get_data(as_text=True)
+        self.assertIn("Nenhuma atividade neste período.", html)
+        self.assertNotIn("Você ainda não fez nenhuma atividade.", html)
 
     def test_falha_no_banco_mostra_indisponivel(self):
         self.entrar()

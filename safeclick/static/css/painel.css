@@ -47,6 +47,113 @@
     text-decoration: underline;
 }
 
+/* ---------- filtro por período ---------- */
+.painel-filtro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    padding: 20px 24px;
+    background: var(--visual-superficie);
+    border: 1px solid var(--visual-borda);
+    border-radius: 16px;
+}
+
+.painel-atalhos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.painel-atalho {
+    padding: 8px 14px;
+    border: 1px solid var(--visual-borda);
+    border-radius: 999px;
+    color: var(--visual-texto);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.painel-atalho:hover {
+    background: var(--painel-azul-suave);
+}
+
+.painel-atalho[aria-current="true"] {
+    border-color: var(--visual-texto);
+    background: var(--visual-texto);
+    color: #ffffff;
+}
+
+.painel-datas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.painel-datas label {
+    display: grid;
+    gap: 4px;
+    color: var(--visual-secundario);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.painel-datas input {
+    padding: 9px 12px;
+    border: 1px solid #c4d1ce;
+    border-radius: 10px;
+    background: var(--visual-superficie);
+    color: var(--visual-texto);
+    font: inherit;
+    font-size: 15px;
+}
+
+.painel-datas input:focus {
+    border-color: var(--visual-foco);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(40, 99, 141, 0.18);
+}
+
+.painel-datas .painel-botao {
+    padding: 10px 20px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.painel-filtro-resumo {
+    flex-basis: 100%;
+    margin: 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--visual-borda);
+    color: var(--visual-secundario);
+    font-size: 14px;
+}
+
+.painel-filtro-resumo strong {
+    color: var(--visual-texto);
+}
+
+.painel-filtro-resumo a {
+    margin-left: 12px;
+    color: var(--visual-verde);
+    font-weight: 600;
+}
+
+.painel-filtro-erro {
+    flex-basis: 100%;
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #fbeceb;
+    color: #b3412f;
+    font-size: 14px;
+    font-weight: 600;
+}
+
 /* ---------- Big Numbers ---------- */
 
 .painel-numeros-moldura {
@@ -292,6 +399,14 @@
 @media (max-width: 600px) {
     .painel-conteudo {
         padding-block: 36px 56px;
+    }
+
+    .painel-filtro {
+        padding: 18px 16px;
+    }
+
+    .painel-datas {
+        margin-left: 0;
     }
 
     .painel-descricao {
