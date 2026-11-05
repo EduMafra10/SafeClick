@@ -5,47 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ conteudo.titulo }} | SafeClick</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>
-<body class="conteudos-pagina">
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+
     {% include "componentes/cabecalho.html" %}
 
-    <main class="conteudos-container conteudos-conteudo">
-        <a class="conteudos-voltar" href="{{ url_for('conteudos.listar') }}">
-            Voltar para conteúdos
-        </a>
+    <main id="conteudo" class="visual-container conteudos-conteudo" tabindex="-1">
+        <div class="conteudos-leitura">
+            <a class="conteudos-voltar" href="{{ url_for('conteudos.listar') }}">
+                <span aria-hidden="true">←</span> Voltar para conteúdos
+            </a>
 
-        <article class="conteudos-artigo">
-            <h1>{{ conteudo.titulo }}</h1>
+            <article class="conteudos-artigo">
+                <header class="conteudos-artigo-cabecalho">
+                    <p class="visual-etiqueta">Conteúdo educativo</p>
+                    <h1>{{ conteudo.titulo }}</h1>
+                </header>
 
-            <div class="conteudos-corpo">
-                {{ conteudo.texto | safe }}
-            </div>
+                <div class="conteudos-corpo">
+                    {{ conteudo.texto | safe }}
+                </div>
 
-            <div class="conteudos-conclusao">
-                {% if conteudo.concluido_em %}
-                    <p class="conteudos-concluido" role="status">
-                        <span aria-hidden="true">✓</span>
-                        Você concluiu este conteúdo em {{ conteudo.concluido_em }}.
-                    </p>
-                {% else %}
-                    <p>Terminou a leitura? Registre para acompanhar no seu progresso.</p>
+                <div class="conteudos-conclusao">
+                    {% if conteudo.concluido_em %}
+                        <p class="conteudos-concluido" role="status">
+                            <span aria-hidden="true">✓</span>
+                            Você concluiu este conteúdo em {{ conteudo.concluido_em }}.
+                        </p>
+                    {% else %}
+                        <p>Terminou a leitura? Registre para acompanhar no seu progresso.</p>
 
-                    <form method="post" action="{{ url_for('conteudos.concluir', slug=conteudo.slug) }}">
-                        {{ formulario.csrf_token }}
-                        <button class="conteudos-botao" type="submit">Marcar como concluído</button>
-                    </form>
-                {% endif %}
-            </div>
-        </article>
-    </main>
-    <footer class="conteudos-rodape">
-        <div class="conteudos-container">
-            <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a> ·
-            <a href="{{ url_for('privacidade.termos') }}">Termos de Uso</a>
+                        <form method="post" action="{{ url_for('conteudos.concluir', slug=conteudo.slug) }}">
+                            {{ formulario.csrf_token }}
+                            <button class="conteudos-botao" type="submit">Marcar como concluído</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </article>
         </div>
-    </footer>
+    </main>
+
+    {% include "conteudos/_rodape.html" %}
 </body>
 </html>

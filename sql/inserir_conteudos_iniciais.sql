@@ -1,5 +1,5 @@
 insert into public.conteudos (slug, titulo, texto) values
-('phishing', 'Phishing', '<h3>O que é Phishing? <h3>
+('phishing', 'Phishing', '<h3>O que é Phishing? </h3>
 <p>Phishing é uma técnica de golpe digital em que criminosos se passam por empresas, bancos, órgãos públicos ou até conhecidos para enganar a vítima e obter senhas, dados de cartão ou documentos.</p>
 <p>O golpe costuma chegar por e-mail, SMS, WhatsApp ou redes sociais, imitando a comunicação de uma marca conhecida, levando a vítima a clicar num link ou preencher um formulário falso.</p>
 <h3>Como identificar</h3>

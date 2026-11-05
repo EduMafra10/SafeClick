@@ -137,6 +137,7 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 15. `sql/registrar_termos_1_0.sql`
 16. `sql/criar_politica_e_leis.sql`
 17. `sql/registrar_politica_e_leis.sql`
+18. `sql/inserir_conteudos_adicionais.sql`(mais 7 conteúdos educativos; pode ser executado mesmo se o banco já tiver os 2 primeiros)
 
 Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
 

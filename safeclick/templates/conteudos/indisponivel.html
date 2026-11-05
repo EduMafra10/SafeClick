@@ -5,17 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indisponível | SafeClick</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>
-<body class="conteudos-pagina">
+<body class="site-visual">
     {% include "componentes/cabecalho.html" %}
 
-    <main class="conteudos-container conteudos-conteudo">
-        <p class="conteudos-indisponivel" role="alert">
-            Não foi possível carregar os conteúdos agora. Tente novamente.
-        </p>
+    <main id="conteudo" class="visual-container conteudos-conteudo">
+        <div class="conteudos-indisponivel" role="alert">
+            <h1>Não foi possível carregar os conteúdos agora.</h1>
+            <p>Tente novamente em instantes.</p>
+            <a class="conteudos-voltar" href="{{ url_for('conteudos.listar') }}">Tentar de novo</a>
+        </div>
     </main>
+
+    {% include "conteudos/_rodape.html" %}
 </body>
 </html>

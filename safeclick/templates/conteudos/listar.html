@@ -5,41 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conteúdos educativos | SafeClick</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>
-<body class="conteudos-pagina">
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+
     {% include "componentes/cabecalho.html" %}
 
-    <main class="conteudos-container conteudos-conteudo">
-        <h1>Conteúdos educativos</h1>
-        <p class="conteudos-instrucao">Escolha um tema para começar a leitura.</p>
+    {% set concluidos = conteudos|selectattr("concluido")|list|length %}
+    {% set total = conteudos|length %}
 
-        {% if not current_user.is_authenticated %}
-            <p>
-                <a href="{{ url_for('autenticacao.login') }}">Entrar na conta</a>
-            </p>
-        {% endif %}
-        <div class="conteudos-lista">
-            {% for c in conteudos %}
-                <a class="conteudos-card" href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">
-                    <h2>{{ c.titulo }}</h2>
-                    {% if c.concluido %}
-                        <span class="conteudos-card-selo">✓ Concluído</span>
-                    {% endif %}
-                    <span class="conteudos-card-link">
-                        {{ "Ler novamente →" if c.concluido else "Ler conteúdo →" }}
-                    </span>
-                </a>
-            {% endfor %}
+    <main id="conteudo" class="visual-container conteudos-conteudo" tabindex="-1">
+        <header class="conteudos-introducao">
+            <div>
+                <p class="visual-etiqueta">Conteúdos</p>
+
+                <h1>Entenda os golpes<br>antes de cair neles.</h1>
+
+                <p class="conteudos-descricao">
+                    Escolha um tema para começar a leitura. Ao terminar, marque como
+                    concluído para acompanhar no seu progresso.
+                </p>
+            </div>
+
+            {% if total %}
+                <div class="conteudos-progresso">
+                    <p class="conteudos-progresso-texto">
+                        <strong>{{ concluidos }}</strong> de {{ total }}
+                        {{ "conteúdo lido" if total == 1 else "conteúdos lidos" }}
+                    </p>
+                    <progress class="conteudos-progresso-barra" max="{{ total }}" value="{{ concluidos }}"
+                              aria-label="Conteúdos concluídos">{{ concluidos }} de {{ total }}</progress>
+                </div>
+            {% endif %}
+        </header>
+
+        <div class="conteudos-organizacao">
+            {% if conteudos %}
+                <ol class="conteudos-lista" aria-label="Conteúdos disponíveis" role="list">
+                    {% for c in conteudos %}
+                        <li class="conteudos-item{% if c.concluido %} conteudos-item--concluido{% endif %}">
+                            <span class="conteudos-numero" aria-hidden="true">
+                                {{ "%02d"|format(loop.index) }}
+                            </span>
+
+                            <div>
+                                {% if c.concluido %}
+                                    <span class="conteudos-card-selo">✓ Concluído</span>
+                                {% endif %}
+
+                                <h2>{{ c.titulo }}</h2>
+
+                                <a class="conteudos-card-link"
+                                   href="{{ url_for('conteudos.detalhe', slug=c.slug) }}"
+                                   aria-label="{{ 'Ler novamente' if c.concluido else 'Ler conteúdo' }}: {{ c.titulo }}">
+                                    {{ "Ler novamente →" if c.concluido else "Ler conteúdo →" }}
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <p class="conteudos-vazio">Nenhum conteúdo publicado ainda.</p>
+            {% endif %}
+
+            <aside class="conteudos-orientacao" aria-labelledby="titulo-orientacao">
+                <h2 id="titulo-orientacao">Como aproveitar melhor.</h2>
+
+                <ol class="conteudos-passos" role="list">
+                    <li>
+                        <strong>Leia</strong>
+                        <p>Entenda como o golpe funciona e quais são os sinais.</p>
+                    </li>
+                    <li>
+                        <strong>Marque</strong>
+                        <p>Registre a leitura no seu progresso.</p>
+                    </li>
+                    <li>
+                        <strong>Pratique</strong>
+                        <p>Teste o que aprendeu nas
+                            <a href="{{ url_for('simulacoes.listar') }}">simulações</a> e nos
+                            <a href="{{ url_for('quizzes.listar_quizzes') }}">quizzes</a>.</p>
+                    </li>
+                </ol>
+            </aside>
         </div>
     </main>
-    <footer class="conteudos-rodape">
-        <div class="conteudos-container">
-            <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a> ·
-            <a href="{{ url_for('privacidade.termos') }}">Termos de Uso</a>
-        </div>
-    </footer>
+
+    {% include "conteudos/_rodape.html" %}
 </body>
 </html>
