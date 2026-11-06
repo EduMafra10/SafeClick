@@ -1,0 +1,64 @@
+{% extends "administracao/base_catalogo.html" %}
+{% block titulo %}Contas{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">Administração</p>
+            <h1>Contas</h1>
+            <p>Consulte as contas cadastradas e a situação do autenticador de cada uma.</p>
+        </div>
+    </header>
+    <form class="admin-filtros" method="get">
+        <div class="admin-busca">
+            <label for="busca">Buscar por nome, e-mail ou nº da conta</label>
+            <input id="busca" name="busca" type="search" value="{{ busca }}" maxlength="100">
+        </div>
+        <button class="admin-botao" type="submit">Buscar</button>
+        {% if busca %}
+            <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Limpar busca</a>
+        {% endif %}
+    </form>
+    <p class="admin-total">{{ total }} {{ 'conta encontrada' if total == 1 else 'contas encontradas' }}</p>
+    {% if contas %}
+        <ul class="admin-lista-itens">
+            {% for conta in contas %}
+                <li class="admin-catalogo-cartao admin-linha-item">
+                    <div>
+                        <strong class="admin-titulo-cenario">
+                            {{ conta.nome }}
+                            {% if conta.perfil == 'administrador' %}<span class="admin-selo">Admin</span>{% endif %}
+                            {% if conta.propria %}<span class="admin-selo admin-selo--voce">Você</span>{% endif %}
+                        </strong>
+                        <span class="admin-metadados">nº {{ conta.id }} · {{ conta.email }}</span>
+                        <p class="admin-info-item">
+                            <span class="admin-estado admin-estado--autenticador-{{ conta.situacao }}">
+                                Autenticador: {{ conta.situacao_rotulo }}
+                            </span>
+                            <span>Cadastro em {{ conta.criado_em.strftime('%d/%m/%Y') }}</span>
+                        </p>
+                    </div>
+                    <div class="admin-acoes">
+                        <a class="admin-link" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
+                        {% if conta.situacao != 'sem' and not conta.propria %}
+                            <a class="admin-link admin-botao-perigo"
+                               href="{{ url_for('administracao.redefinir_autenticador', usuario_id=conta.id) }}">Redefinir autenticador</a>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="admin-vazio">Nenhuma conta corresponde à busca.</p>
+    {% endif %}
+    {% if ultima_pagina > 1 %}
+        <nav class="admin-paginacao" aria-label="Paginação das contas">
+            {% if pagina > 1 %}
+                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, pagina=pagina-1) }}">← Anterior</a>
+            {% endif %}
+            <span>Página {{ pagina }} de {{ ultima_pagina }}</span>
+            {% if pagina < ultima_pagina %}
+                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, pagina=pagina+1) }}">Próxima →</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

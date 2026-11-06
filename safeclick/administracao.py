@@ -1,8 +1,12 @@
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user
+from flask_wtf import FlaskForm
 from psycopg import Error
 
+from safeclick import contas_db
+from safeclick.painel import FUSO_BRASILIA
 from safeclick.sessoes import exigir_perfis
+from safeclick.twilio_api import remover_fator_totp
 from safeclick.catalogo_admin import catalogo
 from safeclick.catalogo_validacao import SECOES
 from safeclick.formularios_administracao import FormularioNovoCenario
@@ -130,4 +134,122 @@ def novo_cenario():
 
     return render_template(
         "administracao/novo_cenario.html", formulario=formulario, erro=erro
+    ), status
+
+
+POR_PAGINA_CONTAS = 20
+
+
+def _situacao_autenticador(conta):
+    if conta["autenticador_ativo"]:
+        return "ativo", "Ativo"
+    if conta["tem_autenticador"]:
+        return "pendente", "QR Code gerado, ainda não ativado"
+    return "sem", "Não configurado"
+
+
+def _preparar_conta(conta):
+    situacao, rotulo = _situacao_autenticador(conta)
+    return {
+        **conta,
+        "criado_em": conta["criado_em"].astimezone(FUSO_BRASILIA),
+        "situacao": situacao,
+        "situacao_rotulo": rotulo,
+        "propria": conta["id"] == int(current_user.id),
+    }
+
+
+@administracao.get("/contas")
+def listar_contas():
+    if (
+        set(request.args) - {"busca", "pagina"}
+        or any(len(request.args.getlist(campo)) != 1 for campo in request.args)
+    ):
+        abort(400, description="Filtros inválidos.")
+
+    busca = request.args.get("busca", "").strip()[:100]
+    pagina_texto = request.args.get("pagina", "1")
+    if not (1 <= len(pagina_texto) <= 7 and pagina_texto.isascii() and pagina_texto.isdecimal()):
+        abort(400, description="Página inválida.")
+    pagina = int(pagina_texto)
+    if not 1 <= pagina <= 1000000:
+        abort(400, description="Página inválida.")
+
+    try:
+        contas, total = contas_db.listar_contas(busca=busca, pagina=pagina, por_pagina=POR_PAGINA_CONTAS)
+    except (Error, RuntimeError):
+        abort(503, description="Não foi possível carregar as contas agora. Tente novamente em instantes.")
+
+    ultima_pagina = max(1, (total + POR_PAGINA_CONTAS - 1) // POR_PAGINA_CONTAS)
+    if pagina > ultima_pagina:
+        abort(404, description="Página não encontrada.")
+
+    return render_template(
+        "administracao/contas.html",
+        secoes=SECOES,
+        secao="contas",
+        contas=[_preparar_conta(conta) for conta in contas],
+        total=total,
+        busca=busca,
+        pagina=pagina,
+        ultima_pagina=ultima_pagina,
+    )
+
+
+@administracao.route("/contas/<int:usuario_id>/redefinir-autenticador", methods=["GET", "POST"])
+def redefinir_autenticador(usuario_id):
+    request.max_content_length = 4096
+    formulario = FlaskForm()
+
+    try:
+        conta = contas_db.obter_conta(usuario_id)
+    except (Error, RuntimeError):
+        abort(503, description="Não foi possível carregar a conta agora.")
+    if conta is None:
+        abort(404, description="Conta não encontrada.")
+    conta = _preparar_conta(conta)
+
+    bloqueio = None
+    if conta["propria"]:
+        bloqueio = "Você não pode redefinir o próprio autenticador por aqui. Peça a outro administrador."
+    elif conta["situacao"] == "sem":
+        bloqueio = "Esta conta ainda não configurou o autenticador. Não há nada para redefinir."
+
+    mensagem, status = bloqueio, 200
+    if request.method == "POST":
+        if bloqueio:
+            status = 409
+        elif set(request.form) != {"csrf_token"} or not formulario.validate_on_submit():
+            mensagem, status = "O formulário expirou. Recarregue a página e tente novamente.", 400
+        else:
+            try:
+                antigo = contas_db.redefinir_autenticador(int(current_user.id), usuario_id)
+            except contas_db.ContaNaoEncontrada:
+                abort(404, description="Conta não encontrada.")
+            except contas_db.SemAutenticador as erro:
+                mensagem, status = str(erro), 409
+            except (Error, RuntimeError):
+                current_app.logger.exception("Falha ao redefinir o autenticador")
+                mensagem, status = "Não foi possível redefinir agora. Nada foi alterado.", 503
+            else:
+                # O banco já não aceita o aplicativo antigo; a remoção na Twilio é só limpeza.
+                try:
+                    remover_fator_totp(antigo["identidade"], antigo["fator_sid"], usuario_id=usuario_id)
+                except RuntimeError:
+                    current_app.logger.warning("Fator antigo não removido na Twilio (conta %s)", usuario_id)
+                flash(
+                    f"Autenticador de {conta['nome']} redefinido. No próximo login, "
+                    "a pessoa vai configurar um novo aplicativo.",
+                    "administracao_sucesso",
+                )
+                return redirect(url_for("administracao.listar_contas", busca=conta["email"]), code=303)
+
+    return render_template(
+        "administracao/redefinir_autenticador.html",
+        secoes=SECOES,
+        secao="contas",
+        formulario=formulario,
+        conta=conta,
+        bloqueio=bloqueio,
+        mensagem=mensagem,
     ), status

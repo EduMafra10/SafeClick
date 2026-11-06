@@ -27,13 +27,13 @@ EVENTOS = {
     "catalogo.removido": ("Item removido do catálogo", "administracao"),
     "catalogo.excluido": ("Rascunho excluído", "administracao"),
     "catalogo.restaurado": ("Item restaurado", "administracao"),
+    "mfa.reconfiguracao_administrativa": ("Autenticador redefinido pelo administrador", "administracao"),
     "auditoria.consultada": ("Auditoria consultada", "administracao"),
     "api.consultada": ("Consulta a serviço externo", "integracoes"),
 }
 
 
 EVENTOS_ANTIGOS = {
-    "mfa.reconfiguracao_administrativa": ("Autenticador reiniciado pelo administrador", "administracao"),
     "mfa.reconfiguracao_concluida": ("Autenticador configurado novamente", "acesso"),
 }
 
@@ -60,7 +60,7 @@ OPERACOES = {
     "validar_ativacao_totp": "ativar o autenticador",
     "validar_codigo_totp": "conferir o código do login",
     "consultar_fator_totp": "consultar a situação do autenticador",
-    "remover_fator_totp": "remover autenticador não ativado",
+    "remover_fator_totp": "remover o autenticador",
     "consultar_prefixo": "consultar vazamentos (desafio de senhas)",
 }
 
@@ -190,6 +190,11 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
         if area:
             frases.append(f"Área: {AREAS.get(area, _legivel(area))}")
         recurso_tipo = None
+
+    elif evento == "mfa.reconfiguracao_administrativa":
+        sessoes = detalhes.pop("sessoes_encerradas", None)
+        if sessoes is not None:
+            frases.append(f"Sessões encerradas: {sessoes}")
 
     elif evento == "termo.aceito":
         versao = detalhes.pop("versao", None)

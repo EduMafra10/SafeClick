@@ -41,6 +41,7 @@ def create_app():
     app.config["SMTP_USER"] = os.getenv("SMTP_USER", "")
     app.config["SMTP_PASSWORD"] = os.getenv("SMTP_PASSWORD", "")
     app.config["SMTP_FROM_NAME"] = os.getenv("SMTP_FROM_NAME", "SafeClick")
+    app.config["SUPORTE_EMAIL"] = os.getenv("SUPORTE_EMAIL", "safeclickpfc@gmail.com")
     app.config["APP_BASE_URL"] = os.getenv(
         "APP_BASE_URL", "http://127.0.0.1:5000"
     ).rstrip("/")

@@ -59,6 +59,21 @@
 
                 {{ formulario.enviar(class_="autenticacao-botao") }}
             </form>
+
+            {% if usuario.mfa_confirmado_em %}
+                <details class="autenticacao-chave">
+                    <summary>Perdi acesso ao meu autenticador</summary>
+                    <p>
+                        Envie um e-mail para
+                        <a href="mailto:{{ config.SUPORTE_EMAIL }}?subject={{ 'Perdi acesso ao autenticador do SafeClick'|urlencode }}">{{ config.SUPORTE_EMAIL }}</a>
+                        a partir do endereço cadastrado na sua conta, informando seu nome.
+                    </p>
+                    <p>
+                        Depois de confirmar que o pedido é seu, um administrador redefine o autenticador.
+                        No próximo login, você configura um novo aplicativo pelo QR Code.
+                    </p>
+                </details>
+            {% endif %}
         {% endif %}
 
         {% if not usuario.mfa_confirmado_em and not configuracao %}

@@ -21,5 +21,10 @@
                 <a class="admin-link" href="{{ url_for('administracao.catalogo.listar', secao=chave) }}">Gerenciar {{ rotulo|lower }} →</a>
             </section>
         {% endfor %}
+        <section class="admin-catalogo-cartao">
+            <h2>Contas</h2>
+            <p>Consulte as contas e redefina o autenticador de quem perdeu o celular.</p>
+            <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Gerenciar contas →</a>
+        </section>
     </div>
 {% endblock %}

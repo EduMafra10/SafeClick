@@ -21,6 +21,8 @@
                     <a href="{{ url_for('administracao.catalogo.listar', secao=chave) }}"
                        {% if secao == chave %}aria-current="page"{% endif %}>{{ rotulo }}</a>
                 {% endfor %}
+                <a href="{{ url_for('administracao.listar_contas') }}"
+                   {% if secao == 'contas' %}aria-current="page"{% endif %}>Contas</a>
                 <a href="{{ url_for('auditoria.listar') }}">Auditoria</a>
             </nav>
         {% endblock %}

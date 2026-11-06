@@ -554,3 +554,46 @@ a.admin-botao {
         max-width: 100%;
     }
 }
+
+
+/* Contas */
+.admin-estado--autenticador-ativo {
+    color: #21543d;
+    background: #eaf3ed;
+    border-color: #c2dbca;
+}
+
+.admin-estado--autenticador-pendente {
+    color: #6c4b14;
+    background: #fff3d9;
+    border-color: #e5d3a8;
+}
+
+.admin-estado--autenticador-sem {
+    color: #4b5c62;
+    background: #edf1f2;
+    border-color: #d2dcdf;
+}
+
+.admin-selo {
+    margin-left: 6px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--visual-azul-suave);
+    color: #28638d;
+    font-size: 11px;
+    font-weight: 700;
+    vertical-align: 2px;
+}
+
+.admin-selo--voce {
+    background: var(--visual-verde-suave);
+    color: var(--visual-verde);
+}
+
+.admin-explicacao {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 16px;
+    padding-left: 20px;
+}

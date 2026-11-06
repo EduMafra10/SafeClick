@@ -28,6 +28,7 @@ EVENTOS_PERMITIDOS = {
     "catalogo.removido",
     "catalogo.excluido",
     "catalogo.restaurado",
+    "mfa.reconfiguracao_administrativa",
 }
 
 RESULTADOS_PERMITIDOS = {

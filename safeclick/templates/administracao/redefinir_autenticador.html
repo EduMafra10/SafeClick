@@ -1,0 +1,33 @@
+{% extends "administracao/base_catalogo.html" %}
+{% block titulo %}Redefinir autenticador{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">Contas</p>
+            <h1>Redefinir autenticador</h1>
+            <p>{{ conta.nome }} · nº {{ conta.id }} · {{ conta.email }}</p>
+        </div>
+    </header>
+    <form method="post" class="admin-formulario">
+        {{ formulario.hidden_tag() }}
+        <p>
+            Situação atual:
+            <span class="admin-estado admin-estado--autenticador-{{ conta.situacao }}">{{ conta.situacao_rotulo }}</span>
+        </p>
+        <p>Use esta opção quando a pessoa perdeu ou trocou o celular. Ao confirmar:</p>
+        <ul class="admin-explicacao">
+            <li>o aplicativo autenticador atual deixa de ser aceito;</li>
+            <li>as sessões abertas desta conta são encerradas;</li>
+            <li>no próximo login, depois da senha, a pessoa configura um novo aplicativo pelo QR Code;</li>
+            <li>a verificação em duas etapas continua obrigatória;</li>
+            <li>a operação fica registrada na auditoria com o seu nome.</li>
+        </ul>
+        <p class="admin-ajuda">Antes de confirmar, verifique que o pedido veio mesmo da dona ou do dono da conta.</p>
+        <div class="admin-acoes">
+            {% if not bloqueio %}
+                <button class="admin-botao admin-confirmar-remocao" type="submit">Confirmar redefinição</button>
+            {% endif %}
+            <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}
