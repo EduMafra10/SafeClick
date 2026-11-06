@@ -27,7 +27,7 @@ class TentativasAuditoriaTeste(unittest.TestCase):
         self.assertIs(registrar.call_args.kwargs["conexao"], self.conexao)
 
     def test_quiz_grava_respostas_e_log_para_o_mesmo_usuario(self):
-        self.conexao.execute.return_value.fetchone.return_value = {"id": 34}
+        self.conexao.execute.return_value.fetchone.return_value = {"id": 34, "catalogo_id": 2}
         resultado = {"pontuacao": 1, "total_questoes": 2}
 
         with patch("safeclick.quizzes.conectar_banco", return_value=self.contexto), \
@@ -41,6 +41,7 @@ class TentativasAuditoriaTeste(unittest.TestCase):
         self.assertEqual(self.conexao.execute.call_count, 3)
         self.assertEqual(registrar.call_args.kwargs["usuario_id"], 7)
         self.assertEqual(registrar.call_args.kwargs["evento"], "quiz.concluido")
+        self.assertEqual(registrar.call_args.kwargs["detalhes"]["quiz_id"], 2)
         self.assertIs(registrar.call_args.kwargs["conexao"], self.conexao)
 
 

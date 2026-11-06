@@ -13,6 +13,7 @@ import psycopg
 
 from safeclick.db import conectar_banco
 from safeclick.auditoria_db import registrar_evento
+from safeclick.catalogo_validacao import MAX_ALTERNATIVAS, MAX_QUESTOES
 from safeclick.sessoes import exigir_perfis
 from flask_login import current_user
 
@@ -22,6 +23,11 @@ quizzes = Blueprint(
     __name__,
     url_prefix="/quizzes",
 )
+
+
+class QuizAlterado(ValueError):
+    pass
+
 
 @quizzes.before_request
 @exigir_perfis("usuario", "administrador")
@@ -35,9 +41,12 @@ def listar_quizzes():
     with conectar_banco() as conexao:
         registros = conexao.execute(
             """
-            SELECT id, titulo
-            FROM public.quizzes
-            ORDER BY id
+            SELECT c.id, q.titulo,
+                   (SELECT COUNT(*) FROM public.questoes WHERE quiz_id = q.id) AS total_questoes
+            FROM public.catalogo_quizzes AS c
+            JOIN public.quizzes AS q ON q.id = c.versao_publicada_id
+            WHERE c.estado = 'publicada'
+            ORDER BY c.id
             """
         ).fetchall()
 
@@ -46,15 +55,17 @@ def listar_quizzes():
         quizzes=registros,
     )
 
+
 @quizzes.route("/<int:quiz_id>", methods=["GET", "POST"])
 def exibir_quiz(quiz_id):
     # Exibe as perguntas e processa o envio das respostas.
     with conectar_banco() as conexao:
         quiz = conexao.execute(
             """
-            SELECT id, titulo
-            FROM public.quizzes
-            WHERE id = %s
+            SELECT c.id, q.id AS versao_id, q.titulo
+            FROM public.catalogo_quizzes AS c
+            JOIN public.quizzes AS q ON q.id = c.versao_publicada_id
+            WHERE c.id = %s AND c.estado = 'publicada'
             """,
             (quiz_id,),
         ).fetchone()
@@ -69,7 +80,7 @@ def exibir_quiz(quiz_id):
             WHERE quiz_id = %s
             ORDER BY ordem
             """,
-            (quiz_id,),
+            (quiz["versao_id"],),
         ).fetchall()
 
         alternativas = conexao.execute(
@@ -85,7 +96,7 @@ def exibir_quiz(quiz_id):
             WHERE questao.quiz_id = %s
             ORDER BY questao.ordem, alternativa.ordem
             """,
-            (quiz_id,),
+            (quiz["versao_id"],),
         ).fetchall()
 
     alternativas_por_questao = {}
@@ -109,12 +120,16 @@ def exibir_quiz(quiz_id):
         )
 
     # Cada abertura do quiz recebe um código vinculado à sessão.
-    chave_token = f"token_quiz_{quiz_id}"
+    chave_token = str(quiz_id)
+    formularios = session.get("formularios_quiz", {})
 
     if request.method == "GET":
-        session[chave_token] = secrets.token_hex(32)
+        formularios.pop(chave_token, None)
+        formularios[chave_token] = {"token": secrets.token_hex(32), "versao": quiz["versao_id"]}
+        session["formularios_quiz"] = dict(list(formularios.items())[-8:])
 
-    token_envio = session.get(chave_token)
+    registro_formulario = formularios.get(chave_token, {})
+    token_envio = registro_formulario.get("token")
 
     erro = None
     mensagem = None
@@ -145,7 +160,11 @@ def exibir_quiz(quiz_id):
             )
             status = 400
 
-        elif len(questoes) != 5:
+        elif registro_formulario.get("versao") != quiz["versao_id"]:
+            erro = "Este quiz foi atualizado. Volte à lista e abra o quiz novamente."
+            status = 409
+
+        elif not 1 <= len(questoes) <= MAX_QUESTOES:
             erro = "Este quiz está indisponível no momento."
             status = 503
 
@@ -185,19 +204,22 @@ def exibir_quiz(quiz_id):
 
                 try:
                     resultado = corrigir_respostas(
-                        quiz_id,
+                        quiz["versao_id"],
                         questoes,
                         respostas,
                     )
 
                     tentativa_id = salvar_tentativa(
                         current_user.id,
-                        quiz_id,
+                        quiz["versao_id"],
                         respostas,
                         resultado,
                         token_envio,
                     )
 
+                except QuizAlterado:
+                    erro = "Este quiz mudou de publicação. Volte à lista para continuar."
+                    status = 409
                 except psycopg.Error:
                     erro = (
                         "Não foi possível salvar sua tentativa. "
@@ -258,7 +280,7 @@ def corrigir_respostas(quiz_id, questoes, respostas):
         len(gabarito) != len(questoes)
         or set(gabarito_por_questao) != ids_esperados
         or any(
-            len(questao["alternativas"]) != 4
+            not 2 <= len(questao["alternativas"]) <= MAX_ALTERNATIVAS
             for questao in questoes
         )
     ):
@@ -308,6 +330,7 @@ def corrigir_respostas(quiz_id, questoes, respostas):
         "detalhes": detalhes,
     }
 
+
 def salvar_tentativa(usuario_id, quiz_id, respostas, resultado, token_envio):
     with conectar_banco() as conexao:
         tentativa = conexao.execute(
@@ -319,9 +342,14 @@ def salvar_tentativa(usuario_id, quiz_id, respostas, resultado, token_envio):
                 total_questoes,
                 token_envio
             )
-            VALUES (%s, %s, %s, %s, %s)
+            SELECT %s, %s, %s, %s, %s
+            FROM public.catalogo_quizzes
+            WHERE versao_publicada_id = %s AND estado = 'publicada'
+            FOR SHARE
             ON CONFLICT (token_envio) DO NOTHING
-            RETURNING id
+            RETURNING id, (
+                SELECT catalogo_id FROM public.quizzes WHERE id = tentativas_quiz.quiz_id
+            ) AS catalogo_id
             """,
             (
                 usuario_id,
@@ -329,6 +357,7 @@ def salvar_tentativa(usuario_id, quiz_id, respostas, resultado, token_envio):
                 resultado["pontuacao"],
                 resultado["total_questoes"],
                 token_envio,
+                quiz_id,
             ),
         ).fetchone()
 
@@ -349,10 +378,7 @@ def salvar_tentativa(usuario_id, quiz_id, respostas, resultado, token_envio):
             ).fetchone()
 
             if tentativa_existente is None:
-                abort(
-                    409,
-                    description="Não foi possível identificar a tentativa.",
-                )
+                raise QuizAlterado()
 
             return tentativa_existente["id"]
 
@@ -382,7 +408,7 @@ def salvar_tentativa(usuario_id, quiz_id, respostas, resultado, token_envio):
             recurso_tipo="tentativa_quiz",
             recurso_id=tentativa_id,
             detalhes={
-                "quiz_id": quiz_id,
+                "quiz_id": tentativa["catalogo_id"],
                 "pontuacao": resultado["pontuacao"],
                 "total_questoes": resultado["total_questoes"],
             },
@@ -390,6 +416,7 @@ def salvar_tentativa(usuario_id, quiz_id, respostas, resultado, token_envio):
         )
 
     return tentativa_id
+
 
 @quizzes.get("/resultado")
 def exibir_resultado():
@@ -407,10 +434,14 @@ def exibir_resultado():
                 tentativa.quiz_id,
                 tentativa.pontuacao,
                 tentativa.total_questoes,
-                quiz.titulo
+                quiz.titulo,
+                catalogo.id AS catalogo_id,
+                catalogo.estado = 'publicada' AS pode_repetir
             FROM public.tentativas_quiz AS tentativa
             JOIN public.quizzes AS quiz
                 ON quiz.id = tentativa.quiz_id
+            JOIN public.catalogo_quizzes AS catalogo
+                ON catalogo.id = quiz.catalogo_id
             WHERE tentativa.id = %s
               AND tentativa.usuario_id = %s
             """,
@@ -455,8 +486,9 @@ def exibir_resultado():
         )
 
     quiz = {
-        "id": tentativa["quiz_id"],
+        "id": tentativa["catalogo_id"],
         "titulo": tentativa["titulo"],
+        "pode_repetir": tentativa["pode_repetir"],
     }
 
     resultado = {

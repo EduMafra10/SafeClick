@@ -3,6 +3,8 @@ from flask_login import current_user
 from psycopg import Error
 
 from safeclick.sessoes import exigir_perfis
+from safeclick.catalogo_admin import catalogo
+from safeclick.catalogo_validacao import SECOES
 from safeclick.formularios_administracao import FormularioNovoCenario
 from safeclick.simulacoes_db import (
     SimulacaoDuplicada,
@@ -12,6 +14,7 @@ from safeclick.simulacoes_db import (
 
 
 administracao = Blueprint("administracao", __name__, url_prefix="/administracao")
+administracao.register_blueprint(catalogo)
 
 ESTADOS = {
     "rascunho": "Rascunho",
@@ -36,7 +39,7 @@ def verificar_acesso_administracao():
 
 @administracao.get("/")
 def inicio():
-    return redirect(url_for("administracao.listar_simulacoes"))
+    return render_template("administracao/inicio_catalogo.html", secoes=SECOES)
 
 
 @administracao.get("/simulacoes")

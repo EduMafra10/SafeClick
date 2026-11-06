@@ -125,11 +125,35 @@ class AdministracaoAcessoTeste(unittest.TestCase):
         self.assertEqual(resposta.headers["Cache-Control"], "no-store")
         self.listar.assert_called_once_with(estado="", pagina=1, por_pagina=20)
 
-    def test_inicio_administrativo_redireciona(self):
+    def test_inicio_administrativo_oferece_as_secoes_do_catalogo(self):
         resposta = self.client.get("/administracao/")
-        self.assertEqual(resposta.status_code, 302)
-        self.assertEqual(resposta.location, "/administracao/simulacoes")
+        self.assertEqual(resposta.status_code, 200)
+        html = resposta.get_data(as_text=True)
+        for secao in ("conteudos", "quizzes", "simulacoes", "paginas"):
+            self.assertIn(f'href="/administracao/catalogo/{secao}"', html)
         self.listar.assert_not_called()
+
+    def test_conta_comum_nao_abre_previa_nem_grava_catalogo(self):
+        self.usuario.perfil = "usuario"
+        with patch("safeclick.catalogo_admin.db.obter_item") as obter, \
+             patch("safeclick.catalogo_admin.db.salvar_rascunho") as salvar:
+            for caminho, metodo in (
+                ("/administracao/catalogo/quizzes/2/previa", "GET"),
+                ("/administracao/catalogo/quizzes/novo", "POST"),
+                ("/administracao/catalogo/conteudos/1/remover", "POST"),
+                ("/administracao/catalogo/simulacoes/1/publicar", "POST"),
+                ("/administracao/catalogo/paginas/1/restaurar", "POST"),
+            ):
+                self.assertEqual(self.client.open(caminho, method=metodo).status_code, 403)
+            obter.assert_not_called()
+            salvar.assert_not_called()
+
+    def test_admin_sem_csrf_nao_cria_rascunho(self):
+        with patch("safeclick.catalogo_admin.db.salvar_rascunho") as salvar:
+            resposta = self.client.post("/administracao/catalogo/quizzes/novo",
+                                        data={"titulo": "Quiz", "estrutura": "[]"})
+        self.assertEqual(resposta.status_code, 400)
+        salvar.assert_not_called()
 
     def test_visitante_precisa_login(self):
         with self.client.session_transaction() as sessao:

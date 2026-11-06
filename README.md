@@ -137,9 +137,21 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 15. `sql/registrar_termos_1_0.sql`
 16. `sql/criar_politica_e_leis.sql`
 17. `sql/registrar_politica_e_leis.sql`
-18. `sql/inserir_conteudos_adicionais.sql`(mais 7 conteúdos educativos; pode ser executado mesmo se o banco já tiver os 2 primeiros)
+18. `sql/inserir_conteudos_adicionais.sql`
+19. `sql/criar_gestao_simulacoes.sql`
+20. `sql/criar_conclusoes_conteudo.sql`
+21. `sql/criar_desafios_senha.sql`
+22. `sql/adicionar_gestao_catalogo.sql`
 
 Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
+
+Em um banco novo, após a preparação, carregue os quatro cenários iniciais:
+
+```powershell
+.\.venv\Scripts\python.exe -m flask --app safeclick importar-cenarios-iniciais
+```
+
+Para usar a área **Minha conta → Gestão de conteúdo** e preparar um banco existente, siga o [guia de gestão do catálogo](docs/gestao_catalogo.md).
 
 A Política de Privacidade e os Termos de Uso ficam arquivados no banco (`versoes_politica` e `versoes_termos`), com as leis citadas em `referencias_legais`. Para mudar um texto, publique uma nova versão no banco antes de alterar `VERSAO_POLITICA` ou `VERSAO_TERMOS` em `safeclick/privacidade.py`.
 

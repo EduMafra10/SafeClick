@@ -18,13 +18,13 @@
 
     <main id="conteudo" class="visual-container conteudos-conteudo" tabindex="-1">
         <div class="conteudos-leitura">
-            <a class="conteudos-voltar" href="{{ url_for('conteudos.listar') }}">
-                <span aria-hidden="true">←</span> Voltar para conteúdos
+            <a class="conteudos-voltar" href="{{ url_for('paginas.listar_paginas' if pagina_editorial else 'conteudos.listar') }}">
+                <span aria-hidden="true">←</span> {{ 'Voltar para páginas' if pagina_editorial else 'Voltar para conteúdos' }}
             </a>
 
             <article class="conteudos-artigo">
                 <header class="conteudos-artigo-cabecalho">
-                    <p class="visual-etiqueta">Conteúdo educativo</p>
+                    <p class="visual-etiqueta">{{ 'Página do SafeClick' if pagina_editorial else 'Conteúdo educativo' }}</p>
                     <h1>{{ conteudo.titulo }}</h1>
                 </header>
 
@@ -32,6 +32,7 @@
                     {{ conteudo.texto | safe }}
                 </div>
 
+                {% if not pagina_editorial %}
                 <div class="conteudos-conclusao">
                     {% if conteudo.concluido_em %}
                         <p class="conteudos-concluido" role="status">
@@ -47,6 +48,7 @@
                         </form>
                     {% endif %}
                 </div>
+                {% endif %}
             </article>
         </div>
     </main>

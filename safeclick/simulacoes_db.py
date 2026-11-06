@@ -1,5 +1,7 @@
 from copy import deepcopy
 
+import click
+from flask.cli import with_appcontext
 from psycopg.types.json import Jsonb
 
 from safeclick.cenarios_simulacao import CENARIOS
@@ -65,6 +67,14 @@ def importar_cenarios_iniciais():
             criadas += 1
 
     return {"criadas": criadas, "existentes": existentes}
+
+
+@click.command("importar-cenarios-iniciais")
+@with_appcontext
+def importar_cenarios_cli():
+    resultado = importar_cenarios_iniciais()
+    click.echo(f"{resultado['criadas']} cenários criados; {resultado['existentes']} já existentes.")
+
 
 _CONSULTA_PUBLICADAS = """
     SELECT

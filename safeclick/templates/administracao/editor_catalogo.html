@@ -1,0 +1,107 @@
+{% extends "administracao/base_catalogo.html" %}
+{% from "administracao/_campos_catalogo.html" import campo, alternativa, pergunta %}
+{% block titulo %}{{ 'Editar' if item else 'Novo item' }} · {{ secoes[secao] }}{% endblock %}
+{% block recursos %}
+    {% if secao in ('quizzes', 'simulacoes') %}
+        <script src="{{ url_for('static', filename='js/editor_catalogo.js') }}" defer></script>
+    {% endif %}
+{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">{{ secoes[secao] }}</p>
+            <h1>{{ 'Editar item' if item else 'Novo item' }}</h1>
+            <p>Salve um rascunho para revisar antes de publicar.</p>
+        </div>
+        {% if item %}
+            <div class="admin-acoes">
+                <a class="admin-link" href="{{ url_for('administracao.catalogo.previa', secao=secao, item_id=item.id) }}">Visualizar versão salva</a>
+            </div>
+        {% endif %}
+    </header>
+    {% if item %}
+        <div class="admin-publicacao">
+            <p class="admin-info-item">
+                <span class="admin-estado admin-estado--{{ item.estado }}">{{ estados[item.estado] }}</span>
+                {% if item.versao %}<span>Última publicação: versão {{ item.versao }}</span>{% endif %}
+            </p>
+            <div class="admin-acoes" aria-label="Ações de publicação">
+                {% if item.rascunho or (item.estado == 'arquivada' and item.versao) %}
+                    <a class="admin-botao" href="{{ url_for('administracao.catalogo.confirmar', secao=secao, item_id=item.id, acao='publicar') }}">{{ 'Publicar revisão' if item.estado == 'publicada' else 'Publicar' }}</a>
+                {% endif %}
+                {% if item.estado == 'publicada' %}
+                    <a class="admin-link" href="{{ url_for('administracao.catalogo.confirmar', secao=secao, item_id=item.id, acao='despublicar') }}">Despublicar</a>
+                {% endif %}
+                <a class="admin-link admin-botao-perigo" href="{{ url_for('administracao.catalogo.confirmar', secao=secao, item_id=item.id, acao='remover') }}">Remover</a>
+            </div>
+            <p class="admin-ajuda-campo">As ações acima usam a versão salva. Salve suas alterações antes de publicar.</p>
+        </div>
+    {% endif %}
+    <form class="admin-formulario admin-editor" method="post" {% if secao in ('quizzes', 'simulacoes') %}data-editor="{{ secao }}"{% endif %}>
+        {{ formulario.hidden_tag() }}
+        {% if item %}
+            <input name="revisao" type="hidden" value="{{ revisao }}">
+        {% endif %}
+        {{ campo('titulo', 'Título', dados.get('titulo', ''), 120 if secao == 'simulacoes' else 150, obrigatorio=true) }}
+        {% if secao != 'quizzes' %}
+            {% if item %}
+                <p class="admin-ajuda-campo">Endereço: <strong>{{ slug }}</strong>. O endereço é fixo para preservar links.</p>
+            {% else %}
+                {{ campo('slug', 'Endereço (exemplo: dicas-de-seguranca)', slug, 80 if secao == 'simulacoes' else 50, obrigatorio=true) }}
+            {% endif %}
+        {% endif %}
+        {% if secao in ('conteudos', 'paginas') %}
+            {{ campo('corpo', 'Texto da página', dados.get('corpo', ''), 16000, 14) }}
+            <p class="admin-ajuda-campo">Use uma linha em branco para separar parágrafos. O editor aceita texto, sem código HTML.</p>
+        {% else %}
+            <input type="hidden" name="estrutura" value="">
+            <noscript><p class="admin-aviso admin-aviso--erro">Ative o JavaScript para editar perguntas e alternativas.</p></noscript>
+            {% if secao == 'quizzes' %}
+                <p class="admin-ajuda-campo">Use de 1 a {{ max_questoes }} perguntas. Cada pergunta publicada precisa de 2 a {{ max_alternativas }} alternativas, uma resposta correta e uma explicação.</p>
+                <div class="admin-itens-editor" data-lista="questao" data-limite="{{ max_questoes }}">
+                    {% for item_questao in questoes %}{{ pergunta(item_questao, max_alternativas, loop.index) }}{% endfor %}
+                </div>
+                <button class="admin-botao-secundario" data-editor-acao="adicionar" data-tipo="questao" type="button">+ Adicionar pergunta</button>
+                <template data-modelo="questao">{{ pergunta({'alternativas': [{}, {}]}, max_alternativas) }}</template>
+                <template data-modelo="alternativa">{{ alternativa({}) }}</template>
+            {% else %}
+                <div class="admin-campo">
+                    <label>Formato do cenário
+                        <select name="tipo" required>
+                            <option value="">Selecione</option>
+                            {% for chave, rotulo in canais.items() %}
+                                <option value="{{ chave }}" {% if dados.get('tipo') == chave %}selected{% endif %}>{{ rotulo }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+                {{ campo('resumo', 'Resumo para o catálogo', dados.get('resumo', ''), 300, 2) }}
+                {{ campo('assunto', 'Assunto ou título da mensagem', dados.get('assunto', ''), 180) }}
+                {{ campo('origem', 'Remetente ou origem fictícia', dados.get('origem', ''), 180) }}
+                {% set mensagem_cenario = dados.get('mensagem', '') %}
+                {{ campo('mensagem', 'Mensagem (um parágrafo por linha)', mensagem_cenario if mensagem_cenario is string else mensagem_cenario|join('\n'), 5000, 5) }}
+                {{ campo('chamada', 'Chamada fictícia (opcional)', dados.get('chamada', ''), 140) }}
+                {% set sinais = dados.get('sinais', '') %}
+                {{ campo('sinais', 'Sinais de risco (um por linha)', sinais if sinais is string else sinais|join('\n'), 3000, 4) }}
+                <fieldset class="admin-editor-bloco" data-produto>
+                    <legend>Produto da loja fictícia (opcional)</legend>
+                    {% set produto = dados.get('produto', {}) %}
+                    {{ campo('produto_nome', 'Nome do produto', produto.get('nome', ''), 120) }}
+                    {{ campo('produto_preco_anterior', 'Preço anterior', produto.get('preco_anterior', ''), 40) }}
+                    {{ campo('produto_preco_atual', 'Preço anunciado', produto.get('preco_atual', ''), 40) }}
+                </fieldset>
+                <p class="admin-ajuda-campo">Inclua pelo menos uma escolha segura e uma de risco. Use apenas dados fictícios.</p>
+                <div class="admin-itens-editor" data-lista="opcao" data-limite="{{ max_alternativas }}">
+                    {% for opcao in opcoes %}{{ alternativa(opcao, true, loop.index) }}{% endfor %}
+                </div>
+                <button class="admin-botao-secundario" data-editor-acao="adicionar" data-tipo="opcao" type="button">+ Adicionar alternativa</button>
+                <template data-modelo="opcao">{{ alternativa({}, true) }}</template>
+            {% endif %}
+            <p class="admin-somente-leitor" aria-live="polite" data-editor-mensagem></p>
+        {% endif %}
+        <div class="admin-acoes admin-editor-final">
+            <button class="admin-botao" type="submit">Salvar rascunho</button>
+            <a class="admin-link" href="{{ url_for('administracao.catalogo.listar', secao=secao) }}">Voltar à lista</a>
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "administracao/base_catalogo.html" %}
+{% block titulo %}{{ secoes[secao] }}{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">Gestão de conteúdo</p>
+            <h1>{{ secoes[secao] }}</h1>
+            <p>Localize um item, revise seu conteúdo ou crie um rascunho.</p>
+        </div>
+        <div class="admin-acoes">
+            <a class="admin-botao" href="{{ url_for('administracao.catalogo.editar', secao=secao) }}">Novo item</a>
+        </div>
+    </header>
+    <form class="admin-filtros" method="get">
+        <div class="admin-busca">
+            <label for="busca">Buscar por título ou endereço</label>
+            <input id="busca" name="busca" type="search" value="{{ busca }}" maxlength="100">
+        </div>
+        <div>
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado">
+                <option value="">Itens ativos na gestão</option>
+                {% for chave, rotulo in estados.items() %}
+                    <option value="{{ chave }}" {% if estado == chave %}selected{% endif %}>{{ rotulo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="admin-botao" type="submit">Filtrar</button>
+        {% if busca or estado %}
+            <a class="admin-link" href="{{ url_for('administracao.catalogo.listar', secao=secao) }}">Limpar filtros</a>
+        {% endif %}
+    </form>
+    <p class="admin-total">{{ total }} {{ 'item encontrado' if total == 1 else 'itens encontrados' }}</p>
+    {% if itens %}
+        <ul class="admin-lista-itens">
+            {% for item in itens %}
+                <li class="admin-catalogo-cartao admin-linha-item">
+                    <div>
+                        <strong class="admin-titulo-cenario">{{ item.titulo }}</strong>
+                        {% if item.slug %}<span class="admin-metadados">{{ item.slug }}</span>{% endif %}
+                        <p class="admin-info-item">
+                            <span class="admin-estado admin-estado--{{ item.estado }}">{{ estados[item.estado] }}</span>
+                            {% if item.versao %}<span>Versão {{ item.versao }}</span>{% endif %}
+                            {% if item.versao and item.tem_rascunho %}<span>Alterações pendentes</span>{% endif %}
+                        </p>
+                    </div>
+                    <div class="admin-acoes">
+                        <a class="admin-link" href="{{ url_for('administracao.catalogo.previa', secao=secao, item_id=item.id) }}">Visualizar</a>
+                        {% if item.estado != 'removida' %}
+                            <a class="admin-link" href="{{ url_for('administracao.catalogo.editar', secao=secao, item_id=item.id) }}">Editar</a>
+                            {% set publico = url_publica(secao, item) %}
+                            {% if publico %}<a class="admin-link" href="{{ publico }}">Abrir no site</a>{% endif %}
+                        {% else %}
+                            <a class="admin-link" href="{{ url_for('administracao.catalogo.confirmar', secao=secao, item_id=item.id, acao='restaurar') }}">Restaurar</a>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="admin-vazio">Nenhum item corresponde aos filtros.</p>
+    {% endif %}
+    {% if ultima > 1 %}
+        <nav class="admin-paginacao" aria-label="Paginação dos itens">
+            {% if pagina > 1 %}
+                <a class="admin-link" href="{{ url_for('administracao.catalogo.listar', secao=secao, estado=estado, busca=busca, pagina=pagina-1) }}">← Anterior</a>
+            {% endif %}
+            <span>Página {{ pagina }} de {{ ultima }}</span>
+            {% if pagina < ultima %}
+                <a class="admin-link" href="{{ url_for('administracao.catalogo.listar', secao=secao, estado=estado, busca=busca, pagina=pagina+1) }}">Próxima →</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

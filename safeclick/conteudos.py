@@ -6,6 +6,35 @@ import logging
 from . import conteudos_db
 
 conteudos_bp = Blueprint("conteudos", __name__, url_prefix="/conteudos")
+paginas_bp = Blueprint("paginas", __name__, url_prefix="/paginas")
+
+
+@paginas_bp.before_request
+@exigir_perfis("usuario", "administrador")
+def verificar_acesso_paginas():
+    return None
+
+
+@paginas_bp.get("/")
+def listar_paginas():
+    try:
+        paginas = conteudos_db.listar_conteudos("paginas")
+    except Exception:
+        logging.exception("Falha em consultar as páginas")
+        return render_template("conteudos/indisponivel.html"), 503
+    return render_template("conteudos/paginas.html", paginas=paginas)
+
+
+@paginas_bp.get("/<slug>", endpoint="detalhe")
+def detalhe_pagina(slug):
+    try:
+        pagina = conteudos_db.buscar_conteudos(slug, "paginas")
+    except Exception:
+        logging.exception("Falha em consultar a página")
+        return render_template("conteudos/indisponivel.html"), 503
+    if pagina is None:
+        abort(404)
+    return render_template("conteudos/detalhe.html", conteudo=pagina, pagina_editorial=True)
 
 @conteudos_bp.route("/")
 def listar():

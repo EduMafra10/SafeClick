@@ -1,0 +1,52 @@
+{% macro campo(nome, rotulo, valor='', maximo=150, linhas=0, dinamico=false, obrigatorio=false) %}
+    <div class="admin-campo">
+        <label>
+            {{ rotulo }}
+            {% if linhas %}
+                <textarea {{ 'data-campo' if dinamico else 'name' }}="{{ nome }}" rows="{{ linhas }}" maxlength="{{ maximo }}"
+                          {% if obrigatorio %}required{% endif %}>{{ valor }}</textarea>
+            {% else %}
+                <input {{ 'data-campo' if dinamico else 'name' }}="{{ nome }}" value="{{ valor }}" maxlength="{{ maximo }}"
+                       {% if obrigatorio %}required{% endif %}>
+            {% endif %}
+        </label>
+    </div>
+{% endmacro %}
+
+{% macro ordem() %}
+    <div class="admin-acoes admin-acoes-edicao">
+        <button class="admin-botao-secundario" data-editor-acao="subir" type="button">Subir</button>
+        <button class="admin-botao-secundario" data-editor-acao="descer" type="button">Descer</button>
+        <button class="admin-botao-secundario admin-botao-perigo" data-editor-acao="remover" type="button">Remover</button>
+    </div>
+{% endmacro %}
+
+{% macro alternativa(item, simulacao=false, numero=1) %}
+    <fieldset class="admin-subbloco" data-item="{{ 'opcao' if simulacao else 'alternativa' }}">
+        <legend>Alternativa <span data-numero>{{ numero }}</span></legend>
+        {{ campo('texto', 'Texto da alternativa', item.get('texto', ''), 500, 2, true) }}
+        {% if simulacao %}
+            {{ campo('consequencia', 'Consequência', item.get('consequencia', ''), 1200, 2, true) }}
+            {{ campo('explicacao', 'Explicação', item.get('explicacao', ''), 1200, 2, true) }}
+        {% endif %}
+        {% set chave = 'segura' if simulacao else 'correta' %}
+        <label class="admin-marcacao">
+            <input type="checkbox" data-campo="{{ chave }}" {% if item.get(chave) is sameas true %}checked{% endif %}>
+            {{ 'É uma escolha segura' if simulacao else 'É a resposta correta' }}
+        </label>
+        {{ ordem() }}
+    </fieldset>
+{% endmacro %}
+
+{% macro pergunta(item, max_alternativas, numero=1) %}
+    <fieldset class="admin-editor-bloco" data-item="questao">
+        <legend>Pergunta <span data-numero>{{ numero }}</span></legend>
+        {{ campo('enunciado', 'Enunciado', item.get('enunciado', ''), 1000, 2, true) }}
+        {{ campo('explicacao', 'Explicação exibida no resultado', item.get('explicacao', ''), 1200, 3, true) }}
+        <div class="admin-itens-editor" data-lista="alternativa" data-limite="{{ max_alternativas }}">
+            {% for opcao in item.get('alternativas', []) %}{{ alternativa(opcao, false, loop.index) }}{% endfor %}
+        </div>
+        <button class="admin-botao-secundario" data-editor-acao="adicionar" data-tipo="alternativa" type="button">+ Adicionar alternativa</button>
+        {{ ordem() }}
+    </fieldset>
+{% endmacro %}

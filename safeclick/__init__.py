@@ -3,11 +3,12 @@ import os
 
 from flask import Flask, redirect, session, url_for
 
-from safeclick.conteudos import conteudos_bp
+from safeclick.conteudos import conteudos_bp, paginas_bp
 from safeclick.db import verificar_banco
 from safeclick.privacidade import privacidade
 from safeclick.quizzes import quizzes
 from safeclick.simulacoes import simulacoes
+from safeclick.simulacoes_db import importar_cenarios_cli
 from safeclick.sessoes import login_manager
 from safeclick.autenticacao import autenticacao
 from safeclick.auditoria import auditoria
@@ -59,6 +60,7 @@ def create_app():
 
     # registra as funcionalidades ja desenvolvidas
     app.register_blueprint(conteudos_bp)
+    app.register_blueprint(paginas_bp)
     app.register_blueprint(simulacoes)
     app.register_blueprint(quizzes)
     app.register_blueprint(auditoria)
@@ -74,6 +76,7 @@ def create_app():
     app.cli.add_command(verificar_banco)
     app.cli.add_command(verificar_twilio)
     app.cli.add_command(verificar_email)
+    app.cli.add_command(importar_cenarios_cli)
 
     
     @app.after_request

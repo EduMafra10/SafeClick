@@ -2,7 +2,7 @@ from .db import conectar_banco
 from .auditoria_db import registrar_evento, usuario_autenticado_id
 
 
-def listar_conteudos():
+def listar_conteudos(secao="conteudos"):
    
     with conectar_banco() as conexao:
         return conexao.execute(
@@ -16,13 +16,14 @@ def listar_conteudos():
             LEFT JOIN public.conclusoes_conteudo AS cc
                 ON cc.conteudo_id = c.id
                AND cc.usuario_id = %s
+            WHERE c.secao = %s AND c.estado = 'publicada'
             ORDER BY c.id
             """,
-            (usuario_autenticado_id(),),
+            (usuario_autenticado_id(), secao),
         ).fetchall()
 
 
-def buscar_conteudos(slug):
+def buscar_conteudos(slug, secao="conteudos"):
     with conectar_banco() as conexao:
         conteudo = conexao.execute(
             """
@@ -39,12 +40,12 @@ def buscar_conteudos(slug):
             LEFT JOIN public.conclusoes_conteudo AS cc
                 ON cc.conteudo_id = c.id
                AND cc.usuario_id = %s
-            WHERE c.slug = %s
+            WHERE c.slug = %s AND c.secao = %s AND c.estado = 'publicada'
             """,
-            (usuario_autenticado_id(), slug),
+            (usuario_autenticado_id(), slug, secao),
         ).fetchone()
 
-        if conteudo is not None:
+        if conteudo is not None and secao == "conteudos":
             registrar_evento(
                 usuario_id=usuario_autenticado_id(),
                 evento="conteudo.visualizado",
@@ -61,7 +62,11 @@ def concluir_conteudo(usuario_id, slug):
     
     with conectar_banco() as conexao:
         conteudo = conexao.execute(
-            "SELECT id FROM public.conteudos WHERE slug = %s",
+            """
+            SELECT id FROM public.conteudos
+            WHERE slug = %s AND secao = 'conteudos' AND estado = 'publicada'
+            FOR SHARE
+            """,
             (slug,),
         ).fetchone()
 

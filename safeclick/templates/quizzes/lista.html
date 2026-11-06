@@ -12,7 +12,7 @@
             <li class="quizzes-cartao quizzes-tema">
                 <p class="quizzes-etiqueta">Quiz {{ loop.index }}</p>
                 <h2>{{ quiz.titulo }}</h2>
-                <p>Responda às cinco perguntas e confira as explicações no final.</p>
+                <p>Responda {{ 'à pergunta' if quiz.total_questoes == 1 else 'às ' ~ quiz.total_questoes ~ ' perguntas' }} e confira as explicações no final.</p>
                 <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}"
                    aria-label="Começar quiz: {{ quiz.titulo }}">Começar quiz <span aria-hidden="true">→</span></a>
             </li>

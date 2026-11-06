@@ -1,0 +1,25 @@
+{% extends "administracao/base_catalogo.html" %}
+{% block titulo %}{{ rotulo }} item{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">{{ secoes[secao] }}</p>
+            <h1>{{ rotulo }} item</h1>
+            <p>{{ item.dados.get('titulo') or item.titulo_publicado or 'Sem título' }}</p>
+        </div>
+    </header>
+    <form method="post" class="admin-formulario">
+        {{ formulario.hidden_tag() }}
+        <input type="hidden" name="revisao" value="{{ item.revisao }}">
+        <p>{{ explicacao }}</p>
+        <div class="admin-acoes">
+            <button class="admin-botao{% if acao == 'remover' %} admin-confirmar-remocao{% endif %}" type="submit"
+                    {% if mensagem and request.method == 'GET' %}disabled{% endif %}>Confirmar {{ rotulo|lower }}</button>
+            {% if item.estado != 'removida' %}
+                <a class="admin-link" href="{{ url_for('administracao.catalogo.editar', secao=secao, item_id=item.id) }}">Cancelar e voltar à edição</a>
+            {% else %}
+                <a class="admin-link" href="{{ url_for('administracao.catalogo.listar', secao=secao, estado='removida') }}">Cancelar</a>
+            {% endif %}
+        </div>
+    </form>
+{% endblock %}

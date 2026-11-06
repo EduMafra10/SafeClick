@@ -61,6 +61,9 @@
                     </div>
 
                     {% if current_user.perfil == 'administrador' %}
+                        <a class="site-conta-link" href="{{ url_for('administracao.inicio') }}">
+                            Gestão de conteúdo
+                        </a>
                         <a
                             class="site-conta-link"
                             href="{{ url_for('administracao.listar_simulacoes') }}"

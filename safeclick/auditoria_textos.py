@@ -20,6 +20,13 @@ EVENTOS = {
     "simulacao.concluida": ("Simulação respondida", "aprendizado"),
     "desafio_senha.concluido": ("Desafio de senhas concluído", "aprendizado"),
     "simulacao.criada": ("Simulação criada", "administracao"),
+    "catalogo.criado": ("Rascunho criado", "administracao"),
+    "catalogo.editado": ("Rascunho editado", "administracao"),
+    "catalogo.publicado": ("Item publicado", "administracao"),
+    "catalogo.despublicado": ("Item despublicado", "administracao"),
+    "catalogo.removido": ("Item removido do catálogo", "administracao"),
+    "catalogo.excluido": ("Rascunho excluído", "administracao"),
+    "catalogo.restaurado": ("Item restaurado", "administracao"),
     "auditoria.consultada": ("Auditoria consultada", "administracao"),
     "api.consultada": ("Consulta a serviço externo", "integracoes"),
 }
@@ -71,13 +78,17 @@ AREAS = {
     "quizzes": "Quizzes",
     "simulacoes": "Simulações",
     "conteudos": "Conteúdos",
+    "paginas": "Páginas",
     "painel": "Meu progresso",
     "senhas": "Laboratório de senhas",
     "administracao": "Administração",
+    "administracao.catalogo": "Gestão de conteúdo",
     "auditoria": "Auditoria",
 }
 
 RECURSOS = {
+    "quiz": "Quiz",
+    "pagina": "Página",
     "tentativa_quiz": "Tentativa de quiz",
     "tentativa_simulacao": "Tentativa de simulação",
     "simulacao": "Simulação",

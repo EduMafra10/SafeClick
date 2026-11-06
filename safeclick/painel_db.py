@@ -12,12 +12,13 @@ def _filtro_periodo(coluna):
 _RESUMO_QUIZZES = """
     SELECT
         COUNT(*) AS tentativas,
-        COUNT(DISTINCT quiz_id) AS quizzes_diferentes,
+        COUNT(DISTINCT quiz.catalogo_id) AS quizzes_diferentes,
         COALESCE(SUM(pontuacao), 0) AS acertos,
         COALESCE(SUM(total_questoes), 0) AS questoes
-    FROM public.tentativas_quiz
+    FROM public.tentativas_quiz AS t
+    JOIN public.quizzes AS quiz ON quiz.id = t.quiz_id
     WHERE usuario_id = %(usuario_id)s
-""" + _filtro_periodo("criada_em")
+""" + _filtro_periodo("t.criada_em")
 
 
 _EVOLUCAO_QUIZZES = """
@@ -73,11 +74,13 @@ _SIMULACOES_POR_CENARIO = """
 
 _RESUMO_CONTEUDOS = """
     SELECT
-        (SELECT COUNT(*) FROM public.conteudos) AS total,
+        (SELECT COUNT(*) FROM public.conteudos WHERE secao = 'conteudos' AND estado = 'publicada') AS total,
         (
             SELECT COUNT(*)
-            FROM public.conclusoes_conteudo
-            WHERE usuario_id = %(usuario_id)s
+            FROM public.conclusoes_conteudo AS cc
+            JOIN public.conteudos AS c ON c.id = cc.conteudo_id
+            WHERE cc.usuario_id = %(usuario_id)s
+              AND c.secao = 'conteudos' AND c.estado = 'publicada'
 """ + _filtro_periodo("concluido_em") + """
         ) AS concluidos
 """

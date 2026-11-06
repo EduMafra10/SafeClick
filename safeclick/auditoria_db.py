@@ -21,6 +21,13 @@ EVENTOS_PERMITIDOS = {
     "desafio_senha.concluido",
     "termo.aceito",
     "auditoria.consultada",
+    "catalogo.criado",
+    "catalogo.editado",
+    "catalogo.publicado",
+    "catalogo.despublicado",
+    "catalogo.removido",
+    "catalogo.excluido",
+    "catalogo.restaurado",
 }
 
 RESULTADOS_PERMITIDOS = {
