@@ -23,7 +23,7 @@ _ORIGEM = {
     "quizzes": (
         "catalogo_quizzes",
         "LEFT JOIN public.quizzes AS v ON v.catalogo_id = i.id AND v.id = i.versao_publicada_id",
-        "v.titulo", "NULL::text", "v.versao", "i.rascunho", "v.id AS versao_id",
+        "v.titulo", "NULL::text", "v.versao", "i.rascunho", "v.id AS versao_id, v.formato",
     ),
     "simulacoes": (
         "simulacoes",
@@ -107,7 +107,8 @@ def _dados_publicados(conexao, secao, item):
     if item["versao_id"] is not None:
         registros = conexao.execute(
             """
-            SELECT q.id, q.enunciado, q.explicacao, a.texto, a.correta
+            SELECT q.id, q.enunciado, q.explicacao, a.texto, a.correta,
+                   a.explicacao AS explicacao_alternativa
             FROM public.questoes AS q
             LEFT JOIN public.alternativas AS a ON a.questao_id = q.id
             WHERE q.quiz_id = %s
@@ -120,8 +121,14 @@ def _dados_publicados(conexao, secao, item):
                 "enunciado": linha["enunciado"], "explicacao": linha["explicacao"], "alternativas": [],
             })
             if linha["texto"] is not None:
-                questao["alternativas"].append({"texto": linha["texto"], "correta": linha["correta"]})
-    return {"titulo": item["titulo_publicado"], "questoes": list(questoes.values())}
+                questao["alternativas"].append({
+                    "texto": linha["texto"], "correta": linha["correta"],
+                    "explicacao": linha["explicacao_alternativa"],
+                })
+    return {
+        "titulo": item["titulo_publicado"], "formato": item["formato"],
+        "questoes": list(questoes.values()),
+    }
 
 
 def obter_item(secao, item_id):
@@ -149,6 +156,37 @@ def _auditar(conexao, usuario_id, secao, item_id, evento, versao=None):
     )
 
 
+def _inserir_rascunho_quiz(conexao, usuario_id, dados):
+    item_id = conexao.execute(
+        "INSERT INTO public.catalogo_quizzes (rascunho) VALUES (%s) RETURNING id",
+        (Jsonb(dados),),
+    ).fetchone()["id"]
+    _auditar(conexao, usuario_id, "quizzes", item_id, "criado")
+    return item_id
+
+
+def importar_rascunhos_quiz(usuario_id, lote):
+    with conectar_banco() as conexao:
+        _exigir_administrador(conexao, usuario_id)
+        # Evita duplicatas ao reenviar o lote ou cadastrar em paralelo pelo editor.
+        conexao.execute("SET LOCAL lock_timeout = '5s'")
+        conexao.execute("LOCK TABLE public.catalogo_quizzes IN SHARE ROW EXCLUSIVE MODE")
+        titulos = {
+            titulo.casefold()
+            for linha in conexao.execute("""
+                SELECT c.rascunho->>'titulo' AS rascunho, q.titulo AS publicado
+                FROM public.catalogo_quizzes AS c
+                LEFT JOIN public.quizzes AS q ON q.id = c.versao_publicada_id
+                WHERE c.removido_em IS NULL
+            """)
+            for titulo in linha.values() if titulo
+        }
+        novos = [dados for dados in lote if dados["titulo"].casefold() not in titulos]
+        for dados in novos:
+            _inserir_rascunho_quiz(conexao, usuario_id, dados)
+    return len(novos)
+
+
 def salvar_rascunho(usuario_id, secao, dados, *, slug=None, item_id=None, revisao=None):
     tabela = _origem(secao)[0]
     dados = validar(secao, dados)
@@ -160,10 +198,7 @@ def salvar_rascunho(usuario_id, secao, dados, *, slug=None, item_id=None, revisa
             _exigir_administrador(conexao, usuario_id)
             if item_id is None:
                 if secao == "quizzes":
-                    registro = conexao.execute(
-                        "INSERT INTO public.catalogo_quizzes (rascunho) VALUES (%s) RETURNING id",
-                        (Jsonb(dados),),
-                    )
+                    return _inserir_rascunho_quiz(conexao, usuario_id, dados)
                 elif secao == "simulacoes":
                     registro = conexao.execute(
                         """
@@ -201,8 +236,8 @@ def _publicar(conexao, usuario_id, secao, item):
     versao = (item["versao"] or 0) + 1
     if secao == "quizzes":
         versao_id = conexao.execute(
-            "INSERT INTO public.quizzes (catalogo_id, versao, titulo) VALUES (%s,%s,%s) RETURNING id",
-            (item["id"], versao, dados["titulo"]),
+            "INSERT INTO public.quizzes (catalogo_id, versao, titulo, formato) VALUES (%s, %s, %s, %s) RETURNING id",
+            (item["id"], versao, dados["titulo"], dados["formato"]),
         ).fetchone()["id"]
         for ordem, questao in enumerate(dados["questoes"], 1):
             questao_id = conexao.execute(
@@ -214,8 +249,11 @@ def _publicar(conexao, usuario_id, secao, item):
             ).fetchone()["id"]
             with conexao.cursor() as cursor:
                 cursor.executemany(
-                    "INSERT INTO public.alternativas (questao_id, ordem, texto, correta) VALUES (%s,%s,%s,%s)",
-                    [(questao_id, numero, opcao["texto"], opcao["correta"])
+                    """
+                    INSERT INTO public.alternativas (questao_id, ordem, texto, correta, explicacao)
+                    VALUES (%s, %s, %s, %s, %s)
+                    """,
+                    [(questao_id, numero, opcao["texto"], opcao["correta"], opcao["explicacao"])
                      for numero, opcao in enumerate(questao["alternativas"], 1)],
                 )
         conexao.execute(

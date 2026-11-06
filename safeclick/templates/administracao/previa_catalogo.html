@@ -18,11 +18,14 @@
         <div class="admin-previa">
             {% for questao in dados.get('questoes', []) %}
                 <section class="admin-catalogo-cartao">
-                    <p class="visual-etiqueta">Pergunta {{ loop.index }}</p>
+                    <p class="visual-etiqueta">{{ 'Trecho' if dados.get('formato') == 'oficina' else 'Pergunta' }} {{ loop.index }}</p>
                     <h2>{{ questao.get('enunciado') or 'Enunciado pendente' }}</h2>
                     <ol type="A">
                         {% for opcao in questao.get('alternativas', []) %}
-                            <li>{{ opcao.get('texto') or 'Alternativa vazia' }}{% if opcao.get('correta') %} <strong>· Correta</strong>{% endif %}</li>
+                            <li>
+                                {{ opcao.get('texto') or 'Alternativa vazia' }}{% if opcao.get('correta') %} <strong>· Correta</strong>{% endif %}
+                                {% if opcao.get('explicacao') %}<p>{{ opcao.explicacao }}</p>{% endif %}
+                            </li>
                         {% endfor %}
                     </ol>
                     {% if questao.get('explicacao') %}<p><strong>Explicação:</strong> {{ questao.explicacao }}</p>{% endif %}

@@ -41,7 +41,7 @@ def listar_quizzes():
     with conectar_banco() as conexao:
         registros = conexao.execute(
             """
-            SELECT c.id, q.titulo,
+            SELECT c.id, q.titulo, q.formato,
                    (SELECT COUNT(*) FROM public.questoes WHERE quiz_id = q.id) AS total_questoes
             FROM public.catalogo_quizzes AS c
             JOIN public.quizzes AS q ON q.id = c.versao_publicada_id
@@ -62,7 +62,7 @@ def exibir_quiz(quiz_id):
     with conectar_banco() as conexao:
         quiz = conexao.execute(
             """
-            SELECT c.id, q.id AS versao_id, q.titulo
+            SELECT c.id, q.id AS versao_id, q.titulo, q.formato
             FROM public.catalogo_quizzes AS c
             JOIN public.quizzes AS q ON q.id = c.versao_publicada_id
             WHERE c.id = %s AND c.estado = 'publicada'
@@ -173,12 +173,13 @@ def exibir_quiz(quiz_id):
             status = 400
 
         else:
+            cartoes_usados = set()
             for questao in questoes:
                 campo = f"questao_{questao['id']}"
                 valores = request.form.getlist(campo)
 
                 alternativas_validas = {
-                    str(alternativa["id"])
+                    str(alternativa["id"]): alternativa
                     for alternativa in questao["alternativas"]
                 }
 
@@ -192,6 +193,14 @@ def exibir_quiz(quiz_id):
                     )
                     status = 400
                     break
+
+                if quiz["formato"] == "oficina":
+                    cartao = alternativas_validas[valores[0]]["texto"]
+                    if cartao in cartoes_usados:
+                        erro = "Encaixe cada cartão em um único trecho do guia."
+                        status = 400
+                        break
+                    cartoes_usados.add(cartao)
 
                 respostas[questao["id"]] = int(valores[0])
 
@@ -418,10 +427,29 @@ def salvar_tentativa(usuario_id, quiz_id, respostas, resultado, token_envio):
     return tentativa_id
 
 
+@quizzes.get("/guia")
+def exibir_guia():
+    with conectar_banco() as conexao:
+        paginas = conexao.execute(
+            """
+            SELECT DISTINCT ON (quiz.catalogo_id)
+                tentativa.id, quiz.titulo, tentativa.pontuacao, tentativa.total_questoes
+            FROM public.tentativas_quiz AS tentativa
+            JOIN public.quizzes AS quiz ON quiz.id = tentativa.quiz_id
+            WHERE tentativa.usuario_id = %s AND quiz.formato = 'oficina'
+            ORDER BY quiz.catalogo_id, tentativa.id DESC
+            """,
+            (current_user.id,),
+        ).fetchall()
+    return render_template("quizzes/guia.html", paginas=paginas)
+
+
 @quizzes.get("/resultado")
-def exibir_resultado():
+@quizzes.get("/resultado/<int:tentativa_id>")
+def exibir_resultado(tentativa_id=None):
     # Mostra a última tentativa associada à sessão do navegador.
-    tentativa_id = session.get("ultima_tentativa_quiz")
+    if tentativa_id is None:
+        tentativa_id = session.get("ultima_tentativa_quiz")
 
     if tentativa_id is None:
         return redirect(url_for("quizzes.listar_quizzes"))
@@ -435,6 +463,7 @@ def exibir_resultado():
                 tentativa.pontuacao,
                 tentativa.total_questoes,
                 quiz.titulo,
+                quiz.formato,
                 catalogo.id AS catalogo_id,
                 catalogo.estado = 'publicada' AS pode_repetir
             FROM public.tentativas_quiz AS tentativa
@@ -459,7 +488,17 @@ def exibir_resultado():
                 escolhida.texto AS resposta_escolhida,
                 correta.texto AS resposta_correta,
                 questao.explicacao,
-                (escolhida.id = correta.id) AS acertou
+                (escolhida.id = correta.id) AS acertou,
+                (
+                    SELECT jsonb_agg(jsonb_build_object(
+                        'ordem', opcao.ordem,
+                        'texto', opcao.texto,
+                        'correta', opcao.correta,
+                        'explicacao', opcao.explicacao
+                    ) ORDER BY opcao.ordem)
+                    FROM public.alternativas AS opcao
+                    WHERE opcao.questao_id = questao.id AND opcao.explicacao <> ''
+                ) AS alternativas_comentadas
             FROM public.respostas_tentativa_quiz AS resposta
             JOIN public.questoes AS questao
                 ON questao.id = resposta.questao_id
@@ -488,6 +527,7 @@ def exibir_resultado():
     quiz = {
         "id": tentativa["catalogo_id"],
         "titulo": tentativa["titulo"],
+        "formato": tentativa["formato"],
         "pode_repetir": tentativa["pode_repetir"],
     }
 

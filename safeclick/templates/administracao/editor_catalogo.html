@@ -57,7 +57,17 @@
             <input type="hidden" name="estrutura" value="">
             <noscript><p class="admin-aviso admin-aviso--erro">Ative o JavaScript para editar perguntas e alternativas.</p></noscript>
             {% if secao == 'quizzes' %}
+                <div class="admin-campo">
+                    <label>Formato do quiz
+                        <select name="formato">
+                            {% for chave, rotulo in formatos.items() %}
+                                <option value="{{ chave }}" {% if dados.get('formato', 'perguntas') == chave %}selected{% endif %}>{{ rotulo }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
                 <p class="admin-ajuda-campo">Use de 1 a {{ max_questoes }} perguntas. Cada pergunta publicada precisa de 2 a {{ max_alternativas }} alternativas, uma resposta correta e uma explicação.</p>
+                <p class="admin-ajuda-campo">Na oficina, cada pergunta representa um trecho do guia. Repita os mesmos cartões em todos os trechos e marque um cartão correto diferente em cada um.</p>
                 <div class="admin-itens-editor" data-lista="questao" data-limite="{{ max_questoes }}">
                     {% for item_questao in questoes %}{{ pergunta(item_questao, max_alternativas, loop.index) }}{% endfor %}
                 </div>

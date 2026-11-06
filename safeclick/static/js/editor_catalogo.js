@@ -91,6 +91,7 @@ if (editor) {
                 alternativas: itens(pergunta.querySelector("[data-lista=alternativa]")).map(opcao => ({
                     texto: campo(opcao, "texto").value,
                     correta: campo(opcao, "correta").checked,
+                    explicacao: campo(opcao, "explicacao").value,
                 })),
             }));
         } else {

@@ -7,8 +7,8 @@ from psycopg import Error, errors
 
 from safeclick import catalogo_admin_db as db
 from safeclick.catalogo_validacao import (
-    CANAIS, MAX_ALTERNATIVAS, MAX_QUESTOES, SECOES, DadosInvalidos,
-    estrutura_json, html_do_texto, validar,
+    CANAIS, FORMATOS_QUIZ, MAX_ALTERNATIVAS, MAX_LOTE_QUIZZES, MAX_QUESTOES,
+    SECOES, DadosInvalidos, estrutura_json, html_do_texto, validar, validar_lote_quizzes,
 )
 
 
@@ -43,7 +43,7 @@ def _proteger_operacao(funcao):
         except (errors.UndefinedTable, errors.UndefinedColumn):
             return render_template(
                 "administracao/aviso_catalogo.html",
-                mensagem="A gestão de conteúdo precisa da migração adicionar_gestao_catalogo.sql no banco usado pelo site.",
+                mensagem="A gestão de conteúdo precisa das migrações do catálogo e dos formatos de quiz no banco usado pelo site.",
             ), 503
         except (Error, RuntimeError) as erro:
             current_app.logger.warning("Falha na gestão do catálogo (%s)", type(erro).__name__)
@@ -70,11 +70,13 @@ def _revisao():
     return int(valor)
 
 
-def _validar_formulario(formulario, campos):
+def _validar_formulario(formulario, campos, *, arquivo=None):
+    arquivos_esperados = {arquivo} if arquivo else set()
     if (
         set(request.form) != campos | {"csrf_token"}
         or any(len(request.form.getlist(nome)) != 1 for nome in request.form)
-        or request.files
+        or set(request.files) != arquivos_esperados
+        or any(len(request.files.getlist(nome)) != 1 for nome in request.files)
         or not formulario.validate_on_submit()
     ):
         raise DadosInvalidos("O formulário é inválido ou expirou. Recarregue a página e tente novamente.")
@@ -82,7 +84,7 @@ def _validar_formulario(formulario, campos):
 
 def _campos(secao):
     if secao == "quizzes":
-        return {"titulo", "estrutura"}
+        return {"titulo", "formato", "estrutura"}
     if secao == "simulacoes":
         return {"titulo", "estrutura", *TEXTOS_SIMULACAO, *("produto_" + c for c in PRODUTO)}
     return {"titulo", "corpo"}
@@ -91,6 +93,7 @@ def _campos(secao):
 def _ler_dados(secao):
     dados = {"titulo": request.form["titulo"]}
     if secao == "quizzes":
+        dados["formato"] = request.form["formato"]
         dados["questoes"] = estrutura_json(request.form["estrutura"])
     elif secao == "simulacoes":
         dados.update({campo: request.form[campo] for campo in TEXTOS_SIMULACAO})
@@ -140,6 +143,36 @@ def listar(secao):
     )
 
 
+@catalogo.route("/quizzes/importar", methods=["GET", "POST"], defaults={"secao": "quizzes"})
+@_proteger_operacao
+def importar_quizzes(secao):
+    request.max_content_length = 512 * 1024
+    formulario = FlaskForm()
+    mensagem, status = None, 200
+    if request.method == "POST":
+        try:
+            _validar_formulario(formulario, set(), arquivo="lote")
+            arquivo = request.files["lote"]
+            if not (arquivo.filename or "").lower().endswith(".json"):
+                raise DadosInvalidos("Selecione um arquivo JSON de quizzes.")
+            lote = validar_lote_quizzes(arquivo.read().decode("utf-8-sig"))
+            novos = db.importar_rascunhos_quiz(current_user.id, lote)
+        except UnicodeDecodeError:
+            mensagem, status = "O arquivo JSON precisa estar em UTF-8.", 400
+        except DadosInvalidos as erro:
+            mensagem, status = str(erro), 400
+        else:
+            flash(
+                f"Rascunhos criados: {novos}. Títulos já cadastrados: {len(lote) - novos}.",
+                "administracao_sucesso",
+            )
+            return redirect(url_for(".listar", secao=secao, estado="rascunho"), code=303)
+    return render_template(
+        "administracao/importar_quizzes.html", formulario=formulario, secao=secao,
+        secoes=SECOES, max_lote=MAX_LOTE_QUIZZES, mensagem=mensagem,
+    ), status
+
+
 @catalogo.route("/<secao>/novo", methods=["GET", "POST"])
 @catalogo.route("/<secao>/<int:item_id>/editar", methods=["GET", "POST"])
 @_proteger_operacao
@@ -184,7 +217,8 @@ def editar(secao, item_id=None):
         secao=secao, estados=ESTADOS, item=item, revisao=revisao, dados=dados, slug=slug,
         canais=CANAIS, questoes=_questoes_tela(dados) if secao == "quizzes" else [],
         opcoes=_opcoes_tela(dados) if secao == "simulacoes" else [],
-        mensagem=mensagem, max_questoes=MAX_QUESTOES, max_alternativas=MAX_ALTERNATIVAS,
+        mensagem=mensagem, formatos=FORMATOS_QUIZ,
+        max_questoes=MAX_QUESTOES, max_alternativas=MAX_ALTERNATIVAS,
     ), status
 
 

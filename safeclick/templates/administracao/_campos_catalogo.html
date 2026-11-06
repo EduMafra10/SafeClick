@@ -28,6 +28,8 @@
         {% if simulacao %}
             {{ campo('consequencia', 'Consequência', item.get('consequencia', ''), 1200, 2, true) }}
             {{ campo('explicacao', 'Explicação', item.get('explicacao', ''), 1200, 2, true) }}
+        {% else %}
+            {{ campo('explicacao', 'Comentário desta alternativa (opcional)', item.get('explicacao', ''), 800, 2, true) }}
         {% endif %}
         {% set chave = 'segura' if simulacao else 'correta' %}
         <label class="admin-marcacao">

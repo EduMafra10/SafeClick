@@ -19,6 +19,8 @@ Os quizzes antigos devem aparecer como `publicada`, com o mesmo ID público. As 
 
 4. Reinicie o SafeClick depois de aplicar a migração. Se houver mais de uma instância conectada ao mesmo banco, atualize todas para esta versão antes de publicar novas revisões. O código anterior não conhece os estados do catálogo nem a separação de versões dos quizzes.
 
+Para usar o formato Oficina e os comentários por alternativa, execute também [adicionar_formato_quizzes.sql](../sql/adicionar_formato_quizzes.sql) depois da migração do catálogo. A migração acrescenta campos às versões e às alternativas. Os quizzes anteriores continuam no formato de perguntas e respostas.
+
 ## Usar o editor
 
 - **Conteúdos educativos**: informe título, endereço e corpo. O editor aceita texto; linhas em branco separam parágrafos. Uma revisão com texto novo é escapada antes da publicação. Se mudar apenas o título de um conteúdo antigo, a formatação existente é preservada. O endereço não muda depois da criação para manter os links.
@@ -27,6 +29,8 @@ Os quizzes antigos devem aparecer como `publicada`, com o mesmo ID público. As 
 - **Páginas**: publique ajuda, orientações e outras páginas editoriais em `/paginas/`, acessível pelo link em **Conteúdos**. Essas páginas não registram conclusão no progresso. As rotas de login, o laboratório e os documentos de privacidade mantêm seus fluxos próprios.
 
 Em todos os tipos, **Salvar rascunho** não muda o que os usuários veem. Use **Visualizar versão salva** para revisar e **Publicar** para disponibilizar. **Despublicar** retira o item do site sem apagar o histórico. **Remover** apaga somente rascunhos inéditos sem vínculos; itens já publicados passam ao filtro **Removido**. **Restaurar** devolve o item à gestão como despublicado. As ações de publicação e remoção têm uma página de confirmação. Para aplicar alterações no editor de quizzes ou simulações, mantenha o JavaScript ativado.
+
+Em **Quizzes → Importar rascunhos**, selecione um arquivo JSON em UTF-8 com até 12 itens. Cada objeto precisa de `titulo` e `questoes`. Cada questão inclui `enunciado`, `explicacao` e `alternativas` com `texto`, `correta` e, opcionalmente, `explicacao`. Ao comentar uma alternativa, preencha o comentário de todas as opções da mesma pergunta. O campo `formato` aceita `perguntas` ou `oficina`. Na oficina, use o mesmo banco de cartões em todos os trechos e uma resposta correta distinta para cada trecho. O lote preserva títulos já cadastrados. As criações e publicações registram a conta administrativa autenticada.
 
 ## Verificar no ambiente de teste
 

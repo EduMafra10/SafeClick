@@ -8,6 +8,9 @@
             <p>Localize um item, revise seu conteúdo ou crie um rascunho.</p>
         </div>
         <div class="admin-acoes">
+            {% if secao == 'quizzes' %}
+                <a class="admin-botao-secundario" href="{{ url_for('administracao.catalogo.importar_quizzes') }}">Importar rascunhos</a>
+            {% endif %}
             <a class="admin-botao" href="{{ url_for('administracao.catalogo.editar', secao=secao) }}">Novo item</a>
         </div>
     </header>

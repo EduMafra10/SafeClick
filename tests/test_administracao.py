@@ -136,10 +136,13 @@ class AdministracaoAcessoTeste(unittest.TestCase):
     def test_conta_comum_nao_abre_previa_nem_grava_catalogo(self):
         self.usuario.perfil = "usuario"
         with patch("safeclick.catalogo_admin.db.obter_item") as obter, \
-             patch("safeclick.catalogo_admin.db.salvar_rascunho") as salvar:
+             patch("safeclick.catalogo_admin.db.salvar_rascunho") as salvar, \
+             patch("safeclick.catalogo_admin.db.importar_rascunhos_quiz") as importar:
             for caminho, metodo in (
                 ("/administracao/catalogo/quizzes/2/previa", "GET"),
                 ("/administracao/catalogo/quizzes/novo", "POST"),
+                ("/administracao/catalogo/quizzes/importar", "GET"),
+                ("/administracao/catalogo/quizzes/importar", "POST"),
                 ("/administracao/catalogo/conteudos/1/remover", "POST"),
                 ("/administracao/catalogo/simulacoes/1/publicar", "POST"),
                 ("/administracao/catalogo/paginas/1/restaurar", "POST"),
@@ -147,6 +150,7 @@ class AdministracaoAcessoTeste(unittest.TestCase):
                 self.assertEqual(self.client.open(caminho, method=metodo).status_code, 403)
             obter.assert_not_called()
             salvar.assert_not_called()
+            importar.assert_not_called()
 
     def test_admin_sem_csrf_nao_cria_rascunho(self):
         with patch("safeclick.catalogo_admin.db.salvar_rascunho") as salvar:
@@ -154,6 +158,12 @@ class AdministracaoAcessoTeste(unittest.TestCase):
                                         data={"titulo": "Quiz", "estrutura": "[]"})
         self.assertEqual(resposta.status_code, 400)
         salvar.assert_not_called()
+
+    def test_importacao_sem_csrf_nao_cria_rascunhos(self):
+        with patch("safeclick.catalogo_admin.db.importar_rascunhos_quiz") as importar:
+            resposta = self.client.post("/administracao/catalogo/quizzes/importar", data={"estrutura": "[]"})
+        self.assertEqual(resposta.status_code, 400)
+        importar.assert_not_called()
 
     def test_visitante_precisa_login(self):
         with self.client.session_transaction() as sessao:

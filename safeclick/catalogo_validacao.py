@@ -16,8 +16,10 @@ CANAIS = {
     "conversa": "Conversa fictícia",
     "loja": "Loja virtual fictícia",
 }
+FORMATOS_QUIZ = {"perguntas": "Perguntas e respostas", "oficina": "Oficina de revisão"}
 MAX_QUESTOES = 20
 MAX_ALTERNATIVAS = 8
+MAX_LOTE_QUIZZES = 12
 
 
 class DadosInvalidos(ValueError):
@@ -69,12 +71,51 @@ def _bool(valor):
     return valor
 
 
+def _validar_oficina(questoes):
+    textos = [a["texto"] for a in questoes[0]["alternativas"]]
+    banco = set(textos)
+    if len(questoes) < 2 or len(banco) != len(textos) or len(banco) < len(questoes):
+        raise DadosInvalidos("A oficina precisa de pelo menos dois trechos e de cartões distintos para preenchê-los.")
+    gabarito = set()
+    for numero, questao in enumerate(questoes, 1):
+        alternativas = questao["alternativas"]
+        if len(alternativas) != len(banco) or {a["texto"] for a in alternativas} != banco:
+            raise DadosInvalidos(f"Trecho {numero}: use os mesmos cartões do primeiro trecho.")
+        correta = next(a["texto"] for a in alternativas if a["correta"])
+        if correta in gabarito:
+            raise DadosInvalidos("Cada trecho da oficina deve ter um cartão correto diferente.")
+        gabarito.add(correta)
+
+
+def validar_lote_quizzes(estrutura):
+    itens = _lista(estrutura_json(estrutura), MAX_LOTE_QUIZZES)
+    if not itens:
+        raise DadosInvalidos("Inclua pelo menos um quiz.")
+    lote = []
+    titulos = set()
+    for numero, item in enumerate(itens, 1):
+        try:
+            dados = validar("quizzes", item, publicar=True)
+        except DadosInvalidos as erro:
+            raise DadosInvalidos(f"Item {numero} do lote. {erro}") from None
+        chave = dados["titulo"].casefold()
+        if chave in titulos:
+            raise DadosInvalidos(f"Há mais de um item com o título “{dados['titulo']}”.")
+        titulos.add(chave)
+        lote.append(dados)
+    return lote
+
+
 def validar(secao, dados, *, publicar=False):
     """Valida limites ao salvar e exige itens completos para publicar."""
+    dados = _objeto(dados)
     titulo = _texto(dados.get("titulo", ""), 120 if secao == "simulacoes" else 150, "Título", True)
     if secao in {"conteudos", "paginas"}:
         return {"titulo": titulo, "corpo": _texto(dados.get("corpo", ""), 16000, "Texto", publicar)}
     if secao == "quizzes":
+        formato = dados.get("formato", "perguntas")
+        if not isinstance(formato, str) or formato not in FORMATOS_QUIZ:
+            raise DadosInvalidos("Selecione um formato de quiz válido.")
         questoes = []
         for numero, questao in enumerate(_lista(dados.get("questoes", []), MAX_QUESTOES), 1):
             questao = _objeto(questao)
@@ -82,11 +123,15 @@ def validar(secao, dados, *, publicar=False):
                 {
                     "texto": _texto(_objeto(opcao).get("texto", ""), 500, f"Pergunta {numero}, alternativa {ordem}", publicar),
                     "correta": _bool(opcao.get("correta", False)),
+                    "explicacao": _texto(opcao.get("explicacao", ""), 800, f"Comentário da pergunta {numero}, alternativa {ordem}"),
                 }
                 for ordem, opcao in enumerate(_lista(questao.get("alternativas", []), MAX_ALTERNATIVAS), 1)
             ]
             if publicar and (len(alternativas) < 2 or sum(a["correta"] for a in alternativas) != 1):
                 raise DadosInvalidos(f"Pergunta {numero}: informe pelo menos duas alternativas e marque exatamente uma correta.")
+            comentadas = sum(bool(a["explicacao"]) for a in alternativas)
+            if publicar and 0 < comentadas < len(alternativas):
+                raise DadosInvalidos(f"Pergunta {numero}: explique cada alternativa antes de publicar.")
             questoes.append({
                 "enunciado": _texto(questao.get("enunciado", ""), 1000, f"Enunciado da pergunta {numero}", publicar),
                 "explicacao": _texto(questao.get("explicacao", ""), 1200, f"Explicação da pergunta {numero}", publicar),
@@ -94,7 +139,9 @@ def validar(secao, dados, *, publicar=False):
             })
         if publicar and not questoes:
             raise DadosInvalidos("Adicione pelo menos uma pergunta antes de publicar.")
-        return {"titulo": titulo, "questoes": questoes}
+        if publicar and formato == "oficina":
+            _validar_oficina(questoes)
+        return {"titulo": titulo, "formato": formato, "questoes": questoes}
 
     tipo = dados.get("tipo")
     if not isinstance(tipo, str) or tipo not in CANAIS:

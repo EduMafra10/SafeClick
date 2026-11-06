@@ -65,7 +65,8 @@
     align-items: flex-start;
 }
 
-.quizzes-tema h2 {
+.quizzes-tema h2,
+.quizzes-tema h3 {
     margin: 0;
     font-size: 23px;
     font-weight: 650;
@@ -327,6 +328,77 @@
 }
 
 .quizzes-explicacao p {
+    margin: 0;
+}
+
+.quizzes-explicacao .quizzes-feedback-titulo {
+    margin-top: 20px;
+}
+
+.quizzes-feedback {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.quizzes-feedback li {
+    padding: 12px 14px;
+    border: 1px solid var(--visual-borda);
+    border-radius: 8px;
+    background: var(--visual-superficie);
+    overflow-wrap: anywhere;
+}
+
+.quizzes-feedback li p {
+    margin-top: 6px;
+}
+
+.quizzes-banco-cartoes {
+    margin-bottom: 24px;
+}
+
+.quizzes-banco-cartoes h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.quizzes-banco-cartoes ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.quizzes-banco-cartoes li {
+    max-width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--visual-borda);
+    border-radius: 8px;
+    background: var(--visual-azul-suave);
+    overflow-wrap: anywhere;
+}
+
+.quizzes-banco-cartoes li span {
+    font-weight: 650;
+}
+
+.quizzes-encaixe {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--visual-borda);
+    border-radius: 8px;
+    background: var(--visual-superficie);
+    color: inherit;
+    font: inherit;
+}
+
+.quizzes-oficina-status:empty {
     margin: 0;
 }
 
