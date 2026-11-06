@@ -31,7 +31,7 @@
 
         {% set mostrando_resultado = resultado and not erro %}
 
-        <!-- O tipo permite reutilizar os modelos nos novos cenários. -->
+        {# O tipo permite reutilizar os modelos nos novos cenários. #}
         {% set modelos_visuais = {
             'email': 'conta-bloqueada',
             'sms': 'entrega-sms',
@@ -40,169 +40,162 @@
         } %}
 
         <div class="simulacao-exercicio">
-            <section
-                class="simulacao-mensagem mensagem--{{ modelos_visuais.get(cenario['tipo'], 'conta-bloqueada') }}"
-                aria-labelledby="titulo-mensagem"
-            >
-                <div class="mensagem-barra">{{ cenario["canal"] }}</div>
+            <div class="simulacao-coluna">
+                <section
+                    class="simulacao-mensagem mensagem--{{ modelos_visuais.get(cenario['tipo'], 'conta-bloqueada') }}"
+                    aria-labelledby="titulo-mensagem"
+                >
+                    <div class="mensagem-barra">{{ cenario["canal"] }}</div>
 
-                {% if cenario["tipo"] == "loja" and cenario.get("produto") %}
-                    <div class="mensagem-produto">
-                        <div class="produto-celular" aria-hidden="true"></div>
+                    {% if cenario["tipo"] == "loja" and cenario.get("produto") %}
+                        <div class="mensagem-produto">
+                            <div class="produto-celular" aria-hidden="true"></div>
 
-                        <div>
-                            <p class="produto-nome">
-                                {{ cenario["produto"]["nome"] }}
-                            </p>
-                            <p class="produto-preco-anterior">
-                                De <s>{{ cenario["produto"]["preco_anterior"] }}</s>
-                            </p>
-                            <p class="produto-preco">
-                                {{ cenario["produto"]["preco_atual"] }}
-                            </p>
+                            <div>
+                                <p class="produto-nome">
+                                    {{ cenario["produto"]["nome"] }}
+                                </p>
+                                <p class="produto-preco-anterior">
+                                    De <s>{{ cenario["produto"]["preco_anterior"] }}</s>
+                                </p>
+                                <p class="produto-preco">
+                                    {{ cenario["produto"]["preco_atual"] }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
-
-                <div class="mensagem-cabecalho">
-                    <h2 id="titulo-mensagem">{{ cenario["assunto"] }}</h2>
-                    <p class="mensagem-origem">{{ cenario["origem"] }}</p>
-                </div>
-
-                
-                <div class="mensagem-corpo">
-                    {% for paragrafo in cenario["mensagem"] %}
-                        <p class="mensagem-paragrafo">{{ paragrafo }}</p>
-                    {% endfor %}
-
-                    {% if cenario["tipo"] != "conversa" %}
-                        
-                        <p class="mensagem-chamada">{{ cenario["chamada"] }}</p>
                     {% endif %}
-                </div>
-            </section>
+
+                    <div class="mensagem-cabecalho">
+                        <h2 id="titulo-mensagem">{{ cenario["assunto"] }}</h2>
+                        <p class="mensagem-origem">{{ cenario["origem"] }}</p>
+                    </div>
+
+                    <div class="mensagem-corpo">
+                        {% for paragrafo in cenario["mensagem"] %}
+                            <p class="mensagem-paragrafo">{{ paragrafo }}</p>
+                        {% endfor %}
+
+                        {% if cenario["tipo"] != "conversa" %}
+                            <p class="mensagem-chamada">{{ cenario["chamada"] }}</p>
+                        {% endif %}
+                    </div>
+                </section>
+
+                {% if mostrando_resultado %}
+                    <aside class="simulacao-sinais" aria-labelledby="titulo-sinais">
+                        <h2 id="titulo-sinais">Sinais de risco nesta mensagem</h2>
+                        <ol>
+                            {% for sinal in cenario["sinais"] %}
+                                <li>{{ sinal }}</li>
+                            {% endfor %}
+                        </ol>
+                    </aside>
+                {% endif %}
+            </div>
 
             <div class="simulacao-decisao">
                 {% if erro %}
                     <p class="simulacao-erro" role="alert">{{ erro }}</p>
                 {% endif %}
 
-                
-                <form method="post" action="{{ url_simulacao }}">
-                    {{ formulario.hidden_tag() }}
-
-                    <input
-                        type="hidden"
-                        name="versao_id"
-                        value="{{ cenario['versao_id'] }}"
-                    >
-
-                    <fieldset
-                        class="simulacao-alternativas"
-                        {% if mostrando_resultado %}disabled{% endif %}
-                    >
-                        <legend>
-                            {% if mostrando_resultado %}
-                                Sua resposta
-                            {% else %}
-                                O que você faria?
-                            {% endif %}
-                        </legend>
-
+                {% if mostrando_resultado %}
+                    {# Depois da resposta, a escolha mostra o resultado e as outras opções ganham uma etiqueta. #}
+                    <section class="simulacao-resposta" aria-labelledby="titulo-resposta">
+                        <h2 id="titulo-resposta">Sua resposta</h2>
                         <p class="simulacao-instrucao">
-                            {% if mostrando_resultado %}
-                                A alternativa marcada corresponde ao resultado abaixo.
+                            {% if resultado["segura"] %}
+                                Você agiu com segurança.
                             {% else %}
-                                Escolha uma alternativa para ver a consequência.
+                                Veja o que aconteceria. Que tal tentar de novo e escolher outro caminho?
                             {% endif %}
                         </p>
 
-                        <div class="simulacao-opcoes">
+                        <ul class="simulacao-opcoes" role="list">
                             {% for identificador, opcao in opcoes.items() %}
-                                <label class="simulacao-opcao">
-                                    <input
-                                        type="radio"
-                                        name="opcao"
-                                        value="{{ identificador }}"
-                                        {% if mostrando_resultado and opcao == resultado %}checked{% endif %}
-                                        required
-                                    >
-                                    <span>{{ opcao["texto"] }}</span>
-                                </label>
-                            {% endfor %}
-                        </div>
-                    </fieldset>
+                                {% set tipo = "segura" if opcao["segura"] else "risco" %}
 
-                    {% if not mostrando_resultado %}
+                                {% if opcao == resultado %}
+                                    <li class="simulacao-opcao simulacao-escolhida simulacao-escolhida--{{ tipo }}">
+                                        <div class="simulacao-escolhida-texto">
+                                            <span class="simulacao-marcador" aria-hidden="true"></span>
+                                            <span>
+                                                <span class="simulacao-oculto">Sua escolha: </span>{{ opcao["texto"] }}
+                                            </span>
+                                        </div>
+
+                                        <div class="simulacao-retorno">
+                                            <p id="titulo-resultado" class="simulacao-veredito">
+                                                {{ "Escolha segura" if opcao["segura"] else "Escolha de risco" }}
+                                            </p>
+                                            <p>{{ opcao["consequencia"] }}</p>
+                                            <p class="simulacao-porque">{{ opcao["explicacao"] }}</p>
+                                        </div>
+                                    </li>
+                                {% else %}
+                                     <li class="simulacao-opcao simulacao-outra">
+                                        <span class="simulacao-marcador" aria-hidden="true"></span>
+                                        <span class="simulacao-outra-texto">{{ opcao["texto"] }}</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+
+                        <nav class="simulacao-proximos" aria-label="Continuar praticando">
+                            <a class="simulacao-continuar" href="{{ url_for('simulacoes.listar') }}">
+                                Explorar outro cenário →
+                            </a>
+
+                            {% if pode_repetir %}
+                                <a class="simulacao-repetir" href="{{ url_simulacao }}">
+                                    Tentar novamente
+                                </a>
+                            {% else %}
+                                <p>
+                                    Este cenário foi arquivado.
+                                    O resultado da sua tentativa continua disponível.
+                                </p>
+                            {% endif %}
+                        </nav>
+                    </section>
+                {% else %}
+                    <form method="post" action="{{ url_simulacao }}">
+                        {{ formulario.hidden_tag() }}
+
+                        <input
+                            type="hidden"
+                            name="versao_id"
+                            value="{{ cenario['versao_id'] }}"
+                        >
+
+                        <fieldset class="simulacao-alternativas">
+                            <legend>O que você faria?</legend>
+
+                            <p class="simulacao-instrucao">
+                                Escolha uma alternativa para ver a consequência.
+                            </p>
+
+                            <div class="simulacao-opcoes">
+                                {% for identificador, opcao in opcoes.items() %}
+                                    <label class="simulacao-opcao">
+                                        <input
+                                            type="radio"
+                                            name="opcao"
+                                            value="{{ identificador }}"
+                                            required
+                                        >
+                                        <span>{{ opcao["texto"] }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </fieldset>
+
                         <button class="simulacao-botao" type="submit">
                             Ver consequência
                         </button>
-                    {% endif %}
-                </form>
+                    </form>
+                {% endif %}
             </div>
         </div>
-
-        {# O resultado ocupa a largura das duas colunas e só aparece sem erro. #}
-        {% if mostrando_resultado %}
-            <section
-                class="simulacao-resultado{% if resultado['segura'] %} simulacao-resultado--segura{% endif %}"
-                aria-labelledby="titulo-resultado"
-            >
-                <p class="simulacao-resultado-rotulo">
-                    Resultado da sua decisão
-                </p>
-
-                <h2 id="titulo-resultado">
-                    {% if resultado["segura"] %}
-                        Escolha segura
-                    {% else %}
-                        Escolha de risco
-                    {% endif %}
-                </h2>
-
-                <div class="simulacao-resultado-detalhes">
-                    <div>
-                        <h3>Consequência</h3>
-                        <p>{{ resultado["consequencia"] }}</p>
-                    </div>
-
-                    <div>
-                        <h3>Por que isso acontece?</h3>
-                        <p>{{ resultado["explicacao"] }}</p>
-                    </div>
-                </div>
-            </section>
-
-            <aside class="simulacao-sinais" aria-labelledby="titulo-sinais">
-                <h2 id="titulo-sinais">Sinais de risco neste exemplo</h2>
-
-                <ul>
-                    {% for sinal in cenario["sinais"] %}
-                        <li>{{ sinal }}</li>
-                    {% endfor %}
-                </ul>
-            </aside>
-
-            <nav class="simulacao-proximos" aria-label="Continuar praticando">
-                <a
-                    class="simulacao-continuar"
-                    href="{{ url_for('simulacoes.listar') }}"
-                >
-                    Explorar outro cenário →
-                </a>
-
-                {% if pode_repetir %}
-                    <a class="simulacao-repetir" href="{{ url_simulacao }}">
-                        Tentar novamente
-                    </a>
-                {% else %}
-                    <p>
-                        Este cenário foi arquivado.
-                        O resultado da sua tentativa continua disponível.
-                    </p>
-                {% endif %}
-            </nav>
-        {% endif %}
 
         <p class="simulacao-aviso">
             Atividade educativa. Todas as mensagens e ofertas são fictícias.
