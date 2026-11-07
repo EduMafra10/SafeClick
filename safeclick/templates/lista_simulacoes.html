@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulações | SafeClick</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lista_simulacoes.css') }}">
+
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+</head>
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+
+    {% include "componentes/cabecalho.html" %}
+
+    <main id="conteudo" class="visual-container catalogo-conteudo" tabindex="-1">
+        <header class="catalogo-introducao">
+            <div>
+                <p class="visual-etiqueta">Simulações</p>
+
+                <h1>Pratique com situações<br>do dia a dia.</h1>
+
+                <p class="catalogo-descricao">
+                    Leia a mensagem, escolha o que faria e descubra os sinais
+                    que ajudam a reconhecer um golpe.
+                </p>
+            </div>
+
+            <p class="catalogo-quantidade">
+                {{ cenarios|length }} cenários para explorar
+            </p>
+        </header>
+
+        <div class="catalogo-organizacao">
+
+            <!-- Os cenários continuam vindo do catálogo definido no Python. -->
+            <ol class="catalogo-lista" aria-label="Cenários disponíveis" role="list">
+                {% for identificador, cenario in cenarios.items() %}
+                    <li class="catalogo-item">
+                        <span class="catalogo-numero" aria-hidden="true">
+                            {{ "%02d"|format(loop.index) }}
+                        </span>
+
+                        <div>
+                            <p class="catalogo-canal">{{ cenario["canal"] }}</p>
+
+                            <h2>{{ cenario["titulo"] }}</h2>
+
+                            <p class="catalogo-resumo">{{ cenario["resumo"] }}</p>
+
+                            <a
+                                class="simulacao-acessar"
+                                href="{{ url_for('simulacoes.executar', slug=cenario['slug']) }}"
+                                aria-label="Iniciar simulação: {{ cenario['titulo'] }}"
+                            >
+                                Explorar cenário
+                                <span aria-hidden="true">→</span>
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+
+            <aside class="catalogo-orientacao" aria-labelledby="titulo-orientacao">
+                <h2 id="titulo-orientacao">Uma pausa antes de agir.</h2>
+
+                <ol class="catalogo-passos" role="list">
+                    <li>
+                        <strong>Observe</strong>
+                        <p>Leia a mensagem e repare nos detalhes.</p>
+                    </li>
+
+                    <li>
+                        <strong>Escolha</strong>
+                        <p>Decida como você reagiria.</p>
+                    </li>
+
+                    <li>
+                        <strong>Entenda</strong>
+                        <p>Veja a consequência e os sinais do golpe.</p>
+                    </li>
+                </ol>
+            </aside>
+        </div>
+
+        <p class="catalogo-aviso">
+            São situações fictícias. Você não envia dados nem faz pagamentos.
+        </p>
+    </main>
+
+    <footer class="visual-rodape">
+        <div class="visual-container">
+            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
+            <p>Educação para uma vida digital mais segura.</p>
+        </div>
+    </footer>
+</body>
+</html>

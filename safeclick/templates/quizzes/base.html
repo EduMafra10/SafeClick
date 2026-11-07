@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Quizzes | SafeClick{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quizzes.css') }}">
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+</head>
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+
+    {% include "componentes/cabecalho.html" %}
+
+    <main id="conteudo" class="visual-container quizzes-conteudo" tabindex="-1">
+        {% block conteudo %}{% endblock %}
+    </main>
+
+    <footer class="visual-rodape">
+        <div class="visual-container">
+            <p>SafeClick · Educação para a segurança digital</p>
+        </div>
+    </footer>
+</body>
+</html>

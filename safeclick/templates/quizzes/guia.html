@@ -1,0 +1,24 @@
+{% extends "quizzes/base.html" %}
+{% block titulo %}Meu guia de revisão | SafeClick{% endblock %}
+{% block conteudo %}
+    <nav class="quizzes-navegacao" aria-label="Navegação dos quizzes">
+        <a href="{{ url_for('quizzes.listar_quizzes') }}">← Voltar aos quizzes</a>
+    </nav>
+    <header class="quizzes-introducao">
+        <p class="quizzes-etiqueta">Oficina SafeClick</p>
+        <h1>Meu guia de revisão</h1>
+        <p>Reveja os encaixes e as explicações da última tentativa de cada atividade concluída.</p>
+    </header>
+    <ul class="quizzes-grade quizzes-lista">
+        {% for pagina in paginas %}
+            <li class="quizzes-cartao quizzes-tema">
+                <h2>{{ pagina.titulo }}</h2>
+                <p>{{ pagina.pontuacao }} de {{ pagina.total_questoes }} trechos com encaixe correto.</p>
+                <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_resultado', tentativa_id=pagina.id) }}"
+                   aria-label="Rever resultado: {{ pagina.titulo }}">Rever resultado →</a>
+            </li>
+        {% else %}
+            <li class="quizzes-cartao">Conclua uma atividade da Oficina SafeClick para começar seu guia.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

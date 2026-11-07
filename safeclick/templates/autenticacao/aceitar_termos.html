@@ -1,0 +1,61 @@
+{% extends "autenticacao/base.html" %}
+
+{% set titulo = "Termos de Uso" %}
+{% set descricao = "Para continuar usando o SafeClick, confira os termos e registre seu aceite." %}
+
+{% block conteudo %}
+    <form method="post" action="{{ url_for('aceite_termos.aceitar') }}">
+        {{ formulario.hidden_tag() }}
+
+        <div class="autenticacao-aceite">
+            <div id="orientacao-termos">
+                <p class="autenticacao-ajuda">
+                    <a href="{{ url_for('privacidade.termos', versao=versao_termos) }}"
+                       target="_blank" rel="noopener">
+                        Ler os Termos de Uso (versão {{ versao_termos }})
+                    </a>
+                </p>
+                <p class="autenticacao-ajuda">
+                    Consulte também a
+                    <a href="{{ url_for('privacidade.politica') }}"
+                       target="_blank" rel="noopener">Política de Privacidade</a>.
+                    Os documentos abrem em outra aba.
+                </p>
+            </div>
+
+            <div class="autenticacao-aceite-linha">
+                {{ formulario.aceitou_termos(
+                    aria_describedby="orientacao-termos erros-termos",
+                    aria_invalid="true" if formulario.aceitou_termos.errors or formulario.versao_termos.errors else "false",
+                    disabled=not termos_disponiveis
+                ) }}
+                {{ formulario.aceitou_termos.label }}
+            </div>
+
+            <div class="autenticacao-erros" id="erros-termos" aria-live="polite">
+                {% for mensagem in formulario.aceitou_termos.errors %}
+                    <p>{{ mensagem }}</p>
+                {% endfor %}
+                {% for mensagem in formulario.versao_termos.errors %}
+                    <p>{{ mensagem }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {{ formulario.enviar(
+            class_="autenticacao-botao",
+            disabled=not termos_disponiveis
+        ) }}
+    </form>
+
+    <form id="formulario-sair" method="post" action="{{ url_for('autenticacao.sair') }}">
+        {{ formulario_saida.csrf_token(id="csrf-saida") }}
+    </form>
+{% endblock %}
+
+{% block rodape %}
+    <button type="submit" form="formulario-sair"
+            class="autenticacao-botao autenticacao-botao-secundario">
+        Sair da conta
+    </button>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "quizzes/base.html" %}
+{% block titulo %}Resultado | SafeClick{% endblock %}
+
+{% block conteudo %}
+    {% set oficina = quiz.formato == 'oficina' %}
+    <div class="quizzes-revisao">
+        <nav class="quizzes-navegacao" aria-label="Navegação dos quizzes">
+            <a href="{{ url_for('quizzes.listar_quizzes') }}">← Voltar aos quizzes</a>
+        </nav>
+        <section class="quizzes-introducao quizzes-cartao quizzes-resumo" aria-labelledby="titulo-resultado">
+            <div>
+                <p class="quizzes-etiqueta">{{ 'Oficina concluída' if oficina else 'Quiz concluído' }}</p>
+                <h1 id="titulo-resultado">{{ quiz.titulo }}</h1>
+                <p>{{ 'Confira as combinações do seu guia e releia os trechos indicados.' if oficina else 'Confira suas respostas e aprenda com as explicações.' }}</p>
+            </div>
+            <div class="quizzes-pontuacao">
+                <span>Você acertou</span>
+                <strong>{{ resultado.pontuacao }} de {{ resultado.total_questoes }}</strong>
+                <span>{{ 'trechos' if oficina else 'perguntas' }}</span>
+            </div>
+        </section>
+
+        <h2 class="quizzes-titulo-secao">{{ 'Seu guia de revisão' if oficina else 'Suas respostas' }}</h2>
+        <div class="quizzes-perguntas">
+            {% for detalhe in resultado.detalhes %}
+                <section class="quizzes-cartao" aria-labelledby="resposta-{{ loop.index }}">
+                    <h3 class="quizzes-enunciado" id="resposta-{{ loop.index }}">
+                        <span class="quizzes-etiqueta">{{ 'Trecho' if oficina else 'Pergunta' }} {{ detalhe.ordem }} de {{ resultado.total_questoes }}</span>
+                        {{ detalhe.enunciado }}
+                    </h3>
+                    <p class="quizzes-status {% if detalhe.acertou %}quizzes-acerto{% else %}quizzes-revisar{% endif %}">
+                        {% if detalhe.acertou %}Você acertou!{% elif oficina %}Revisar este trecho{% else %}Resposta incorreta{% endif %}
+                    </p>
+                    <p class="quizzes-escolha"><strong>{{ 'Seu encaixe' if oficina else 'Sua resposta' }}:</strong><br>{{ detalhe.resposta_escolhida }}</p>
+                    <p><strong>{{ 'Cartão esperado' if oficina else 'Resposta correta' }}:</strong><br>{{ detalhe.resposta_correta }}</p>
+                    <div class="quizzes-explicacao">
+                        <h4>Por que essa resposta?</h4>
+                        <p>{{ detalhe.explicacao }}</p>
+                        {% if detalhe.alternativas_comentadas %}
+                            <h4 class="quizzes-feedback-titulo">{{ 'Como interpretar cada cartão' if oficina else 'Explicação de cada alternativa' }}</h4>
+                            <ul class="quizzes-feedback">
+                                {% for alternativa in detalhe.alternativas_comentadas %}
+                                    <li>
+                                        <strong>{% if not oficina %}{{ 'ABCDEFGH'[alternativa.ordem - 1] }}. {% endif %}{{ alternativa.texto }}</strong>
+                                        <span class="quizzes-status {{ 'quizzes-acerto' if alternativa.correta else 'quizzes-revisar' }}">
+                                            {{ 'Correta' if alternativa.correta else 'Incorreta' }}
+                                        </span>
+                                        <p>{{ alternativa.explicacao }}</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </section>
+            {% endfor %}
+        </div>
+
+        <nav class="quizzes-acoes" aria-label="Próximas ações">
+            {% if quiz.pode_repetir %}
+                <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}">Tentar novamente</a>
+            {% endif %}
+            <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.listar_quizzes') }}">Escolher outro quiz</a>
+            {% if oficina %}
+                <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.exibir_guia') }}">Meu guia de revisão</a>
+                <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('conteudos.listar') }}">Reler os conteúdos</a>
+            {% endif %}
+        </nav>
+    </div>
+{% endblock %}

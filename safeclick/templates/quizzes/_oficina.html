@@ -1,0 +1,29 @@
+<section class="quizzes-cartao quizzes-banco-cartoes" aria-labelledby="titulo-cartoes">
+    <h2 id="titulo-cartoes">Cartões do guia</h2>
+    <ul>
+        {% for cartao in questoes[0].alternativas %}
+            <li data-oficina-cartao="{{ cartao.texto }}">{{ cartao.texto }} <span hidden>· Usado</span></li>
+        {% endfor %}
+    </ul>
+</section>
+
+<div class="quizzes-perguntas">
+    {% for questao in questoes %}
+        <div class="quizzes-cartao">
+            <label class="quizzes-enunciado" for="trecho-{{ questao.id }}">
+                <span class="quizzes-etiqueta">Trecho {{ questao.ordem }} de {{ questoes|length }}</span>
+                {{ questao.enunciado }}
+            </label>
+            <select class="quizzes-encaixe" id="trecho-{{ questao.id }}" name="questao_{{ questao.id }}"
+                    data-oficina-encaixe required>
+                <option value="">Escolha um cartão</option>
+                {% for alternativa in questao.alternativas %}
+                    <option value="{{ alternativa.id }}" data-cartao="{{ alternativa.texto }}"
+                            {% if respostas.get(questao.id) == alternativa.id %}selected{% endif %}>{{ alternativa.texto }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endfor %}
+</div>
+<p class="quizzes-oficina-status" role="status" data-oficina-status></p>
+<script src="{{ url_for('static', filename='js/oficina_quiz.js') }}" defer></script>

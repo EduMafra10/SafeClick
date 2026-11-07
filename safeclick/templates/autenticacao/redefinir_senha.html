@@ -1,0 +1,54 @@
+{% extends "autenticacao/base.html" %}
+
+{% set titulo = "Crie uma nova senha" %}
+{% set descricao = "Use uma senha com 15 a 128 caracteres. Seu autenticador continuará ativo." %}
+
+{% block conteudo %}
+    {% if not link_invalido %}
+        <noscript>
+            <p class="autenticacao-mensagem" role="alert">
+                Ative o JavaScript e abra novamente o link recebido por e-mail.
+            </p>
+        </noscript>
+
+        <form method="post" action="{{ url_for('recuperacao.redefinir') }}">
+            {{ formulario.hidden_tag() }}
+
+            <input
+                type="hidden"
+                name="token_recuperacao"
+                id="token-recuperacao"
+                value="{{ token_recuperacao }}"
+            >
+
+            {{ exibir_campo(formulario.senha, "new-password") }}
+
+            {{ exibir_campo(formulario.confirmar_senha, "new-password") }}
+
+            {{ formulario.enviar(class_="autenticacao-botao") }}
+        </form>
+
+        <p
+            class="autenticacao-ajuda"
+            id="recuperacao-orientacao"
+            hidden
+        >
+            Para continuar, abra o link recebido por e-mail.
+        </p>
+    {% endif %}
+
+    <script
+        src="{{ url_for('static', filename='js/recuperacao.js') }}"
+        defer
+    ></script>
+{% endblock %}
+
+{% block rodape %}
+    <a href="{{ url_for('recuperacao.solicitar') }}">
+        Solicitar outro link
+    </a>
+    ·
+    <a href="{{ url_for('autenticacao.login') }}">
+        Voltar para o login
+    </a>
+{% endblock %}

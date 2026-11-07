@@ -1,0 +1,144 @@
+/* deixando o css mais moderno e arrumado */
+.site-visual {
+    --visual-fundo: #f7f8f5;
+    --visual-superficie: #ffffff;
+    --visual-texto: #173b45;
+    --visual-secundario: #586d72;
+    --visual-borda: #dce5e3;
+    --visual-verde: #27684f;
+    --visual-verde-suave: #eaf3ed;
+    --visual-azul-suave: #edf3f5;
+    --visual-foco: #28638d;
+
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--visual-fundo);
+    color: var(--visual-texto);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.site-visual *,
+.site-visual *::before,
+.site-visual *::after {
+    box-sizing: border-box;
+}
+
+.visual-container {
+    width: min(1180px, calc(100% - 48px));
+    margin-inline: auto;
+}
+
+.visual-etiqueta {
+    margin: 0;
+    color: var(--visual-verde);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.site-visual a:focus-visible,
+.site-visual button:focus-visible,
+.site-visual summary:focus-visible {
+    outline: 3px solid var(--visual-foco);
+    outline-offset: 4px;
+}
+
+
+.visual-pular {
+    position: absolute;
+    top: 12px;
+    left: 24px;
+    z-index: 10;
+    transform: translateY(-180%);
+    padding: 12px 18px;
+    background: var(--visual-superficie);
+    color: var(--visual-texto);
+}
+
+.visual-pular:focus {
+    transform: translateY(0);
+}
+
+/* reaproveita o cabeçalho e o menu da conta que já existem */
+.site-visual .site-cabecalho {
+    background: var(--visual-superficie);
+    color: var(--visual-texto);
+    border-color: var(--visual-borda);
+    box-shadow: none;
+    font-family: inherit;
+}
+
+.site-visual .site-barra {
+    width: min(1180px, calc(100% - 48px));
+}
+
+.site-visual .site-marca {
+    color: var(--visual-texto);
+}
+
+.site-visual .site-marca strong span {
+    color: var(--visual-verde);
+}
+
+.site-visual .site-navegacao {
+    gap: 22px;
+}
+
+.site-visual .site-navegacao a {
+    padding: 10px 2px;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--visual-secundario);
+}
+
+.site-visual .site-navegacao a:hover,
+.site-visual .site-navegacao a[aria-current="page"] {
+    color: var(--visual-texto);
+    border-bottom-color: var(--visual-verde);
+}
+
+.site-visual .site-avatar {
+    background: var(--visual-verde-suave);
+    color: var(--visual-verde);
+}
+
+.visual-rodape {
+    margin-top: auto;
+    border-top: 1px solid var(--visual-borda);
+    color: var(--visual-secundario);
+    font-size: 12px;
+}
+
+.visual-rodape .visual-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    padding-block: 22px;
+}
+
+.visual-rodape p {
+    margin: 0;
+}
+
+.visual-rodape strong {
+    color: var(--visual-verde);
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .visual-container,
+    .site-visual .site-barra {
+        width: calc(100% - 40px);
+    }
+
+    .site-visual .site-navegacao {
+        gap: 12px;
+    }
+}

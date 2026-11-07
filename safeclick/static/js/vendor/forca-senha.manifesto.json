@@ -1,0 +1,39 @@
+{
+  "biblioteca": "https://github.com/zxcvbn-ts/zxcvbn",
+  "compilador": "esbuild 0.28.2",
+  "arquivo": "forca-senha.js",
+  "bytes": 2285450,
+  "sha256": "9c6088b4096da61449f5f821f8956d384981076728569ff1d7a4e6a1b53b3ca5",
+  "pacotes": [
+    {
+      "pacote": "@zxcvbn-ts/core",
+      "versao": "4.2.0",
+      "licenca": "MIT"
+    },
+    {
+      "pacote": "@zxcvbn-ts/language-common",
+      "versao": "4.1.3",
+      "licenca": "MIT"
+    },
+    {
+      "pacote": "@zxcvbn-ts/language-en",
+      "versao": "4.1.1",
+      "licenca": "MIT"
+    },
+    {
+      "pacote": "@zxcvbn-ts/language-pt-br",
+      "versao": "4.1.1",
+      "licenca": "MIT"
+    },
+    {
+      "pacote": "@zxcvbn-ts/dictionary-compression",
+      "versao": "3.0.1",
+      "licenca": "MIT"
+    },
+    {
+      "pacote": "fastest-levenshtein",
+      "versao": "1.0.16",
+      "licenca": "MIT"
+    }
+  ]
+}

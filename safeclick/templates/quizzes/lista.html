@@ -1,0 +1,51 @@
+{% extends "quizzes/base.html" %}
+
+{% block conteudo %}
+    {% set oficinas = quizzes|selectattr('formato', 'equalto', 'oficina')|list %}
+    {% set tradicionais = quizzes|rejectattr('formato', 'equalto', 'oficina')|list %}
+    <div class="quizzes-introducao">
+        <p class="quizzes-etiqueta">Aprenda na prática</p>
+        <h1>Quizzes do SafeClick</h1>
+        <p>Escolha um tema e teste seus conhecimentos sobre segurança digital.</p>
+    </div>
+
+    {% if tradicionais or not oficinas %}
+    <ul class="quizzes-grade quizzes-lista">
+        {% for quiz in tradicionais %}
+            <li class="quizzes-cartao quizzes-tema">
+                <p class="quizzes-etiqueta">Quiz {{ loop.index }}</p>
+                <h2>{{ quiz.titulo }}</h2>
+                <p>Responda {{ 'à pergunta' if quiz.total_questoes == 1 else 'às ' ~ quiz.total_questoes ~ ' perguntas' }} e confira as explicações no final.</p>
+                <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}"
+                   aria-label="Começar quiz: {{ quiz.titulo }}">Começar quiz <span aria-hidden="true">→</span></a>
+            </li>
+        {% else %}
+            <li class="quizzes-cartao">Nenhum quiz disponível no momento.</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if oficinas %}
+        <section aria-labelledby="titulo-oficina">
+            <h2 class="quizzes-titulo-secao" id="titulo-oficina">Oficina SafeClick</h2>
+            <p>Encaixe os cartões para corrigir as explicações do guia e confira o que vale revisar.</p>
+            <p><a href="{{ url_for('quizzes.exibir_guia') }}">Meu guia de revisão →</a></p>
+            <ul class="quizzes-grade quizzes-lista">
+                {% for oficina in oficinas %}
+                    <li class="quizzes-cartao quizzes-tema">
+                        <p class="quizzes-etiqueta">Oficina {{ loop.index }}</p>
+                        <h3>{{ oficina.titulo }}</h3>
+                        <p>{{ oficina.total_questoes }} trechos para revisar.</p>
+                        <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=oficina.id) }}"
+                           aria-label="Abrir oficina: {{ oficina.titulo }}">Abrir oficina <span aria-hidden="true">→</span></a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    {% if tradicionais %}<aside class="quizzes-faixa">
+        <h2>Um passo de cada vez</h2>
+        <p>Cada pergunta tem uma resposta correta. Leia com calma e use o resultado para aprender.</p>
+    </aside>{% endif %}
+{% endblock %}

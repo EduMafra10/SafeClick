@@ -1,0 +1,11 @@
+{# leis e artigos citados, vindos de referencias_legais #}
+{% if referencias %}
+    <h2 id="legislacao-citada">Legislação citada</h2>
+    <ul class="privacidade-leis">
+        {% for referencia in referencias %}
+            <li>
+                {% if referencia.url %}<a href="{{ referencia.url }}" target="_blank" rel="noopener noreferrer">{{ referencia.norma }}</a>{% else %}{{ referencia.norma }}{% endif %}{% if referencia.dispositivo %}, {{ referencia.dispositivo }}{% endif %}: {{ referencia.assunto }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

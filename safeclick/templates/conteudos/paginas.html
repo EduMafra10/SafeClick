@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Páginas | SafeClick</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+</head>
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+    {% include "componentes/cabecalho.html" %}
+    <main id="conteudo" class="visual-container conteudos-conteudo" tabindex="-1">
+        <a class="conteudos-voltar" href="{{ url_for('conteudos.listar') }}">← Voltar para conteúdos</a>
+        <div class="conteudos-leitura">
+            <article class="conteudos-artigo">
+                <header class="conteudos-artigo-cabecalho">
+                    <p class="visual-etiqueta">SafeClick</p>
+                    <h1>Páginas</h1>
+                </header>
+                <div class="conteudos-corpo">
+                    {% if paginas %}
+                        <ul>
+                            {% for pagina in paginas %}
+                                <li><a class="conteudos-card-link" href="{{ url_for('paginas.detalhe', slug=pagina.slug) }}">{{ pagina.titulo }} →</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Nenhuma página publicada ainda.</p>
+                    {% endif %}
+                </div>
+            </article>
+        </div>
+    </main>
+    {% include "conteudos/_rodape.html" %}
+</body>
+</html>

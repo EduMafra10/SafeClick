@@ -1,0 +1,68 @@
+{% extends "administracao/base_catalogo.html" %}
+{% block titulo %}Prévia · {{ dados.get('titulo', 'Item') }}{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">Prévia administrativa</p>
+            <h1>{{ dados.get('titulo', 'Item') }}</h1>
+            <p>{{ 'Rascunho salvo. Apenas administradores veem esta revisão.' if item.rascunho else 'Última versão publicada do item.' }}</p>
+        </div>
+        <div class="admin-acoes">
+            {% if item.estado != 'removida' %}
+                <a class="admin-link" href="{{ url_for('administracao.catalogo.editar', secao=secao, item_id=item.id) }}">Editar item</a>
+            {% endif %}
+            {% if url_publica %}<a class="admin-link" href="{{ url_publica }}">Abrir no site</a>{% endif %}
+        </div>
+    </header>
+    {% if secao == 'quizzes' %}
+        <div class="admin-previa">
+            {% for questao in dados.get('questoes', []) %}
+                <section class="admin-catalogo-cartao">
+                    <p class="visual-etiqueta">{{ 'Trecho' if dados.get('formato') == 'oficina' else 'Pergunta' }} {{ loop.index }}</p>
+                    <h2>{{ questao.get('enunciado') or 'Enunciado pendente' }}</h2>
+                    <ol type="A">
+                        {% for opcao in questao.get('alternativas', []) %}
+                            <li>
+                                {{ opcao.get('texto') or 'Alternativa vazia' }}{% if opcao.get('correta') %} <strong>· Correta</strong>{% endif %}
+                                {% if opcao.get('explicacao') %}<p>{{ opcao.explicacao }}</p>{% endif %}
+                            </li>
+                        {% endfor %}
+                    </ol>
+                    {% if questao.get('explicacao') %}<p><strong>Explicação:</strong> {{ questao.explicacao }}</p>{% endif %}
+                </section>
+            {% else %}
+                <p class="admin-vazio">Ainda não há perguntas neste rascunho.</p>
+            {% endfor %}
+        </div>
+    {% elif secao == 'simulacoes' %}
+        <div class="admin-previa">
+            <section class="admin-catalogo-cartao">
+                <p class="visual-etiqueta">{{ dados.get('canal', '') }}</p>
+                <h2>{{ dados.get('assunto') or 'Assunto pendente' }}</h2>
+                <p>{{ dados.get('resumo', '') }}</p>
+                <p><strong>{{ dados.get('origem', '') }}</strong></p>
+                {% for paragrafo in dados.get('mensagem', []) %}<p>{{ paragrafo }}</p>{% endfor %}
+                <p>{{ dados.get('chamada', '') }}</p>
+                {% if dados.get('produto') %}
+                    <p><strong>{{ dados.produto.nome }}</strong> · {{ dados.produto.preco_anterior }} → {{ dados.produto.preco_atual }}</p>
+                {% endif %}
+                {% if dados.get('sinais') %}
+                    <h3>Sinais de risco</h3>
+                    <ul>{% for sinal in dados.sinais %}<li>{{ sinal }}</li>{% endfor %}</ul>
+                {% endif %}
+            </section>
+            {% for opcao in opcoes %}
+                <section class="admin-catalogo-cartao">
+                    <p class="visual-etiqueta">Alternativa {{ loop.index }} · {{ 'Segura' if opcao.segura else 'De risco' }}</p>
+                    <h2>{{ opcao.texto or 'Alternativa pendente' }}</h2>
+                    <p><strong>Consequência:</strong> {{ opcao.consequencia }}</p>
+                    <p><strong>Explicação:</strong> {{ opcao.explicacao }}</p>
+                </section>
+            {% endfor %}
+        </div>
+    {% else %}
+        <article class="admin-catalogo-cartao admin-previa admin-corpo-previa">
+            {% if corpo %}{{ corpo | safe }}{% else %}<p>O texto ainda está vazio.</p>{% endif %}
+        </article>
+    {% endif %}
+{% endblock %}

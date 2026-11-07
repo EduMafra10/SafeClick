@@ -1,0 +1,25 @@
+{% extends "administracao/base_catalogo.html" %}
+{% block titulo %}Importar rascunhos · Quizzes{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">Quizzes</p>
+            <h1>Importar rascunhos</h1>
+            <p>Selecione um arquivo JSON com até {{ max_lote }} quizzes. Confira os itens salvos antes de publicar.</p>
+        </div>
+    </header>
+    {% if mensagem %}<p class="admin-aviso admin-aviso--erro" role="alert">{{ mensagem }}</p>{% endif %}
+    <form class="admin-formulario admin-editor" method="post" enctype="multipart/form-data">
+        {{ formulario.hidden_tag() }}
+        <div class="admin-campo">
+            <label>Arquivo de quizzes (JSON)
+                <input type="file" name="lote" accept=".json,application/json" required>
+            </label>
+        </div>
+        <p class="admin-ajuda-campo">Cada item precisa de título, perguntas, gabarito e explicações. Títulos já cadastrados são preservados.</p>
+        <div class="admin-acoes admin-editor-final">
+            <button class="admin-botao" type="submit">Criar rascunhos</button>
+            <a class="admin-link" href="{{ url_for('administracao.catalogo.listar', secao=secao) }}">Voltar à lista</a>
+        </div>
+    </form>
+{% endblock %}

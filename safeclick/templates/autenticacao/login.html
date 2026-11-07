@@ -1,0 +1,27 @@
+{% extends "autenticacao/base.html" %}
+
+{% set titulo = "Entre na sua conta" %}
+{% set descricao = "Acesse seus conteúdos, quizzes e simulações." %}
+
+{% block conteudo %}
+    <form method="post" action="{{ url_for('autenticacao.login') }}">
+        {{ formulario.hidden_tag() }}
+        {{ exibir_campo(formulario.email, "username") }}
+
+        <div class="autenticacao-senha-login">
+            {{ exibir_campo(formulario.senha, "current-password") }}
+            <p class="autenticacao-recuperar">
+                <a href="{{ url_for('recuperacao.solicitar') }}">
+                    Esqueci minha senha
+                </a>
+            </p>
+        </div>
+
+        {{ formulario.enviar(class_="autenticacao-botao") }}
+    </form>
+{% endblock %}
+
+{% block rodape %}
+    Ainda não tem uma conta?
+    <a href="{{ url_for('autenticacao.cadastro') }}">Criar conta</a>
+{% endblock %}
