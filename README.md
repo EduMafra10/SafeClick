@@ -85,20 +85,12 @@ if (-not (Test-Path -LiteralPath .env)) {
 }
 ```
 
-O modelo atual contém as configurações básicas do banco e da chave da aplicação. Acrescente as variáveis da Twilio e do cookie, conforme a estrutura abaixo:
+O `.env.example` traz todas as variáveis, separadas por seção e com valores de exemplo no formato esperado. No `.env`, troque cada valor de exemplo pelo valor real do ambiente utilizado pelo grupo. As variáveis são lidas em `safeclick/config.py`:
 
-```dotenv
-DATABASE_URL="COLE_AQUI_A_CONEXAO_DO_NEON"
-SECRET_KEY="COLE_AQUI_A_CHAVE_DA_APLICACAO"
+- `APP_ENV=desenvolvimento` exige somente a `SECRET_KEY` para iniciar;
+- `APP_ENV=producao` exige também o banco, a Twilio e o e-mail, uma `SECRET_KEY` com pelo menos 32 caracteres e um `APP_BASE_URL` com `https://`, e ativa o cookie seguro.
 
-TWILIO_ACCOUNT_SID="COLE_AQUI_O_ACCOUNT_SID"
-TWILIO_AUTH_TOKEN="COLE_AQUI_O_AUTH_TOKEN"
-TWILIO_VERIFY_SERVICE_SID="COLE_AQUI_O_SERVICE_SID"
-
-SESSION_COOKIE_SECURE=false
-```
-
-Os textos acima são exemplos. Substitua-os pelos valores do ambiente utilizado pelo grupo.
+Se faltar alguma variável obrigatória, a aplicação não inicia e informa quais estão faltando.
 
 - **Neon:** obtenha a conexão selecionando o projeto, a branch e o banco corretos. Preserve os parâmetros fornecidos pelo serviço.
 - **Twilio:** utilize as credenciais da conta e o identificador de um serviço Verify configurado para TOTP.
