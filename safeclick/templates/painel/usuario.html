@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/painel.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conquistas.css') }}">
 
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/vendor/chart.umd.js') }}" defer></script>
@@ -278,6 +279,47 @@
                     "media": quizzes.percentual_acertos
                 }|tojson }}
             </script>
+        {% endif %}
+        
+        {% if conquistas %}
+            {% from "componentes/_icone_conquista.html" import icone_conquista %}
+            {% set liberadas = conquistas|selectattr("desbloqueada")|list|length %}
+
+            <section id="conquistas" class="painel-cartao conquistas-painel" aria-labelledby="titulo-conquistas">
+                <div class="painel-cartao-cabecalho">
+                    <div>
+                        <h2 id="titulo-conquistas">Suas conquistas</h2>
+                        <p>Liberadas automaticamente conforme você pratica. Valem para todo o seu histórico.</p>
+                    </div>
+
+                    <p class="conquistas-contagem">
+                        <strong>{{ liberadas }}</strong> de {{ conquistas|length }} desbloqueadas
+                    </p>
+                </div>
+
+                <ul class="conquistas-grade" role="list">
+                    {% for c in conquistas %}
+                        <li class="conquista{% if c.desbloqueada %} conquista--desbloqueada{% endif %}">
+                            <span class="conquista-icone">{{ icone_conquista(c.criterio) }}</span>
+
+                            <div>
+                                <h3>{{ c.nome }}</h3>
+                                <p>{{ c.descricao }}</p>
+
+                                {% if c.desbloqueada %}
+                                    <p class="conquista-status">Desbloqueada em {{ c.desbloqueada_em }}</p>
+                                {% elif c.meta > 1 %}
+                                    <progress class="conquista-progresso" max="{{ c.meta }}" value="{{ c.atual }}"
+                                              aria-label="Progresso de {{ c.nome }}">{{ c.atual }} de {{ c.meta }}</progress>
+                                    <p class="conquista-status">{{ c.atual }} de {{ c.meta }}</p>
+                                {% else %}
+                                    <p class="conquista-status">Ainda bloqueada</p>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
         {% endif %}
     </main>
 

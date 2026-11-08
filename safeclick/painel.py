@@ -4,6 +4,7 @@ from flask import Blueprint, abort, render_template, request
 from flask_login import current_user
 from psycopg import Error
 
+from safeclick.conquistas import carregar_conquistas_painel
 from safeclick.painel_db import buscar_painel_usuario
 from safeclick.sessoes import exigir_perfis
 
@@ -107,4 +108,8 @@ def exibir():
             description="Não foi possível carregar o seu painel agora. Tente novamente em instantes.",
         )
 
-    return render_template("painel/usuario.html", dados=dados, filtro=filtro)
+    conquistas = carregar_conquistas_painel(int(current_user.id))
+
+    return render_template(
+        "painel/usuario.html", dados=dados, filtro=filtro, conquistas=conquistas
+    )

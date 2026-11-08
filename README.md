@@ -135,6 +135,7 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 21. `sql/criar_desafios_senha.sql`
 22. `sql/adicionar_gestao_catalogo.sql`
 23. `sql/adicionar_formato_quizzes.sql`
+24. `sql/criar_conquistas.sql`
 
 Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
 

@@ -1,0 +1,38 @@
+{# Aviso de "conquista desbloqueada", incluído no cabeçalho de todas as páginas. #}
+{% from "componentes/_icone_conquista.html" import icone_conquista %}
+{% set novas = conquistas_para_exibir() if conquistas_para_exibir is defined else [] %}
+
+{% if novas %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conquistas.css') }}">
+    <script src="{{ url_for('static', filename='js/conquistas.js') }}" defer></script>
+
+    <div class="conquista-avisos" role="status" aria-live="polite">
+        {% for c in novas[:3] %}
+            <div class="conquista-aviso">
+                <span class="conquista-aviso-icone">{{ icone_conquista(c.criterio) }}</span>
+
+                <div class="conquista-aviso-texto">
+                    <small>Conquista desbloqueada</small>
+                    <strong>{{ c.nome }}</strong>
+                    <span>{{ c.descricao }}</span>
+                </div>
+
+                <button class="conquista-aviso-fechar" type="button" aria-label="Fechar aviso">×</button>
+            </div>
+        {% endfor %}
+
+        {% if novas|length > 3 %}
+            <div class="conquista-aviso">
+                <span class="conquista-aviso-icone">{{ icone_conquista("") }}</span>
+
+                <div class="conquista-aviso-texto">
+                    <small>Conquistas desbloqueadas</small>
+                    <strong>Mais {{ novas|length - 3 }} {{ "conquista" if novas|length == 4 else "conquistas" }}</strong>
+                    <a href="{{ url_for('painel.exibir') }}#conquistas">Ver todas no seu progresso</a>
+                </div>
+
+                <button class="conquista-aviso-fechar" type="button" aria-label="Fechar aviso">×</button>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
