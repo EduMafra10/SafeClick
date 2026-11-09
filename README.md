@@ -136,6 +136,9 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 22. `sql/adicionar_gestao_catalogo.sql`
 23. `sql/adicionar_formato_quizzes.sql`
 24. `sql/criar_conquistas.sql`
+25. `sql/criar_avaliacoes.sql`
+
+O [guia do RF17](docs/avaliacoes.md) explica como habilitar e testar as avaliações em ambiente de teste e preparar a coleta real.
 
 Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
 

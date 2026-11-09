@@ -1,0 +1,51 @@
+{% extends "quizzes/base.html" %}
+{% from "componentes/links_atividades.html" import links_atividades %}
+{% block titulo %}Avaliar {{ 'quiz' if tipo == 'quiz' else 'conteúdo' }} | SafeClick{% endblock %}
+
+{% block conteudo %}
+    <div class="quizzes-revisao">
+        <nav class="quizzes-navegacao" aria-label="Voltar à atividade">
+            <a href="{{ voltar }}">← Voltar à atividade</a>
+        </nav>
+        <header class="quizzes-introducao">
+            <p class="quizzes-etiqueta">Avaliação opcional</p>
+            <h1>{{ 'Avaliar quiz' if tipo == 'quiz' else 'Avaliar conteúdo' }}</h1>
+            <p>{{ atividade.titulo }}</p>
+        </header>
+
+        {% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}
+            <p class="quizzes-faixa" role="status">{{ mensagem }}</p>
+        {% endfor %}
+        {% if envio_invalido %}
+            <p class="quizzes-erro" role="alert">
+                {% if formulario.csrf_token.errors %}O formulário expirou ou é inválido. Recarregue a página e tente novamente.
+                {% else %}Confira a nota e o comentário antes de enviar.{% endif %}
+            </p>
+        {% endif %}
+        <form class="quizzes-cartao" method="post" aria-describedby="aviso-avaliacao">
+            {{ formulario.hidden_tag() }}
+            <fieldset class="quizzes-pergunta">
+                <legend>{{ formulario.nota.label.text }}</legend>
+                <div class="quizzes-opcoes">
+                    {% for opcao in formulario.nota %}
+                        <label class="quizzes-opcao">
+                            {{ opcao(required=true) }} <span>{{ opcao.label.text }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if formulario.nota.errors %}<p class="quizzes-erro">Escolha uma nota inteira de 1 a 5.</p>{% endif %}
+            </fieldset>
+            <div class="avaliacao-comentario">
+                {{ formulario.comentario.label }}
+                <p id="ajuda-comentario">Até {{ limite_comentario }} caracteres. Evite incluir dados pessoais seus ou de terceiros, como nomes, contatos e senhas.</p>
+                {{ formulario.comentario(rows=4, maxlength=limite_comentario, aria_describedby="ajuda-comentario") }}
+                {% for erro in formulario.comentario.errors %}<p class="quizzes-erro">{{ erro }}</p>{% endfor %}
+            </div>
+            <p id="aviso-avaliacao">A avaliação fica vinculada à sua conta para que você possa atualizá-la. O painel administrativo mostra resultados agrupados. Consulte a <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
+            <button class="quizzes-botao" type="submit">{{ 'Atualizar avaliação' if atividade.nota is not none else 'Enviar avaliação' }}</button>
+        </form>
+        <nav class="quizzes-acoes" aria-label="Próximas atividades">
+            {{ links_atividades(tipo, atividade.proxima_referencia) }}
+        </nav>
+    </div>
+{% endblock %}

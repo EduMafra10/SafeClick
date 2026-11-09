@@ -47,6 +47,7 @@ def carregar_configuracao():
         "APP_ENV": ambiente,
         "SECRET_KEY": _texto("SECRET_KEY"),
         "APP_BASE_URL": _texto("APP_BASE_URL", "http://127.0.0.1:5000").rstrip("/"),
+        "AVALIACOES_ATIVAS": _booleano("AVALIACOES_ATIVAS"),
         # banco de dados
         "DATABASE_URL": _texto("DATABASE_URL"),
         # Twilio Verify (segundo fator do login)

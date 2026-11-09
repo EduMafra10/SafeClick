@@ -1,4 +1,5 @@
 {% extends "quizzes/base.html" %}
+{% from "componentes/links_atividades.html" import links_atividades %}
 {% block titulo %}{{ quiz.titulo }} | SafeClick{% endblock %}
 
 {% block conteudo %}
@@ -58,5 +59,8 @@
                 </div>
             {% endif %}
         </form>
+        <nav class="quizzes-acoes" aria-label="Próximas atividades">
+            {{ links_atividades('quiz', quiz.proxima_referencia) }}
+        </nav>
     </div>
 {% endblock %}

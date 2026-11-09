@@ -1,4 +1,5 @@
 {% extends "quizzes/base.html" %}
+{% from "componentes/links_atividades.html" import links_atividades %}
 {% block titulo %}Resultado | SafeClick{% endblock %}
 
 {% block conteudo %}
@@ -58,8 +59,11 @@
         <nav class="quizzes-acoes" aria-label="Próximas ações">
             {% if quiz.pode_repetir %}
                 <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}">Tentar novamente</a>
+                {% if config.AVALIACOES_ATIVAS %}
+                    <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.quiz', tentativa_id=tentativa_id) }}">Avaliar quiz</a>
+                {% endif %}
             {% endif %}
-            <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.listar_quizzes') }}">Escolher outro quiz</a>
+            {{ links_atividades('quiz', quiz.proxima_referencia) }}
             {% if oficina %}
                 <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.exibir_guia') }}">Meu guia de revisão</a>
                 <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('conteudos.listar') }}">Reler os conteúdos</a>

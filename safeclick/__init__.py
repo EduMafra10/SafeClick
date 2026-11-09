@@ -19,6 +19,7 @@ from safeclick.senhas import senhas
 from safeclick.administracao import administracao
 from safeclick.painel import painel
 from safeclick.conquistas import conquistas
+from safeclick.avaliacoes import avaliacoes
 
 def create_app():
     app = Flask(__name__)
@@ -41,6 +42,7 @@ def create_app():
     app.register_blueprint(administracao)
     app.register_blueprint(painel)
     app.register_blueprint(conquistas)
+    app.register_blueprint(avaliacoes)
 
     # Registra as páginas de LGPD (política de privacidade e termos de uso).
     app.register_blueprint(privacidade)

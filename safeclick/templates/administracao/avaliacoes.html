@@ -1,0 +1,28 @@
+{% extends "administracao/base_catalogo.html" %}
+{% block titulo %}Avaliações{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">Administração</p>
+            <h1>Avaliações de conteúdos e quizzes</h1>
+            <p>Consulte a média e a quantidade de avaliações das atividades publicadas. Os indicadores aparecem a partir de {{ minimo }} avaliações por atividade.</p>
+        </div>
+    </header>
+    <ul class="admin-lista-itens">
+        {% for item in itens %}
+            <li class="admin-catalogo-cartao admin-linha-item">
+                <div>
+                    <p class="visual-etiqueta">{{ item.tipo }}</p>
+                    <h2>{{ item.titulo }}</h2>
+                </div>
+                {% if item.total is not none %}
+                    <p><strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5</strong> · {{ item.total }} avaliações</p>
+                {% else %}
+                    <p>Dados insuficientes</p>
+                {% endif %}
+            </li>
+        {% else %}
+            <li class="admin-catalogo-cartao">Ainda não há atividades publicadas.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

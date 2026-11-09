@@ -26,5 +26,12 @@
             <p>Consulte as contas e redefina o autenticador de quem perdeu o celular.</p>
             <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Gerenciar contas →</a>
         </section>
+        {% if config.AVALIACOES_ATIVAS %}
+            <section class="admin-catalogo-cartao">
+                <h2>Avaliações</h2>
+                <p>Consulte como os usuários avaliaram a utilidade das atividades.</p>
+                <a class="admin-link" href="{{ url_for('administracao.listar_avaliacoes') }}">Consultar avaliações →</a>
+            </section>
+        {% endif %}
     </div>
 {% endblock %}

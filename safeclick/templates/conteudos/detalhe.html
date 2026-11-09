@@ -1,3 +1,4 @@
+{% from "componentes/links_atividades.html" import links_atividades -%}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -39,6 +40,9 @@
                             <span aria-hidden="true">✓</span>
                             Você concluiu este conteúdo em {{ conteudo.concluido_em }}.
                         </p>
+                        {% if config.AVALIACOES_ATIVAS %}
+                            <a class="conteudos-botao" href="{{ url_for('avaliacoes.conteudo', slug=conteudo.slug) }}">Avaliar conteúdo</a>
+                        {% endif %}
                     {% else %}
                         <p>Terminou a leitura? Registre para acompanhar no seu progresso.</p>
 
@@ -50,6 +54,11 @@
                 </div>
                 {% endif %}
             </article>
+            {% if not pagina_editorial %}
+                <nav class="conteudos-acoes" aria-label="Próximas atividades">
+                    {{ links_atividades('conteudo', conteudo.proxima_referencia, 'conteudos-botao') }}
+                </nav>
+            {% endif %}
         </div>
     </main>
 

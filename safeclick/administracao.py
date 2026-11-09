@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 from psycopg import Error
 
 from safeclick import contas_db
+from safeclick.avaliacoes_db import MINIMO_AVALIACOES, listar_resumo_avaliacoes
 from safeclick.painel import FUSO_BRASILIA
 from safeclick.sessoes import exigir_perfis
 from safeclick.twilio_api import remover_fator_totp
@@ -44,6 +45,20 @@ def verificar_acesso_administracao():
 @administracao.get("/")
 def inicio():
     return render_template("administracao/inicio_catalogo.html", secoes=SECOES)
+
+
+@administracao.get("/avaliacoes")
+def listar_avaliacoes():
+    if not current_app.config["AVALIACOES_ATIVAS"]:
+        abort(404)
+    try:
+        itens = listar_resumo_avaliacoes()
+    except (Error, RuntimeError):
+        abort(503, description="Não foi possível consultar as avaliações agora. Tente novamente em instantes.")
+    return render_template(
+        "administracao/avaliacoes.html", secoes=SECOES, secao="avaliacoes",
+        itens=itens, minimo=MINIMO_AVALIACOES,
+    )
 
 
 @administracao.get("/simulacoes")

@@ -23,6 +23,10 @@
                 {% endfor %}
                 <a href="{{ url_for('administracao.listar_contas') }}"
                    {% if secao == 'contas' %}aria-current="page"{% endif %}>Contas</a>
+                {% if config.AVALIACOES_ATIVAS %}
+                    <a href="{{ url_for('administracao.listar_avaliacoes') }}"
+                       {% if secao == 'avaliacoes' %}aria-current="page"{% endif %}>Avaliações</a>
+                {% endif %}
                 <a href="{{ url_for('auditoria.listar') }}">Auditoria</a>
             </nav>
         {% endblock %}

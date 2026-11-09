@@ -330,6 +330,27 @@
     background: #0f2a31;
 }
 
+.conteudos-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.conteudos-acoes .conteudos-botao {
+    text-align: center;
+    text-decoration: none;
+}
+
+.conteudos-botao-secundario {
+    background: transparent;
+    color: var(--visual-texto);
+}
+
+.conteudos-botao-secundario:hover {
+    background: var(--visual-azul-suave);
+}
+
 .conteudos-conclusao .conteudos-concluido {
     display: inline-flex;
     align-items: center;
@@ -397,6 +418,10 @@
 }
 
 @media (max-width: 600px) {
+    .conteudos-acoes .conteudos-botao {
+        width: 100%;
+    }
+
     .conteudos-conteudo {
         padding-block: 30px 48px;
     }
