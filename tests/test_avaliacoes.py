@@ -2,7 +2,10 @@ import os
 import re
 import unittest
 from contextlib import nullcontext
+from decimal import Decimal
 from unittest.mock import patch
+
+from psycopg import Error
 
 from safeclick import create_app
 from safeclick.sessoes import Usuario
@@ -105,6 +108,49 @@ class AvaliacoesTeste(unittest.TestCase):
         for rota in (self.rota, "/avaliacoes/quizzes/19"):
             self.assertEqual(self.cliente.post(rota, data={"nota": "5", "csrf_token": token}).status_code, 404)
         self.salvar.assert_not_called()
+
+    def test_edita_avaliacao_do_quiz_por_item_do_catalogo_e_limpa_comentario(self):
+        self.rota = "/avaliacoes/quizzes/19"
+        self.buscar.return_value.update(nota=4, comentario="<script>privado</script>")
+        pagina = self.cliente.get(self.rota)
+        self.assertEqual(pagina.status_code, 200)
+        self.assertIn('href="/quizzes/resultado/19"', pagina.text)
+        self.assertIn("Atualizar avaliação", pagina.text)
+        self.assertIn("&lt;script&gt;privado&lt;/script&gt;", pagina.text)
+        self.assertNotIn("<script>privado</script>", pagina.text)
+
+        resposta = self.cliente.post(self.rota, data={
+            "nota": "5", "comentario": "  ", "csrf_token": self.csrf(),
+        })
+
+        self.assertEqual(resposta.status_code, 303)
+        self.assertEqual(resposta.location, self.rota)
+        self.buscar.assert_called_with(self.conexao, "quiz", 7, 19, bloquear=True)
+        self.salvar.assert_called_once_with(self.conexao, "quiz", 7, 42, 5, None)
+        self.assertIn("Avaliação salva", self.cliente.get(resposta.location).text)
+
+    def test_erro_no_banco_retorna_mensagem_sem_detalhes_privados(self):
+        self.salvar.side_effect = Error("detalhe privado do banco")
+        resposta = self.cliente.post(self.rota, data={"nota": "4", "csrf_token": self.csrf()})
+
+        self.assertEqual(resposta.status_code, 503)
+        self.assertIn("Não foi possível acessar a avaliação agora", resposta.text)
+        self.assertNotIn("detalhe privado do banco", resposta.text)
+
+    def test_painel_mostra_apenas_resumo_e_sinaliza_dados_insuficientes(self):
+        self.usuario.perfil = "administrador"
+        resumo = self.substituir("safeclick.administracao.listar_resumo_avaliacoes", return_value=[
+            {"tipo": "Conteúdo", "titulo": "Aprender", "total": None, "media": None,
+             "comentario": "Comentário privado", "usuario_id": 7},
+            {"tipo": "Quiz", "titulo": "Revisar", "total": 5, "media": Decimal("4.6")},
+        ])
+        resposta = self.cliente.get("/administracao/avaliacoes")
+
+        self.assertEqual(resposta.status_code, 200)
+        for texto in ("Aprender", "Dados insuficientes", "Revisar", "4,6 de 5", "5 avaliações"):
+            self.assertIn(texto, resposta.text)
+        self.assertNotIn("Comentário privado", resposta.text)
+        resumo.assert_called_once_with()
 
     def test_agregados_restritos_e_desativacao_fecha_as_rotas(self):
         resumo = self.substituir("safeclick.administracao.listar_resumo_avaliacoes", return_value=[])
