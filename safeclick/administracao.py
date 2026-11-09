@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from psycopg import Error
 
 from safeclick import contas_db
-from safeclick.avaliacoes_db import MINIMO_AVALIACOES, listar_resumo_avaliacoes
+from safeclick.avaliacoes_db import listar_resumo_avaliacoes
 from safeclick.painel import FUSO_BRASILIA
 from safeclick.sessoes import exigir_perfis
 from safeclick.twilio_api import remover_fator_totp
@@ -57,7 +57,7 @@ def listar_avaliacoes():
         abort(503, description="Não foi possível consultar as avaliações agora. Tente novamente em instantes.")
     return render_template(
         "administracao/avaliacoes.html", secoes=SECOES, secao="avaliacoes",
-        itens=itens, minimo=MINIMO_AVALIACOES,
+        itens=itens,
     )
 
 

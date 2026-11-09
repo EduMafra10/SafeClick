@@ -3,11 +3,12 @@ import re
 import unittest
 from contextlib import nullcontext
 from decimal import Decimal
-from unittest.mock import patch
+from unittest.mock import MagicMock, Mock, patch
 
 from psycopg import Error
 
 from safeclick import create_app
+from safeclick.avaliacoes_db import salvar_avaliacao
 from safeclick.sessoes import Usuario
 
 
@@ -137,17 +138,35 @@ class AvaliacoesTeste(unittest.TestCase):
         self.assertIn("Não foi possível acessar a avaliação agora", resposta.text)
         self.assertNotIn("detalhe privado do banco", resposta.text)
 
-    def test_painel_mostra_apenas_resumo_e_sinaliza_dados_insuficientes(self):
+    def test_falha_no_log_impede_confirmacao_e_reverte_a_transacao(self):
+        token = self.csrf()
+        falha = Error("Falha no registro de auditoria")
+        conexao = Mock()
+        conexao.execute.side_effect = [Mock(), falha]
+        contexto = MagicMock()
+        contexto.__enter__.return_value = conexao
+        self.abrir.return_value = contexto
+        self.salvar.side_effect = salvar_avaliacao
+
+        resposta = self.cliente.post(self.rota, data={"nota": "4", "csrf_token": token})
+
+        self.assertEqual(resposta.status_code, 503)
+        self.assertIs(contexto.__exit__.call_args.args[1], falha)
+        self.assertNotIn("Avaliação salva", resposta.text)
+
+    def test_painel_mostra_indicadores_desde_a_primeira_avaliacao(self):
         self.usuario.perfil = "administrador"
         resumo = self.substituir("safeclick.administracao.listar_resumo_avaliacoes", return_value=[
-            {"tipo": "Conteúdo", "titulo": "Aprender", "total": None, "media": None,
+            {"tipo": "Conteúdo", "titulo": "Aprender", "total": 1, "media": Decimal("4.0"),
              "comentario": "Comentário privado", "usuario_id": 7},
-            {"tipo": "Quiz", "titulo": "Revisar", "total": 5, "media": Decimal("4.6")},
+            {"tipo": "Quiz", "titulo": "Revisar", "total": 2, "media": Decimal("4.5")},
+            {"tipo": "Conteúdo", "titulo": "Praticar", "total": None, "media": None},
         ])
         resposta = self.cliente.get("/administracao/avaliacoes")
 
         self.assertEqual(resposta.status_code, 200)
-        for texto in ("Aprender", "Dados insuficientes", "Revisar", "4,6 de 5", "5 avaliações"):
+        for texto in ("Aprender", "4,0 de 5", "1 avaliação", "Revisar", "4,5 de 5", "2 avaliações",
+                      "Praticar", "Sem avaliações"):
             self.assertIn(texto, resposta.text)
         self.assertNotIn("Comentário privado", resposta.text)
         resumo.assert_called_once_with()
@@ -162,3 +181,21 @@ class AvaliacoesTeste(unittest.TestCase):
         self.assertEqual(self.cliente.get("/administracao/avaliacoes").status_code, 404)
         self.assertEqual(self.cliente.get(self.rota).status_code, 404)
         self.abrir.assert_not_called()
+
+
+class AvaliacoesBancoTeste(unittest.TestCase):
+    def test_salvamento_audita_os_dois_tipos_na_mesma_conexao(self):
+        for tipo in ("conteudo", "quiz"):
+            with self.subTest(tipo=tipo):
+                conexao = Mock()
+                conexao.execute.return_value.fetchone.return_value = {"id": 1}
+
+                salvar_avaliacao(conexao, tipo, 7, 42, 4, "Comentário privado")
+
+                gravacao, auditoria = conexao.execute.call_args_list
+                self.assertIn(f"INSERT INTO public.avaliacoes_{tipo}", gravacao.args[0])
+                self.assertEqual(gravacao.args[1], (7, 42, 4, "Comentário privado"))
+                self.assertIn("INSERT INTO public.logs_auditoria", auditoria.args[0])
+                campos = auditoria.args[1]
+                self.assertEqual(campos[:-1], (7, "avaliacao.salva", "sucesso", f"avaliacao_{tipo}", None))
+                self.assertEqual(campos[-1].obj, {})

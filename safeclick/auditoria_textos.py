@@ -16,6 +16,7 @@ EVENTOS = {
     "acesso.negado": ("Acesso negado", "acesso"),
     "conteudo.visualizado": ("Conteúdo aberto", "aprendizado"),
     "conteudo.concluido": ("Conteúdo concluído", "aprendizado"),
+    "avaliacao.salva": ("Avaliação salva", "aprendizado"),
     "quiz.concluido": ("Quiz respondido", "aprendizado"),
     "simulacao.concluida": ("Simulação respondida", "aprendizado"),
     "desafio_senha.concluido": ("Desafio de senhas concluído", "aprendizado"),
@@ -93,6 +94,8 @@ RECURSOS = {
     "tentativa_simulacao": "Tentativa de simulação",
     "simulacao": "Simulação",
     "conteudo": "Conteúdo",
+    "avaliacao_conteudo": "Avaliação de conteúdo",
+    "avaliacao_quiz": "Avaliação de quiz",
     "desafio_senha": "Partida do desafio",
     "usuario": "Conta",
     "aceite_termos": "Aceite",
@@ -207,6 +210,8 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
 
     if recurso_tipo in RECURSOS and recurso_id:
         frases.append(f"{RECURSOS[recurso_tipo]} nº {recurso_id}")
+    elif evento == "avaliacao.salva" and recurso_tipo in RECURSOS:
+        frases.append(RECURSOS[recurso_tipo])
 
     return frases
 

@@ -17,6 +17,7 @@ EVENTOS_PERMITIDOS = {
     "simulacao.criada",
     "conteudo.visualizado",
     "conteudo.concluido",
+    "avaliacao.salva",
     "api.consultada",
     "desafio_senha.concluido",
     "termo.aceito",

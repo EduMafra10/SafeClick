@@ -5,7 +5,7 @@
         <div>
             <p class="visual-etiqueta">Administração</p>
             <h1>Avaliações de conteúdos e quizzes</h1>
-            <p>Consulte a média e a quantidade de avaliações das atividades publicadas. Os indicadores aparecem a partir de {{ minimo }} avaliações por atividade.</p>
+            <p>Consulte a média e a quantidade de avaliações de cada atividade publicada a partir da primeira resposta.</p>
         </div>
     </header>
     <ul class="admin-lista-itens">
@@ -16,9 +16,9 @@
                     <h2>{{ item.titulo }}</h2>
                 </div>
                 {% if item.total is not none %}
-                    <p><strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5</strong> · {{ item.total }} avaliações</p>
+                    <p><strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5</strong> · {{ item.total }} {{ 'avaliação' if item.total == 1 else 'avaliações' }}</p>
                 {% else %}
-                    <p>Dados insuficientes</p>
+                    <p>Sem avaliações</p>
                 {% endif %}
             </li>
         {% else %}

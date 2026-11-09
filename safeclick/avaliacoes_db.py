@@ -1,8 +1,7 @@
+from safeclick.auditoria_db import registrar_evento
 from safeclick.db import conectar_banco
 from safeclick.navegacao_atividades import PROXIMO_CONTEUDO, PROXIMO_QUIZ
 
-
-MINIMO_AVALIACOES = 5
 
 _ALVOS = {
     "conteudo": (
@@ -64,10 +63,16 @@ def salvar_avaliacao(conexao, tipo, usuario_id, item_id, nota, comentario):
         """,
         (usuario_id, item_id, nota, comentario),
     )
+    registrar_evento(
+        usuario_id=usuario_id,
+        evento="avaliacao.salva",
+        resultado="sucesso",
+        recurso_tipo=f"avaliacao_{tipo}",
+        conexao=conexao,
+    )
 
 
 def listar_resumo_avaliacoes():
-    # A consulta retorna apenas agregados com volume suficiente por item.
     with conectar_banco() as conexao:
         return conexao.execute(
             """
@@ -76,7 +81,7 @@ def listar_resumo_avaliacoes():
             LEFT JOIN (
                 SELECT conteudo_id, count(*) AS total, round(avg(nota), 1) AS media
                 FROM public.avaliacoes_conteudo
-                GROUP BY conteudo_id HAVING count(*) >= %s
+                GROUP BY conteudo_id
             ) AS resumo ON resumo.conteudo_id = item.id
             WHERE item.secao = 'conteudos' AND item.estado = 'publicada'
             UNION ALL
@@ -86,10 +91,9 @@ def listar_resumo_avaliacoes():
             LEFT JOIN (
                 SELECT catalogo_id, count(*) AS total, round(avg(nota), 1) AS media
                 FROM public.avaliacoes_quiz
-                GROUP BY catalogo_id HAVING count(*) >= %s
+                GROUP BY catalogo_id
             ) AS resumo ON resumo.catalogo_id = item.id
             WHERE item.estado = 'publicada'
             ORDER BY tipo, titulo
-            """,
-            (MINIMO_AVALIACOES, MINIMO_AVALIACOES),
+            """
         ).fetchall()

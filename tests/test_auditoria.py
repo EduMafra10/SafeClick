@@ -103,6 +103,16 @@ class AuditoriaAcessoTeste(unittest.TestCase):
         self.assertIn("27/09/2026", html)
         self.assertIn("09:30:00", html)
 
+    def test_filtra_e_exibe_o_salvamento_da_avaliacao(self):
+        registros = [self.registro(evento="avaliacao.salva", recurso_tipo="avaliacao_quiz",
+                                   recurso_id=None, detalhes={})]
+        resposta, html, _, listar = self.consultar("/auditoria/?evento=avaliacao.salva", registros)
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(listar.call_args.kwargs["eventos"], {"avaliacao.salva"})
+        self.assertIn("Avaliação salva", html)
+        self.assertIn("Avaliação de quiz", html)
+
     def test_explica_registro_sem_usuario(self):
         registros = [
             self.registro(usuario_id=None, usuario_nome=None, usuario_email=None, usuario_perfil=None,
