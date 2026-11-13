@@ -266,9 +266,11 @@ class RotaPainelTeste(unittest.TestCase):
         self.assertIn("Responda um quiz para acompanhar sua evolução.", html)
         self.assertIn("Faça uma simulação para ver suas escolhas por cenário.", html)
 
-    def test_administrador_tambem_tem_painel(self):
+    def test_administrador_vai_para_a_visao_geral(self):
         self.entrar(perfil="administrador")
-        self.assertEqual(self.client.get("/painel/").status_code, 200)
+        resposta = self.client.get("/painel/")
+        self.assertEqual(resposta.location, "/administracao/")
+        self.buscar.assert_not_called()
 
     def hoje(self, dia):
         self.substituir(patch("safeclick.painel._hoje", return_value=dia))

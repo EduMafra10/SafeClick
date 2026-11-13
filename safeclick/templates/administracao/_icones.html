@@ -1,0 +1,16 @@
+{% macro icone(nome) -%}
+<svg class="admin-icone" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+     stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    {%- if nome == 'visao' -%}<path d="M3 13h7V3H3zM14 21h7V11h-7zM3 21h7v-5H3zM14 7h7V3h-7z"/>
+    {%- elif nome == 'conteudos' -%}<path d="M4 4h12l4 4v12H4z"/><path d="M8 12h8M8 16h6"/>
+    {%- elif nome == 'quizzes' -%}<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01"/>
+    {%- elif nome == 'simulacoes' -%}<path d="M4 5h16v11H8l-4 4z"/><path d="M12 8v3M12 13.5v.01"/>
+    {%- elif nome == 'paginas' -%}<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/>
+    {%- elif nome == 'contas' -%}<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.6.8 2.6 2.5 3 5.2"/>
+    {%- elif nome == 'avaliacoes' -%}<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>
+    {%- elif nome == 'auditoria' -%}<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>
+    {%- elif nome == 'plataforma' -%}<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>
+    {%- elif nome == 'sair' -%}<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>
+    {%- endif -%}
+</svg>
+{%- endmacro %}

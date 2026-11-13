@@ -14,6 +14,7 @@ def conta(**alteracoes):
         "id": 12, "nome": "João Teste", "email": "joao@example.test", "perfil": "usuario",
         "criado_em": datetime(2026, 11, 1, 2, 30, tzinfo=timezone.utc),
         "tem_autenticador": True, "autenticador_ativo": True,
+        "ultimo_acesso": datetime(2026, 11, 10, 22, 15, tzinfo=timezone.utc),
     }
     dados.update(alteracoes)
     return dados
@@ -38,6 +39,15 @@ class ContasBancoTeste(unittest.TestCase):
         self.assertIn("ILIKE", consulta.args[0])
         self.assertEqual(consulta.args[1]["padrao"], "%50\\%\\_a%")
         self.assertNotIn("senha_hash", consulta.args[0])
+
+    def test_filtro_do_autenticador_junto_com_a_busca(self):
+        self.conexao.execute.return_value.fetchone.return_value = {"total": 0}
+        contas_db.listar_contas(busca="ana", autenticador="pendente")
+        consulta = self.conexao.execute.call_args_list[1].args[0]
+        self.assertIn("(nome ILIKE %(padrao)s OR email ILIKE %(padrao)s) AND mfa_fator_sid IS NOT NULL AND mfa_confirmado_em IS NULL", consulta)
+        self.assertIn("evento = 'login.sucesso'", consulta)
+        with self.assertRaises(ValueError):
+            contas_db.listar_contas(autenticador="qualquer")
 
     def test_busca_por_numero_da_conta(self):
         self.conexao.execute.return_value.fetchone.return_value = {"total": 1}
@@ -79,6 +89,57 @@ class ContasBancoTeste(unittest.TestCase):
         with self.assertRaises(contas_db.ContaNaoEncontrada):
             contas_db.redefinir_autenticador(7, 99)
 
+    def preparar_perfil(self, perfil="usuario", autenticador_ativo=True, administradores=2):
+        self.conexao.execute.return_value.fetchall.return_value = [{"id": n} for n in range(administradores)]
+        self.conexao.execute.return_value.fetchone.return_value = {
+            "id": 12, "perfil": perfil, "autenticador_ativo": autenticador_ativo}
+        self.conexao.execute.return_value.rowcount = 3
+
+    def test_promover_encerra_sessoes_e_registra(self):
+        self.preparar_perfil()
+        contas_db.alterar_perfil(7, 12, "administrador")
+        comandos = [chamada.args for chamada in self.conexao.execute.call_args_list]
+        self.assertIn("perfil = 'administrador' FOR NO KEY UPDATE", comandos[0][0])
+        self.assertIn("FOR NO KEY UPDATE", comandos[1][0])
+        self.assertEqual(comandos[2], ("UPDATE public.usuarios SET perfil = %s WHERE id = %s", ("administrador", 12)))
+        self.assertIn("DELETE FROM public.sessoes_autenticadas", comandos[3][0])
+        dados = self.registrar.call_args.kwargs
+        self.assertEqual(dados["usuario_id"], 7)
+        self.assertEqual(dados["evento"], "usuario.perfil_alterado")
+        self.assertEqual(dados["recurso_id"], 12)
+        self.assertEqual(dados["detalhes"], {"perfil_anterior": "usuario", "perfil_novo": "administrador",
+                                             "sessoes_encerradas": 3})
+        self.assertIs(dados["conexao"], self.conexao)
+
+    def test_rebaixar_quando_ha_outro_administrador(self):
+        self.preparar_perfil(perfil="administrador", administradores=2)
+        contas_db.alterar_perfil(7, 12, "usuario")
+        self.assertEqual(self.registrar.call_args.kwargs["detalhes"]["perfil_novo"], "usuario")
+
+    def test_alteracoes_de_perfil_recusadas(self):
+        casos = (
+            ("propria conta", {}, (7, 7, "usuario"), "próprio perfil"),
+            ("mesmo perfil", {"perfil": "administrador"}, (7, 12, "administrador"), "já tem"),
+            ("sem autenticador", {"autenticador_ativo": False}, (7, 12, "administrador"), "autenticador ativo"),
+            ("ultimo administrador", {"perfil": "administrador", "administradores": 1}, (7, 12, "usuario"), "pelo menos um"),
+        )
+        for nome, conta_banco, argumentos, mensagem in casos:
+            with self.subTest(nome):
+                self.preparar_perfil(**conta_banco)
+                with self.assertRaisesRegex(contas_db.AlteracaoDePerfilRecusada, mensagem):
+                    contas_db.alterar_perfil(*argumentos)
+        comandos = " ".join(chamada.args[0] for chamada in self.conexao.execute.call_args_list)
+        self.assertNotIn("SET perfil", comandos)
+        self.registrar.assert_not_called()
+
+    def test_perfil_invalido_e_conta_inexistente(self):
+        with self.assertRaises(ValueError):
+            contas_db.alterar_perfil(7, 12, "suporte")
+        self.preparar_perfil()
+        self.conexao.execute.return_value.fetchone.return_value = None
+        with self.assertRaises(contas_db.ContaNaoEncontrada):
+            contas_db.alterar_perfil(7, 99, "administrador")
+
 
 class ContasRotasTeste(unittest.TestCase):
     def substituir(self, alvo, **argumentos):
@@ -108,6 +169,7 @@ class ContasRotasTeste(unittest.TestCase):
         self.redefinir = self.substituir("safeclick.administracao.contas_db.redefinir_autenticador",
                                          return_value={"identidade": "identidade", "fator_sid": "YF123"})
         self.remover = self.substituir("safeclick.administracao.remover_fator_totp")
+        self.alterar = self.substituir("safeclick.administracao.contas_db.alterar_perfil")
 
     def postar(self, url):
         pagina = self.client.get("/administracao/contas").get_data(as_text=True)
@@ -122,8 +184,8 @@ class ContasRotasTeste(unittest.TestCase):
         self.assertIn("joao@example.test", html)
         self.assertIn('href="/administracao/contas/12/redefinir-autenticador"', html)
         self.assertNotIn('href="/administracao/contas/7/redefinir-autenticador"', html)
-        self.listar.assert_called_once_with(busca="jo", pagina=1, por_pagina=20)
-
+        self.listar.assert_called_once_with(busca="jo", autenticador=None, pagina=1, por_pagina=20)
+        self.assertIn("Último acesso em 10/11/2026 às 19:15", html)
     def test_situacoes_do_autenticador(self):
         self.listar.return_value = ([conta(autenticador_ativo=False), conta(id=13, tem_autenticador=False,
                                                                             autenticador_ativo=False)], 2)
@@ -132,9 +194,16 @@ class ContasRotasTeste(unittest.TestCase):
         self.assertIn("Não configurado", html)
         self.assertNotIn('href="/administracao/contas/13/redefinir-autenticador"', html)
 
+    def test_filtra_pela_situacao_do_autenticador(self):
+        self.listar.return_value = ([conta(id=13, ultimo_acesso=None)], 1)
+        html = self.client.get("/administracao/contas?autenticador=pendente").get_data(as_text=True)
+        self.listar.assert_called_once_with(busca="", autenticador="pendente", pagina=1, por_pagina=20)
+        self.assertIn('<option value="pendente" selected>', html)
+        self.assertIn("Nenhum acesso registrado", html)
+
     def test_filtros_invalidos(self):
         for url in ("/administracao/contas?pagina=0", "/administracao/contas?pagina=abc",
-                    "/administracao/contas?outro=1"):
+                    "/administracao/contas?outro=1", "/administracao/contas?autenticador=bloqueado"):
             with self.subTest(url=url):
                 self.assertEqual(self.client.get(url).status_code, 400)
 
@@ -191,6 +260,69 @@ class ContasRotasTeste(unittest.TestCase):
         resposta = self.client.post("/administracao/contas/12/redefinir-autenticador")
         self.assertEqual(resposta.status_code, 400)
         self.redefinir.assert_not_called()
+
+    def test_lista_oferece_promover_e_remover_acesso(self):
+        self.listar.return_value = ([conta(), conta(id=13, perfil="administrador"),
+                                     conta(id=14, autenticador_ativo=False),
+                                     conta(id=7, nome="Admin", perfil="administrador")], 4)
+        html = self.client.get("/administracao/contas").get_data(as_text=True)
+        self.assertIn('href="/administracao/contas/12/perfil">Tornar administrador', html)
+        self.assertIn('href="/administracao/contas/13/perfil">Remover acesso de administrador', html)
+        self.assertNotIn('href="/administracao/contas/14/perfil"', html)
+        self.assertNotIn('href="/administracao/contas/7/perfil"', html)
+
+    def test_confirmacao_de_promocao(self):
+        resposta = self.client.get("/administracao/contas/12/perfil")
+        html = resposta.get_data(as_text=True)
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn("Confirmar promoção", html)
+        self.assertIn("próximo login", html)
+        self.alterar.assert_not_called()
+
+    def test_promover_volta_para_a_lista(self):
+        resposta = self.postar("/administracao/contas/12/perfil")
+        self.assertEqual(resposta.status_code, 303)
+        self.assertIn("/administracao/contas?busca=joao@example.test", resposta.location)
+        self.alterar.assert_called_once_with(7, 12, "administrador")
+        html = self.client.get(resposta.location).get_data(as_text=True)
+        self.assertIn("João Teste agora é administrador(a).", html)
+
+    def test_remover_acesso_de_administrador(self):
+        self.obter.return_value = conta(perfil="administrador")
+        self.assertIn("Confirmar remoção", self.client.get("/administracao/contas/12/perfil").get_data(as_text=True))
+        resposta = self.postar("/administracao/contas/12/perfil")
+        self.assertEqual(resposta.status_code, 303)
+        self.alterar.assert_called_once_with(7, 12, "usuario")
+
+    def test_bloqueios_da_alteracao_de_perfil(self):
+        for dados in (conta(id=7, perfil="administrador"), conta(autenticador_ativo=False)):
+            with self.subTest(dados=dados):
+                self.obter.return_value = dados
+                resposta = self.postar(f"/administracao/contas/{dados['id']}/perfil")
+                self.assertEqual(resposta.status_code, 409)
+                self.assertNotIn("Confirmar", resposta.get_data(as_text=True))
+        self.alterar.assert_not_called()
+
+    def test_recusa_do_banco_aparece_na_tela(self):
+        self.obter.return_value = conta(perfil="administrador")
+        self.alterar.side_effect = contas_db.AlteracaoDePerfilRecusada("O sistema precisa ter pelo menos um administrador.")
+        resposta = self.postar("/administracao/contas/12/perfil")
+        self.assertEqual(resposta.status_code, 409)
+        self.assertIn("pelo menos um administrador", resposta.get_data(as_text=True))
+
+    def test_falha_no_banco_ao_alterar_perfil(self):
+        self.alterar.side_effect = RuntimeError("banco")
+        resposta = self.postar("/administracao/contas/12/perfil")
+        self.assertEqual(resposta.status_code, 503)
+        self.assertIn("Nada foi alterado", resposta.get_data(as_text=True))
+
+    def test_alterar_perfil_exige_csrf_e_administrador(self):
+        self.assertEqual(self.client.post("/administracao/contas/12/perfil").status_code, 400)
+        self.obter.return_value = None
+        self.assertEqual(self.client.get("/administracao/contas/99/perfil").status_code, 404)
+        self.usuario.perfil = "usuario"
+        self.assertEqual(self.client.post("/administracao/contas/12/perfil").status_code, 403)
+        self.alterar.assert_not_called()
 
 
     

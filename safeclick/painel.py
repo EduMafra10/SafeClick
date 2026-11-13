@@ -1,6 +1,6 @@
 from datetime import date, datetime, timedelta, timezone
 
-from flask import Blueprint, abort, render_template, request
+from flask import Blueprint, abort, redirect, render_template, request, url_for
 from flask_login import current_user
 from psycopg import Error
 
@@ -96,6 +96,10 @@ def ler_filtro_periodo():
 
 @painel.get("/")
 def exibir():
+    # o administrador acompanha a plataforma na Visão geral, não um progresso próprio
+    if current_user.perfil == "administrador":
+        return redirect(url_for("administracao.inicio"))
+
     filtro = ler_filtro_periodo()
 
     try:

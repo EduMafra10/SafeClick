@@ -1,0 +1,74 @@
+{% from "administracao/_icones.html" import icone %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Administração{% endblock %} | SafeClick</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/administracao.css') }}">
+    <script src="{{ url_for('static', filename='js/administracao_menu.js') }}" defer></script>
+    {% block recursos %}{% endblock %}
+</head>
+<body class="site-visual admin-corpo">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+    {% set rota = request.endpoint or '' %}
+    {% set secao_atual = (request.view_args or {}).get('secao') %}
+    {% set nome = (current_user.nome|default('', true)|trim) or 'Administrador' %}
+
+    <aside class="admin-lateral">
+        <a class="admin-marca" href="{{ url_for('administracao.inicio') }}">
+            <strong>Safe<span>Click</span></strong>
+            <small>Área administrativa</small>
+        </a>
+
+        <details class="admin-menu" open>
+            <summary class="admin-menu-botao">Menu</summary>
+
+            <nav class="admin-menu-links" aria-label="Área administrativa">
+                <a href="{{ url_for('administracao.inicio') }}"
+                   {% if rota == 'administracao.inicio' %}aria-current="page"{% endif %}>{{ icone('visao') }}Visão geral</a>
+
+                <p class="admin-menu-grupo">Conteúdo</p>
+                {% for chave, rotulo in secoes_admin.items() %}
+                    <a href="{{ url_for('administracao.catalogo.listar', secao=chave) }}"
+                       {% if secao_atual == chave %}aria-current="page"{% endif %}>{{ icone(chave) }}{{ rotulo }}</a>
+                {% endfor %}
+
+                <p class="admin-menu-grupo">Pessoas</p>
+                <a href="{{ url_for('administracao.listar_contas') }}"
+                  {% if rota in ('administracao.listar_contas', 'administracao.redefinir_autenticador', 'administracao.alterar_perfil') %}aria-current="page"{% endif %}>{{ icone('contas') }}Contas</a>
+                {% if config.AVALIACOES_ATIVAS %}
+                    <a href="{{ url_for('administracao.listar_avaliacoes') }}"
+                       {% if rota == 'administracao.listar_avaliacoes' %}aria-current="page"{% endif %}>{{ icone('avaliacoes') }}Avaliações</a>
+                {% endif %}
+
+                <p class="admin-menu-grupo">Segurança</p>
+                <a href="{{ url_for('auditoria.listar') }}"
+                   {% if request.blueprint == 'auditoria' %}aria-current="page"{% endif %}>{{ icone('auditoria') }}Auditoria</a>
+            </nav>
+        </details>
+
+        <div class="admin-lateral-rodape">
+            <p class="admin-quem">
+                <strong>{{ nome }}</strong>
+                <span>{{ current_user.email }}</span>
+            </p>
+            <a class="admin-rodape-acao" href="{{ url_for('simulacoes.listar') }}">{{ icone('plataforma') }}Ver a plataforma</a>
+            <form method="post" action="{{ url_for('autenticacao.sair') }}">
+                {{ formulario_saida.csrf_token(id='csrf-saida') }}
+                <button class="admin-rodape-acao" type="submit">{{ icone('sair') }}Sair</button>
+            </form>
+        </div>
+    </aside>
+
+    <main id="conteudo" class="admin-principal {% block classe_principal %}{% endblock %}" tabindex="-1">
+        {% block navegacao %}{% endblock %}
+        {% for aviso in get_flashed_messages(category_filter=['administracao_sucesso']) %}
+            <p class="admin-aviso" role="status">{{ aviso }}</p>
+        {% endfor %}
+        {% if mensagem %}<p class="admin-aviso admin-aviso--erro" role="alert">{{ mensagem }}</p>{% endif %}
+        {% block conteudo %}{% endblock %}
+    </main>
+</body>
+</html>

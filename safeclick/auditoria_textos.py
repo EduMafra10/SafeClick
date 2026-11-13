@@ -29,6 +29,7 @@ EVENTOS = {
     "catalogo.excluido": ("Rascunho excluído", "administracao"),
     "catalogo.restaurado": ("Item restaurado", "administracao"),
     "mfa.reconfiguracao_administrativa": ("Autenticador redefinido pelo administrador", "administracao"),
+    "usuario.perfil_alterado": ("Perfil de acesso alterado", "administracao"),
     "auditoria.consultada": ("Auditoria consultada", "administracao"),
     "api.consultada": ("Consulta a serviço externo", "integracoes"),
 }
@@ -39,6 +40,8 @@ EVENTOS_ANTIGOS = {
 }
 
 RESULTADOS = {"sucesso": "Sucesso", "falha": "Falha", "negado": "Negado"}
+
+PERFIS = {"usuario": "usuário", "administrador": "administrador"}
 
 MOTIVOS_LOGIN = {
     "email_nao_cadastrado": "E-mail não cadastrado",
@@ -196,6 +199,15 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
 
     elif evento == "mfa.reconfiguracao_administrativa":
         sessoes = detalhes.pop("sessoes_encerradas", None)
+        if sessoes is not None:
+            frases.append(f"Sessões encerradas: {sessoes}")
+
+    elif evento == "usuario.perfil_alterado":
+        anterior = detalhes.pop("perfil_anterior", None)
+        novo = detalhes.pop("perfil_novo", None)
+        sessoes = detalhes.pop("sessoes_encerradas", None)
+        if anterior and novo:
+            frases.append(f"De {PERFIS.get(anterior, anterior)} para {PERFIS.get(novo, novo)}")
         if sessoes is not None:
             frases.append(f"Sessões encerradas: {sessoes}")
 

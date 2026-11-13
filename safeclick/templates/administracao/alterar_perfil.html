@@ -1,0 +1,43 @@
+{% extends "administracao/base.html" %}
+{% set promover = novo_perfil == 'administrador' %}
+{% block titulo %}{{ 'Tornar administrador' if promover else 'Remover acesso de administrador' }}{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">Contas</p>
+            <h1>{{ 'Tornar administrador' if promover else 'Remover acesso de administrador' }}</h1>
+            <p>{{ conta.nome }} · nº {{ conta.id }} · {{ conta.email }}</p>
+        </div>
+    </header>
+    <form method="post" class="admin-formulario">
+        {{ formulario.hidden_tag() }}
+        {% if promover %}
+            <p>Ao confirmar, esta conta passa a ter acesso à área administrativa:</p>
+            <ul class="admin-explicacao">
+                <li>poderá criar, editar e publicar conteúdos, quizzes, simulações e páginas;</li>
+                <li>poderá consultar a auditoria e redefinir o autenticador de outras contas;</li>
+                <li>poderá alterar o perfil de outras contas;</li>
+                <li>as sessões abertas desta conta são encerradas, e o novo acesso vale a partir do próximo login;</li>
+                <li>a operação fica registrada na auditoria com o seu nome.</li>
+            </ul>
+            <p class="admin-ajuda">Conceda esse acesso apenas a quem faz parte da equipe do SafeClick.</p>
+        {% else %}
+            <p>Ao confirmar, esta conta volta a ser uma conta comum:</p>
+            <ul class="admin-explicacao">
+                <li>perde o acesso à área administrativa;</li>
+                <li>os conteúdos que ela publicou continuam no ar;</li>
+                <li>as sessões abertas desta conta são encerradas;</li>
+                <li>a operação fica registrada na auditoria com o seu nome.</li>
+            </ul>
+            <p class="admin-ajuda">O sistema sempre mantém pelo menos um administrador.</p>
+        {% endif %}
+        <div class="admin-acoes">
+            {% if not bloqueio %}
+                <button class="admin-botao {{ '' if promover else 'admin-confirmar-remocao' }}" type="submit">
+                    {{ 'Confirmar promoção' if promover else 'Confirmar remoção' }}
+                </button>
+            {% endif %}
+            <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}

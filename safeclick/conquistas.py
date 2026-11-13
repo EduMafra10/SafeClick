@@ -20,6 +20,7 @@ def marcar_verificacao(resposta):
         and resposta.status_code < 400
         and not ja_conferiu
         and current_user.is_authenticated
+        and current_user.perfil == "usuario"
     ):
         session[_VERIFICAR] = True
     return resposta
@@ -31,7 +32,8 @@ def conquistas_para_exibir():
 
     g.conquistas_novas = []
 
-    if not current_user.is_authenticated:
+    # conquistas são da jornada do aluno; o administrador não recebe avisos
+    if not current_user.is_authenticated or current_user.perfil != "usuario":
         return []
 
     pendente = session.pop(_VERIFICAR, False)

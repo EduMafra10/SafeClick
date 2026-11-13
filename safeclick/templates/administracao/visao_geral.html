@@ -1,0 +1,212 @@
+{% extends "administracao/base.html" %}
+{% block titulo %}Visão geral{% endblock %}
+{% block recursos %}
+    <script src="{{ url_for('static', filename='js/vendor/chart.umd.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/visao_geral.js') }}" defer></script>
+{% endblock %}
+{% block classe_principal %}admin-vg{% endblock %}
+
+{% macro percentual(valor) %}{{ '—' if valor is none else valor ~ '%' }}{% endmacro %}
+
+{% block conteudo %}
+    {% set contas = dados.contas %}
+    {% set seguranca = dados.seguranca %}
+
+    <header class="admin-vg-topo">
+        <div>
+            <h1>Visão geral</h1>
+            <p>Uso da plataforma pelos usuários, sem contar administradores.</p>
+        </div>
+        <nav class="admin-vg-periodo" aria-label="Período dos indicadores">
+            {% for opcao in periodos %}
+                <a href="{{ url_for('administracao.inicio', periodo=opcao) }}"
+                   {% if opcao == dados.dias %}aria-current="page"{% endif %}>{{ opcao }} dias</a>
+            {% endfor %}
+        </nav>
+    </header>
+
+    <section class="admin-vg-numeros" aria-label="Resumo">
+        <div>
+            <p>Usuários cadastrados</p>
+            <strong>{{ contas.total }}</strong>
+            <span>{{ contas.novas }} {{ 'novo' if contas.novas == 1 else 'novos' }} em {{ dados.dias }} dias</span>
+        </div>
+        <div>
+            <p>Usuários ativos</p>
+            <strong>{{ contas.ativas }}</strong>
+            <span>{{ percentual(contas.percentual_ativas) }} fizeram alguma atividade</span>
+        </div>
+        <div>
+            <p>Atividades concluídas</p>
+            <strong>{{ dados.atividades.total }}</strong>
+            <span>no período</span>
+        </div>
+        <div>
+            <p>Autenticador ativo</p>
+            <strong>{{ percentual(contas.percentual_autenticador) }}</strong>
+            <span>{{ contas.autenticador_ativo }} de {{ contas.total }} contas</span>
+        </div>
+    </section>
+
+    <div class="admin-vg-linha admin-vg-linha--grafico">
+        <section>
+            <h2>Atividades por dia</h2>
+            <p class="admin-vg-sub">Últimos {{ dados.dias }} dias</p>
+            {% if dados.atividades.total %}
+                <div class="admin-vg-grafico">
+                    <canvas id="grafico-atividades" role="img"
+                            aria-label="Gráfico de barras com as atividades concluídas por dia"></canvas>
+                </div>
+                <ul class="admin-vg-legenda">
+                    {% for tipo, rotulo in rotulos_atividade.items() %}
+                        <li><i class="admin-vg-cor--{{ tipo }}" aria-hidden="true"></i>{{ rotulo }} <b>{{ dados.atividades.por_tipo[tipo] }}</b></li>
+                    {% endfor %}
+                </ul>
+                <script type="application/json" id="dados-visao-geral">{{ grafico|tojson }}</script>
+            {% else %}
+                <p class="admin-vg-vazio">Nenhuma atividade no período.</p>
+            {% endif %}
+        </section>
+
+        <div class="admin-vg-coluna">
+            <section>
+                <h2>Pendências</h2>
+                <p class="admin-vg-sub">O que pode precisar de você</p>
+                <ul class="admin-vg-pendencias">
+                    <li>
+                        <span>QR Code gerado e não ativado</span>
+                        <span><b>{{ contas.autenticador_pendente }}</b>
+                            <a href="{{ url_for('administracao.listar_contas', autenticador='pendente') }}">Contas</a></span>
+                    </li>
+                    {% if avaliacoes is not none %}
+                        <li>
+                            <span>Atividades com nota abaixo de 3</span>
+                            <span><b class="{{ 'admin-vg-erro' if notas_baixas }}">{{ notas_baixas }}</b>
+                                <a href="{{ url_for('administracao.listar_avaliacoes') }}">Avaliações</a></span>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <span>Falhas de login (24 h)</span>
+                        <span><b class="{{ 'admin-vg-alerta' if seguranca.falhas_login }}">{{ seguranca.falhas_login }}</b>
+                            <a href="{{ url_for('auditoria.listar', evento='login.falha') }}">Auditoria</a></span>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Conteúdo publicado</h2>
+                <p class="admin-vg-sub">Itens disponíveis para os usuários</p>
+                <table class="admin-vg-tabela">
+                    <thead><tr><th scope="col">Seção</th><th scope="col" class="admin-vg-num">Publicados</th><th scope="col" class="admin-vg-num">Rascunhos</th></tr></thead>
+                    <tbody>
+                        {% for chave, rotulo in secoes_admin.items() %}
+                            {% set item = dados.catalogo.get(chave, {'publicados': 0, 'rascunhos': 0}) %}
+                            <tr>
+                                <td><a href="{{ url_for('administracao.catalogo.listar', secao=chave) }}">{{ rotulo }}</a></td>
+                                <td class="admin-vg-num">{{ item.publicados }}</td>
+                                <td class="admin-vg-num">
+                                    {% if item.rascunhos %}
+                                        <a class="admin-vg-alerta" href="{{ url_for('administracao.catalogo.listar', secao=chave, estado='rascunho') }}">{{ item.rascunhos }}</a>
+                                    {% else %}0{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <div class="admin-vg-linha">
+        <section>
+            <h2>Simulações</h2>
+            <p class="admin-vg-sub">Escolhas seguras na primeira tentativa de cada pessoa</p>
+            {% for cenario in dados.simulacoes %}
+                <div class="admin-vg-barra">
+                    <div>
+                        <span>{{ cenario.titulo }}</span>
+                        <span><b>{{ percentual(cenario.percentual_seguras) }}</b> · {{ cenario.pessoas }} {{ 'pessoa' if cenario.pessoas == 1 else 'pessoas' }}</span>
+                    </div>
+                    <svg class="admin-vg-trilho" aria-hidden="true">
+                        <rect class="{{ 'admin-vg-trilho--baixo' if cenario.percentual_seguras < 60 }}"
+                              width="{{ [cenario.percentual_seguras, 1]|max }}%" height="100%" rx="3"></rect>
+                    </svg>
+                </div>
+            {% else %}
+                <p class="admin-vg-vazio">Nenhuma simulação feita no período.</p>
+            {% endfor %}
+        </section>
+
+        <section>
+            <h2>Quizzes com menor média</h2>
+            <p class="admin-vg-sub">Onde o conteúdo pode precisar de reforço</p>
+            {% if dados.quizzes %}
+                <table class="admin-vg-tabela">
+                    <thead><tr><th scope="col">Quiz</th><th scope="col" class="admin-vg-num">Tentativas</th><th scope="col" class="admin-vg-num">Acertos</th></tr></thead>
+                    <tbody>
+                        {% for quiz in dados.quizzes %}
+                            <tr><td>{{ quiz.titulo }}</td><td class="admin-vg-num">{{ quiz.tentativas }}</td><td class="admin-vg-num">{{ percentual(quiz.percentual_acertos) }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="admin-vg-vazio">Nenhum quiz respondido no período.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <div class="admin-vg-linha admin-vg-linha--fim {{ 'admin-vg-linha--unica' if avaliacoes is none }}">
+        <section>
+            <h2>Segurança nas últimas 24 horas</h2>
+            <p class="admin-vg-sub">Registros da auditoria</p>
+             <div class="admin-vg-seguranca-corpo">
+                <ul class="admin-vg-seguranca">
+                    <li><strong>{{ seguranca.falhas_login }}</strong> falhas de login</li>
+                    <li><strong>{{ seguranca.acessos_negados }}</strong> acessos negados</li>
+                    <li><strong>{{ seguranca.autenticadores_redefinidos }}</strong> autenticadores redefinidos</li>
+                </ul>
+                {% if eventos %}
+                    <table class="admin-vg-tabela">
+                        <caption class="admin-somente-leitor">Últimos eventos registrados</caption>
+                        <tbody>
+                            {% for evento in eventos %}
+                                <tr>
+                                    <td class="admin-vg-hora">{{ evento.hora.strftime('%d/%m %H:%M') }}</td>
+                                    <td>{{ evento.titulo }}</td>
+                                    <td class="admin-vg-num admin-vg-resultado--{{ evento.resultado }}">{{ evento.resultado|capitalize }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="admin-vg-vazio">Nenhum acesso registrado nas últimas 24 horas.</p>
+                {% endif %}
+            </div>
+            <a class="admin-vg-mais" href="{{ url_for('auditoria.listar') }}">Abrir a auditoria</a>
+        </section>
+
+        {% if avaliacoes is not none %}
+            <section>
+                <h2>Menores notas</h2>
+                <p class="admin-vg-sub">Média das avaliações de 1 a 5</p>
+                {% if avaliacoes %}
+                    <table class="admin-vg-tabela">
+                        <thead><tr><th scope="col">Atividade</th><th scope="col" class="admin-vg-num">Avaliações</th><th scope="col" class="admin-vg-num">Média</th></tr></thead>
+                        <tbody>
+                            {% for item in avaliacoes %}
+                                <tr>
+                                    <td>{{ item.tipo }}: {{ item.titulo }}</td>
+                                    <td class="admin-vg-num">{{ item.total }}</td>
+                                    <td class="admin-vg-num {{ 'admin-vg-erro' if item.media < 3 }}">{{ ('%.1f'|format(item.media)).replace('.', ',') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="admin-vg-vazio">Nenhuma atividade foi avaliada ainda.</p>
+                {% endif %}
+                <a class="admin-vg-mais" href="{{ url_for('administracao.listar_avaliacoes') }}">Ver todas as avaliações</a>
+            </section>
+        {% endif %}
+    </div>
+{% endblock %}

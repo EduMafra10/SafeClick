@@ -12,7 +12,7 @@
                 ('conteudos', 'conteudos.listar', 'Conteúdos'),
                 ('quizzes', 'quizzes.listar_quizzes', 'Quizzes'),
                 ('senhas', 'senhas.pagina', 'Laboratório')
-            ] %}
+            ] if not (grupo == 'painel' and current_user.perfil == 'administrador') %}
                 <a
                     href="{{ url_for(destino) }}"
                     {% if request.blueprint == grupo %}aria-current="page"{% endif %}
@@ -62,20 +62,7 @@
 
                     {% if current_user.perfil == 'administrador' %}
                         <a class="site-conta-link" href="{{ url_for('administracao.inicio') }}">
-                            Gestão de conteúdo
-                        </a>
-                        <a
-                            class="site-conta-link"
-                            href="{{ url_for('administracao.listar_simulacoes') }}"
-                        >
-                            Gestão de simulações
-                        </a>
-
-                        <a
-                            class="site-conta-link"
-                            href="{{ url_for('auditoria.listar') }}"
-                        >
-                            Logs de auditoria
+                            Área administrativa
                         </a>
                     {% endif %}
 
@@ -102,5 +89,14 @@
         {% endif %}
     </div>
 </header>
+
+{% if current_user.is_authenticated and current_user.perfil == 'administrador' %}
+    <div class="site-aviso-admin" role="note">
+        <p>
+            Você está vendo a plataforma como usuário. As suas atividades aqui não entram nos indicadores.
+            <a href="{{ url_for('administracao.inicio') }}">Voltar à área administrativa</a>
+        </p>
+    </div>
+{% endif %}
 
 {% include "componentes/_aviso_conquistas.html" %}

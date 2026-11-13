@@ -1,5 +1,6 @@
 
 from flask import Flask, redirect, session, url_for
+from flask_login import current_user
 
 from safeclick.config import carregar_configuracao
 from safeclick.conteudos import conteudos_bp, paginas_bp
@@ -63,7 +64,8 @@ def create_app():
 
     @app.get("/")
     def inicio():
-        # O painel de progresso é a página inicial de quem está logado
+        if current_user.is_authenticated and current_user.perfil == "administrador":
+            return redirect(url_for("administracao.inicio"))
         return redirect(url_for("painel.exibir"))
 
     return app

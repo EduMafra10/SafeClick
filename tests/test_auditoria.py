@@ -220,6 +220,13 @@ class AuditoriaTextosTeste(unittest.TestCase):
             textos.descrever_detalhes("evento.novo", {"campo_novo": 3}), ["Campo novo: 3"]
         )
 
+    def test_descreve_alteracao_de_perfil(self):
+        self.assertEqual(
+            textos.descrever_detalhes("usuario.perfil_alterado", {
+                "perfil_anterior": "usuario", "perfil_novo": "administrador", "sessoes_encerradas": 2}),
+            ["De usuário para administrador", "Sessões encerradas: 2"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

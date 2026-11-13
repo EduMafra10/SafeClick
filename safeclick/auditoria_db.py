@@ -30,6 +30,7 @@ EVENTOS_PERMITIDOS = {
     "catalogo.excluido",
     "catalogo.restaurado",
     "mfa.reconfiguracao_administrativa",
+    "usuario.perfil_alterado",
 }
 
 RESULTADOS_PERMITIDOS = {

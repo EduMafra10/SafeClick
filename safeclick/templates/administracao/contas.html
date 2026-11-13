@@ -1,4 +1,4 @@
-{% extends "administracao/base_catalogo.html" %}
+{% extends "administracao/base.html" %}
 {% block titulo %}Contas{% endblock %}
 {% block conteudo %}
     <header class="admin-introducao">
@@ -13,9 +13,18 @@
             <label for="busca">Buscar por nome, e-mail ou nº da conta</label>
             <input id="busca" name="busca" type="search" value="{{ busca }}" maxlength="100">
         </div>
-        <button class="admin-botao" type="submit">Buscar</button>
-        {% if busca %}
-            <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Limpar busca</a>
+        <div>
+            <label for="autenticador">Autenticador</label>
+            <select id="autenticador" name="autenticador">
+                <option value="">Todas as situações</option>
+                {% for valor, rotulo in filtros_autenticador.items() %}
+                    <option value="{{ valor }}" {% if autenticador == valor %}selected{% endif %}>{{ rotulo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="admin-botao" type="submit">Filtrar</button>
+        {% if busca or autenticador %}
+            <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Limpar filtros</a>
         {% endif %}
     </form>
     <p class="admin-total">{{ total }} {{ 'conta encontrada' if total == 1 else 'contas encontradas' }}</p>
@@ -35,6 +44,10 @@
                                 Autenticador: {{ conta.situacao_rotulo }}
                             </span>
                             <span>Cadastro em {{ conta.criado_em.strftime('%d/%m/%Y') }}</span>
+                            <span>
+                                {% if conta.ultimo_acesso %}Último acesso em {{ conta.ultimo_acesso.strftime('%d/%m/%Y às %H:%M') }}
+                                {% else %}Nenhum acesso registrado{% endif %}
+                            </span>
                         </p>
                     </div>
                     <div class="admin-acoes">
@@ -43,21 +56,28 @@
                             <a class="admin-link admin-botao-perigo"
                                href="{{ url_for('administracao.redefinir_autenticador', usuario_id=conta.id) }}">Redefinir autenticador</a>
                         {% endif %}
+                        {% if not conta.propria %}
+                            {% if conta.perfil == 'administrador' %}
+                                <a class="admin-link" href="{{ url_for('administracao.alterar_perfil', usuario_id=conta.id) }}">Remover acesso de administrador</a>
+                            {% elif conta.situacao == 'ativo' %}
+                                <a class="admin-link" href="{{ url_for('administracao.alterar_perfil', usuario_id=conta.id) }}">Tornar administrador</a>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p class="admin-vazio">Nenhuma conta corresponde à busca.</p>
+        <p class="admin-vazio">Nenhuma conta corresponde aos filtros.</p>
     {% endif %}
     {% if ultima_pagina > 1 %}
         <nav class="admin-paginacao" aria-label="Paginação das contas">
             {% if pagina > 1 %}
-                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, pagina=pagina-1) }}">← Anterior</a>
+                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, pagina=pagina-1) }}">← Anterior</a>
             {% endif %}
             <span>Página {{ pagina }} de {{ ultima_pagina }}</span>
             {% if pagina < ultima_pagina %}
-                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, pagina=pagina+1) }}">Próxima →</a>
+                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, pagina=pagina+1) }}">Próxima →</a>
             {% endif %}
         </nav>
     {% endif %}
