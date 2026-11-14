@@ -1,0 +1,44 @@
+{# Cartão da mensagem fictícia, usado na simulação e na prévia do administrador. #}
+{% macro mensagem_simulacao(cenario) %}
+    {% set modelos_visuais = {
+        'email': 'conta-bloqueada',
+        'sms': 'entrega-sms',
+        'conversa': 'falso-conhecido',
+        'loja': 'loja-falsa'
+    } %}
+    {% set paragrafos = cenario.get('mensagem') or [] %}
+    {% if paragrafos is string %}{% set paragrafos = paragrafos.splitlines() %}{% endif %}
+    <section
+        class="simulacao-mensagem mensagem--{{ modelos_visuais.get(cenario.get('tipo'), 'conta-bloqueada') }}"
+        aria-labelledby="titulo-mensagem"
+    >
+        <div class="mensagem-barra">{{ cenario.get('canal', '') }}</div>
+
+        {% if cenario.get('tipo') == "loja" and cenario.get("produto") %}
+            <div class="mensagem-produto">
+                <div class="produto-celular" aria-hidden="true"></div>
+
+                <div>
+                    <p class="produto-nome">{{ cenario["produto"]["nome"] }}</p>
+                    <p class="produto-preco-anterior">De <s>{{ cenario["produto"]["preco_anterior"] }}</s></p>
+                    <p class="produto-preco">{{ cenario["produto"]["preco_atual"] }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="mensagem-cabecalho">
+            <h2 id="titulo-mensagem">{{ cenario.get("assunto", "") }}</h2>
+            <p class="mensagem-origem">{{ cenario.get("origem", "") }}</p>
+        </div>
+
+        <div class="mensagem-corpo">
+            {% for paragrafo in paragrafos %}
+                <p class="mensagem-paragrafo">{{ paragrafo }}</p>
+            {% endfor %}
+
+            {% if cenario.get('tipo') != "conversa" and cenario.get("chamada") %}
+                <p class="mensagem-chamada">{{ cenario["chamada"] }}</p>
+            {% endif %}
+        </div>
+    </section>
+{% endmacro %}

@@ -233,6 +233,7 @@ def previa(secao, item_id):
     return render_template(
         "administracao/previa_catalogo.html", secao=secao, secoes=SECOES, item=item,
         dados=dados, corpo=corpo, opcoes=_opcoes_tela(dados) if secao == "simulacoes" else [],
+        questoes=_questoes_tela(dados) if secao == "quizzes" else [],
         url_publica=_url_publica(secao, item),
     )
 

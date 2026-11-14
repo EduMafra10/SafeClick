@@ -1,3 +1,4 @@
+{% from "componentes/_mensagem_simulacao.html" import mensagem_simulacao %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -31,55 +32,9 @@
 
         {% set mostrando_resultado = resultado and not erro %}
 
-        {# O tipo permite reutilizar os modelos nos novos cenários. #}
-        {% set modelos_visuais = {
-            'email': 'conta-bloqueada',
-            'sms': 'entrega-sms',
-            'conversa': 'falso-conhecido',
-            'loja': 'loja-falsa'
-        } %}
-
         <div class="simulacao-exercicio">
             <div class="simulacao-coluna">
-                <section
-                    class="simulacao-mensagem mensagem--{{ modelos_visuais.get(cenario['tipo'], 'conta-bloqueada') }}"
-                    aria-labelledby="titulo-mensagem"
-                >
-                    <div class="mensagem-barra">{{ cenario["canal"] }}</div>
-
-                    {% if cenario["tipo"] == "loja" and cenario.get("produto") %}
-                        <div class="mensagem-produto">
-                            <div class="produto-celular" aria-hidden="true"></div>
-
-                            <div>
-                                <p class="produto-nome">
-                                    {{ cenario["produto"]["nome"] }}
-                                </p>
-                                <p class="produto-preco-anterior">
-                                    De <s>{{ cenario["produto"]["preco_anterior"] }}</s>
-                                </p>
-                                <p class="produto-preco">
-                                    {{ cenario["produto"]["preco_atual"] }}
-                                </p>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <div class="mensagem-cabecalho">
-                        <h2 id="titulo-mensagem">{{ cenario["assunto"] }}</h2>
-                        <p class="mensagem-origem">{{ cenario["origem"] }}</p>
-                    </div>
-
-                    <div class="mensagem-corpo">
-                        {% for paragrafo in cenario["mensagem"] %}
-                            <p class="mensagem-paragrafo">{{ paragrafo }}</p>
-                        {% endfor %}
-
-                        {% if cenario["tipo"] != "conversa" %}
-                            <p class="mensagem-chamada">{{ cenario["chamada"] }}</p>
-                        {% endif %}
-                    </div>
-                </section>
+                {{ mensagem_simulacao(cenario) }}
 
                 {% if mostrando_resultado %}
                     <aside class="simulacao-sinais" aria-labelledby="titulo-sinais">

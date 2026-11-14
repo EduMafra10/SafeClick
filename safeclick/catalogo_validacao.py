@@ -1,7 +1,7 @@
 import json
 import re
-from html import escape
-from html.parser import HTMLParser
+
+from safeclick.texto_formatado import html_do_texto, texto_do_html  # noqa: F401
 
 
 SECOES = {
@@ -190,37 +190,3 @@ def validar(secao, dados, *, publicar=False):
                 raise DadosInvalidos("Preencha os três campos do produto ou deixe todos vazios.")
             cenario["produto"] = produto
     return cenario
-
-
-class _TextoLegado(HTMLParser):
-    blocos = {"p", "div", "section", "h1", "h2", "h3", "h4", "br", "li", "ul", "ol"}
-
-    def __init__(self):
-        super().__init__()
-        self.partes = []
-
-    def handle_starttag(self, tag, attrs):
-        if tag in self.blocos:
-            self.partes.append("\n")
-
-    def handle_endtag(self, tag):
-        if tag in self.blocos:
-            self.partes.append("\n")
-
-    def handle_data(self, data):
-        self.partes.append(data)
-
-
-def texto_do_html(html):
-    parser = _TextoLegado()
-    parser.feed(html)
-    return re.sub(r"\n{3,}", "\n\n", "".join(parser.partes)).strip()
-
-
-def html_do_texto(texto):
-    """Texto do editor vira HTML escapado, inclusive na prévia."""
-    paragrafos = re.split(r"\n[ \t]*\n", texto)
-    return "".join(
-        "<p>" + escape(paragrafo.strip()).replace("\n", "<br>\n") + "</p>"
-        for paragrafo in paragrafos if paragrafo.strip()
-    )

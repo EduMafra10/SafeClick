@@ -1175,3 +1175,825 @@ a.admin-botao {
 .admin-lista-itens .admin-link {
     min-height: 36px;
 }
+
+/* ---------- Editor do catálogo ---------- */
+.admin-corpo:has(.admin-editor-pagina) {
+    background: linear-gradient(to right, var(--admin-lateral) 248px, #f6f8f7 248px);
+}
+
+.admin-trilha {
+    margin-bottom: 8px;
+    color: var(--admin-texto-suave);
+    font-size: 14px;
+}
+
+.admin-trilha a {
+    color: var(--visual-verde);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.admin-trilha a:hover {
+    text-decoration: underline;
+}
+
+.admin-trilha span {
+    margin: 0 6px;
+}
+
+.admin-editor-topo {
+    padding-bottom: 22px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--admin-linha);
+}
+
+.admin-editor-topo h1 {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.25;
+}
+
+.admin-editor-topo p {
+    margin: 6px 0 0;
+    color: var(--admin-texto-suave);
+}
+
+.admin-editor-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+    gap: 24px;
+    max-width: 1180px;
+}
+
+.admin-editor-grade .admin-editor {
+    display: grid;
+    gap: 18px;
+    max-width: none;
+    margin: 0;
+}
+
+.admin-editor [hidden] {
+    display: none !important;
+}
+
+.admin-bloco,
+.admin-painel {
+    padding: 22px 24px;
+    border: 1px solid var(--admin-linha);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(23, 59, 69, .04);
+}
+
+.admin-bloco h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 18px;
+    font-size: 17px;
+}
+
+.admin-bloco h2 i {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--visual-verde-suave);
+    color: var(--visual-verde);
+    font-size: 13px;
+    font-style: normal;
+}
+
+.admin-bloco-ajuda {
+    margin: -8px 0 14px;
+    color: var(--admin-texto-suave);
+    font-size: 14px;
+}
+
+.admin-editor .admin-campo {
+    margin-bottom: 16px;
+}
+
+.admin-editor .admin-campo label {
+    margin-bottom: 0;
+    font-size: 14.5px;
+}
+
+.admin-editor .admin-campo label small,
+.admin-endereco small {
+    color: var(--admin-texto-suave);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.admin-editor .admin-campo input,
+.admin-editor .admin-campo textarea {
+    margin-top: 6px;
+    border-color: #c4d0cc;
+    font-size: 15px;
+}
+
+.admin-editor .admin-campo input:hover,
+.admin-editor .admin-campo textarea:hover {
+    border-color: #95a8a3;
+}
+
+.admin-campos-duplos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 14px;
+}
+
+.admin-endereco {
+    margin: -4px 0 16px;
+    color: var(--admin-texto-suave);
+    font-size: 14px;
+}
+
+.admin-endereco code,
+.admin-ajuda-formatacao code {
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: #f1f5f3;
+    color: var(--visual-texto);
+    font-size: 13px;
+}
+
+.admin-endereco-entrada {
+    display: flex;
+    align-items: stretch;
+    margin-top: 6px;
+}
+
+.admin-endereco-entrada span {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid #c4d0cc;
+    border-right: 0;
+    border-radius: 6px 0 0 6px;
+    background: #f1f5f3;
+    color: var(--admin-texto-suave);
+    font-size: 14px;
+}
+
+.admin-editor .admin-endereco-entrada input {
+    margin-top: 0;
+    border-radius: 0 6px 6px 0;
+}
+
+/* texto com formatação */
+.admin-formatacao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 7px;
+    border: 1px solid #c4d0cc;
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    background: #f6f8f7;
+}
+
+.admin-formatacao button {
+    padding: 5px 11px;
+    border: 1px solid var(--admin-linha);
+    border-radius: 5px;
+    background: #fff;
+    color: var(--visual-texto);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.admin-formatacao button:hover {
+    border-color: var(--visual-verde);
+    background: var(--visual-verde-suave);
+}
+
+.admin-editor .admin-campo-texto {
+    margin-bottom: 10px;
+}
+
+.admin-editor .admin-campo-texto textarea {
+    margin-top: 0;
+    border-radius: 0 0 6px 6px;
+    line-height: 1.6;
+}
+
+.admin-ajuda-formatacao {
+    color: var(--admin-texto-suave);
+    font-size: 14px;
+}
+
+.admin-ajuda-formatacao summary {
+    color: var(--visual-verde);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-ajuda-formatacao ul {
+    display: grid;
+    gap: 6px;
+    margin: 10px 0;
+    padding-left: 18px;
+}
+
+.admin-ajuda-formatacao p {
+    margin: 0;
+}
+
+/* escolhas em cartões: formato do quiz e canal da simulação */
+.admin-opcoes-cartao,
+.admin-canais {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.admin-opcoes-cartao {
+    grid-template-columns: 1fr 1fr;
+}
+
+.admin-canais {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.admin-opcoes-cartao legend {
+    margin-bottom: 8px;
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.admin-opcoes-cartao label,
+.admin-canais label {
+    position: relative;
+    display: grid;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid #c4d0cc;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.admin-canais label {
+    justify-items: center;
+    padding: 16px 8px;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.admin-canais label span {
+    font-size: 22px;
+}
+
+.admin-opcoes-cartao small {
+    color: var(--admin-texto-suave);
+    font-size: 13px;
+}
+
+.admin-opcoes-cartao input,
+.admin-canais input {
+    position: absolute;
+    opacity: 0;
+}
+
+.admin-opcoes-cartao label:hover,
+.admin-canais label:hover {
+    border-color: #95a8a3;
+}
+
+.admin-opcoes-cartao label:has(input:checked),
+.admin-canais label:has(input:checked) {
+    border-color: var(--visual-verde);
+    background: var(--visual-verde-suave);
+    box-shadow: inset 0 0 0 1px var(--visual-verde);
+}
+
+.admin-opcoes-cartao label:has(input:focus-visible),
+.admin-canais label:has(input:focus-visible) {
+    outline: 3px solid var(--visual-foco);
+    outline-offset: 2px;
+}
+
+[data-so-oficina] {
+    display: none;
+}
+
+.admin-oficina-ajuda {
+    margin: -8px 0 16px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #f1f5f3;
+    color: var(--admin-texto-suave);
+    font-size: 14px;
+}
+
+.admin-oficina-ajuda p {
+    margin: 0 0 10px;
+}
+
+.admin-checklist li[hidden] {
+    display: none;
+}
+
+.admin-editor:has(input[name="formato"][value="oficina"]:checked) [data-so-oficina] {
+    display: block;
+}
+
+/* perguntas e alternativas */
+.admin-editor .admin-subbloco {
+    position: relative;
+    padding: 16px 18px 4px;
+    border: 1px solid var(--admin-linha);
+    border-radius: 10px;
+    background: #fff;
+}
+
+.admin-editor .admin-subbloco legend {
+    margin: 4px 0 12px;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.admin-editor :is(.admin-alternativa, .admin-pergunta) > legend {
+    float: left;
+}
+
+.admin-editor :is(.admin-alternativa, .admin-pergunta) > .admin-acoes-edicao {
+    float: right;
+}
+
+.admin-editor :is(.admin-alternativa, .admin-pergunta) > :not(legend, .admin-acoes-edicao) {
+    clear: both;
+}
+
+.admin-editor .admin-alternativa[data-item="alternativa"] {
+    padding: 12px 14px 0;
+}
+
+.admin-editor .admin-alternativa[data-item="alternativa"] > legend {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.admin-editor .admin-alternativa[data-item="alternativa"] .admin-campo {
+    margin-bottom: 12px;
+}
+
+.admin-editor .admin-alternativa[data-item="alternativa"] .admin-campo input {
+    margin-top: 4px;
+    min-height: 42px;
+}
+
+.admin-editor .admin-alternativa[data-item="alternativa"] .admin-campo label {
+    font-size: 13.5px;
+}
+
+.admin-editor .admin-pergunta {
+    padding-bottom: 16px;
+    background: #fbfcfb;
+}
+
+.admin-editor .admin-pergunta .admin-itens-editor {
+    gap: 12px;
+}
+
+.admin-alternativa {
+    border-left: 4px solid #d5dedb !important;
+}
+
+.admin-alternativa:has([data-campo="segura"]),
+.admin-alternativa:has([data-campo="correta"]:checked) {
+    border-left-color: var(--visual-verde) !important;
+}
+
+.admin-alternativa:has([data-campo="segura"]:not(:checked)) {
+    border-left-color: #c47a3a !important;
+}
+
+.admin-editor .admin-acoes-edicao {
+    gap: 6px;
+    margin: 0 0 8px;
+}
+
+.admin-botao-icone {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 4px 9px;
+    border: 1px solid var(--admin-linha);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--visual-texto);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.admin-botao-icone:hover:not(:disabled) {
+    border-color: #95a8a3;
+}
+
+.admin-botao-icone:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.admin-alt-tipo,
+.admin-alt-correta {
+    position: relative;
+    display: inline-flex;
+    margin-right: 6px;
+    border: 1px solid #c4d0cc;
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.admin-alt-tipo input,
+.admin-alt-correta input {
+    position: absolute;
+    opacity: 0;
+}
+
+.admin-alt-tipo span,
+.admin-alt-correta span {
+    padding: 5px 11px;
+    color: var(--admin-texto-suave);
+}
+
+.admin-alt-tipo input:not(:checked) + span {
+    background: #fbf0e6;
+    color: #8a4a14;
+    font-weight: 600;
+}
+
+.admin-alt-tipo input:checked + span + span,
+.admin-alt-correta input:checked + span {
+    background: var(--visual-verde-suave);
+    color: var(--visual-verde);
+    font-weight: 600;
+}
+
+.admin-alt-correta input:checked + span::before {
+    content: "✓ ";
+}
+
+.admin-alt-tipo:has(input:focus-visible),
+.admin-alt-correta:has(input:focus-visible) {
+    outline: 3px solid var(--visual-foco);
+    outline-offset: 2px;
+}
+
+.admin-botao-adicionar {
+    width: 100%;
+    min-height: 44px;
+    margin-top: 12px;
+    border: 1px dashed #aebdb9;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--visual-verde);
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-botao-adicionar:hover:not(:disabled) {
+    border-color: var(--visual-verde);
+    background: var(--visual-verde-suave);
+}
+
+.admin-botao-adicionar:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+.admin-produto {
+    margin-top: 4px;
+    background: #fbfcfb !important;
+}
+
+/* coluna lateral */
+.admin-editor-lateral {
+    position: sticky;
+    top: 24px;
+    display: grid;
+    gap: 16px;
+}
+
+.admin-painel h2 {
+    margin: 0 0 12px;
+    font-size: 15px;
+}
+
+.admin-painel-estado {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px;
+}
+
+.admin-painel-estado small,
+.admin-painel-nota {
+    color: var(--admin-texto-suave);
+    font-size: 13px;
+}
+
+.admin-painel-alterado {
+    margin: -6px 0 12px;
+    color: var(--admin-alerta);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.admin-botao-largo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 46px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+.admin-botao-contorno {
+    border: 1px solid var(--visual-texto);
+    background: #fff;
+    color: var(--visual-texto);
+}
+
+.admin-botao-contorno:hover {
+    background: #f1f5f3;
+}
+
+.admin-botao-publicar {
+    border: 1px solid var(--visual-verde);
+    background: var(--visual-verde);
+    color: #fff;
+}
+
+.admin-botao-publicar:hover {
+    background: #1f5641;
+}
+
+.admin-botao-publicar[aria-disabled="true"] {
+    border-color: #e1e7e5;
+    background: #e9eeec;
+    color: #8c9c99;
+}
+
+.admin-painel-nota {
+    margin: 6px 0 0;
+}
+
+.admin-painel-mais {
+    display: flex;
+    gap: 18px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--admin-linha);
+    font-size: 14px;
+}
+
+.admin-painel-mais a {
+    color: var(--visual-texto);
+    font-weight: 600;
+}
+
+.admin-painel-mais a.admin-botao-perigo {
+    color: #8b362d;
+}
+
+.admin-checklist {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--admin-texto-suave);
+    font-size: 14px;
+}
+
+.admin-checklist li {
+    display: flex;
+    gap: 9px;
+}
+
+.admin-checklist li::before {
+    content: "";
+    flex: none;
+    width: 14px;
+    height: 14px;
+    margin-top: 3px;
+    border: 1.5px solid #b3c1bd;
+    border-radius: 50%;
+}
+
+.admin-checklist li.ok {
+    color: var(--visual-texto);
+}
+
+.admin-checklist li.ok::before {
+    content: "✓";
+    display: grid;
+    place-items: center;
+    border-color: var(--visual-verde);
+    background: var(--visual-verde);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.admin-checklist .admin-checklist-dica {
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px solid var(--admin-linha);
+}
+
+.admin-checklist .admin-checklist-dica::before {
+    content: "i";
+    display: grid;
+    place-items: center;
+    border-color: #b3c1bd;
+    color: var(--admin-texto-suave);
+    font-size: 10px;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.admin-voltar-lista {
+    justify-self: start;
+    font-size: 14px;
+}
+
+@media (max-width: 1100px) {
+    .admin-editor-grade {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-editor-lateral {
+        position: static;
+        grid-row: 1;
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
+}
+
+@media (max-width: 960px) {
+    .admin-corpo:has(.admin-editor-pagina) {
+        background: #f6f8f7;
+    }
+}
+
+@media (max-width: 700px) {
+    .admin-editor-lateral,
+    .admin-campos-duplos,
+    .admin-opcoes-cartao {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-canais {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .admin-bloco,
+    .admin-painel {
+        padding: 18px 16px;
+    }
+
+    .admin-editor :is(.admin-alternativa, .admin-pergunta) > .admin-acoes-edicao {
+        float: none;
+        clear: both;
+    }
+}
+
+/* ---------- Prévia do catálogo ---------- */
+.admin-previa-barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 24px;
+    padding-bottom: 22px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--admin-linha);
+}
+
+.admin-previa-barra h1 {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.25;
+}
+
+.admin-previa-barra p {
+    margin: 6px 0 0;
+    color: var(--admin-texto-suave);
+}
+
+.admin-previa-acoes {
+    display: flex;
+    gap: 10px;
+}
+
+.admin-previa-acoes .admin-botao-largo {
+    width: auto;
+    margin: 0;
+    padding: 0 20px;
+}
+
+.admin-previa-tela {
+    max-width: 1100px;
+    padding: 28px 32px 36px;
+    border: 1px dashed #b9c7c3;
+    border-radius: 14px;
+    background: var(--visual-fundo);
+}
+
+.admin-previa-rotulo {
+    margin: 0 0 18px;
+    color: var(--admin-texto-suave);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.admin-previa-tela .conteudos-artigo {
+    max-width: 760px;
+}
+
+.admin-previa-tela button:disabled,
+.admin-previa-tela fieldset:disabled {
+    cursor: default;
+}
+
+.admin-previa-subtitulo {
+    margin: 36px 0 4px;
+    padding-top: 24px;
+    border-top: 1px dashed #b9c7c3;
+    font-size: 18px;
+}
+
+.admin-previa-nota {
+    margin: 0 0 16px;
+    color: var(--admin-texto-suave);
+    font-size: 14px;
+}
+
+.admin-previa-tela .quizzes-responder + .admin-previa-nota,
+.admin-previa-tela .quizzes-perguntas + .admin-previa-nota {
+    margin-top: 16px;
+}
+
+.admin-previa-resultados {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+}
+
+.admin-previa-resultados .simulacao-opcoes {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-previa-resultados .simulacao-sinais {
+    margin: 0;
+}
+
+.admin-previa-tela .admin-previa-correta {
+    border-color: var(--visual-verde);
+    background: var(--visual-verde-suave);
+}
+
+.admin-previa-gabarito {
+    margin: 14px 0 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #f1f5f3;
+    font-size: 14px;
+}
+
+@media (max-width: 800px) {
+    .admin-previa-tela {
+        padding: 18px 14px 24px;
+    }
+
+    .admin-previa-resultados {
+        grid-template-columns: 1fr;
+    }
+}
