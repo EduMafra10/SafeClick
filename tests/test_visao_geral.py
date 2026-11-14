@@ -1,14 +1,16 @@
+import io
 import os
 import unittest
 from datetime import date, datetime, timezone
 from unittest.mock import MagicMock, patch
 
+from openpyxl import load_workbook
 from psycopg import Error
 
 from safeclick import create_app
 from safeclick import visao_geral_db
+from safeclick.visao_geral_excel import gerar_planilha
 from safeclick.sessoes import Usuario
-
 
 def dados_visao_geral(**alteracoes):
     dados = {
@@ -215,7 +217,104 @@ class VisaoGeralRotasTeste(unittest.TestCase):
         with patch("safeclick.conquistas.liberar_conquistas") as liberar, \
              patch("safeclick.simulacoes.listar_simulacoes_publicadas", return_value={}):
             self.client.get("/simulacoes/")
-        liberar.assert_not_called()
+            liberar.assert_not_called()
+
+    def test_exportar_planilha_registra_na_auditoria(self):
+        with patch("safeclick.administracao.registrar_evento") as registrar:
+            resposta = self.client.get("/administracao/visao-geral.xlsx?periodo=7")
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.mimetype, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        self.assertRegex(resposta.headers["Content-Disposition"],
+                         r'attachment; filename="safeclick-visao-geral-7-dias-\d{4}-\d{2}-\d{2}\.xlsx"')
+        self.assertEqual(resposta.headers["Cache-Control"], "no-store")
+        planilha = load_workbook(io.BytesIO(resposta.data))
+        self.assertEqual(planilha.sheetnames, ["Resumo", "Atividades por dia"])
+        self.assertEqual(self.buscar.call_args.args[0], 7)
+        dados = registrar.call_args.kwargs
+        self.assertEqual((dados["usuario_id"], dados["evento"]), (7, "visao_geral.exportada"))
+        self.assertEqual(dados["detalhes"], {"periodo_dias": 7})
+
+    def test_exportar_planilha_valida_periodo_e_perfil(self):
+        with patch("safeclick.administracao.registrar_evento") as registrar:
+            self.assertEqual(self.client.get("/administracao/visao-geral.xlsx?periodo=15").status_code, 400)
+            self.usuario.perfil = "usuario"
+            self.assertEqual(self.client.get("/administracao/visao-geral.xlsx").status_code, 403)
+        registrar.assert_not_called()
+
+    def test_exportar_sem_registro_na_auditoria_nao_entrega_o_arquivo(self):
+        with patch("safeclick.administracao.registrar_evento", side_effect=Error("falhou")):
+            resposta = self.client.get("/administracao/visao-geral.xlsx")
+        self.assertEqual(resposta.status_code, 503)
+        self.assertNotIn("Usuários cadastrados", resposta.get_data(as_text=True))
+
+    def test_botao_de_exportar_usa_o_periodo_da_tela(self):
+        self.buscar.return_value = dados_visao_geral(dias=90)
+        html = self.client.get("/administracao/?periodo=90").get_data(as_text=True)
+        self.assertIn('href="/administracao/visao-geral.xlsx?periodo=90"', html)
+
+
+class VisaoGeralPlanilhaTeste(unittest.TestCase):
+    def gerar(self, **alteracoes):
+        avaliacoes = alteracoes.pop("avaliacoes", None)
+        conteudo = gerar_planilha(dados_visao_geral(**alteracoes), {"conteudo": "Conteúdos", "quiz": "Quizzes",
+                                  "simulacao": "Simulações", "desafio": "Desafios"},
+                                  {"conteudos": "Conteúdos educativos", "quizzes": "Quizzes"},
+                                  avaliacoes, datetime(2026, 11, 14, 15, 30))
+        return load_workbook(io.BytesIO(conteudo))
+
+    def linhas(self, aba):
+        resultado = []
+        for linha in aba.iter_rows(values_only=True):
+            linha = list(linha)
+            while linha and linha[-1] is None:
+                linha.pop()
+            resultado.append(tuple(linha))
+        return resultado
+
+    def celula(self, aba, texto):
+        return next(c for linha in aba.iter_rows() for c in linha if c.value == texto)
+
+    def test_resumo_com_numeros_e_porcentagens_de_verdade(self):
+        resumo = self.gerar()["Resumo"]
+        linhas = self.linhas(resumo)
+        self.assertEqual(linhas[0][0], "SafeClick - Visão geral")
+        self.assertIn("(14/10/2026 a 12/11/2026)", linhas[1][0])
+        self.assertIn("Gerado em 14/11/2026 às 15:30", linhas[2][0])
+        self.assertIn(("Usuários ativos no período", 25, 0.62), linhas)
+        self.assertIn(("Promoção em uma loja desconhecida", 5, 0.4), linhas)
+        self.assertIn(("Quizzes", 4, 2), linhas)
+        self.assertIn(("Falhas de login", 7), linhas)
+        ativos = self.celula(resumo, "Usuários ativos no período")
+        self.assertEqual(resumo.cell(ativos.row, 3).number_format, "0%")
+        self.assertTrue(self.celula(resumo, "Indicador").font.bold)
+        self.assertFalse(any(l and "Menores notas" in str(l[0]) for l in linhas))
+
+    def test_atividades_por_dia_com_datas_e_total(self):
+        aba = self.gerar()["Atividades por dia"]
+        linhas = self.linhas(aba)
+        self.assertEqual(linhas[0], ("Dia", "Conteúdos", "Quizzes", "Simulações", "Desafios", "Total"))
+        self.assertEqual(linhas[1], (datetime(2026, 10, 14), 1, 0, 1, 0, 2))
+        self.assertEqual(linhas[-1], ("Total", 1, 1, 1, 0, 3))
+        self.assertEqual(aba["A2"].number_format, "dd/mm/yyyy")
+        self.assertEqual(aba.freeze_panes, "A2")
+
+    def test_nao_inclui_dados_pessoais(self):
+        planilha = self.gerar()
+        textos = " ".join(str(v) for aba in planilha for l in self.linhas(aba) for v in l)
+        self.assertNotIn("Login recusado", textos)
+        self.assertNotIn("login.falha", textos)
+
+    def test_avaliacoes_quando_ativas(self):
+        resumo = self.gerar(avaliacoes=[{"tipo": "Quiz", "titulo": "Senhas", "total": 4, "media": 2.25}])["Resumo"]
+        self.assertIn(("Senhas", "Quiz", 4, 2.25), self.linhas(resumo))
+        self.assertEqual(self.celula(resumo, 2.25).number_format, "0.0")
+
+    def test_secao_vazia_e_texto_que_parece_formula(self):
+        resumo = self.gerar(quizzes=[], simulacoes=[
+            {"titulo": '=HYPERLINK("http://x")', "pessoas": 1, "percentual_seguras": None}])["Resumo"]
+        celula = self.celula(resumo, '=HYPERLINK("http://x")')
+        self.assertEqual(celula.data_type, "s")
+        self.assertIn(("Nenhum registro no período.",), self.linhas(resumo))
 
 
 if __name__ == "__main__":

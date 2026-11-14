@@ -1,22 +1,26 @@
 from datetime import datetime
 
-from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from psycopg import Error
 
 from safeclick import auditoria_textos, contas_db
+from safeclick.auditoria_db import registrar_evento
 from safeclick.avaliacoes_db import listar_resumo_avaliacoes
 from safeclick.painel import FUSO_BRASILIA
 from safeclick.sessoes import exigir_perfis
 from safeclick.twilio_api import remover_fator_totp
 from safeclick.catalogo_admin import catalogo
 from safeclick.catalogo_validacao import SECOES
+from safeclick.visao_geral_excel import gerar_planilha
 from safeclick.visao_geral_db import PERIODOS, buscar_visao_geral
 
 
 administracao = Blueprint("administracao", __name__, url_prefix="/administracao")
 administracao.register_blueprint(catalogo)
+
+TIPO_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 ROTULOS_ATIVIDADE = {
     "conteudo": "Conteúdos concluídos",
@@ -88,6 +92,32 @@ def inicio():
         notas_baixas=sum(1 for item in avaliacoes or [] if item["media"] < 3),
         rotulos_atividade=ROTULOS_ATIVIDADE,
     )
+
+
+@administracao.get("/visao-geral.xlsx")
+def exportar_visao_geral():
+    dias = _ler_periodo()
+    agora = datetime.now(FUSO_BRASILIA)
+    try:
+        dados = buscar_visao_geral(dias, agora.date())
+        avaliacoes = _avaliacoes_mais_baixas()
+        registrar_evento(
+            usuario_id=int(current_user.id),
+            evento="visao_geral.exportada",
+            resultado="sucesso",
+            recurso_tipo="visao_geral",
+            detalhes={"periodo_dias": dias},
+        )
+    except (Error, RuntimeError):
+        current_app.logger.exception("Falha ao exportar a visão geral")
+        abort(503, description="Não foi possível exportar os indicadores agora. Tente novamente em instantes.")
+
+    conteudo = gerar_planilha(dados, ROTULOS_ATIVIDADE, SECOES, avaliacoes, agora)
+    nome = f"safeclick-visao-geral-{dias}-dias-{agora:%Y-%m-%d}.xlsx"
+    return Response(conteudo, mimetype=TIPO_EXCEL, headers={
+        "Content-Disposition": f'attachment; filename="{nome}"',
+        "Cache-Control": "no-store",
+    })
 
 
 @administracao.get("/avaliacoes")

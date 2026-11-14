@@ -31,6 +31,7 @@ EVENTOS_PERMITIDOS = {
     "catalogo.restaurado",
     "mfa.reconfiguracao_administrativa",
     "usuario.perfil_alterado",
+    "visao_geral.exportada",
 }
 
 RESULTADOS_PERMITIDOS = {

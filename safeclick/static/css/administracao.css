@@ -813,6 +813,27 @@ a.admin-botao {
     color: #fff;
 }
 
+.admin-vg-ferramentas {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+}
+
+.admin-vg .admin-vg-exportar {
+    padding: 6px 12px;
+    border: 1px solid var(--admin-linha);
+    border-radius: 6px;
+    color: var(--visual-texto);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.admin-vg .admin-vg-exportar:hover {
+    border-color: var(--visual-texto);
+}
+
 .admin-vg-numeros {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

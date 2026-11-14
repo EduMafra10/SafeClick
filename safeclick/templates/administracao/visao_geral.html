@@ -17,12 +17,16 @@
             <h1>Visão geral</h1>
             <p>Uso da plataforma pelos usuários, sem contar administradores.</p>
         </div>
-        <nav class="admin-vg-periodo" aria-label="Período dos indicadores">
-            {% for opcao in periodos %}
-                <a href="{{ url_for('administracao.inicio', periodo=opcao) }}"
-                   {% if opcao == dados.dias %}aria-current="page"{% endif %}>{{ opcao }} dias</a>
-            {% endfor %}
-        </nav>
+        <div class="admin-vg-ferramentas">
+            <nav class="admin-vg-periodo" aria-label="Período dos indicadores">
+                {% for opcao in periodos %}
+                    <a href="{{ url_for('administracao.inicio', periodo=opcao) }}"
+                       {% if opcao == dados.dias %}aria-current="page"{% endif %}>{{ opcao }} dias</a>
+                {% endfor %}
+            </nav>
+            <a class="admin-vg-exportar" href="{{ url_for('administracao.exportar_visao_geral', periodo=dados.dias) }}"
+               download>Exportar para Excel</a>
+        </div>
     </header>
 
     <section class="admin-vg-numeros" aria-label="Resumo">
