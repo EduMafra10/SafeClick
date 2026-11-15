@@ -1,0 +1,1266 @@
+[
+  {
+    "titulo": "Proteção de senhas e contas",
+    "formato": "perguntas",
+    "questoes": [
+      {
+        "enunciado": "Qual estratégia é mais adequada para criar uma senha?",
+        "explicacao": "Comprimento e imprevisibilidade ajudam a proteger a senha. Dados pessoais, sequências e exemplos públicos facilitam tentativas de descoberta. Releia “Como se proteger”, em Proteção de Senhas.",
+        "alternativas": [
+          {
+            "texto": "Usar o próprio nome seguido do ano de nascimento.",
+            "correta": false,
+            "explicacao": "Nome e ano de nascimento são dados previsíveis. A leitura orienta evitar informações pessoais ao criar senhas."
+          },
+          {
+            "texto": "Criar uma senha longa, exclusiva e difícil de prever, sem dados pessoais.",
+            "correta": true,
+            "explicacao": "Comprimento, imprevisibilidade e uso em uma única conta são os cuidados centrais. O laboratório também mostra que nomes e sequências enfraquecem a senha."
+          },
+          {
+            "texto": "Usar uma sequência do teclado para facilitar a memorização.",
+            "correta": false,
+            "explicacao": "Sequências do teclado são padrões conhecidos por programas de adivinhação. Ser fácil de lembrar não torna essa combinação segura."
+          },
+          {
+            "texto": "Copiar uma senha publicada como exemplo em uma aula.",
+            "correta": false,
+            "explicacao": "Um exemplo de aula já é público. Crie uma combinação própria e exclusiva em vez de usar uma senha que outras pessoas também conhecem."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uma pessoa usa a mesma senha no e-mail, na rede social e em uma loja virtual. Qual é o principal risco dessa prática?",
+        "explicacao": "Uma senha descoberta pode ser testada em outras contas. Usar senhas diferentes reduz o impacto de um comprometimento. Releia “Por que senhas fracas são perigosas”.",
+        "alternativas": [
+          {
+            "texto": "Só a loja em que ocorreu o vazamento fica em risco.",
+            "correta": false,
+            "explicacao": "O vazamento pode atingir também as outras contas que usam a combinação. A origem na loja não limita onde a senha será testada."
+          },
+          {
+            "texto": "Somente a conta de e-mail precisa de uma senha exclusiva.",
+            "correta": false,
+            "explicacao": "A conta de e-mail também precisa de proteção, mas o risco da reutilização vale para cada serviço que aceita a senha exposta."
+          },
+          {
+            "texto": "Ativar a segunda etapa dispensa senhas diferentes entre serviços.",
+            "correta": false,
+            "explicacao": "A segunda etapa acrescenta proteção, mas não retira de circulação uma senha exposta. Senhas diferentes continuam necessárias."
+          },
+          {
+            "texto": "A descoberta da senha em um serviço pode comprometer os demais.",
+            "correta": true,
+            "explicacao": "No credential stuffing, a combinação exposta é testada em outros serviços. Usar uma senha exclusiva em cada um reduz esse alcance."
+          }
+        ]
+      },
+      {
+        "enunciado": "Para que serve ativar a verificação em duas etapas em uma conta?",
+        "explicacao": "A segunda etapa acrescenta proteção caso a senha seja descoberta. Ela não elimina todos os riscos nem dispensa outros cuidados. Releia “O que é”, em Verificação em duas etapas.",
+        "alternativas": [
+          {
+            "texto": "Acrescentar uma verificação além da senha para dificultar acessos indevidos.",
+            "correta": true,
+            "explicacao": "A segunda etapa pede outra prova de identidade. Ela complementa a senha e dificulta que alguém entre conhecendo apenas a combinação."
+          },
+          {
+            "texto": "Garantir que nenhuma tentativa de golpe terá sucesso.",
+            "correta": false,
+            "explicacao": "A segunda etapa reduz riscos de acesso, mas não garante proteção contra todos os golpes. Códigos também podem ser pedidos por falsos atendentes."
+          },
+          {
+            "texto": "Permitir compartilhar a senha sem qualquer risco.",
+            "correta": false,
+            "explicacao": "A senha e os códigos devem permanecer em segredo. Ativar a segunda etapa não autoriza compartilhar credenciais."
+          },
+          {
+            "texto": "Substituir a necessidade de atualizar o dispositivo.",
+            "correta": false,
+            "explicacao": "Atualizações corrigem falhas do dispositivo e dos programas. A segunda etapa protege o acesso à conta e não substitui esse cuidado."
+          }
+        ]
+      },
+      {
+        "enunciado": "Alguém se apresenta como suporte de um aplicativo e pede que você envie o código de verificação recebido por SMS. Você não iniciou nenhum atendimento. Como agir?",
+        "explicacao": "Códigos de verificação podem permitir acesso à conta. Um golpista pode se passar pelo suporte para obter essa informação e agir em seu nome. Releia “Cuidados”, em Verificação em duas etapas.",
+        "alternativas": [
+          {
+            "texto": "Enviar o código se a pessoa souber seu nome.",
+            "correta": false,
+            "explicacao": "Conhecer seu nome não comprova a identidade do atendente. Dados vazados ou públicos podem ser usados para tornar o contato convincente."
+          },
+          {
+            "texto": "Enviar apenas parte do código para testar o atendimento.",
+            "correta": false,
+            "explicacao": "Enviar parte de um código não verifica o suporte. O material orienta não compartilhar códigos e procurar um canal conhecido por conta própria."
+          },
+          {
+            "texto": "Não compartilhar o código e procurar o suporte pelo canal oficial.",
+            "correta": true,
+            "explicacao": "O código pode permitir o registro ou acesso à conta. Mantenha-o em segredo e procure o suporte pelo canal oficial conhecido."
+          },
+          {
+            "texto": "Publicar o código no grupo da turma para pedir orientação.",
+            "correta": false,
+            "explicacao": "Publicar o código permite que outras pessoas o vejam. Para pedir orientação, descreva a situação sem expor códigos ou senhas."
+          }
+        ]
+      },
+      {
+        "enunciado": "Você confirma, pelo canal oficial de um serviço, que sua senha foi exposta em um vazamento. O que deve fazer?",
+        "explicacao": "Substitua a senha exposta em todos os serviços onde foi repetida e ative a segunda etapa. Releia “O que fazer”, em Vazamento de dados.",
+        "alternativas": [
+          {
+            "texto": "Aguardar um acesso indevido antes de tomar providências.",
+            "correta": false,
+            "explicacao": "Uma senha já exposta pode ser usada antes de surgir um aviso de invasão. A leitura recomenda trocar a combinação em todos os serviços onde foi repetida."
+          },
+          {
+            "texto": "Trocar a senha no serviço e onde ela foi repetida, usando senhas diferentes.",
+            "correta": true,
+            "explicacao": "A troca remove a senha comprometida de cada conta afetada. Usar combinações diferentes evita repetir o mesmo risco entre serviços."
+          },
+          {
+            "texto": "Trocar apenas a foto e o nome do perfil.",
+            "correta": false,
+            "explicacao": "Foto e nome do perfil não alteram a senha aceita pelo serviço. A medida de proteção é substituir a combinação exposta."
+          },
+          {
+            "texto": "Enviar a senha antiga aos amigos para que verifiquem o vazamento.",
+            "correta": false,
+            "explicacao": "Enviar a senha antiga amplia sua divulgação. Verifique o aviso pelo canal oficial e altere a senha, sem compartilhar a combinação."
+          }
+        ]
+      },
+      {
+        "enunciado": "Como um gerenciador de senhas pode ajudar a seguir a recomendação de exclusividade?",
+        "explicacao": "Ele ajuda a guardar combinações diferentes sem precisar decorar todas. Releia “Como se proteger”, em Proteção de Senhas.",
+        "alternativas": [
+          {
+            "texto": "Guardar uma combinação diferente para cada serviço.",
+            "correta": true,
+            "explicacao": "O gerenciador permite organizar senhas exclusivas. Assim, memorizar muitas combinações não precisa levar à reutilização."
+          },
+          {
+            "texto": "Usar a mesma combinação longa em todos os serviços.",
+            "correta": false,
+            "explicacao": "O comprimento não elimina o risco da reutilização. Uma combinação exposta continuaria válida em várias contas."
+          },
+          {
+            "texto": "Desativar a segunda etapa para simplificar o acesso.",
+            "correta": false,
+            "explicacao": "A segunda etapa complementa a senha. Guardar as senhas em um gerenciador não substitui essa verificação."
+          },
+          {
+            "texto": "Preencher a senha do e-mail em qualquer formulário recebido.",
+            "correta": false,
+            "explicacao": "Um gerenciador não torna legítimo um formulário desconhecido. Verifique o serviço e não entregue a senha a terceiros."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uma ideia de senha tem 16 caracteres, mas repete uma sequência do teclado. O que o laboratório ensina sobre ela?",
+        "explicacao": "O comprimento sozinho não elimina padrões fáceis de adivinhar. Releia as orientações de força estimada no Laboratório de senhas.",
+        "alternativas": [
+          {
+            "texto": "O tamanho garante que ela não pode ser descoberta.",
+            "correta": false,
+            "explicacao": "O laboratório chama o resultado de estimativa. Uma sequência conhecida continua previsível mesmo quando é longa."
+          },
+          {
+            "texto": "Acrescentar o ano de nascimento elimina o padrão.",
+            "correta": false,
+            "explicacao": "Datas pessoais acrescentam outro elemento previsível. A orientação é evitar nomes, datas e sequências fáceis de adivinhar."
+          },
+          {
+            "texto": "É preciso substituir o padrão por uma combinação longa e imprevisível, exclusiva daquela conta.",
+            "correta": true,
+            "explicacao": "Comprimento e ausência de padrões se complementam. A exclusividade evita que a mesma senha proteja contas diferentes."
+          },
+          {
+            "texto": "Copiar uma senha conhecida do desafio é uma alternativa segura.",
+            "correta": false,
+            "explicacao": "As senhas do desafio são exemplos públicos. Servem para aprender sobre vazamentos e não devem ser usadas como senha pessoal."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Phishing: aprenda antes de clicar",
+    "formato": "perguntas",
+    "questoes": [
+      {
+        "enunciado": "Você recebe um e-mail dizendo que seu acesso ao portal da faculdade será bloqueado em dez minutos. A mensagem pede que você clique em um link e informe sua senha. Qual é a atitude mais segura?",
+        "explicacao": "Golpistas podem usar ameaças de bloqueio para provocar decisões apressadas. Verifique a situação por um canal oficial acessado independentemente da mensagem.",
+        "alternativas": [
+          {
+            "texto": "Clicar imediatamente para evitar o bloqueio.",
+            "correta": false,
+            "explicacao": "O prazo curto tenta provocar uma decisão apressada. Usar o link da própria ameaça impede uma verificação independente."
+          },
+          {
+            "texto": "Responder ao e-mail perguntando se ele é verdadeiro.",
+            "correta": false,
+            "explicacao": "Responder ao mesmo remetente não confirma sua identidade. Procure o portal pelo endereço conhecido para verificar a situação."
+          },
+          {
+            "texto": "Acessar o portal pelo endereço conhecido e verificar o aviso.",
+            "correta": true,
+            "explicacao": "Acessar o endereço conhecido evita depender do link recebido. A urgência é um sinal para conferir a origem antes de fornecer dados."
+          },
+          {
+            "texto": "Encaminhar o link aos colegas para que testem primeiro.",
+            "correta": false,
+            "explicacao": "Encaminhar o link para que colegas testem pode expor outras pessoas. Verifique pelo canal oficial sem espalhar o endereço suspeito."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uma mensagem apresenta o logotipo da faculdade e menciona seu nome. Isso comprova que ela foi enviada pela instituição?",
+        "explicacao": "Informações pessoais e elementos visuais podem tornar uma fraude convincente. Confirme a identidade do remetente por um canal oficial antes de atender a pedidos.",
+        "alternativas": [
+          {
+            "texto": "Não. A aparência e os dados citados podem ser usados por golpistas.",
+            "correta": true,
+            "explicacao": "Logotipo e nome podem ser copiados ou obtidos em vazamentos. A leitura sobre phishing orienta conferir remetente e domínio."
+          },
+          {
+            "texto": "Sim. Somente a faculdade pode colocar seu logotipo em mensagens.",
+            "correta": false,
+            "explicacao": "Uma marca visual pode ser reproduzida em mensagens falsas. Ela não prova quem enviou a comunicação."
+          },
+          {
+            "texto": "Sim. Conhecer o nome do estudante comprova a identidade do remetente.",
+            "correta": false,
+            "explicacao": "O nome pode estar disponível publicamente ou em dados vazados. Conhecê-lo não autentica o remetente."
+          },
+          {
+            "texto": "Uma assinatura visual profissional dispensa conferir o endereço do remetente.",
+            "correta": false,
+            "explicacao": "Uma assinatura bem produzida também pode ser imitada. A conferência do endereço e do canal oficial continua necessária."
+          }
+        ]
+      },
+      {
+        "enunciado": "Você recebe um anexo chamado “Atualização de matrícula”, mas não esperava esse documento e não reconhece o remetente. O que deve fazer primeiro?",
+        "explicacao": "Anexos inesperados podem conter programas maliciosos. Confirmar a origem antes de abrir reduz o risco de comprometer o dispositivo e os dados armazenados.",
+        "alternativas": [
+          {
+            "texto": "Abrir o arquivo para descobrir quem o enviou.",
+            "correta": false,
+            "explicacao": "Abrir um arquivo para descobrir sua origem pode executar malware. Confirme o envio pelo contato oficial antes de abrir."
+          },
+          {
+            "texto": "Encaminhar o anexo ao grupo da turma.",
+            "correta": false,
+            "explicacao": "Encaminhar um anexo não verificado transfere o risco para os colegas. O primeiro passo é conferir a origem."
+          },
+          {
+            "texto": "Desativar a proteção do computador caso ela impeça a abertura.",
+            "correta": false,
+            "explicacao": "Desativar a proteção remove uma barreira do dispositivo. Um anexo inesperado deve ser verificado, mesmo que pareça importante."
+          },
+          {
+            "texto": "Confirmar o envio com a secretaria pelo contato oficial conhecido.",
+            "correta": true,
+            "explicacao": "Confirmar por um contato oficial conhecido permite verificar o envio sem executar o arquivo. Essa é a orientação para anexos inesperados."
+          }
+        ]
+      },
+      {
+        "enunciado": "Um colega envia um link de uma suposta bolsa de estudos. A página pede seu login e sua senha institucional. Qual é a melhor decisão?",
+        "explicacao": "A conta de um conhecido pode estar comprometida, ou ele pode encaminhar um golpe sem perceber. A origem aparente da mensagem não substitui a verificação do endereço e da instituição.",
+        "alternativas": [
+          {
+            "texto": "Informar os dados porque a mensagem veio de um conhecido.",
+            "correta": false,
+            "explicacao": "O colega pode ter encaminhado um golpe ou ter a conta comprometida. O vínculo com quem enviou não substitui conferir a instituição."
+          },
+          {
+            "texto": "Verificar a oportunidade no canal oficial da instituição antes de fornecer dados.",
+            "correta": true,
+            "explicacao": "A consulta no canal oficial confirma a oportunidade sem depender da mensagem. Só forneça dados depois de verificar a origem."
+          },
+          {
+            "texto": "Confiar na página se ela tiver imagens de estudantes.",
+            "correta": false,
+            "explicacao": "Imagens e aparência de uma página podem ser copiadas. Elas não comprovam a legitimidade do endereço."
+          },
+          {
+            "texto": "Compartilhar o link para descobrir se outras pessoas conseguem entrar.",
+            "correta": false,
+            "explicacao": "Distribuir o link amplia a exposição. A conferência deve ocorrer no canal oficial da instituição."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uma mensagem anuncia um sorteio de material escolar. Para participar, um formulário desconhecido exige foto do documento e senha do seu e-mail, sem explicar a necessidade dessas informações. Como agir?",
+        "explicacao": "Um cadastro sem finalidade clara, pedindo documento e senha do e-mail, expõe informações desnecessárias. Não forneça a senha e verifique a origem. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais.",
+        "alternativas": [
+          {
+            "texto": "Preencher tudo porque os campos são obrigatórios.",
+            "correta": false,
+            "explicacao": "Um campo obrigatório não demonstra necessidade nem legitimidade. A leitura recomenda desconfiar de cadastros em troca de brindes."
+          },
+          {
+            "texto": "Enviar os dados e pedir a exclusão depois.",
+            "correta": false,
+            "explicacao": "Pedir exclusão depois não evita a exposição inicial. Confira a finalidade antes de fornecer dados e mantenha a senha em segredo."
+          },
+          {
+            "texto": "Não enviar e verificar a legitimidade e a finalidade da coleta.",
+            "correta": true,
+            "explicacao": "O pedido de documento e senha sem explicação merece desconfiança. Verifique a origem e a finalidade sem enviar essas informações."
+          },
+          {
+            "texto": "Fornecer os dados de um familiar para proteger os seus.",
+            "correta": false,
+            "explicacao": "Usar dados de familiares expõe outra pessoa. Os cuidados de privacidade valem também para informações de terceiros."
+          }
+        ]
+      },
+      {
+        "enunciado": "No computador, o texto do link mostra o portal conhecido, mas ao passar o mouse aparece outro domínio. O que esse contraste indica?",
+        "explicacao": "O destino real pode ser diferente do texto usado para apresentar o link. Releia “Como identificar”, em Phishing.",
+        "alternativas": [
+          {
+            "texto": "O texto visível garante que o destino é o portal oficial.",
+            "correta": false,
+            "explicacao": "Quem escreve a mensagem escolhe o texto visível. Ele pode ocultar um destino diferente."
+          },
+          {
+            "texto": "É um sinal de alerta. Verifique pelo endereço oficial digitado no navegador.",
+            "correta": true,
+            "explicacao": "A divergência de domínio é uma pista descrita no material. Digitar o endereço conhecido evita depender desse link."
+          },
+          {
+            "texto": "É necessário abrir o destino para descobrir se o link é seguro.",
+            "correta": false,
+            "explicacao": "A leitura recomenda verificar sem clicar no endereço suspeito. Abrir o portal conhecido já permite conferir a situação."
+          },
+          {
+            "texto": "Basta verificar se o e-mail tem o logotipo da instituição.",
+            "correta": false,
+            "explicacao": "O logotipo pode ser copiado. Ele não explica nem corrige a divergência entre o texto e o destino do link."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uma mensagem não tem erros de português, mas pede senha e ameaça bloquear sua conta em minutos. Qual avaliação é adequada?",
+        "explicacao": "Os sinais devem ser avaliados em conjunto. A ausência de erros não elimina a urgência e o pedido de dados. Releia “Como identificar”, em Phishing.",
+        "alternativas": [
+          {
+            "texto": "Sem erros de escrita, a mensagem pode ser atendida sem conferir a origem.",
+            "correta": false,
+            "explicacao": "Erros são uma pista possível, não uma condição obrigatória de um golpe. A pressão e o pedido de senha continuam relevantes."
+          },
+          {
+            "texto": "A ameaça de bloqueio torna obrigatório usar o link enviado.",
+            "correta": false,
+            "explicacao": "A urgência é uma técnica para impedir a conferência. O caminho indicado é consultar o serviço por conta própria."
+          },
+          {
+            "texto": "Só é phishing se a mensagem chegar por e-mail.",
+            "correta": false,
+            "explicacao": "O texto também apresenta SMS, aplicativos e redes sociais como canais de phishing."
+          },
+          {
+            "texto": "Há sinais de alerta. Não envie a senha e consulte o serviço pelo canal oficial.",
+            "correta": true,
+            "explicacao": "Boa escrita não autentica o remetente. A verificação independente evita obedecer à pressão da mensagem."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Golpes digitais: phishing, mensagens e Pix",
+    "formato": "perguntas",
+    "questoes": [
+      {
+        "enunciado": "O que define o phishing no material do SafeClick?",
+        "explicacao": "Phishing explora a confiança em um remetente conhecido para induzir a vítima a fornecer dados. Releia “O que é Phishing?”.",
+        "alternativas": [
+          {
+            "texto": "Um vazamento causado pela exposição de dados guardados por uma empresa.",
+            "correta": false,
+            "explicacao": "Essa descrição corresponde a vazamento de dados. No phishing, o mecanismo é o engano: o criminoso se apresenta como alguém confiável para obter informações."
+          },
+          {
+            "texto": "Uma tentativa de se passar por uma fonte confiável para conseguir senhas, dados de cartão ou documentos.",
+            "correta": true,
+            "explicacao": "A imitação de empresas, órgãos ou conhecidos dá credibilidade à mensagem e tenta levar a vítima a um link ou formulário falso."
+          },
+          {
+            "texto": "Um programa que bloqueia arquivos e cobra um resgate.",
+            "correta": false,
+            "explicacao": "Bloquear arquivos e cobrar resgate caracteriza ransomware. A leitura sobre phishing destaca a falsa identidade e o pedido de dados."
+          },
+          {
+            "texto": "O uso de uma senha já vazada para tentar entrar em outros serviços.",
+            "correta": false,
+            "explicacao": "Esse reaproveitamento é chamado de credential stuffing. O phishing é uma tentativa de obter informações por meio de engano."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual conjunto reúne os sinais de alerta que o material destaca para uma falsa cobrança de entrega por SMS?",
+        "explicacao": "Remetente desconhecido, endereço suspeito, prazo curto e pedido de pagamento pela mensagem são sinais descritos em “Sinais de alerta”.",
+        "alternativas": [
+          {
+            "texto": "Mensagem curta, celular disponível e aplicativo da loja instalado.",
+            "correta": false,
+            "explicacao": "Uma mensagem curta e a facilidade de responder pelo celular ajudam a explicar por que o golpe funciona. Os sinais de alerta dizem respeito ao remetente, ao endereço, ao prazo e ao pedido recebido."
+          },
+          {
+            "texto": "Consulta da encomenda feita pelo aplicativo oficial, aberto por conta própria.",
+            "correta": false,
+            "explicacao": "Abrir o aplicativo oficial é uma forma de verificar a cobrança. Esse cartão descreve uma ação de proteção, não os sinais presentes no SMS."
+          },
+          {
+            "texto": "Número desconhecido, link encurtado e cobrança com prazo de 20 minutos.",
+            "correta": true,
+            "explicacao": "O número pode estar se passando pela empresa, o link encurtado dificulta conferir o destino e o prazo tenta apressar o pagamento."
+          },
+          {
+            "texto": "Taxa de valor baixo, nome de uma empresa conhecida e texto sem erros.",
+            "correta": false,
+            "explicacao": "Um valor baixo e um nome conhecido podem deixar a cobrança convincente. O material orienta a olhar para o endereço, a origem, o prazo e o pedido de pagamento."
+          }
+        ]
+      },
+      {
+        "enunciado": "Como verificar a identidade de alguém que usa um número novo para pedir um Pix urgente?",
+        "explicacao": "O material orienta a confirmar por outro caminho antes de transferir. Releia “Como se proteger”, em Golpe do falso conhecido e Pix.",
+        "alternativas": [
+          {
+            "texto": "Ligar para o número antigo que você já tinha salvo e aguardar a confirmação.",
+            "correta": true,
+            "explicacao": "Usar um contato conhecido evita depender da identidade que a conversa nova tenta apresentar. Aguarde essa confirmação antes de pagar."
+          },
+          {
+            "texto": "Considerar o nome e a foto do perfil como confirmação da identidade.",
+            "correta": false,
+            "explicacao": "Nome e foto podem ser copiados e usados em um número novo. Por isso a leitura recomenda confirmar por outro caminho."
+          },
+          {
+            "texto": "Confirmar a história enviando outra mensagem ao próprio número novo.",
+            "correta": false,
+            "explicacao": "Responder no mesmo número mantém a verificação sob controle de quem fez o pedido. A confirmação pelo número antigo dá uma via independente."
+          },
+          {
+            "texto": "Fazer a transferência assim que a pessoa explicar por que a conta é de terceiro.",
+            "correta": false,
+            "explicacao": "A explicação pode fazer parte do golpe. O pedido de depósito em conta de terceiro é um sinal de alerta citado no texto."
+          }
+        ]
+      },
+      {
+        "enunciado": "Por que uma suposta loja pediria o código de seis dígitos do WhatsApp que chegou por SMS?",
+        "explicacao": "O código recebido por SMS participa do registro da conta em outro aparelho. Releia “Como a conta de WhatsApp é roubada”.",
+        "alternativas": [
+          {
+            "texto": "Para confirmar o PIN que você criou na verificação em duas etapas.",
+            "correta": false,
+            "explicacao": "O PIN é uma proteção adicional escolhida pelo usuário. O código enviado por SMS tem outra função no registro da conta."
+          },
+          {
+            "texto": "Para verificar se uma transferência Pix já foi concluída.",
+            "correta": false,
+            "explicacao": "O código pertence ao registro do WhatsApp. A leitura trata Pix e captura da conta como mecanismos distintos do golpe."
+          },
+          {
+            "texto": "Para comprovar que o número novo pertence à pessoa que pediu dinheiro.",
+            "correta": false,
+            "explicacao": "O código é enviado para a sua conta. A identidade do conhecido deve ser conferida por um caminho independente, como o número antigo."
+          },
+          {
+            "texto": "Para ativar a sua conta em outro aparelho e falar com seus contatos.",
+            "correta": true,
+            "explicacao": "Ao receber o código, o golpista pode registrar a conta em outro celular e usar sua identidade em conversas. Guarde o código para si."
+          }
+        ]
+      },
+      {
+        "enunciado": "Segundo a leitura, qual é a primeira medida depois de perceber que você fez um Pix em um golpe?",
+        "explicacao": "A resposta imediata apresentada no texto é avisar o banco e pedir a abertura do MED. Releia “Se você já fez o Pix”. O pedido não garante devolução.",
+        "alternativas": [
+          {
+            "texto": "Avisar somente a pessoa verdadeira para que ela alerte os contatos.",
+            "correta": false,
+            "explicacao": "Avisar a pessoa ajuda a proteger os contatos, mas o primeiro passo indicado no material é comunicar o banco sobre a transferência."
+          },
+          {
+            "texto": "Avisar o banco imediatamente e pedir a abertura do Mecanismo Especial de Devolução (MED).",
+            "correta": true,
+            "explicacao": "O material apresenta o MED como o mecanismo a solicitar ao banco em caso de golpe com Pix. A orientação é entrar em contato imediatamente. Solicitar o MED não garante recuperar o valor."
+          },
+          {
+            "texto": "Aguardar para ver se o destinatário devolve o valor por iniciativa própria.",
+            "correta": false,
+            "explicacao": "A espera adia o passo imediato ensinado na leitura: avisar o banco sobre a transferência e pedir a abertura do MED."
+          },
+          {
+            "texto": "Fazer apenas um boletim de ocorrência.",
+            "correta": false,
+            "explicacao": "Registrar a ocorrência é uma medida prevista no texto. Ela complementa o aviso ao banco e o pedido de abertura do MED."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual uso da palavra “smishing” está de acordo com a leitura revisada?",
+        "explicacao": "Smishing nomeia o phishing enviado por SMS. Golpes em outros aplicativos também podem ser phishing, mas não se tornam SMS por chegar ao celular. Releia “O que é”, em Golpes por SMS e mensagens.",
+        "alternativas": [
+          {
+            "texto": "Qualquer tentativa de golpe, inclusive em uma loja física.",
+            "correta": false,
+            "explicacao": "O termo identifica um canal específico de phishing, o SMS. Não designa todos os tipos de fraude."
+          },
+          {
+            "texto": "Somente um vazamento de dados armazenados por uma empresa.",
+            "correta": false,
+            "explicacao": "Vazamento é exposição de dados guardados. Smishing é a mensagem de phishing enviada por SMS."
+          },
+          {
+            "texto": "Uma tentativa de phishing enviada por SMS.",
+            "correta": true,
+            "explicacao": "O nome combina SMS e phishing. O canal de envio é o que distingue esse termo da definição geral."
+          },
+          {
+            "texto": "Qualquer conversa no WhatsApp, mesmo sem tentativa de engano.",
+            "correta": false,
+            "explicacao": "Nem toda conversa é golpe. O texto distingue o phishing por SMS das tentativas que chegam por outros aplicativos."
+          }
+        ]
+      },
+      {
+        "enunciado": "Após informar dados em um link suspeito recebido por mensagem, qual conjunto de ações a leitura recomenda?",
+        "explicacao": "Troque as senhas envolvidas, avise o banco pelo canal oficial quando houver exposição financeira e bloqueie ou denuncie o contato. Releia “O que fazer”, em Golpes por SMS e mensagens.",
+        "alternativas": [
+          {
+            "texto": "Trocar as senhas envolvidas e avisar o banco pelos canais oficiais, além de bloquear e denunciar o contato.",
+            "correta": true,
+            "explicacao": "As medidas tratam a exposição já ocorrida e interrompem o contato suspeito. O atendimento deve ser procurado por uma via oficial."
+          },
+          {
+            "texto": "Apenas apagar a conversa e manter as senhas utilizadas.",
+            "correta": false,
+            "explicacao": "Apagar a mensagem não retira de uso as informações que já foram entregues. A leitura também recomenda a troca das senhas envolvidas."
+          },
+          {
+            "texto": "Usar o telefone da própria mensagem para avisar o banco.",
+            "correta": false,
+            "explicacao": "O contato fornecido pode fazer parte da fraude. Procure o banco pelos canais oficiais conhecidos."
+          },
+          {
+            "texto": "Responder ao remetente pedindo que ele apague o formulário.",
+            "correta": false,
+            "explicacao": "O mesmo remetente não é uma fonte confiável para resolver a exposição. A resposta mantém o contato com quem pode estar aplicando o golpe."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Contas protegidas: senhas, 2FA e vazamentos",
+    "formato": "perguntas",
+    "questoes": [
+      {
+        "enunciado": "Qual prática reúne as recomendações da leitura para criar senhas de serviços importantes?",
+        "explicacao": "A recomendação educativa passou a priorizar comprimento, imprevisibilidade e exclusividade, em harmonia com o laboratório. Misturar símbolos não corrige uma sequência óbvia. Releia “Como se proteger”, em Proteção de Senhas.",
+        "alternativas": [
+          {
+            "texto": "Usar uma senha longa e com símbolos em todas as contas.",
+            "correta": false,
+            "explicacao": "O comprimento ajuda contra tentativas de adivinhação. A repetição ainda permite que uma combinação vazada seja testada em vários serviços."
+          },
+          {
+            "texto": "Usar a data de nascimento com letras e símbolos nas pontas.",
+            "correta": false,
+            "explicacao": "A data é um dado pessoal previsível. O texto recomenda evitar informações pessoais óbvias na senha."
+          },
+          {
+            "texto": "Usar senhas exclusivas e imprevisíveis, de preferência com 15 caracteres ou mais, sem nomes, datas ou sequências óbvias.",
+            "correta": true,
+            "explicacao": "Essa orientação reúne comprimento, ausência de padrões e uso em uma única conta. Os 15 caracteres são a referência educativa do laboratório, não uma garantia isolada de segurança."
+          },
+          {
+            "texto": "Escolher uma senha curta e previsível para conseguir decorá-la.",
+            "correta": false,
+            "explicacao": "Sequências curtas e óbvias podem ser descobertas por programas automatizados. A leitura sugere considerar um gerenciador para guardar combinações diferentes."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uma senha vazou em uma loja e era usada também no e-mail. O que a leitura recomenda fazer com essas duas contas?",
+        "explicacao": "A mesma senha pode ser testada em outras plataformas após um vazamento. Releia “O que fazer”, em Vazamento de dados.",
+        "alternativas": [
+          {
+            "texto": "Trocar a senha nos dois serviços por senhas diferentes e ativar a verificação em duas etapas.",
+            "correta": true,
+            "explicacao": "A troca em todos os serviços onde a senha foi repetida retira a combinação vazada de circulação nessas contas. O segundo fator acrescenta uma proteção ao acesso."
+          },
+          {
+            "texto": "Trocar só a senha da loja, onde o vazamento ocorreu.",
+            "correta": false,
+            "explicacao": "A combinação exposta continuaria válida no e-mail. O material orienta a trocar também em todos os serviços em que ela foi reutilizada."
+          },
+          {
+            "texto": "Manter as duas senhas e ativar somente a verificação em duas etapas.",
+            "correta": false,
+            "explicacao": "A verificação em duas etapas acrescenta proteção, mas a recomendação do texto também inclui substituir a senha que já foi exposta."
+          },
+          {
+            "texto": "Trocar as duas senhas por outra senha compartilhada.",
+            "correta": false,
+            "explicacao": "A troca remove a combinação antiga. Compartilhar a nova senha mantém o mesmo risco entre serviços se ocorrer outro vazamento."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual segundo passo o material descreve no login do SafeClick depois da senha?",
+        "explicacao": "O SafeClick pede o código do aplicativo autenticador. Consulte “No SafeClick”, em Verificação em duas etapas.",
+        "alternativas": [
+          {
+            "texto": "Receber por SMS o código de login do SafeClick.",
+            "correta": false,
+            "explicacao": "SMS é um dos formatos apresentados na leitura. Na seção sobre o SafeClick, o código vem do aplicativo autenticador no celular."
+          },
+          {
+            "texto": "Digitar o código que o aplicativo autenticador gera no celular.",
+            "correta": true,
+            "explicacao": "O autenticador gera o código e a Twilio Verify o confere. A sessão depende dessa validação depois da senha."
+          },
+          {
+            "texto": "Aprovar o acesso em uma notificação enviada pelo SafeClick.",
+            "correta": false,
+            "explicacao": "A aprovação de notificações é outro tipo de segundo fator descrito no material. Para o SafeClick, a leitura apresenta a digitação de um código."
+          },
+          {
+            "texto": "Conectar uma chave física de segurança ao computador.",
+            "correta": false,
+            "explicacao": "A chave física é um exemplo de autenticação de outros serviços. O método descrito para o SafeClick usa o aplicativo autenticador."
+          }
+        ]
+      },
+      {
+        "enunciado": "Que reação a leitura recomenda quando aparece uma solicitação de aprovação que você não iniciou?",
+        "explicacao": "Uma solicitação inesperada merece atenção. Releia “Cuidados”, em Verificação em duas etapas.",
+        "alternativas": [
+          {
+            "texto": "Aprovar e trocar a senha depois.",
+            "correta": false,
+            "explicacao": "A aprovação pode liberar o acesso que outra pessoa iniciou. O primeiro passo recomendado é recusar o pedido."
+          },
+          {
+            "texto": "Informar um código do autenticador a alguém que se apresenta como suporte.",
+            "correta": false,
+            "explicacao": "O código é uma prova de acesso da sua conta. A leitura orienta a mantê-lo em segredo inclusive quando alguém diz ser do suporte."
+          },
+          {
+            "texto": "Ignorar a solicitação e manter a senha atual.",
+            "correta": false,
+            "explicacao": "Ignorar evita aprovar naquele momento, mas o texto recomenda recusar o pedido e trocar a senha para proteger o acesso."
+          },
+          {
+            "texto": "Recusar a solicitação e trocar a senha.",
+            "correta": true,
+            "explicacao": "A recusa impede que a solicitação seja aprovada, e a troca retira a senha atual de uso naquela conta."
+          }
+        ]
+      },
+      {
+        "enunciado": "Depois de um vazamento de documentos, uma mensagem cita seu CPF e pede pagamento. Qual leitura da situação é mais adequada?",
+        "explicacao": "Dados expostos podem dar aparência de legitimidade a contatos falsos e também ser usados em fraudes. Releia “Por que isso importa para você” e “O que fazer”, em Vazamento de dados.",
+        "alternativas": [
+          {
+            "texto": "A presença do CPF comprova que a cobrança é verdadeira.",
+            "correta": false,
+            "explicacao": "O próprio vazamento pode ter fornecido o CPF a quem enviou a mensagem. Conhecer esse dado não comprova a identidade ou a legitimidade da cobrança."
+          },
+          {
+            "texto": "O único risco após o vazamento é alguém adivinhar a sua senha.",
+            "correta": false,
+            "explicacao": "O material também descreve golpes personalizados e tentativas de fraude no nome de quem teve documentos expostos."
+          },
+          {
+            "texto": "O CPF pode ter sido usado para personalizar um golpe. Desconfie da cobrança e acompanhe extratos e faturas.",
+            "correta": true,
+            "explicacao": "A mensagem pode usar um dado real para convencer. O acompanhamento ajuda a perceber movimentações que você não reconhece."
+          },
+          {
+            "texto": "Basta alterar a senha da loja e confiar nos contatos que souberem seu CPF.",
+            "correta": false,
+            "explicacao": "Trocar a senha é uma medida para proteger a conta. Os contatos que citam dados vazados ainda podem fazer pedidos fraudulentos."
+          }
+        ]
+      },
+      {
+        "enunciado": "O que distingue o aplicativo autenticador do código por SMS, segundo o conteúdo?",
+        "explicacao": "O aplicativo gera códigos temporários mesmo sem internet. O SMS depende do canal telefônico e pode ser interceptado ou desviado. Releia “Os tipos mais comuns”, em Verificação em duas etapas.",
+        "alternativas": [
+          {
+            "texto": "SMS é sempre imune a interceptação e troca do chip.",
+            "correta": false,
+            "explicacao": "O texto cita exatamente esses riscos do SMS. Ele é uma proteção adicional, mas não é apresentado como imune."
+          },
+          {
+            "texto": "O aplicativo gera códigos temporários no celular mesmo sem internet; o SMS chega pelo canal telefônico.",
+            "correta": true,
+            "explicacao": "Essa diferença explica como os códigos chegam ao usuário. No SafeClick, a validação do código gerado é feita pela Twilio Verify."
+          },
+          {
+            "texto": "O autenticador só funciona quando outra pessoa envia o código por mensagem.",
+            "correta": false,
+            "explicacao": "O aplicativo gera o código no próprio celular. Não é necessário nem seguro pedir a terceiros que forneçam esse código."
+          },
+          {
+            "texto": "O código do aplicativo deve ser compartilhado para confirmar o suporte.",
+            "correta": false,
+            "explicacao": "O tipo de geração não muda o cuidado com o segredo. A leitura orienta nunca informar os códigos a atendentes."
+          }
+        ]
+      },
+      {
+        "enunciado": "Por que a leitura sobre vazamentos recomenda consultar o Registrato?",
+        "explicacao": "A consulta permite acompanhar contas e empréstimos em seu nome. Ela complementa a atenção aos extratos e faturas. Releia “O que fazer”, em Vazamento de dados.",
+        "alternativas": [
+          {
+            "texto": "Para saber a senha original que foi exposta.",
+            "correta": false,
+            "explicacao": "A finalidade citada é consultar vínculos financeiros em seu nome. O texto não apresenta o Registrato como consulta de senhas."
+          },
+          {
+            "texto": "Para receber garantia de que nenhuma fraude ocorrerá.",
+            "correta": false,
+            "explicacao": "A consulta ajuda a acompanhar informações, mas não impede por si só novos golpes ou acessos indevidos."
+          },
+          {
+            "texto": "Para dispensar a troca de uma senha comprometida.",
+            "correta": false,
+            "explicacao": "Acompanhar vínculos financeiros e substituir senhas expostas têm finalidades diferentes. Uma ação não substitui a outra."
+          },
+          {
+            "texto": "Para conferir contas e empréstimos em seu nome e perceber possíveis vínculos que não reconhece.",
+            "correta": true,
+            "explicacao": "Documentos vazados podem ser usados em fraudes. Acompanhar esses registros ajuda a identificar situações que merecem verificação."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Compras seguras, privacidade e proteção do dispositivo",
+    "formato": "perguntas",
+    "questoes": [
+      {
+        "enunciado": "Qual verificação é recomendada antes de comprar em uma loja anunciada nas redes sociais?",
+        "explicacao": "A leitura recomenda pesquisar a reputação, conferir o CNPJ e acessar a loja digitando o endereço. Releia “Antes de comprar”.",
+        "alternativas": [
+          {
+            "texto": "Confiar no anúncio se o desconto for alto e houver um contador de tempo.",
+            "correta": false,
+            "explicacao": "Preço muito abaixo do mercado e contagem regressiva estão entre os sinais de loja suspeita. A pressa pode fazer você pular a pesquisa."
+          },
+          {
+            "texto": "Pesquisar a reputação em fontes independentes e conferir o CNPJ informado pela loja.",
+            "correta": true,
+            "explicacao": "Avaliações externas e sites de reclamação ajudam a conferir a reputação. O CNPJ permite comparar os dados exibidos com o nome da loja."
+          },
+          {
+            "texto": "Confiar na loja se o endereço for parecido com o de uma marca conhecida.",
+            "correta": false,
+            "explicacao": "Endereços com letras trocadas podem imitar uma marca. A leitura orienta a conferir o endereço e os dados da loja antes de comprar."
+          },
+          {
+            "texto": "Usar a aparência profissional do site como única verificação.",
+            "correta": false,
+            "explicacao": "Lojas falsas também podem parecer profissionais. A aparência não substitui a pesquisa de reputação e a conferência dos dados."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual dado do boleto o material orienta a conferir para evitar que o dinheiro vá a outro destinatário?",
+        "explicacao": "O beneficiário identifica quem recebe o pagamento. Releia a orientação sobre boletos em “Antes de comprar”.",
+        "alternativas": [
+          {
+            "texto": "O valor que aparece no anúncio.",
+            "correta": false,
+            "explicacao": "Comparar o valor ajuda a verificar o preço. O beneficiário é o dado que indica para onde o dinheiro será enviado."
+          },
+          {
+            "texto": "A data de vencimento do boleto.",
+            "correta": false,
+            "explicacao": "A data informa o prazo do pagamento. A leitura chama atenção para a alteração no beneficiário, que identifica o destinatário do dinheiro."
+          },
+          {
+            "texto": "A aparência do logotipo da loja.",
+            "correta": false,
+            "explicacao": "O logotipo pode acompanhar uma página que imita a loja. A conferência ensinada na leitura é a do beneficiário do pagamento."
+          },
+          {
+            "texto": "O beneficiário indicado antes de confirmar o pagamento.",
+            "correta": true,
+            "explicacao": "Um boleto adulterado muda o destinatário. Conferir o beneficiário permite perceber se ele corresponde a quem deve receber."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uma pessoa quer saber quais dados uma empresa tem sobre ela e corrigir um telefone errado. Como fazer esses dois pedidos?",
+        "explicacao": "Os pedidos devem ser encaminhados ao canal de privacidade indicado pela empresa. Releia “Seus direitos pela LGPD”.",
+        "alternativas": [
+          {
+            "texto": "Solicitar confirmação e acesso aos dados e pedir a correção do telefone pelo canal de privacidade.",
+            "correta": true,
+            "explicacao": "Confirmação e acesso servem para conhecer os dados tratados. O pedido de correção se aplica à informação errada no cadastro."
+          },
+          {
+            "texto": "Pedir portabilidade para corrigir o telefone e saber quais dados existem.",
+            "correta": false,
+            "explicacao": "Portabilidade se refere a levar dados para outro serviço. O caso pede acesso aos dados e correção de um campo."
+          },
+          {
+            "texto": "Pedir eliminação do cadastro para descobrir quais dados são tratados.",
+            "correta": false,
+            "explicacao": "A eliminação citada na leitura se aplica a dados desnecessários ou tratados sem base legal. Para saber quais dados existem, o pedido é de confirmação e acesso."
+          },
+          {
+            "texto": "Pedir apenas a lista de empresas com as quais os dados foram compartilhados.",
+            "correta": false,
+            "explicacao": "Informações sobre compartilhamento constituem outro direito. Esse pedido não resolve a correção do telefone nem substitui a solicitação de acesso aos próprios dados."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual par identifica o malware que bloqueia arquivos e a medida que prepara a recuperação desses arquivos?",
+        "explicacao": "A cobrança de resgate após bloquear arquivos caracteriza ransomware. Releia “O que são códigos maliciosos” e “Como se proteger”.",
+        "alternativas": [
+          {
+            "texto": "Spyware e revisão das permissões de câmera.",
+            "correta": false,
+            "explicacao": "Spyware espiona o que a pessoa digita e acessa. Revisar permissões é um cuidado com aplicativos. Para recuperar arquivos bloqueados, o material destaca cópias de segurança."
+          },
+          {
+            "texto": "Cavalo de troia e atualização do navegador.",
+            "correta": false,
+            "explicacao": "Cavalo de troia parece útil e executa ações escondidas. Atualizar ajuda a corrigir falhas, enquanto o backup é a medida voltada a recuperar arquivos."
+          },
+          {
+            "texto": "Ransomware e backups regulares em um local separado.",
+            "correta": true,
+            "explicacao": "Ransomware bloqueia ou embaralha os arquivos e cobra resgate. Uma cópia guardada separadamente oferece uma forma de recuperar os dados. O backup prepara a recuperação, mas não impede a infecção."
+          },
+          {
+            "texto": "Vírus e troca imediata da senha no mesmo aparelho.",
+            "correta": false,
+            "explicacao": "Vírus se espalha infectando arquivos e programas. A leitura relaciona resgate ao ransomware e orienta a usar outro aparelho para trocar senhas quando há sinais de infecção."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual combinação protege contra um anexo inesperado e reduz o risco de falhas já conhecidas nos programas?",
+        "explicacao": "As medidas se complementam: conferir o envio evita abrir um arquivo suspeito e manter o software atualizado corrige falhas conhecidas. Releia “Como se proteger”.",
+        "alternativas": [
+          {
+            "texto": "Abrir o anexo se o nome do remetente for conhecido e manter os programas como estão.",
+            "correta": false,
+            "explicacao": "A leitura recomenda confirmar até anexos inesperados de conhecidos. Programas desatualizados podem manter falhas já conhecidas por criminosos."
+          },
+          {
+            "texto": "Confirmar o envio com a pessoa antes de abrir e manter sistema, navegador e aplicativos atualizados.",
+            "correta": true,
+            "explicacao": "Confirmar trata o risco daquele anexo específico. A atualização protege contra falhas conhecidas nos programas e no sistema."
+          },
+          {
+            "texto": "Fazer um backup e abrir imediatamente o anexo.",
+            "correta": false,
+            "explicacao": "O backup prepara a recuperação de arquivos. A medida indicada para um anexo inesperado é confirmar antes com quem o enviou."
+          },
+          {
+            "texto": "Manter o antivírus ativo e dispensar as atualizações.",
+            "correta": false,
+            "explicacao": "O antivírus ativo faz parte dos cuidados. Atualizar continua importante porque corrige falhas que podem ser exploradas."
+          }
+        ]
+      },
+      {
+        "enunciado": "Um programa parece útil, mas executa ações escondidas ao ser instalado. Qual tipo de malware corresponde à descrição da leitura?",
+        "explicacao": "A aparência de utilidade combinada com ações ocultas caracteriza o cavalo de troia. Releia “O que são códigos maliciosos”.",
+        "alternativas": [
+          {
+            "texto": "Vírus, cuja característica citada é infectar arquivos e outros programas.",
+            "correta": false,
+            "explicacao": "A definição de vírus destaca a infecção de arquivos. O disfarce de programa útil corresponde ao cavalo de troia."
+          },
+          {
+            "texto": "Ransomware, porque todo programa oculto necessariamente cobra resgate.",
+            "correta": false,
+            "explicacao": "Cobrança de resgate após bloquear arquivos caracteriza ransomware. O enunciado destaca o disfarce de utilidade."
+          },
+          {
+            "texto": "Cavalo de troia, que parece útil e realiza ações escondidas.",
+            "correta": true,
+            "explicacao": "A descrição coincide com a definição do conteúdo. Conferir a origem dos aplicativos ajuda a reduzir esse risco."
+          },
+          {
+            "texto": "Spyware, porque a leitura o define como qualquer loja falsa.",
+            "correta": false,
+            "explicacao": "Spyware espiona o que a pessoa digita e acessa. Loja falsa pertence ao tema de fraudes em compras online."
+          }
+        ]
+      },
+      {
+        "enunciado": "Diante de lentidão sem motivo e aplicativos que você não instalou, qual orientação está no conteúdo?",
+        "explicacao": "Esses sinais merecem investigação. Rode o antivírus e use outro aparelho para trocar senhas. Releia “Sinais de infecção”, em Códigos maliciosos e atualizações.",
+        "alternativas": [
+          {
+            "texto": "Ignorar os sinais, pois um antivírus instalado impede toda infecção.",
+            "correta": false,
+            "explicacao": "Ter antivírus não garante ausência de infecção. O material orienta investigar sinais inesperados."
+          },
+          {
+            "texto": "Investigar com o antivírus e trocar as senhas usando outro aparelho.",
+            "correta": true,
+            "explicacao": "A investigação examina o dispositivo suspeito. Outro aparelho evita digitar novas credenciais no equipamento que pode estar comprometido."
+          },
+          {
+            "texto": "Trocar imediatamente todas as senhas no aparelho suspeito e dispensar a verificação.",
+            "correta": false,
+            "explicacao": "A leitura orienta usar outro aparelho para a troca. Digitar no equipamento suspeito pode expor a nova combinação."
+          },
+          {
+            "texto": "Concluir que houve ransomware apenas pela lentidão.",
+            "correta": false,
+            "explicacao": "Lentidão merece atenção, mas não identifica sozinha o tipo de malware. Ransomware é descrito pelo bloqueio de arquivos e cobrança de resgate."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Privacidade na prática: dados, permissões e direitos",
+    "formato": "perguntas",
+    "questoes": [
+      {
+        "enunciado": "Qual conjunto contém exemplos de dados pessoais apresentados no conteúdo?",
+        "explicacao": "Nome, e-mail e localização podem identificar alguém direta ou indiretamente. Releia “O que são dados pessoais”, em Privacidade e seus dados pessoais.",
+        "alternativas": [
+          {
+            "texto": "Somente senhas e números de cartão.",
+            "correta": false,
+            "explicacao": "A definição é mais ampla e inclui informações como nome, e-mail e localização. Não se limita a credenciais ou dados de pagamento."
+          },
+          {
+            "texto": "Nome, e-mail e localização que permitam identificar uma pessoa.",
+            "correta": true,
+            "explicacao": "Esses são exemplos apresentados no material. Uma informação pode ser pessoal mesmo sem conter um documento."
+          },
+          {
+            "texto": "Apenas documentos com fotografia.",
+            "correta": false,
+            "explicacao": "E-mail e telefone também podem identificar alguém. A presença de fotografia não é condição para ser dado pessoal."
+          },
+          {
+            "texto": "Somente os dados que já foram publicados em redes sociais.",
+            "correta": false,
+            "explicacao": "A definição depende de identificar a pessoa. Ela também se aplica aos dados que permanecem em um cadastro privado."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual alternativa reúne exemplos da categoria de dados sensíveis citada na leitura?",
+        "explicacao": "A leitura destaca saúde, religião, opinião política e biometria como exemplos que recebem proteção maior. Releia “O que são dados pessoais”.",
+        "alternativas": [
+          {
+            "texto": "Nome da loja e data da promoção.",
+            "correta": false,
+            "explicacao": "Esses elementos não correspondem aos exemplos sobre a pessoa apresentados no conteúdo."
+          },
+          {
+            "texto": "E-mail e telefone, porque todo dado pessoal pertence automaticamente à categoria sensível.",
+            "correta": false,
+            "explicacao": "E-mail e telefone são dados pessoais. O material distingue a categoria sensível usando exemplos específicos."
+          },
+          {
+            "texto": "Saúde, religião, opinião política e biometria.",
+            "correta": true,
+            "explicacao": "Esse conjunto corresponde aos exemplos da categoria sensível apresentados na leitura."
+          },
+          {
+            "texto": "Qualquer informação que uma empresa prefira manter em segredo.",
+            "correta": false,
+            "explicacao": "A categoria sensível se refere a tipos específicos de dados pessoais. Sigilo comercial não é o critério apresentado."
+          }
+        ]
+      },
+      {
+        "enunciado": "Um aplicativo pede câmera, contatos e localização sem explicar a necessidade. Qual atitude segue “Cuidados no dia a dia”?",
+        "explicacao": "Revise as permissões e confira a finalidade antes de conceder acessos. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais.",
+        "alternativas": [
+          {
+            "texto": "Aceitar todas as permissões porque o cadastro exige.",
+            "correta": false,
+            "explicacao": "A exigência na tela não explica por que o aplicativo precisa de cada acesso. A leitura recomenda revisar as permissões."
+          },
+          {
+            "texto": "Autorizar usando os contatos de outra pessoa.",
+            "correta": false,
+            "explicacao": "Informações de terceiros também exigem cuidado. Usá-las não esclarece a finalidade dos acessos pedidos."
+          },
+          {
+            "texto": "Publicar documentos para provar que você é o titular.",
+            "correta": false,
+            "explicacao": "Expor documentos amplia os dados disponíveis para golpes. Não resolve a falta de explicação das permissões."
+          },
+          {
+            "texto": "Revisar os acessos pedidos e consultar a política antes de autorizar.",
+            "correta": true,
+            "explicacao": "A leitura relaciona revisão de permissões e leitura da política à redução da exposição de dados."
+          }
+        ]
+      },
+      {
+        "enunciado": "Como descobrir com quais organizações uma empresa compartilhou seus dados?",
+        "explicacao": "Solicite informações sobre compartilhamento pelo canal de privacidade indicado na política. Releia “Seus direitos pela LGPD”.",
+        "alternativas": [
+          {
+            "texto": "Pedir informação sobre compartilhamento pelo canal de privacidade da empresa.",
+            "correta": true,
+            "explicacao": "O material apresenta esse direito e indica o canal de privacidade como caminho para o pedido."
+          },
+          {
+            "texto": "Pedir apenas a correção do telefone.",
+            "correta": false,
+            "explicacao": "Correção trata informação incompleta ou errada. Não identifica, por si só, as organizações que receberam dados."
+          },
+          {
+            "texto": "Trocar a senha e concluir que o compartilhamento anterior foi apagado.",
+            "correta": false,
+            "explicacao": "A troca protege o acesso à conta. Não informa nem desfaz automaticamente tratamentos de dados já realizados."
+          },
+          {
+            "texto": "Enviar o cadastro inteiro a um desconhecido que se apresente como fiscal.",
+            "correta": false,
+            "explicacao": "O pedido deve seguir um canal verificado. Entregar todo o cadastro a um desconhecido amplia a exposição."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uma pessoa quer solicitar a eliminação de dados desnecessários de um cadastro. Qual afirmação é mais precisa?",
+        "explicacao": "A leitura orienta usar o canal de privacidade. A análise do pedido considera as hipóteses da LGPD e eventuais deveres de conservação. Releia “Seus direitos pela LGPD”.",
+        "alternativas": [
+          {
+            "texto": "Todo pedido exige apagar imediatamente qualquer registro, sem exceção.",
+            "correta": false,
+            "explicacao": "A lei prevê situações de conservação. A solicitação deve ser analisada, sem prometer exclusão imediata e irrestrita."
+          },
+          {
+            "texto": "É possível solicitar a eliminação dos dados desnecessários ou tratados irregularmente pelo canal indicado.",
+            "correta": true,
+            "explicacao": "Esse é o direito apresentado no conteúdo. O canal deve orientar a análise e informar limites legais de conservação, quando existirem."
+          },
+          {
+            "texto": "A empresa nunca precisa receber pedidos sobre dados pessoais.",
+            "correta": false,
+            "explicacao": "O material apresenta direitos de confirmação, acesso, correção e eliminação, além do canal para exercê-los."
+          },
+          {
+            "texto": "Apenas criar outra conta elimina os dados do cadastro antigo.",
+            "correta": false,
+            "explicacao": "Uma conta nova não equivale a um pedido nem demonstra eliminação do cadastro anterior."
+          }
+        ]
+      },
+      {
+        "enunciado": "O canal de privacidade não resolveu seu pedido. Qual encaminhamento é apresentado no conteúdo?",
+        "explicacao": "O material indica que é possível reclamar à ANPD. Isso não dispensa tentar exercer o direito pelo canal da empresa. Releia “Seus direitos pela LGPD”.",
+        "alternativas": [
+          {
+            "texto": "Publicar CPF, documentos e a reclamação em qualquer grupo aberto.",
+            "correta": false,
+            "explicacao": "A divulgação de documentos cria nova exposição. Use canais de atendimento verificados e forneça apenas o necessário."
+          },
+          {
+            "texto": "Entregar sua senha a alguém que prometa falar com a empresa.",
+            "correta": false,
+            "explicacao": "Senhas não devem ser compartilhadas. Um intermediário desconhecido não substitui o canal indicado para o pedido."
+          },
+          {
+            "texto": "Procurar o canal oficial da ANPD para registrar a reclamação, conforme as orientações do órgão.",
+            "correta": true,
+            "explicacao": "A ANPD é o órgão citado na leitura. O encaminhamento deve seguir seus procedimentos oficiais e os dados necessários ao pedido."
+          },
+          {
+            "texto": "Concluir que trocar a foto do perfil resolve o pedido de acesso.",
+            "correta": false,
+            "explicacao": "A aparência do perfil não fornece acesso aos dados tratados e não corrige a ausência de resposta ao pedido."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Laboratório de senhas: interpretar, gerar e revisar",
+    "formato": "perguntas",
+    "questoes": [
+      {
+        "enunciado": "O que você deve digitar no Analisador do Laboratório de senhas?",
+        "explicacao": "O aviso pede uma ideia nova ou variação fictícia, sem usar uma senha em uso. A análise acontece no navegador. Releia “Analise uma ideia de senha”, no Laboratório.",
+        "alternativas": [
+          {
+            "texto": "A senha atual do banco para verificar se está forte.",
+            "correta": false,
+            "explicacao": "O aviso do laboratório orienta nunca digitar uma senha que você já usa. Use uma ideia fictícia para aprender."
+          },
+          {
+            "texto": "A senha atual de um familiar, para não usar a sua.",
+            "correta": false,
+            "explicacao": "Isso também expõe uma credencial em uso e dados de outra pessoa. A atividade deve usar uma ideia nova ou fictícia."
+          },
+          {
+            "texto": "Uma ideia fictícia ou nova, sem usar uma senha que já esteja em uso.",
+            "correta": true,
+            "explicacao": "Essa escolha permite observar padrões e orientações sem colocar uma credencial real na atividade."
+          },
+          {
+            "texto": "O código do autenticador para medir o tamanho da senha.",
+            "correta": false,
+            "explicacao": "O código confirma acesso à conta e deve permanecer em segredo. O Analisador avalia uma ideia de senha."
+          }
+        ]
+      },
+      {
+        "enunciado": "O Analisador mostra uma força estimada alta para uma ideia de senha. Qual conclusão é adequada?",
+        "explicacao": "A estimativa identifica padrões, mas não garante segurança. Use cada senha em uma única conta. Releia a nota do Analisador.",
+        "alternativas": [
+          {
+            "texto": "A estimativa ajuda a revisar padrões, mas exclusividade e outros cuidados continuam necessários.",
+            "correta": true,
+            "explicacao": "O laboratório apresenta uma estimativa. Uma nota alta não autoriza reutilização nem dispensa a segunda etapa."
+          },
+          {
+            "texto": "É seguro repetir a combinação em todos os serviços.",
+            "correta": false,
+            "explicacao": "A reutilização permite testar uma combinação vazada em várias contas. A nota não altera esse risco."
+          },
+          {
+            "texto": "A ferramenta garante que a senha nunca aparecerá em vazamentos.",
+            "correta": false,
+            "explicacao": "O Analisador estima força diante de padrões. Não prevê incidentes futuros nem garante que uma senha não será exposta."
+          },
+          {
+            "texto": "A nota comprova que nenhuma tentativa de golpe pode funcionar.",
+            "correta": false,
+            "explicacao": "Golpes também envolvem engano e exposição de códigos. Força de senha não resolve todos esses riscos."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual combinação segue as orientações do Analisador para comprimento e padrões?",
+        "explicacao": "O painel orienta 15 caracteres ou mais e ausência de padrões fáceis. Releia o checklist do Analisador e “Como se proteger”, em Proteção de Senhas.",
+        "alternativas": [
+          {
+            "texto": "Repetir uma sequência de teclado até ultrapassar 15 caracteres.",
+            "correta": false,
+            "explicacao": "A repetição preserva um padrão conhecido. O comprimento precisa se combinar com imprevisibilidade."
+          },
+          {
+            "texto": "Usar uma combinação longa e imprevisível, sem nomes, datas ou sequências óbvias.",
+            "correta": true,
+            "explicacao": "Essa escolha reúne os dois pontos do checklist. Use também uma combinação exclusiva para cada conta."
+          },
+          {
+            "texto": "Acrescentar o ano de nascimento ao próprio nome.",
+            "correta": false,
+            "explicacao": "Nome e data pessoal são exemplos de padrões previsíveis citados no laboratório."
+          },
+          {
+            "texto": "Usar um nome de time muito conhecido porque é fácil de lembrar.",
+            "correta": false,
+            "explicacao": "O desafio mostra nomes de times entre os exemplos públicos e previsíveis. Memorização não é prova de resistência a adivinhação."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual é a finalidade da área “Gere uma senha forte” do Laboratório?",
+        "explicacao": "A área permite escolher opções de geração e criar combinações no navegador. Releia “Gere uma senha forte”.",
+        "alternativas": [
+          {
+            "texto": "Trocar automaticamente a senha de todos os sites em que você tem conta.",
+            "correta": false,
+            "explicacao": "O gerador cria uma combinação. Ele não entra nos serviços para alterar cadastros."
+          },
+          {
+            "texto": "Enviar a senha gerada para outros usuários como recomendação pública.",
+            "correta": false,
+            "explicacao": "Senhas de uso pessoal devem permanecer em segredo. Publicar a combinação elimina esse cuidado."
+          },
+          {
+            "texto": "Criar novas combinações no navegador conforme as opções escolhidas.",
+            "correta": true,
+            "explicacao": "Essa é a finalidade do gerador. O usuário ainda escolhe onde empregar e guardar uma combinação exclusiva."
+          },
+          {
+            "texto": "Consultar dados bancários para escolher a senha mais usada.",
+            "correta": false,
+            "explicacao": "O laboratório não apresenta essa coleta. A geração ocorre no navegador, sem usar dados bancários."
+          }
+        ]
+      },
+      {
+        "enunciado": "No desafio “Qual vazou mais?”, o que você compara?",
+        "explicacao": "São exemplos públicos, comparados pela quantidade de aparições na base consultada. Nenhuma senha sua é usada no jogo. Releia as instruções do desafio.",
+        "alternativas": [
+          {
+            "texto": "Qual das suas senhas reais está cadastrada no SafeClick.",
+            "correta": false,
+            "explicacao": "O jogo não usa senhas do participante. Ele apresenta exemplos públicos para escolhas entre duas opções."
+          },
+          {
+            "texto": "Qual exemplo recebe mais gostos de outros usuários.",
+            "correta": false,
+            "explicacao": "A comparação é de ocorrências em vazamentos, não de preferência de usuários."
+          },
+          {
+            "texto": "Qual senha é mais recente na conta do banco.",
+            "correta": false,
+            "explicacao": "O desafio não consulta contas bancárias. Seus pares são exemplos públicos."
+          },
+          {
+            "texto": "Qual dos dois exemplos públicos apareceu em mais vazamentos na base consultada.",
+            "correta": true,
+            "explicacao": "A contagem compara os exemplos apresentados. Ela não é uma auditoria das senhas pessoais do participante."
+          }
+        ]
+      },
+      {
+        "enunciado": "Um dos exemplos públicos apareceu menos que o outro no desafio. Ele pode ser adotado como senha pessoal?",
+        "explicacao": "A contagem é comparativa. Os dois exemplos são públicos e previsíveis, por isso não devem ser reutilizados. Releia as instruções e o feedback do desafio.",
+        "alternativas": [
+          {
+            "texto": "Sim, porque aparecer menos equivale a não ter sido exposto.",
+            "correta": false,
+            "explicacao": "Menos ocorrências não significa ausência de exposição. Além disso, a combinação já é pública no próprio jogo."
+          },
+          {
+            "texto": "Não. Crie uma combinação própria, longa, imprevisível e exclusiva.",
+            "correta": true,
+            "explicacao": "A finalidade do jogo é aprender sobre padrões públicos. Uma combinação menos frequente continua inadequada por ser um exemplo conhecido."
+          },
+          {
+            "texto": "Sim, desde que a mesma senha seja usada em várias contas.",
+            "correta": false,
+            "explicacao": "Além de ser pública, a combinação seria reutilizada. Isso amplia o impacto se alguém a testar."
+          },
+          {
+            "texto": "Só é necessário acrescentar o ano atual ao exemplo público.",
+            "correta": false,
+            "explicacao": "Acrescentar um número previsível não desfaz o padrão conhecido. A orientação é criar uma combinação própria."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -12,7 +12,7 @@
             <p class="quizzes-etiqueta">{{ 'Oficina SafeClick' if oficina else 'Teste seus conhecimentos' }}</p>
             <h1>{{ quiz.titulo }}</h1>
             <p id="orientacao-quiz">
-                {% if oficina %}Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez.
+                {% if oficina %}Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez. Pode haver cartões que ficam sem uso.
                 {% else %}Selecione uma alternativa por pergunta. Todas as perguntas são obrigatórias.{% endif %}
             </p>
         </div>

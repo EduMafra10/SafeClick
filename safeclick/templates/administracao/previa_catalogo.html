@@ -106,7 +106,7 @@
                 <div class="quizzes-introducao quizzes-cartao">
                     <p class="quizzes-etiqueta">{{ 'Oficina SafeClick' if oficina else 'Teste seus conhecimentos' }}</p>
                     <h1>{{ titulo_item }}</h1>
-                    <p>{% if oficina %}Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez.
+                    <p>{% if oficina %}Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez. Pode haver cartões que ficam sem uso.
                        {% else %}Selecione uma alternativa por pergunta. Todas as perguntas são obrigatórias.{% endif %}</p>
                 </div>
                 {% if oficina and questoes %}

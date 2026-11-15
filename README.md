@@ -152,6 +152,8 @@ Em um banco novo, após a preparação, carregue os quatro cenários iniciais:
 
 Para usar a área **Minha conta → Gestão de conteúdo** e preparar um banco existente, siga o [guia de gestão do catálogo](docs/gestao_catalogo.md).
 
+A cobertura dos materiais, os quizzes e as oficinas revisados, os gabaritos e a publicação de novas versões estão no [relatório de revisão didática](docs/revisao_didatica.md).
+
 A Política de Privacidade e os Termos de Uso ficam arquivados no banco (`versoes_politica` e `versoes_termos`), com as leis citadas em `referencias_legais`. Para mudar um texto, publique uma nova versão no banco antes de alterar `VERSAO_POLITICA` ou `VERSAO_TERMOS` em `safeclick/privacidade.py`.
 
 O arquivo `sql/verificar_estrutura_quizzes.sql` auxilia na inspeção da estrutura dos quizzes.
