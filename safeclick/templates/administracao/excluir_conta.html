@@ -1,0 +1,51 @@
+{% extends "administracao/base.html" %}
+{% block titulo %}Excluir conta de administrador{% endblock %}
+{% block conteudo %}
+    <header class="admin-introducao">
+        <div>
+            <p class="visual-etiqueta">Contas</p>
+            <h1>Excluir conta de administrador</h1>
+            <p>{{ conta.nome }} · nº {{ conta.id }} · {{ conta.email }}</p>
+        </div>
+    </header>
+    <form method="post" class="admin-formulario">
+        {{ formulario.hidden_tag() }}
+        <p>Use esta opção quando um administrador deixa a equipe do SafeClick. Ao confirmar:</p>
+        <ul class="admin-explicacao">
+            <li>o nome, a senha e o vínculo com o aplicativo autenticador são apagados na hora, sem prazo para desfazer;</li>
+            <li>o acesso é encerrado em todos os dispositivos;</li>
+            <li>o e-mail fica guardado por 6 meses, visível só para a administração, e depois é apagado;</li>
+            <li>os conteúdos que a pessoa publicou continuam no ar;</li>
+            <li>a pessoa recebe um aviso por e-mail;</li>
+            <li>a exclusão fica registrada na auditoria com o seu nome e o motivo.</li>
+        </ul>
+        <p class="admin-ajuda">
+            Se a pessoa só deixou de administrar, mas continua usando o SafeClick,
+            prefira "Remover acesso de administrador".
+        </p>
+        {% if not bloqueio %}
+            {% for campo, autocompletar in ((formulario.motivo, "off"), (formulario.senha, "current-password")) %}
+                <div class="admin-campo">
+                    {{ campo.label }}
+                    {{ campo(autocomplete=autocompletar,
+                             aria_invalid="true" if campo.errors else "false",
+                             aria_describedby="erros-" ~ campo.id,
+                             maxlength=300 if campo.name == "motivo" else 128,
+                             rows=3 if campo.name == "motivo" else none) }}
+                    {% if campo.name == "motivo" %}
+                        <p class="admin-ajuda-campo">Por exemplo: "saiu da equipe do projeto". Não escreva dados pessoais.</p>
+                    {% endif %}
+                    <div id="erros-{{ campo.id }}" aria-live="polite">
+                        {% for erro in campo.errors %}<p class="admin-erro-campo">{{ erro }}</p>{% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="admin-acoes">
+            {% if not bloqueio %}
+                <button class="admin-botao admin-confirmar-remocao" type="submit">Excluir conta</button>
+            {% endif %}
+            <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Cancelar</a>
+        </div>
+    </form>
+{% endblock %}

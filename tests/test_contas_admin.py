@@ -29,6 +29,7 @@ class ContasBancoTeste(unittest.TestCase):
         abrir.start()
         self.addCleanup(abrir.stop)
         self.registrar = patch("safeclick.contas_db.registrar_evento").start()
+        self.prazos = patch("safeclick.contas_db.aplicar_prazos").start()
         self.addCleanup(patch.stopall)
 
     def test_busca_por_texto_escapa_curingas(self):
@@ -184,7 +185,7 @@ class ContasRotasTeste(unittest.TestCase):
         self.assertIn("joao@example.test", html)
         self.assertIn('href="/administracao/contas/12/redefinir-autenticador"', html)
         self.assertNotIn('href="/administracao/contas/7/redefinir-autenticador"', html)
-        self.listar.assert_called_once_with(busca="jo", autenticador=None, pagina=1, por_pagina=20)
+        self.listar.assert_called_once_with(busca="jo", autenticador=None, situacao="ativas", pagina=1, por_pagina=20)
         self.assertIn("Último acesso em 10/11/2026 às 19:15", html)
     def test_situacoes_do_autenticador(self):
         self.listar.return_value = ([conta(autenticador_ativo=False), conta(id=13, tem_autenticador=False,
@@ -197,7 +198,7 @@ class ContasRotasTeste(unittest.TestCase):
     def test_filtra_pela_situacao_do_autenticador(self):
         self.listar.return_value = ([conta(id=13, ultimo_acesso=None)], 1)
         html = self.client.get("/administracao/contas?autenticador=pendente").get_data(as_text=True)
-        self.listar.assert_called_once_with(busca="", autenticador="pendente", pagina=1, por_pagina=20)
+        self.listar.assert_called_once_with(busca="", autenticador="pendente", situacao="ativas", pagina=1, por_pagina=20)
         self.assertIn('<option value="pendente" selected>', html)
         self.assertIn("Nenhum acesso registrado", html)
 

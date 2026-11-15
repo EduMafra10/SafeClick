@@ -1,0 +1,50 @@
+{% extends "autenticacao/base.html" %}
+
+{% set titulo = "Excluir minha conta" %}
+{% set descricao = "Leia com atenção antes de confirmar. Você terá 30 dias para mudar de ideia." %}
+
+{% block conteudo %}
+    <div class="autenticacao-exclusao" id="consequencias-exclusao">
+        <p class="autenticacao-ajuda">Ao excluir a conta:</p>
+        <ul class="autenticacao-lista">
+            <li>o acesso é encerrado na hora, em todos os dispositivos, e o vínculo com o aplicativo autenticador é apagado;</li>
+            <li>você tem 30 dias para mudar de ideia: enviaremos para o seu e-mail um link para reativar a conta, que pede a sua senha;</li>
+            <li>depois dos 30 dias, seu nome e sua senha são apagados de vez, e a conta não pode mais ser recuperada;</li>
+            <li>seu e-mail fica guardado por mais 6 meses, visível só para a administração, para comprovar a exclusão e apurar incidentes de segurança; depois, é apagado;</li>
+            <li>suas atividades e conquistas ficam guardadas apenas para estatísticas; depois que o e-mail é apagado, ficam sem nenhum dado que identifique você;</li>
+            <li>passados os 30 dias, se quiser voltar, você pode criar uma conta nova com o mesmo e-mail, que começa do zero.</li>
+        </ul>
+        <p class="autenticacao-ajuda">
+            Depois, você pode apagar o SafeClick do seu aplicativo autenticador.
+        </p>
+    </div>
+
+    <form method="post" action="{{ url_for('exclusao_conta.excluir') }}">
+        {{ formulario.hidden_tag() }}
+
+        {{ exibir_campo(formulario.senha, "current-password") }}
+
+        <div class="autenticacao-aceite">
+            <div class="autenticacao-aceite-linha">
+                {{ formulario.ciente(
+                    aria_describedby="consequencias-exclusao erros-ciente",
+                    aria_invalid="true" if formulario.ciente.errors else "false"
+                ) }}
+                {{ formulario.ciente.label }}
+            </div>
+
+            <div class="autenticacao-erros" id="erros-ciente" aria-live="polite">
+                {% for mensagem in formulario.ciente.errors %}
+                    <p>{{ mensagem }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {{ formulario.enviar(class_="autenticacao-botao autenticacao-botao-perigo") }}
+    </form>
+{% endblock %}
+
+{% block rodape %}
+    Mudou de ideia?
+    <a href="{{ url_for('conta.exibir') }}">Voltar para Minha conta</a>
+{% endblock %}

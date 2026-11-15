@@ -35,6 +35,9 @@ _CONTAS = f"""
         count(*) FILTER (WHERE mfa_fator_sid IS NOT NULL AND mfa_confirmado_em IS NULL) AS autenticador_pendente
     FROM public.usuarios
     WHERE perfil = 'usuario'
+    -- contas excluídas ou aguardando a exclusão não entram no total (RF16)
+      AND excluida_em IS NULL
+      AND exclusao_solicitada_em IS NULL
 """
 
 _ATIVOS = f"SELECT count(DISTINCT usuario_id) AS ativos FROM ({_ATIVIDADES}) AS atividades"

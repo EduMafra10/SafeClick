@@ -145,6 +145,9 @@
     overflow-wrap: anywhere;
 }
 
+.autenticacao-ajuda[hidden] {
+    display: none;
+}
 .autenticacao-ajuda {
     color: #526d7e;
 }
@@ -409,4 +412,28 @@
 .autenticacao-botao:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.autenticacao-exclusao {
+    margin: 0 0 24px;
+}
+
+.autenticacao-lista {
+    margin: 8px 0 12px;
+    padding-left: 20px;
+    font-size: 14px;
+}
+
+.autenticacao-lista li + li {
+    margin-top: 6px;
+}
+
+.autenticacao-botao-perigo {
+    border-color: #a64f30;
+    background-color: #a64f30;
+}
+
+.autenticacao-botao-perigo:hover {
+    border-color: #833d28;
+    background-color: #833d28;
 }

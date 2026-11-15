@@ -17,7 +17,7 @@ from safeclick.sessoes import exigir_perfis, hash_sessao_atual
 
 # Rota da exclusão de conta (parte de outro integrante). Quando ela existir,
 # coloque aqui o nome do endpoint, por exemplo "conta_exclusao.confirmar".
-ENDPOINT_EXCLUSAO = None
+ENDPOINT_EXCLUSAO = "exclusao_conta.excluir"
 
 
 conta = Blueprint("conta", __name__, url_prefix="/conta")

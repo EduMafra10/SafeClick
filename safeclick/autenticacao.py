@@ -16,6 +16,7 @@ from psycopg import Error
 from psycopg.errors import UniqueViolation
 from werkzeug.security import check_password_hash, generate_password_hash
 from safeclick.auditoria_db import registrar_evento
+from safeclick.exclusao_conta import avisar_conta_agendada, concluir_exclusoes_vencidas
 from safeclick.limites import permitir_tentativa
 from safeclick.privacidade import DOCUMENTOS, VERSAO_TERMOS
 from safeclick.termos_db import TermosDesatualizados, buscar_termos
@@ -141,21 +142,30 @@ def login():
                     erro="Muitas tentativas. Aguarde cinco minutos e tente novamente.",
                 ), 429
 
+            concluir_exclusoes_vencidas()
             usuario = buscar_usuario_por_email(formulario.email.data)
             senha_hash = usuario["senha_hash"] if usuario else _HASH_LOGIN
             senha_valida = check_password_hash(
                 senha_hash,
-                formulario.senha.data,
+                formulario.senha.data,  
             )
 
             if usuario is None or not senha_valida:
-                
+
                 if usuario is None:
                     _registrar_falha_login("senha", "email_nao_cadastrado")
                 else:
                     _registrar_falha_login("senha", "senha_incorreta", usuario["id"])
                 erro = "E-mail ou senha inválidos."
                 status = 401
+            elif usuario.get("exclusao_solicitada_em"):
+                _registrar_falha_login("senha", "exclusao_agendada", usuario["id"])
+                aviso = avisar_conta_agendada(usuario["id"])
+                if aviso is None:
+                    erro = "E-mail ou senha inválidos."
+                    status = 401
+                else:
+                    erro, status = aviso
             else:
                 token = iniciar_login_pendente(
                     usuario["id"], usuario["senha_hash"]

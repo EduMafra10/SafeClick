@@ -4,11 +4,17 @@ from flask import Blueprint, Response, abort, current_app, flash, redirect, rend
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from psycopg import Error
+from wtforms import PasswordField, TextAreaField
+from wtforms.validators import DataRequired, Length
 
 from safeclick import auditoria_textos, contas_db
 from safeclick.auditoria_db import registrar_evento
 from safeclick.avaliacoes_db import listar_resumo_avaliacoes
+from safeclick.emails import enviar_email
+from safeclick.formularios import limpar_texto
+from safeclick.limites import permitir_tentativa
 from safeclick.painel import FUSO_BRASILIA
+from safeclick.recuperacao import _agendar
 from safeclick.sessoes import exigir_perfis
 from safeclick.twilio_api import remover_fator_totp
 from safeclick.catalogo_admin import catalogo
@@ -159,6 +165,14 @@ FILTROS_AUTENTICADOR = {
     "sem": "Não configurado",
 }
 
+FILTROS_SITUACAO = {
+    "ativas": "Ativas",
+    "agendadas": "Exclusão agendada (30 dias)",
+    "excluidas": "Excluídas",
+}
+
+def _no_fuso(momento):
+    return momento.astimezone(FUSO_BRASILIA) if momento else None
 
 def _preparar_conta(conta):
     situacao, rotulo = _situacao_autenticador(conta)
@@ -167,6 +181,9 @@ def _preparar_conta(conta):
         **conta,
         "criado_em": conta["criado_em"].astimezone(FUSO_BRASILIA),
         "ultimo_acesso": ultimo_acesso.astimezone(FUSO_BRASILIA) if ultimo_acesso else None,
+        "excluida_em": _no_fuso(conta.get("excluida_em")),
+        "exclusao_marcada_para": _no_fuso(conta.get("exclusao_marcada_para")),
+        "descartar_em": _no_fuso(conta.get("descartar_em")),
         "situacao": situacao,
         "situacao_rotulo": rotulo,
         "propria": conta["id"] == int(current_user.id),
@@ -175,7 +192,7 @@ def _preparar_conta(conta):
 @administracao.get("/contas")
 def listar_contas():
     if (
-        set(request.args) - {"busca", "autenticador", "pagina"}
+        set(request.args) - {"busca", "autenticador", "situacao", "pagina"}
         or any(len(request.args.getlist(campo)) != 1 for campo in request.args)
     ):
         abort(400, description="Filtros inválidos.")
@@ -183,6 +200,9 @@ def listar_contas():
     busca = request.args.get("busca", "").strip()[:100]
     autenticador = request.args.get("autenticador") or None
     if autenticador is not None and autenticador not in FILTROS_AUTENTICADOR:
+        abort(400, description="Filtros inválidos.")
+    situacao = request.args.get("situacao") or "ativas"
+    if situacao not in FILTROS_SITUACAO:
         abort(400, description="Filtros inválidos.")
     pagina_texto = request.args.get("pagina", "1")
     if not (1 <= len(pagina_texto) <= 7 and pagina_texto.isascii() and pagina_texto.isdecimal()):
@@ -193,7 +213,8 @@ def listar_contas():
 
     try:
         contas, total = contas_db.listar_contas(
-            busca=busca, autenticador=autenticador, pagina=pagina, por_pagina=POR_PAGINA_CONTAS
+            busca=busca, autenticador=autenticador, situacao=situacao,
+            pagina=pagina, por_pagina=POR_PAGINA_CONTAS,
         )
     except (Error, RuntimeError):
         abort(503, description="Não foi possível carregar as contas agora. Tente novamente em instantes.")
@@ -211,6 +232,8 @@ def listar_contas():
         busca=busca,
         autenticador=autenticador,
         filtros_autenticador=FILTROS_AUTENTICADOR,
+        situacao=situacao,
+        filtros_situacao=FILTROS_SITUACAO,
         pagina=pagina,
         ultima_pagina=ultima_pagina,
     )
@@ -321,6 +344,100 @@ def alterar_perfil(usuario_id):
         formulario=formulario,
         conta=conta,
         novo_perfil=novo_perfil,
+        bloqueio=bloqueio,
+        mensagem=mensagem,
+    ), status
+
+class FormularioExcluirAdministrador(FlaskForm):
+    senha = PasswordField("Sua senha", validators=[
+        DataRequired(message="Informe a sua senha para confirmar."),
+        Length(max=128, message="A senha informada é muito longa."),
+    ])
+    motivo = TextAreaField("Motivo da exclusão", filters=[limpar_texto], validators=[
+        DataRequired(message="Explique o motivo da exclusão."),
+        Length(min=10, max=300, message="Escreva o motivo com 10 a 300 caracteres."),
+    ])
+
+
+def _avisar_conta_excluida(email):
+    enviar_email(
+        email,
+        "SafeClick - Sua conta foi excluída",
+        "Olá!\n\nSua conta de administrador no SafeClick foi excluída por outro administrador da equipe. "
+        "Seu nome, sua senha e o vínculo com o aplicativo autenticador foram apagados, e o acesso "
+        "foi encerrado em todos os dispositivos.\n\n"
+        "Seu e-mail fica guardado por 6 meses, visível só para a administração, e depois é apagado. "
+        "Se você acha que isso foi um engano, fale com a equipe pelo canal informado na "
+        "Política de Privacidade.\n\nSafeClick",
+    )
+
+
+@administracao.route("/contas/<int:usuario_id>/excluir", methods=["GET", "POST"])
+def excluir_conta(usuario_id):
+    """Um administrador exclui a conta de outro administrador (RF16)."""
+    request.max_content_length = 4096
+    formulario = FormularioExcluirAdministrador()
+
+    try:
+        conta = contas_db.obter_conta(usuario_id)
+    except (Error, RuntimeError):
+        abort(503, description="Não foi possível carregar a conta agora.")
+    if conta is None:
+        abort(404, description="Conta não encontrada.")
+    conta = _preparar_conta(conta)
+
+    bloqueio = None
+    if conta["propria"]:
+        bloqueio = "Para excluir a sua própria conta, use Minha conta → Excluir conta."
+    elif conta["perfil"] != "administrador":
+        bloqueio = (
+            "Só contas de administrador são excluídas por aqui. "
+            "As outras pessoas excluem a própria conta em Minha conta."
+        )
+
+    mensagem, status = bloqueio, 200
+    if request.method == "POST":
+        if bloqueio:
+            status = 409
+        elif set(request.form) != {"csrf_token", "senha", "motivo"} or not formulario.validate_on_submit():
+            status = 400
+        else:
+            administrador_id = int(current_user.id)
+            try:
+                if not permitir_tentativa("exclusao_admin", str(administrador_id), 5):
+                    mensagem, status = "Muitas tentativas. Aguarde cinco minutos e tente novamente.", 429
+                elif not contas_db.senha_confere(administrador_id, formulario.senha.data):
+                    mensagem, status = "Senha incorreta. Nada foi alterado.", 400
+                else:
+                    antigo = contas_db.excluir_administrador(
+                        administrador_id, usuario_id, formulario.motivo.data
+                    )
+            except contas_db.ContaNaoEncontrada:
+                abort(404, description="Conta não encontrada.")
+            except contas_db.ExclusaoRecusada as erro:
+                mensagem, status = str(erro), 409
+            except (Error, RuntimeError):
+                current_app.logger.exception("Falha ao excluir a conta de administrador")
+                mensagem, status = "Não foi possível excluir agora. Nada foi alterado.", 503
+
+            if status == 200:
+                if antigo["fator_sid"]:
+                    try:
+                        remover_fator_totp(antigo["identidade"], antigo["fator_sid"], usuario_id=usuario_id)
+                    except RuntimeError:
+                        current_app.logger.warning("Fator antigo não removido na Twilio (conta %s)", usuario_id)
+                if not _agendar(_avisar_conta_excluida, antigo["email"]):
+                    current_app.logger.error("Aviso de conta excluída não agendado.")
+                flash(
+                    f"A conta de {conta['nome']} foi excluída. O e-mail fica guardado por 6 meses.",
+                    "administracao_sucesso",
+                )
+                return redirect(url_for("administracao.listar_contas", situacao="excluidas"), code=303)
+
+    return render_template(
+        "administracao/excluir_conta.html",
+        formulario=formulario,
+        conta=conta,
         bloqueio=bloqueio,
         mensagem=mensagem,
     ), status

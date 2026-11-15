@@ -22,20 +22,18 @@ from safeclick.administracao import administracao
 from safeclick.painel import painel
 from safeclick.conquistas import conquistas
 from safeclick.avaliacoes import avaliacoes
+from safeclick.exclusao_conta import exclusao_conta, reativacao_conta
 
 def create_app():
     app = Flask(__name__)
 
-    # toda a configuração vem de safeclick/config.py (variáveis de ambiente)
     app.config.update(carregar_configuracao())
 
     login_manager.init_app(app)
 
-    # registra as paginas de autenticacao
     app.register_blueprint(autenticacao)
     app.register_blueprint(recuperacao)
 
-    # registra as funcionalidades ja desenvolvidas
     app.register_blueprint(conteudos_bp)
     app.register_blueprint(paginas_bp)
     app.register_blueprint(simulacoes)
@@ -45,14 +43,14 @@ def create_app():
     app.register_blueprint(painel)
     app.register_blueprint(conquistas)
     app.register_blueprint(avaliacoes)
+    app.register_blueprint(exclusao_conta)
+    app.register_blueprint(reativacao_conta)
 
-    # Registra as páginas de LGPD (política de privacidade e termos de uso).
     app.register_blueprint(privacidade)
     app.register_blueprint(aceite_termos)
     app.register_blueprint(senhas)
     app.register_blueprint(conta)
 
-    # Disponibiliza o comando de verificação do banco.
     app.cli.add_command(verificar_banco)
     app.cli.add_command(verificar_twilio)
     app.cli.add_command(verificar_email)

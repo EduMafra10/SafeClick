@@ -2,6 +2,7 @@ from werkzeug.security import generate_password_hash
 
 from safeclick.auditoria_db import registrar_evento
 from safeclick.db import conectar_banco
+from safeclick.exclusao_conta_db import aplicar_prazos
 from safeclick.termos_db import TermosDesatualizados, buscar_termos
 
 def buscar_usuario_por_email(email):
@@ -10,7 +11,7 @@ def buscar_usuario_por_email(email):
     with conectar_banco() as conexao:
         return conexao.execute(
             """
-            SELECT id, nome, email, senha_hash, perfil
+            SELECT id, nome, email, senha_hash, perfil, exclusao_solicitada_em
             FROM public.usuarios
             WHERE lower(email) = %s
             """,
@@ -48,6 +49,7 @@ def criar_usuario(nome, email, senha, *, aceitou_termos, versao_termos):
         documento = buscar_termos(versao_termos, conexao=conexao)
         if documento is None:
             raise RuntimeError("A versão dos Termos de Uso ainda não foi publicada.")
+        aplicar_prazos(conexao)
 
         registro = conexao.execute(
             """

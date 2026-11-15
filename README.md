@@ -137,6 +137,8 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 23. `sql/adicionar_formato_quizzes.sql`
 24. `sql/criar_conquistas.sql`
 25. `sql/criar_avaliacoes.sql`
+26. `sql/adicionar_icone_usuarios.sql`
+27. `sql/adicionar_exclusao_conta.sql`
 
 O [guia do RF17](docs/avaliacoes.md) explica como habilitar e testar as avaliações em ambiente de teste e preparar a coleta real.
 

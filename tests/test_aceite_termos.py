@@ -223,6 +223,7 @@ class CadastroTermosTransacaoTeste(unittest.TestCase):
             "hash": patch("safeclick.usuarios_db.generate_password_hash", return_value="hash-ficticio"),
             "buscar": patch("safeclick.usuarios_db.buscar_termos", return_value=DOCUMENTO),
             "auditar": patch("safeclick.usuarios_db.registrar_evento"),
+            "prazos": patch("safeclick.usuarios_db.aplicar_prazos"),
         }.items():
             self.mocks[nome] = substituicao.start()
             self.addCleanup(substituicao.stop)
@@ -235,6 +236,7 @@ class CadastroTermosTransacaoTeste(unittest.TestCase):
     def test_conta_aceite_e_dois_eventos_usam_mesma_transacao(self):
         self.assertEqual(self.criar(), 11)
         self.mocks["buscar"].assert_called_once_with("1.0", conexao=self.conexao)
+        self.mocks["prazos"].assert_called_once_with(self.conexao)
         chamadas = self.conexao.execute.call_args_list
         self.assertEqual(len(chamadas), 2)
         self.assertIn("INSERT INTO public.usuarios", chamadas[0].args[0])

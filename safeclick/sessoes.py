@@ -129,6 +129,8 @@ def carregar_usuario(usuario_id):
                   AND sessao.usuario_id = %s
                   AND usuario.id = sessao.usuario_id
                   AND usuario.mfa_confirmado_em IS NOT NULL
+                  AND usuario.excluida_em IS NULL
+                  AND usuario.exclusao_solicitada_em IS NULL
                   AND sessao.expira_em > clock_timestamp()
                   AND sessao.ultima_atividade >
                       clock_timestamp() - INTERVAL '30 minutes'

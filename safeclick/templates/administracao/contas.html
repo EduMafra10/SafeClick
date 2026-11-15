@@ -14,6 +14,14 @@
             <input id="busca" name="busca" type="search" value="{{ busca }}" maxlength="100">
         </div>
         <div>
+            <label for="situacao">Situação</label>
+            <select id="situacao" name="situacao">
+                {% for valor, rotulo in filtros_situacao.items() %}
+                    <option value="{{ valor }}" {% if situacao == valor %}selected{% endif %}>{{ rotulo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
             <label for="autenticador">Autenticador</label>
             <select id="autenticador" name="autenticador">
                 <option value="">Todas as situações</option>
@@ -23,7 +31,7 @@
             </select>
         </div>
         <button class="admin-botao" type="submit">Filtrar</button>
-        {% if busca or autenticador %}
+        {% if busca or autenticador or situacao != 'ativas' %}
             <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Limpar filtros</a>
         {% endif %}
     </form>
@@ -31,6 +39,45 @@
     {% if contas %}
         <ul class="admin-lista-itens">
             {% for conta in contas %}
+                {% if conta.excluida_em %}
+                <li class="admin-catalogo-cartao admin-linha-item">
+                    <div>
+                        <strong class="admin-titulo-cenario">
+                            Conta excluída
+                            {% if conta.perfil == 'administrador' %}<span class="admin-selo">Era admin</span>{% endif %}
+                        </strong>
+                        <span class="admin-metadados">
+                            nº {{ conta.id }} ·
+                            {% if conta.email_guardado %}{{ conta.email_guardado }} (guardado até {{ conta.descartar_em.strftime('%d/%m/%Y') }})
+                            {% else %}e-mail já descartado{% endif %}
+                        </span>
+                        <p class="admin-info-item">
+                            <span>Cadastro em {{ conta.criado_em.strftime('%d/%m/%Y') }}</span>
+                            <span>Excluída em {{ conta.excluida_em.strftime('%d/%m/%Y às %H:%M') }}</span>
+                        </p>
+                    </div>
+                    <div class="admin-acoes">
+                        <a class="admin-link" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
+                    </div>
+                </li>
+                {% elif conta.exclusao_marcada_para %}
+                <li class="admin-catalogo-cartao admin-linha-item">
+                    <div>
+                        <strong class="admin-titulo-cenario">
+                            {{ conta.nome }}
+                            {% if conta.perfil == 'administrador' %}<span class="admin-selo">Admin</span>{% endif %}
+                        </strong>
+                        <span class="admin-metadados">nº {{ conta.id }} · {{ conta.email }}</span>
+                        <p class="admin-info-item">
+                            <span>Desativada pela própria pessoa</span>
+                            <span>Exclusão definitiva em {{ conta.exclusao_marcada_para.strftime('%d/%m/%Y') }}, se ela não reativar</span>
+                        </p>
+                    </div>
+                    <div class="admin-acoes">
+                        <a class="admin-link" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
+                    </div>
+                </li>
+                {% else %}
                 <li class="admin-catalogo-cartao admin-linha-item">
                     <div>
                         <strong class="admin-titulo-cenario">
@@ -62,9 +109,13 @@
                             {% elif conta.situacao == 'ativo' %}
                                 <a class="admin-link" href="{{ url_for('administracao.alterar_perfil', usuario_id=conta.id) }}">Tornar administrador</a>
                             {% endif %}
+                            {% if conta.perfil == 'administrador' %}
+                                <a class="admin-link admin-botao-perigo" href="{{ url_for('administracao.excluir_conta', usuario_id=conta.id) }}">Excluir conta</a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% else %}
@@ -73,11 +124,11 @@
     {% if ultima_pagina > 1 %}
         <nav class="admin-paginacao" aria-label="Paginação das contas">
             {% if pagina > 1 %}
-                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, pagina=pagina-1) }}">← Anterior</a>
+                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, situacao=situacao if situacao != 'ativas' else None, pagina=pagina-1) }}">← Anterior</a>
             {% endif %}
             <span>Página {{ pagina }} de {{ ultima_pagina }}</span>
             {% if pagina < ultima_pagina %}
-                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, pagina=pagina+1) }}">Próxima →</a>
+                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, situacao=situacao if situacao != 'ativas' else None, pagina=pagina+1) }}">Próxima →</a>
             {% endif %}
         </nav>
     {% endif %}
