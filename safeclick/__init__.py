@@ -17,6 +17,7 @@ from safeclick.emails import verificar_email
 from safeclick.recuperacao import recuperacao
 from safeclick.aceite_termos import aceite_termos
 from safeclick.senhas import senhas
+from safeclick.conta import conta
 from safeclick.administracao import administracao
 from safeclick.painel import painel
 from safeclick.conquistas import conquistas
@@ -49,6 +50,7 @@ def create_app():
     app.register_blueprint(privacidade)
     app.register_blueprint(aceite_termos)
     app.register_blueprint(senhas)
+    app.register_blueprint(conta)
 
     # Disponibiliza o comando de verificação do banco.
     app.cli.add_command(verificar_banco)

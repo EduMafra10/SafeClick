@@ -13,6 +13,9 @@ EVENTOS = {
     "login.falha": ("Login recusado", "acesso"),
     "logout.realizado": ("Saiu da conta", "acesso"),
     "usuario.senha_redefinida": ("Senha redefinida", "acesso"),
+    "usuario.senha_alterada": ("Senha trocada em Minha conta", "acesso"),
+    "usuario.perfil_atualizado": ("Dados do perfil atualizados", "acesso"),
+    "sessoes.encerradas": ("Outras sessões encerradas", "acesso"),
     "acesso.negado": ("Acesso negado", "acesso"),
     "conteudo.visualizado": ("Conteúdo aberto", "aprendizado"),
     "conteudo.concluido": ("Conteúdo concluído", "aprendizado"),
@@ -202,6 +205,16 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
         sessoes = detalhes.pop("sessoes_encerradas", None)
         if sessoes is not None:
             frases.append(f"Sessões encerradas: {sessoes}")
+
+    elif evento in ("usuario.senha_alterada", "sessoes.encerradas", "usuario.perfil_atualizado"):
+        if detalhes.pop("motivo", None) == "senha_atual_incorreta":
+            frases.append("Senha atual incorreta")
+        sessoes = detalhes.pop("sessoes_encerradas", None)
+        if sessoes is not None:
+            frases.append(f"Outras sessões encerradas: {sessoes}")
+        campos = detalhes.pop("campos", None)
+        if campos:
+            frases.append("Alterado: " + ", ".join(_legivel(campo) for campo in campos))
 
     elif evento == "usuario.perfil_alterado":
         anterior = detalhes.pop("perfil_anterior", None)

@@ -1,3 +1,4 @@
+{% from "componentes/_icone_perfil.html" import icone_perfil %}
 <header class="site-cabecalho">
     <div class="site-barra">
         <a class="site-marca" href="{{ url_for('simulacoes.listar') }}">
@@ -31,9 +32,7 @@
                     class="site-conta-botao"
                     aria-label="Menu da conta de {{ nome }}"
                 >
-                    <span class="site-avatar" aria-hidden="true">
-                        {{ partes[0][0]|upper }}{% if partes|length > 1 %}{{ partes[-1][0]|upper }}{% endif %}
-                    </span>
+                    {{ icone_perfil(current_user.icone, nome, 38, 'site-avatar') }}
 
                     <span class="site-conta-resumo" aria-hidden="true">
                         <strong>{{ partes[0] }}</strong>
@@ -59,6 +58,8 @@
                         <strong>{{ nome }}</strong>
                         <span>{{ current_user.email }}</span>
                     </div>
+
+                    <a class="site-conta-link" href="{{ url_for('conta.exibir') }}">Minha conta</a>
 
                     {% if current_user.perfil == 'administrador' %}
                         <a class="site-conta-link" href="{{ url_for('administracao.inicio') }}">

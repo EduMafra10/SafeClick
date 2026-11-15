@@ -64,6 +64,7 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         return {
             "nome": "Pessoa Teste",
             "email": "PESSOA@example.com",
+            "confirmar_email": " pessoa@EXAMPLE.com ",
             "senha": "senha-ficticia-longa",
             "confirmar_senha": "senha-ficticia-longa",
             "aceitou_termos": "y",
@@ -126,6 +127,16 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         resposta = self.client.post("/cadastro", data=dados)
         self.assertEqual(resposta.status_code, 400)
         self.assertNotIn(dados["senha"], resposta.get_data(as_text=True))
+        self.criar.assert_not_called()
+
+    def test_emails_diferentes_nao_criam_conta(self):
+        dados = self.dados()
+        dados["confirmar_email"] = "pessoa@exemplo.com"
+        resposta = self.client.post("/cadastro", data=dados)
+        self.assertEqual(resposta.status_code, 400)
+        self.assertIn("Os e-mails precisam ser iguais.", resposta.get_data(as_text=True))
+        dados.pop("confirmar_email")
+        self.assertEqual(self.client.post("/cadastro", data=dados).status_code, 400)
         self.criar.assert_not_called()
 
     def test_sucesso_encaminha_aceite_versao_e_nao_autentica(self):

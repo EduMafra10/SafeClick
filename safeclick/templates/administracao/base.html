@@ -54,6 +54,7 @@
                 <strong>{{ nome }}</strong>
                 <span>{{ current_user.email }}</span>
             </p>
+            <a class="admin-rodape-acao" href="{{ url_for('conta.exibir') }}">{{ icone('contas') }}Minha conta</a>
             <a class="admin-rodape-acao" href="{{ url_for('simulacoes.listar') }}">{{ icone('plataforma') }}Ver a plataforma</a>
             <form method="post" action="{{ url_for('autenticacao.sair') }}">
                 {{ formulario_saida.csrf_token(id='csrf-saida') }}

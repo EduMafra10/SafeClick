@@ -8,6 +8,9 @@ from safeclick.db import conectar_banco
 EVENTOS_PERMITIDOS = {
     "usuario.cadastrado",
     "usuario.senha_redefinida",
+    "usuario.senha_alterada",
+    "usuario.perfil_atualizado",
+    "sessoes.encerradas",
     "login.sucesso",
     "login.falha",
     "logout.realizado",

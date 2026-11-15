@@ -119,6 +119,25 @@
     font-weight: 700;
 }
 
+.perfil-icone {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.perfil-icone svg {
+    display: block;
+}
+
+.perfil-icone--iniciais {
+    background: #e8f3ed;
+    color: #215940;
+    font-weight: 700;
+    line-height: 1;
+}
+
 .site-conta-resumo {
     min-width: 0;
     max-width: 120px;
