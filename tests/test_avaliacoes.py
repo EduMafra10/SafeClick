@@ -142,7 +142,7 @@ class AvaliacoesTeste(unittest.TestCase):
         token = self.csrf()
         falha = Error("Falha no registro de auditoria")
         conexao = Mock()
-        conexao.execute.side_effect = [Mock(), falha]
+        conexao.execute.side_effect = [Mock(), Mock(), falha]
         contexto = MagicMock()
         contexto.__enter__.return_value = conexao
         self.abrir.return_value = contexto
@@ -192,9 +192,12 @@ class AvaliacoesBancoTeste(unittest.TestCase):
 
                 salvar_avaliacao(conexao, tipo, 7, 42, 4, "Comentário privado")
 
-                gravacao, auditoria = conexao.execute.call_args_list
+                titular, gravacao, auditoria = conexao.execute.call_args_list
+                self.assertIn('FOR SHARE', titular.args[0])
+                self.assertEqual(titular.args[1], (7,))
                 self.assertIn(f"INSERT INTO public.avaliacoes_{tipo}", gravacao.args[0])
-                self.assertEqual(gravacao.args[1], (7, 42, 4, "Comentário privado"))
+                self.assertEqual(gravacao.args[1][:4], (7, 42, 4, "Comentário privado"))
+                self.assertEqual(gravacao.args[1][4:], (False,False,False,None,False,'nao_solicitada'))
                 self.assertIn("INSERT INTO public.logs_auditoria", auditoria.args[0])
                 campos = auditoria.args[1]
                 self.assertEqual(campos[:-1], (7, "avaliacao.salva", "sucesso", f"avaliacao_{tipo}", None))

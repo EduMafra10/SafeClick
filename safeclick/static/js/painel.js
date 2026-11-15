@@ -22,6 +22,7 @@
 
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     Chart.defaults.color = secundario;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) Chart.defaults.animation = false;
 
   
     function quebrarTexto(texto, limite) {

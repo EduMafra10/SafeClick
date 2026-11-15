@@ -1,0 +1,13 @@
+{% extends 'administracao/base.html' %}
+{% block titulo %}Revisar comentário{% endblock %}
+{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">{% endblock %}
+{% block conteudo %}
+<section class="admin-catalogo-cartao"><h1>{{ 'Publicar comentário sem identificação' if acao == 'aprovar' else 'Impedir publicação do comentário' }}</h1>
+<h2>{{ item.titulo }}</h2><p class="participacao-texto">{{ item.comentario }}</p>
+<p>Antes de publicar, confira se o texto se refere à atividade e não contém dados pessoais, senhas, contatos, ofensas ou informações sensíveis.</p>
+{% if erro %}<p role="alert">{{ erro }}</p>{% endif %}
+<form method="post">{{ formulario.hidden_tag() }}<input type="hidden" name="revisao" value="{{ item.revisao }}">
+<label class="participacao-opcao"><input type="checkbox" name="confirmar" value="1" required> Confirmo que revisei o comentário e esta decisão.</label>
+<button class="admin-botao">{{ 'Confirmar publicação' if acao == 'aprovar' else 'Confirmar bloqueio de publicação' }}</button>
+<a href="{{ url_for('moderacao_avaliacoes.listar') }}">Cancelar</a></form></section>
+{% endblock %}

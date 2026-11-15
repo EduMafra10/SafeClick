@@ -139,8 +139,12 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 25. `sql/criar_avaliacoes.sql`
 26. `sql/adicionar_icone_usuarios.sql`
 27. `sql/adicionar_exclusao_conta.sql`
+28. `sql/adicionar_avaliacoes_publicas_ranking.sql`
+29. `sql/registrar_politica_1_3_participacao.sql`
 
 O [guia do RF17](docs/avaliacoes.md) explica como habilitar e testar as avaliações em ambiente de teste e preparar a coleta real.
+
+O [guia de participação e progresso](docs/participacao_progresso.md) descreve as avaliações públicas, a moderação, o ranking opcional, as regras de pontuação, a privacidade e os testes PostgreSQL. Em um banco existente já atualizado até o item 27, aplique somente os itens 28 e 29 antes de reiniciar esta versão da aplicação.
 
 Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
 

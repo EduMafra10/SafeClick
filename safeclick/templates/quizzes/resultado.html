@@ -1,5 +1,6 @@
 {% extends "quizzes/base.html" %}
 {% from "componentes/links_atividades.html" import links_atividades %}
+{% from "componentes/avaliacoes_publicas.html" import avaliacoes_publicas %}
 {% block titulo %}Resultado | SafeClick{% endblock %}
 
 {% block conteudo %}
@@ -56,6 +57,7 @@
             {% endfor %}
         </div>
 
+        {% if config.AVALIACOES_ATIVAS and quiz.pode_repetir %}{{ avaliacoes_publicas('quiz', quiz.id) }}{% endif %}
         <nav class="quizzes-acoes" aria-label="Próximas ações">
             {% if quiz.pode_repetir %}
                 <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}">Tentar novamente</a>

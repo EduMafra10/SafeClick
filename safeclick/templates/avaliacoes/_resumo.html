@@ -1,0 +1,12 @@
+<div class="participacao-resumo">
+    {% if resumo.total %}<p><strong>{{ ('%.1f'|format(resumo.media)).replace('.', ',') }} de 5</strong> · {{ resumo.total }} {{ 'avaliação pública' if resumo.total == 1 else 'avaliações públicas' }}</p>
+    {% else %}<p>Esta atividade ainda não tem avaliações compartilhadas publicamente.</p>{% endif %}
+    <p class="participacao-nota">Somente notas autorizadas pelos autores. Avaliação de utilidade não é nota de desempenho.</p>
+    <ul class="participacao-comentarios" role="list">
+        {% for item in comentarios %}<li>
+            <p><strong>Participante sem identificação</strong> · {{ item.nota }} de 5 · <time>{{ item.data }}</time></p>
+            <p class="participacao-texto">{{ item.comentario }}</p>
+        </li>{% else %}<li>Ainda não há comentários públicos aprovados para esta atividade.</li>{% endfor %}
+    </ul>
+    <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id) }}">Abrir todas as avaliações desta atividade →</a>
+</div>

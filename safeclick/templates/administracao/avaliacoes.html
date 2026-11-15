@@ -6,6 +6,8 @@
             <p class="visual-etiqueta">Administração</p>
             <h1>Avaliações de conteúdos e quizzes</h1>
             <p>Consulte a média e a quantidade de avaliações de cada atividade publicada a partir da primeira resposta.</p>
+            <p>Este resumo inclui notas privadas. A consulta pública considera somente as notas que os autores autorizaram divulgar.</p>
+            <p><a href="{{ url_for('moderacao_avaliacoes.listar') }}">Consultar comentários e moderar publicações →</a> · <a href="{{ url_for('avaliacoes.publicas') }}">Ver consulta pública</a></p>
         </div>
     </header>
     <ul class="admin-lista-itens">

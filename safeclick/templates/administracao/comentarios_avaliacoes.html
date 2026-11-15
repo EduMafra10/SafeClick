@@ -1,0 +1,22 @@
+{% extends 'administracao/base.html' %}
+{% block titulo %}Comentários de avaliações{% endblock %}
+{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">{% endblock %}
+{% block conteudo %}
+<header class="admin-introducao"><div><p class="visual-etiqueta">Administração</p><h1>Comentários de avaliações</h1>
+<p>Consulte novas avaliações e modere comentários autorizados para publicação. Comentários antigos não são disponibilizados sem atualização pelo autor.</p></div></header>
+<p><a href="{{ url_for('administracao.listar_avaliacoes') }}">Ver médias e quantidades</a> · <a href="{{ url_for('avaliacoes.publicas') }}">Conferir consulta pública</a></p>
+{% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}<p role="status" class="admin-catalogo-cartao">{{ mensagem }}</p>{% endfor %}
+<form method="get" class="participacao-filtros"><label>Situação <select name="estado">
+{% for valor,texto in [('', 'Todas'),('pendente','Aguardando moderação'),('aprovada','Publicados'),('rejeitada','Não publicados'),('nao_solicitada','Privados')] %}<option value="{{ valor }}" {{ 'selected' if estado == valor }}>{{ texto }}</option>{% endfor %}
+</select></label><button class="admin-botao">Filtrar</button></form>
+<ul class="admin-lista-itens">{% for item in itens %}<li class="admin-catalogo-cartao">
+<h2>{{ item.titulo }}</h2><p>Conta #{{ item.usuario_id }} · {{ item.nota }} de 5 · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
+<p class="participacao-texto">{{ item.comentario or 'Sem comentário.' }}</p>
+<p>Estado: {{ {'pendente':'Aguardando moderação','aprovada':'Publicado','rejeitada':'Não publicado','nao_solicitada':'Privado'}[item.moderacao] }}.</p>
+{% if item.publicar_comentario and item.publicada %}<p>
+<a href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='aprovar') }}">Revisar para publicar</a> ·
+<a href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='ocultar') }}">Impedir publicação</a>
+</p>{% endif %}
+</li>{% else %}<li class="admin-catalogo-cartao">Nenhuma avaliação disponível para esse filtro.</li>{% endfor %}</ul>
+<nav class="quizzes-acoes" aria-label="Páginas de avaliações">{% if pagina > 1 %}<a href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina-1,estado=estado) }}">Anterior</a>{% endif %}<span>Página {{ pagina }}</span>{% if pagina * 20 < total %}<a href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina+1,estado=estado) }}">Próxima</a>{% endif %}</nav>
+{% endblock %}

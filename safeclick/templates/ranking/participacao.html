@@ -1,0 +1,20 @@
+{% extends 'quizzes/base.html' %}
+{% block titulo %}Participação no ranking | SafeClick{% endblock %}
+{% block conteudo %}
+<header class="quizzes-introducao"><h1>Minha participação no ranking</h1><p>Participar é opcional. Sair do ranking não apaga seu progresso privado.</p></header>
+{% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}<p class="quizzes-faixa" role="status">{{ mensagem }}</p>{% endfor %}
+{% if erro %}<p class="quizzes-erro" role="alert">{{ erro }}</p>{% endif %}
+{% if preferencia %}<p class="quizzes-faixa">Seu pseudônimo público é <strong>{{ preferencia.apelido }}</strong>.</p>{% else %}<p>Você não participa do ranking público.</p>{% endif %}
+{% if current_user.perfil == 'usuario' %}
+<form method="post" class="quizzes-cartao" data-espera>
+    {{ formulario.hidden_tag() }}
+    <label class="participacao-opcao">{{ formulario.participar(value='1') }} <span>{{ formulario.participar.label.text }}</span></label>
+    <p>Ao participar, o público verá somente seu pseudônimo, posição, pontuação e quantidade de atividades. O cálculo inclui seu histórico de quizzes, oficinas, simulações e desafio de senhas.</p>
+    <label class="participacao-opcao">{{ formulario.maior_de_idade(value='1') }} <span>{{ formulario.maior_de_idade.label.text }}</span></label>
+    <p>Para sair, desmarque a participação e salve. Um novo ingresso recebe outro pseudônimo. A participação pública está limitada a maiores de 18 anos por autodeclaração; os demais usuários podem usar os recursos privados.</p>
+    <p><a href="{{ url_for('ranking.privacidade') }}">Leia o aviso de participação</a> e a <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
+    <button class="quizzes-botao">Salvar preferência</button>
+</form><p role="status" data-carregando hidden>Salvando preferência…</p>
+{% else %}<p class="quizzes-faixa">Administradores podem consultar o ranking, mas não participam da classificação.</p>{% endif %}
+<p><a href="{{ url_for('ranking.listar') }}">Voltar ao ranking</a></p>
+{% endblock %}

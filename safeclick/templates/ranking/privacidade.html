@@ -1,0 +1,13 @@
+{% extends 'quizzes/base.html' %}
+{% block titulo %}Participação e privacidade | SafeClick{% endblock %}
+{% block conteudo %}
+<article class="quizzes-cartao"><h1>Participação e privacidade</h1><p>Versão do aviso: {{ versao }}.</p>
+<h2>Avaliações</h2><p>A nota de utilidade e o comentário ficam vinculados à sua conta para edição, exclusão e prevenção de duplicidade. Novas avaliações enviadas com este aviso podem ser consultadas pela equipe administrativa para melhorar os materiais. Comentários antigos permanecem privados até que você os atualize pelo novo formulário.</p>
+<p>Você escolhe separadamente compartilhar a nota e enviar o comentário para publicação. A consulta pública inclui somente notas autorizadas. Comentários dependem também da revisão administrativa. Não publicamos nome, e-mail, número da conta ou ligação com o pseudônimo do ranking.</p>
+<p>Não escreva nomes, contatos, documentos, senhas ou dados sensíveis seus ou de terceiros. A moderação pode impedir a publicação. Editar um comentário publicado exige nova revisão.</p>
+<h2>Ranking</h2><p>A adesão publica apenas pseudônimo aleatório, posição, pontos e quantidade de atividades. O pseudônimo não deriva do seu nome ou e-mail, mas fica vinculado à conta internamente; portanto, não representa anonimização definitiva. Não há nome público livre para preencher.</p>
+<h2>Suas escolhas</h2><p>A exposição pública é opcional, limitada a maiores de 18 anos por autodeclaração. Quem não participa continua aprendendo e acompanhando o próprio progresso. Essa autodeclaração não equivale a uma verificação documental de idade.</p>
+<p>Retire a autorização de uma avaliação pelo formulário ou exclua-a em <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>. Você pode sair em <a href="{{ url_for('ranking.participacao') }}">Participação no ranking</a>. As mudanças retiram os dados das consultas seguintes do sistema, mas não apagam cópias feitas por terceiros.</p>
+<p>Ao solicitar exclusão da conta, a exibição pública é retirada. Ao concluir a exclusão, avaliações e preferência do ranking são eliminadas. O histórico mínimo de auditoria segue a política do projeto. Consulte os direitos, o responsável e o canal de atendimento na <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
+</article>
+{% endblock %}

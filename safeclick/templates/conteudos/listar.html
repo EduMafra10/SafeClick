@@ -30,6 +30,9 @@
                     Escolha um tema para começar a leitura. Ao terminar, marque como
                     concluído para acompanhar no seu progresso.
                 </p>
+                {% if config.AVALIACOES_ATIVAS %}
+                    <p><a href="{{ url_for('avaliacoes.publicas', tipo='conteudo') }}">Consultar avaliações dos conteúdos →</a></p>
+                {% endif %}
             </div>
 
             {% if total %}

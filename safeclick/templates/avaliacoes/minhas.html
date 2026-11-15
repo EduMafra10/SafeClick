@@ -1,0 +1,20 @@
+{% extends 'quizzes/base.html' %}
+{% block titulo %}Minhas avaliações | SafeClick{% endblock %}
+{% block conteudo %}
+<header class="quizzes-introducao"><p class="quizzes-etiqueta">Controle dos seus dados</p><h1>Minhas avaliações</h1>
+<p>Consulte o que você enviou. A exclusão retira a nota e o comentário das consultas, inclusive se a atividade já foi despublicada.</p></header>
+{% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}<p class="quizzes-faixa" role="status">{{ mensagem }}</p>{% endfor %}
+<ul class="quizzes-lista">
+{% for item in itens %}<li class="quizzes-cartao participacao-item">
+    <h2>{{ item.titulo }}</h2><p>{{ item.nota }} de 5 · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
+    {% if item.comentario %}<p class="participacao-texto">{{ item.comentario }}</p>{% endif %}
+    <p>Comentário: {{ {'pendente':'aguardando moderação','aprovada':'publicado sem identificação','rejeitada':'não publicado pela moderação','nao_solicitada':'privado'}[item.moderacao] }}.</p>
+    {% if item.publicada and (item.tipo == 'conteudo' or item.ultimo_resultado) %}<p><a href="{{ url_for('avaliacoes.conteudo',slug=item.slug) if item.tipo == 'conteudo' else url_for('avaliacoes.quiz',tentativa_id=item.ultimo_resultado) }}">Editar nota e comentário</a></p>{% endif %}
+    {% if item.publicar_nota or item.publicar_comentario %}<form method="post" action="{{ url_for('avaliacoes.retirar',tipo=item.tipo,item_id=item.item_id) }}">{{ formulario.hidden_tag() }}<button class="quizzes-botao quizzes-botao-secundario">Retirar divulgação e manter privada</button></form>{% endif %}
+    <form method="post" action="{{ url_for('avaliacoes.excluir', tipo=item.tipo, item_id=item.item_id) }}" data-confirmar="Excluir esta avaliação? Ela sairá também da consulta pública.">
+        {{ formulario.hidden_tag() }}<button class="quizzes-botao quizzes-botao-secundario">Excluir avaliação</button>
+    </form>
+</li>{% else %}<li class="quizzes-cartao">Você ainda não enviou avaliações.</li>{% endfor %}
+</ul>
+<p><a href="{{ url_for('ranking.privacidade') }}">Como seus dados são utilizados</a></p>
+{% endblock %}

@@ -194,7 +194,6 @@ class VisaoGeralRotasTeste(unittest.TestCase):
 
     def test_administrador_entra_na_visao_geral(self):
         self.assertEqual(self.client.get("/").location, "/administracao/")
-        self.assertEqual(self.client.get("/painel/").location, "/administracao/")
 
     def test_usuario_comum_continua_no_proprio_painel(self):
         self.usuario.perfil = "usuario"
@@ -206,7 +205,8 @@ class VisaoGeralRotasTeste(unittest.TestCase):
             html = self.client.get("/simulacoes/").get_data(as_text=True)
             self.assertIn("Você está vendo a plataforma como usuário", html)
             self.assertIn("Área administrativa", html)
-            self.assertNotIn("Meu progresso", html)
+            self.assertIn("Meu progresso", html)
+            self.assertIn("não entram nos indicadores gerais nem no ranking", html)
             self.usuario.perfil = "usuario"
             html = self.client.get("/simulacoes/").get_data(as_text=True)
             self.assertNotIn("Você está vendo a plataforma como usuário", html)

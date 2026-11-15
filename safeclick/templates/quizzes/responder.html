@@ -1,5 +1,6 @@
 {% extends "quizzes/base.html" %}
 {% from "componentes/links_atividades.html" import links_atividades %}
+{% from "componentes/avaliacoes_publicas.html" import avaliacoes_publicas %}
 {% block titulo %}{{ quiz.titulo }} | SafeClick{% endblock %}
 
 {% block conteudo %}
@@ -59,6 +60,7 @@
                 </div>
             {% endif %}
         </form>
+        {% if config.AVALIACOES_ATIVAS %}{{ avaliacoes_publicas('quiz', quiz.id) }}{% endif %}
         <nav class="quizzes-acoes" aria-label="Próximas atividades">
             {{ links_atividades('quiz', quiz.proxima_referencia) }}
         </nav>

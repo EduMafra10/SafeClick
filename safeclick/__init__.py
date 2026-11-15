@@ -23,6 +23,8 @@ from safeclick.painel import painel
 from safeclick.conquistas import conquistas
 from safeclick.avaliacoes import avaliacoes
 from safeclick.exclusao_conta import exclusao_conta, reativacao_conta
+from safeclick.ranking import ranking
+from safeclick.moderacao_avaliacoes import moderacao_avaliacoes
 
 def create_app():
     app = Flask(__name__)
@@ -45,6 +47,8 @@ def create_app():
     app.register_blueprint(avaliacoes)
     app.register_blueprint(exclusao_conta)
     app.register_blueprint(reativacao_conta)
+    app.register_blueprint(ranking)
+    app.register_blueprint(moderacao_avaliacoes)
 
     app.register_blueprint(privacidade)
     app.register_blueprint(aceite_termos)
