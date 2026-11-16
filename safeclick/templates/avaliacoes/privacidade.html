@@ -1,0 +1,18 @@
+{% extends 'quizzes/base.html' %}
+{% block titulo %}Avaliações e privacidade | SafeClick{% endblock %}
+{% block conteudo %}
+<article class="quizzes-cartao">
+    <p class="quizzes-etiqueta">Suas escolhas</p>
+    <h1>Avaliações e privacidade</h1>
+    <p>Aviso de publicação: {{ versao }}.</p>
+    <h2>Como utilizamos sua avaliação</h2>
+    <p>A nota de utilidade e o comentário ficam vinculados à sua conta para edição, exclusão e prevenção de duplicidade. Novas avaliações enviadas com este aviso podem ser consultadas pela equipe administrativa para melhorar os materiais. Comentários antigos permanecem privados até que você os atualize pelo novo formulário.</p>
+    <h2>Compartilhamento opcional</h2>
+    <p>Você escolhe separadamente compartilhar a nota e enviar o comentário para publicação. A consulta pública inclui somente notas autorizadas. Comentários dependem também da revisão administrativa. Não publicamos nome, e-mail ou número da conta do autor.</p>
+    <p>Não escreva nomes, contatos, documentos, senhas ou dados sensíveis seus ou de terceiros. A moderação pode impedir a publicação. Editar um comentário publicado exige nova revisão.</p>
+    <p>A exposição pública é opcional, limitada a maiores de 18 anos por autodeclaração. Essa declaração não equivale a uma verificação documental de idade. Quem não compartilha continua aprendendo, avaliando de forma privada e acompanhando o próprio progresso.</p>
+    <h2>Retirada e exclusão</h2>
+    <p>Retire a autorização pelo formulário ou use <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a> para manter sua avaliação privada ou excluí-la, inclusive se a atividade sair do catálogo. As mudanças retiram os dados das consultas seguintes do sistema, mas não apagam cópias feitas por terceiros.</p>
+    <p>Ao solicitar exclusão da conta, a exibição pública é retirada. Ao concluir a exclusão, as avaliações são eliminadas. O histórico mínimo de auditoria segue a política do projeto. Consulte seus direitos, o responsável e o canal de atendimento na <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
+</article>
+{% endblock %}

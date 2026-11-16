@@ -1,28 +1,40 @@
 {% extends "administracao/base.html" %}
 {% block titulo %}Avaliações{% endblock %}
+{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
+{% block classe_principal %}admin-avaliacoes{% endblock %}
 {% block conteudo %}
     <header class="admin-introducao">
         <div>
             <p class="visual-etiqueta">Administração</p>
             <h1>Avaliações de conteúdos e quizzes</h1>
-            <p>Consulte a média e a quantidade de avaliações de cada atividade publicada a partir da primeira resposta.</p>
+            <p>Veja como os participantes avaliam a utilidade dos conteúdos e quizzes, desde a primeira resposta.</p>
         </div>
     </header>
-    <ul class="admin-lista-itens">
+    {% include 'administracao/_avaliacoes_navegacao.html' %}
+    {% set resumo = namespace(avaliadas=0, respostas=0) %}
+    {% for item in itens %}{% if item.total %}{% set resumo.avaliadas = resumo.avaliadas + 1 %}{% set resumo.respostas = resumo.respostas + item.total %}{% endif %}{% endfor %}
+    <section class="avaliacoes-admin-indicadores" aria-label="Resumo das avaliações">
+        <div><strong>{{ itens|length }}</strong><span>Atividades publicadas</span></div>
+        <div><strong>{{ resumo.avaliadas }}</strong><span>Atividades avaliadas</span></div>
+        <div><strong>{{ resumo.respostas }}</strong><span>Avaliações recebidas</span></div>
+    </section>
+    <p class="avaliacoes-admin-total">O resumo administrativo inclui notas privadas. Na consulta pública aparecem somente as notas autorizadas pelos autores.</p>
+    <ul class="avaliacoes-admin-lista">
         {% for item in itens %}
-            <li class="admin-catalogo-cartao admin-linha-item">
+            <li class="avaliacoes-admin-cartao avaliacoes-admin-cartao-cabecalho">
                 <div>
-                    <p class="visual-etiqueta">{{ item.tipo }}</p>
+                    <p class="avaliacoes-admin-tipo">{{ item.tipo }}</p>
                     <h2>{{ item.titulo }}</h2>
+                    <p class="avaliacoes-admin-meta">{{ item.total or 0 }} {{ 'avaliação recebida' if item.total == 1 else 'avaliações recebidas' }}</p>
                 </div>
                 {% if item.total is not none %}
-                    <p><strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5</strong> · {{ item.total }} {{ 'avaliação' if item.total == 1 else 'avaliações' }}</p>
+                    <aside class="avaliacoes-admin-nota" aria-label="Média {{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5"><strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }}</strong><span>de 5</span></aside>
                 {% else %}
-                    <p>Sem avaliações</p>
+                    <span class="avaliacoes-admin-sem-nota">Sem avaliações</span>
                 {% endif %}
             </li>
         {% else %}
-            <li class="admin-catalogo-cartao">Ainda não há atividades publicadas.</li>
+            <li class="avaliacoes-admin-vazio"><h2>Ainda não há atividades publicadas.</h2><p>As médias aparecerão aqui quando os participantes avaliarem os conteúdos e quizzes.</p></li>
         {% endfor %}
     </ul>
 {% endblock %}

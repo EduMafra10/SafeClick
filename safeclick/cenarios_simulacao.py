@@ -17,10 +17,10 @@ CENARIOS = {
         ],
         "chamada": "CONFIRMAR MEUS DADOS",
         "sinais": [
-            "Pressão para responder imediatamente.",
-            "Ameaça de bloqueio com prazo curto.",
-            "Pedido de dados pessoais por uma mensagem não verificada.",
-            "Convite para acessar um endereço fornecido pelo próprio remetente.",
+            "[parágrafo 2] Pressão para responder imediatamente.",
+            "[assunto] Ameaça de bloqueio com prazo curto.",
+            "[botão] Pedido de dados pessoais por uma mensagem não verificada.",
+            "[parágrafo 2] Convite para acessar um endereço fornecido pelo próprio remetente.",
         ],
         "opcoes": {
             "clicar_link": {
@@ -57,10 +57,10 @@ CENARIOS = {
         ],
         "chamada": "REGULARIZAR ENTREGA",
         "sinais": [
-            "Cobrança inesperada sem identificar claramente o pedido.",
-            "Prazo curto acompanhado de ameaça de devolução.",
-            "Pedido de dados e pagamento por um endereço recebido no SMS.",
-            "Valor pequeno usado para incentivar uma decisão rápida.",
+            "[parágrafo 1] Cobrança inesperada sem identificar claramente o pedido.",
+            "[parágrafo 2] Prazo curto acompanhado de ameaça de devolução.",
+            "[parágrafo 3] Pedido de dados e pagamento por um endereço recebido no SMS.",
+            "[parágrafo 2] Valor pequeno usado para incentivar uma decisão rápida.",
         ],
         "opcoes": {
             "consultar_pedido": {
@@ -97,10 +97,10 @@ CENARIOS = {
         ],
         "chamada": "FAZER O PIX AGORA",
         "sinais": [
-            "Contato por um número novo alegando ser alguém conhecido.",
-            "Pedido urgente de dinheiro.",
-            "Transferência para uma conta de outra pessoa.",
-            "Recusa de uma ligação para confirmar a identidade.",
+            "[remetente] Contato por um número novo alegando ser alguém conhecido.",
+            "[parágrafo 2] Pedido urgente de dinheiro.",
+            "[parágrafo 3] Transferência para uma conta de outra pessoa.",
+            "[parágrafo 3] Recusa de uma ligação para confirmar a identidade.",
         ],
         "opcoes": {
             "transferir_pela_foto": {
@@ -142,10 +142,10 @@ CENARIOS = {
         ],
         "chamada": "COMPRAR COM DESCONTO",
         "sinais": [
-            "Preço muito abaixo do habitual combinado com pressão para pagar.",
-            "Loja desconhecida encontrada por um anúncio.",
-            "Desconto condicionado ao pagamento imediato por Pix.",
-            "Depoimentos e alegações de segurança apresentados apenas pela própria loja.",
+            "[produto] Preço muito abaixo do habitual combinado com pressão para pagar.",
+            "[remetente] Loja desconhecida encontrada por um anúncio.",
+            "[parágrafo 2] Desconto condicionado ao pagamento imediato por Pix.",
+            "[parágrafo 3] Depoimentos e alegações de segurança apresentados apenas pela própria loja.",
         ],
         "opcoes": {
             "comprar_por_https": {

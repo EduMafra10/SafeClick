@@ -28,6 +28,8 @@ def dados_visao_geral(**alteracoes):
         },
         "simulacoes": [{"titulo": "Promoção em uma loja desconhecida", "pessoas": 5, "percentual_seguras": 40}],
         "quizzes": [{"titulo": "Phishing: aprenda antes de clicar", "tentativas": 13, "percentual_acertos": 45}],
+        "questoes": [{"enunciado": "Qual sinal indica um link falso?", "quiz": "Phishing: aprenda antes de clicar",
+                      "respostas": 9, "percentual_erros": 67}],
         "catalogo": {"conteudos": {"publicados": 8, "rascunhos": 0}, "quizzes": {"publicados": 4, "rascunhos": 2}},
         "seguranca": {"falhas_login": 7, "acessos_negados": 2, "autenticadores_redefinidos": 1},
         "ultimos_eventos": [{
@@ -97,9 +99,20 @@ class VisaoGeralBancoTeste(unittest.TestCase):
 
     def test_resumo_do_catalogo_por_secao(self):
         catalogo = [{"secao": "quizzes", "publicados": 4, "rascunhos": 1}]
-        self.conexao.execute.return_value.fetchall.side_effect = [[], [], [], catalogo, [], []]
+        self.conexao.execute.return_value.fetchall.side_effect = [[], [], [], [], catalogo, [], []]
         dados = visao_geral_db.buscar_visao_geral(30, date(2026, 11, 12))
         self.assertEqual(dados["catalogo"]["quizzes"], {"publicados": 4, "rascunhos": 1})
+
+    def test_questoes_com_mais_erros(self):
+        questoes = [{"enunciado": "O que é phishing?", "titulo": "Golpes digitais", "respostas": 8, "erros": 6}]
+        self.conexao.execute.return_value.fetchall.side_effect = [[], [], [], questoes, [], [], []]
+        dados = visao_geral_db.buscar_visao_geral(30, date(2026, 11, 12))
+        self.assertEqual(dados["questoes"], [
+            {"enunciado": "O que é phishing?", "quiz": "Golpes digitais", "respostas": 8, "percentual_erros": 75},
+        ])
+        sql = next(c for c in self.consultas() if "respostas_tentativa_quiz" in c)
+        self.assertIn("perfil = 'usuario'", sql)
+        self.assertIn(f"count(*) >= {visao_geral_db.MINIMO_RESPOSTAS_QUESTAO}", sql)
 
     def test_periodo_invalido_nao_abre_banco(self):
         for dias in (0, 15, "30", None):
@@ -144,7 +157,8 @@ class VisaoGeralRotasTeste(unittest.TestCase):
         self.assertEqual(resposta.status_code, 200)
         for texto in ("Visão geral", "Usuários cadastrados", "80%", "Promoção em uma loja desconhecida",
                       "Phishing: aprenda antes de clicar", "Conteúdo publicado", "Login recusado",
-                      "12/11 13:30", "Atividades com nota abaixo de 3"):
+                      "12/11 13:30", "Atividades com nota abaixo de 3", "Questões com mais erros",
+                      "Qual sinal indica um link falso?", "67%"):
             with self.subTest(texto=texto):
                 self.assertIn(texto, html)
         self.assertIn('href="/administracao/catalogo/quizzes?estado=rascunho"', html)
@@ -194,7 +208,6 @@ class VisaoGeralRotasTeste(unittest.TestCase):
 
     def test_administrador_entra_na_visao_geral(self):
         self.assertEqual(self.client.get("/").location, "/administracao/")
-        self.assertEqual(self.client.get("/painel/").location, "/administracao/")
 
     def test_usuario_comum_continua_no_proprio_painel(self):
         self.usuario.perfil = "usuario"
@@ -206,7 +219,8 @@ class VisaoGeralRotasTeste(unittest.TestCase):
             html = self.client.get("/simulacoes/").get_data(as_text=True)
             self.assertIn("Você está vendo a plataforma como usuário", html)
             self.assertIn("Área administrativa", html)
-            self.assertNotIn("Meu progresso", html)
+            self.assertIn("Meu progresso", html)
+            self.assertIn("não entram nos indicadores gerais", html)
             self.usuario.perfil = "usuario"
             html = self.client.get("/simulacoes/").get_data(as_text=True)
             self.assertNotIn("Você está vendo a plataforma como usuário", html)
@@ -284,6 +298,7 @@ class VisaoGeralPlanilhaTeste(unittest.TestCase):
         self.assertIn(("Promoção em uma loja desconhecida", 5, 0.4), linhas)
         self.assertIn(("Quizzes", 4, 2), linhas)
         self.assertIn(("Falhas de login", 7), linhas)
+        self.assertIn(("Qual sinal indica um link falso?", "Phishing: aprenda antes de clicar", 9, 0.67), linhas)
         ativos = self.celula(resumo, "Usuários ativos no período")
         self.assertEqual(resumo.cell(ativos.row, 3).number_format, "0%")
         self.assertTrue(self.celula(resumo, "Indicador").font.bold)

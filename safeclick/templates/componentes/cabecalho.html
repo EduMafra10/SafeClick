@@ -13,7 +13,7 @@
                 ('conteudos', 'conteudos.listar', 'Conteúdos'),
                 ('quizzes', 'quizzes.listar_quizzes', 'Quizzes'),
                 ('senhas', 'senhas.pagina', 'Laboratório')
-            ] if not (grupo == 'painel' and current_user.perfil == 'administrador') %}
+            ] %}
                 <a
                     href="{{ url_for(destino) }}"
                     {% if request.blueprint == grupo %}aria-current="page"{% endif %}
@@ -60,6 +60,7 @@
                     </div>
 
                     <a class="site-conta-link" href="{{ url_for('conta.exibir') }}">Minha conta</a>
+                    <a class="site-conta-link" href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>
 
                     {% if current_user.perfil == 'administrador' %}
                         <a class="site-conta-link" href="{{ url_for('administracao.inicio') }}">
@@ -94,7 +95,7 @@
 {% if current_user.is_authenticated and current_user.perfil == 'administrador' %}
     <div class="site-aviso-admin" role="note">
         <p>
-            Você está vendo a plataforma como usuário. As suas atividades aqui não entram nos indicadores.
+            Você está vendo a plataforma como usuário. As suas atividades ficam no seu progresso privado e não entram nos indicadores gerais.
             <a href="{{ url_for('administracao.inicio') }}">Voltar à área administrativa</a>
         </p>
     </div>

@@ -3,6 +3,7 @@ from flask import Blueprint, abort, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
 
+from safeclick.pistas_simulacao import separar_pistas
 from safeclick.sessoes import exigir_perfis
 from safeclick.simulacoes_db import (
     SimulacaoAlterada,
@@ -14,6 +15,7 @@ from safeclick.simulacoes_db import (
 
 
 simulacoes = Blueprint("simulacoes", __name__, url_prefix="/simulacoes")
+simulacoes.record_once(lambda estado: estado.app.jinja_env.globals.update(separar_pistas=separar_pistas))
 
 
 @simulacoes.before_request

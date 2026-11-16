@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/painel.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/conquistas.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">
+    <script src="{{ url_for('static', filename='js/participacao.js') }}" defer></script>
 
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/vendor/chart.umd.js') }}" defer></script>
@@ -39,6 +41,9 @@
     {% set simulacoes = dados.simulacoes %}
 
     <main id="conteudo" class="visual-container painel-conteudo" tabindex="-1">
+        {% for mensagem in get_flashed_messages(category_filter=["sucesso"]) %}
+            <p class="visual-aviso" role="status">{{ mensagem }}</p>
+        {% endfor %}
         <header class="painel-introducao">
             <div>
                 <p class="visual-etiqueta">Meu progresso</p>
@@ -67,7 +72,7 @@
                 {% endfor %}
             </nav>
 
-            <form class="painel-datas" method="get" action="{{ url_for('painel.exibir') }}">
+            <form class="painel-datas" method="get" action="{{ url_for('painel.exibir') }}" data-espera>
                 <label>
                     De
                     <input type="date" name="inicio" value="{{ filtro.inicio or '' }}"
@@ -80,6 +85,7 @@
                 </label>
                 <button class="painel-botao" type="submit">Filtrar</button>
             </form>
+            <p role="status" data-carregando hidden>Carregando seu progresso…</p>
 
             <p class="painel-filtro-resumo" aria-live="polite">
                 Mostrando:
@@ -104,7 +110,7 @@
             {% endif %}
         </section>
 
-        {% set sem_atividade = conteudos.concluidos == 0 and quizzes.tentativas == 0 and simulacoes.tentativas == 0 %}
+        {% set sem_atividade = conteudos.concluidos == 0 and quizzes.tentativas == 0 and simulacoes.tentativas == 0 and not (detalhes and detalhes.historico) %}
 
         {% if sem_atividade and filtro.ativo %}
             <section class="painel-vazio" aria-labelledby="titulo-vazio">
@@ -280,7 +286,8 @@
                 }|tojson }}
             </script>
         {% endif %}
-        
+
+        {% include 'painel/_detalhes.html' %}
         {% if conquistas %}
             {% from "componentes/_icone_conquista.html" import icone_conquista %}
             {% set liberadas = conquistas|selectattr("desbloqueada")|list|length %}
@@ -323,6 +330,6 @@
         {% endif %}
     </main>
 
-        {% include "conteudos/_rodape.html" %}
+    {% include "componentes/_rodape.html" %}
 </body>
 </html>

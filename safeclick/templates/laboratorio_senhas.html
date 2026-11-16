@@ -247,6 +247,8 @@
         </p>
     </main>
 
-        {% with rodape_extra="Dados do desafio: Pwned Passwords, do Have I Been Pwned." %}{% include "conteudos/_rodape.html" %}{% endwith %}
+    {% with rodape_fonte = "Dados do desafio: Pwned Passwords, do Have I Been Pwned." %}
+        {% include "componentes/_rodape.html" %}
+    {% endwith %}
 </body>
 </html>

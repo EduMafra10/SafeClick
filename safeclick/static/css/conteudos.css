@@ -382,6 +382,10 @@
     margin: 0 0 8px;
 }
 
+.conteudos-rodape-links a {
+    color: var(--visual-verde);
+}
+
 @media (max-width: 1000px) {
     .conteudos-lista {
         grid-template-columns: minmax(0, 1fr);

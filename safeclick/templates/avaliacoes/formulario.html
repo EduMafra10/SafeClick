@@ -19,7 +19,7 @@
         {% if envio_invalido %}
             <p class="quizzes-erro" role="alert">
                 {% if formulario.csrf_token.errors %}O formulário expirou ou é inválido. Recarregue a página e tente novamente.
-                {% else %}Confira a nota e o comentário antes de enviar.{% endif %}
+                {% else %}Confira a nota, o comentário e as opções de publicação. Compartilhar um comentário exige autorizar a nota, preencher o texto e declarar ter 18 anos ou mais.{% endif %}
             </p>
         {% endif %}
         <form class="quizzes-cartao" method="post" aria-describedby="aviso-avaliacao">
@@ -41,7 +41,15 @@
                 {{ formulario.comentario(rows=4, maxlength=limite_comentario, aria_describedby="ajuda-comentario") }}
                 {% for erro in formulario.comentario.errors %}<p class="quizzes-erro">{{ erro }}</p>{% endfor %}
             </div>
-            <p id="aviso-avaliacao">A avaliação fica vinculada à sua conta para que você possa atualizá-la. O painel administrativo mostra resultados agrupados. Consulte a <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
+            <fieldset class="participacao-widget"><legend>Compartilhamento opcional</legend>
+                <p>Sem marcar estas opções, sua avaliação fica privada. A equipe administrativa pode consultar novas notas e comentários enviados com este aviso para melhorar as atividades.</p>
+                <label class="participacao-opcao">{{ formulario.publicar_nota(value='1') }} <span>{{ formulario.publicar_nota.label.text }}</span></label>
+                <label class="participacao-opcao">{{ formulario.publicar_comentario(value='1') }} <span>{{ formulario.publicar_comentario.label.text }}</span></label>
+                <label class="participacao-opcao">{{ formulario.maior_de_idade(value='1') }} <span>{{ formulario.maior_de_idade.label.text }}</span></label>
+                <p class="participacao-nota">Menores de 18 anos podem avaliar de forma privada. A publicação não inclui nome, e-mail ou número da sua conta. Alterar o texto público exige nova moderação.</p>
+                {% if atividade.moderacao %}<p>Comentário: {{ {'pendente':'aguardando moderação','aprovada':'publicado','rejeitada':'não publicado pela moderação','nao_solicitada':'privado'}.get(atividade.moderacao,'privado') }}.</p>{% endif %}
+            </fieldset>
+            <p id="aviso-avaliacao">A avaliação fica vinculada à sua conta para edição e exclusão. Você pode retirar a autorização desmarcando as opções e salvando, ou excluir em <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>. Leia o <a href="{{ url_for('avaliacoes.privacidade') }}">aviso de participação</a> e a <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
             <button class="quizzes-botao" type="submit">{{ 'Atualizar avaliação' if atividade.nota is not none else 'Enviar avaliação' }}</button>
         </form>
         <nav class="quizzes-acoes" aria-label="Próximas atividades">

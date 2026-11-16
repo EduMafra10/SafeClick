@@ -1,0 +1,67 @@
+/* Componentes exclusivos da gestão de avaliações. */
+.admin-avaliacoes { max-width: 1450px; }
+.admin-avaliacoes .admin-introducao { margin-bottom: 0; }
+.admin-avaliacoes .admin-introducao h1 { font-size: clamp(1.75rem, 3vw, 2.2rem); line-height: 1.25; margin: 10px 0 12px; }
+.admin-avaliacoes .admin-introducao p:not(.visual-etiqueta) { max-width: 72ch; margin-block: 8px 0; }
+.admin-avaliacoes .admin-botao,
+.admin-avaliacoes .admin-botao-secundario { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 42px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; line-height: 1.4; text-align: center; text-decoration: none; }
+.admin-avaliacoes a.admin-botao:visited { color: #fff; }
+.admin-avaliacoes .admin-botao-secundario,
+.admin-avaliacoes a.admin-botao-secundario:visited { border-color: var(--visual-borda); color: var(--visual-texto); background: var(--visual-superficie); }
+.admin-avaliacoes .admin-botao-secundario:hover { border-color: #b9cdc3; background: var(--visual-verde-suave); }
+.admin-avaliacoes .admin-botao-secundario[aria-current="page"] { border-color: #b9d2c3; background: var(--visual-verde-suave); color: var(--visual-verde); }
+.admin-avaliacoes .admin-botao-perigo,
+.admin-avaliacoes a.admin-botao-perigo:visited { color: var(--admin-erro); border-color: #e7d5d3; }
+.admin-avaliacoes .admin-botao-perigo:hover { background: var(--admin-erro-suave); border-color: #cfaeaa; }
+.admin-avaliacoes .avaliacoes-admin-confirmar-bloqueio { border-color: var(--admin-erro); background: var(--admin-erro); }
+.admin-avaliacoes .avaliacoes-admin-confirmar-bloqueio:hover { background: #842e2e; }
+.avaliacoes-admin-atalhos { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-block: 22px; margin-bottom: 26px; border-bottom: 1px solid var(--visual-borda); }
+.avaliacoes-admin-indicadores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 28px; }
+.avaliacoes-admin-indicadores > div { padding: 18px 20px; border: 1px solid var(--visual-borda); border-radius: 12px; background: #f8faf8; }
+.avaliacoes-admin-indicadores strong { display: block; color: var(--visual-texto); font-size: 28px; line-height: 1.25; }
+.avaliacoes-admin-indicadores span { color: var(--visual-secundario); font-size: 13px; }
+.avaliacoes-admin-filtros { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding: 18px 20px; border: 1px solid var(--visual-borda); border-radius: 12px; background: #f8faf8; }
+.avaliacoes-admin-filtros label { display: grid; gap: 7px; min-width: 0; flex: 0 1 290px; color: var(--visual-texto); font-size: 14px; font-weight: 600; }
+.avaliacoes-admin-filtros select { width: 100%; min-width: 0; min-height: 42px; padding: 9px 34px 9px 12px; border: 1px solid #b5c8c0; border-radius: 8px; font: inherit; color: var(--visual-texto); background: var(--visual-superficie); }
+.avaliacoes-admin-total { margin: 22px 0 12px; color: var(--visual-secundario); font-size: 14px; }
+.avaliacoes-admin-lista { display: grid; gap: 16px; padding: 0; margin: 0; list-style: none; }
+.avaliacoes-admin-cartao { padding: 22px 24px; border: 1px solid var(--visual-borda); border-radius: 12px; background: var(--visual-superficie); }
+.avaliacoes-admin-cartao-cabecalho { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+.avaliacoes-admin-cartao-cabecalho > div { min-width: 0; flex: 1 1 220px; }
+.avaliacoes-admin-cartao h2 { margin: 5px 0 8px; font-size: 19px; line-height: 1.4; overflow-wrap: anywhere; }
+.avaliacoes-admin-tipo { margin: 0; color: var(--visual-secundario); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.avaliacoes-admin-meta { margin: 0; color: var(--visual-secundario); font-size: 13px; }
+.avaliacoes-admin-estado { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--visual-borda); border-radius: 100px; font-size: 12px; line-height: 1.5; white-space: normal; }
+.avaliacoes-admin-estado::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.avaliacoes-admin-estado--pendente { color: #835717; border-color: #e7d7b8; background: #fbf6eb; }
+.avaliacoes-admin-estado--aprovada { color: #276347; border-color: #cfe2d4; background: #edf5ee; }
+.avaliacoes-admin-estado--rejeitada { color: #93483e; border-color: #ead7d2; background: #fbf2f0; }
+.avaliacoes-admin-estado--nao_solicitada { color: var(--visual-secundario); background: #f5f7f6; }
+.avaliacoes-admin-texto { margin-block: 20px; padding: 16px 18px; border-left: 3px solid #c8d9cf; border-radius: 0 8px 8px 0; background: #f7f9f7; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.75; }
+.avaliacoes-admin-acoes { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+.avaliacoes-admin-ajuda { margin-block: 14px 0; color: var(--visual-secundario); font-size: 13px; }
+.avaliacoes-admin-nota { min-width: 100px; padding: 12px 16px; border-radius: 10px; background: var(--visual-verde-suave); text-align: center; color: var(--visual-verde); }
+.avaliacoes-admin-nota strong { display: block; font-size: 28px; line-height: 1.2; }
+.avaliacoes-admin-nota span { font-size: 12px; }
+.avaliacoes-admin-sem-nota { color: var(--visual-secundario); font-size: 13px; }
+.avaliacoes-admin-vazio { padding: 42px 24px; border: 1px dashed #c7d6ce; border-radius: 12px; text-align: center; background: #fafbf9; }
+.avaliacoes-admin-vazio h2 { margin-top: 0; font-size: 19px; }
+.avaliacoes-admin-vazio p { max-width: 56ch; margin: 0 auto; color: var(--visual-secundario); }
+.avaliacoes-admin-paginacao { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--visual-borda); }
+.avaliacoes-admin-paginacao span { color: var(--visual-secundario); font-size: 13px; }
+.avaliacoes-admin-revisao { max-width: 820px; }
+.avaliacoes-admin-orientacao { padding: 16px 18px; border: 1px solid #e6dcc8; border-radius: 10px; background: #fbf8f0; font-size: 14px; }
+.avaliacoes-admin-confirmacao { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px; font-size: 14px; }
+.avaliacoes-admin-confirmacao input { flex: none; width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--visual-verde); }
+.avaliacoes-admin-aviso { padding: 14px 18px; border: 1px solid #cfe2d4; border-radius: 10px; background: var(--visual-verde-suave); }
+@media (max-width: 640px) {
+    .avaliacoes-admin-indicadores { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .avaliacoes-admin-indicadores > div { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+    .avaliacoes-admin-filtros { align-items: stretch; padding: 16px; }
+    .avaliacoes-admin-filtros label { flex-basis: 100%; }
+    .avaliacoes-admin-cartao { padding: 18px; }
+    .avaliacoes-admin-atalhos > a,
+    .avaliacoes-admin-acoes > a,
+    .avaliacoes-admin-acoes > button { flex: 1 1 100%; }
+    .avaliacoes-admin-texto { padding: 14px; }
+}

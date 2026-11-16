@@ -185,6 +185,10 @@ class RotaPainelTeste(unittest.TestCase):
         self.buscar = self.substituir(patch(
             "safeclick.painel.buscar_painel_usuario", return_value=painel()
         ))
+        self.detalhes = self.substituir(patch('safeclick.painel.buscar_detalhes_painel', return_value={
+            'historico': [], 'categorias': [], 'revisar': [], 'proximos': [],
+        }))
+        self.substituir(patch('safeclick.painel.carregar_conquistas_painel', return_value=[]))
 
     def entrar(self, perfil="usuario"):
         usuario = Usuario({
@@ -266,11 +270,12 @@ class RotaPainelTeste(unittest.TestCase):
         self.assertIn("Responda um quiz para acompanhar sua evolução.", html)
         self.assertIn("Faça uma simulação para ver suas escolhas por cenário.", html)
 
-    def test_administrador_vai_para_a_visao_geral(self):
+    def test_administrador_pode_ver_seu_progresso_privado(self):
         self.entrar(perfil="administrador")
         resposta = self.client.get("/painel/")
-        self.assertEqual(resposta.location, "/administracao/")
-        self.buscar.assert_not_called()
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn('não entram nos indicadores gerais', resposta.text)
+        self.buscar.assert_called_once_with(7, inicio=None, fim=None)
 
     def hoje(self, dia):
         self.substituir(patch("safeclick.painel._hoje", return_value=dia))
@@ -344,6 +349,14 @@ class RotaPainelTeste(unittest.TestCase):
         self.entrar()
         self.buscar.side_effect = Error("falha simulada")
         self.assertEqual(self.client.get("/painel/").status_code, 503)
+
+    def test_falha_nos_novos_indicadores_preserva_o_painel_existente(self):
+        self.entrar()
+        self.substituir(patch('safeclick.painel.buscar_detalhes_painel', side_effect=Error('detalhe privado')))
+        resposta = self.client.get('/painel/')
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn('Não foi possível carregar alguns indicadores adicionais', resposta.text)
+        self.assertNotIn('detalhe privado', resposta.text)
 
 
 if __name__ == "__main__":

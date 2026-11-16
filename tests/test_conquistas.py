@@ -228,6 +228,7 @@ class PainelConquistasTeste(RotasBase):
     def setUp(self):
         super().setUp()
         self.substituir(patch("safeclick.painel.buscar_painel_usuario", return_value=PAINEL))
+        self.substituir(patch("safeclick.painel.buscar_detalhes_painel", return_value=None))
         self.carregar = self.substituir(patch(
             "safeclick.conquistas.liberar_e_listar_conquistas", return_value=([], LISTA)
         ))

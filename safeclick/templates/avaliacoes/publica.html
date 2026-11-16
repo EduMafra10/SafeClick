@@ -1,0 +1,12 @@
+{% extends 'quizzes/base.html' %}
+{% block titulo %}Avaliações de {{ atividade.titulo }} | SafeClick{% endblock %}
+{% block conteudo %}
+<nav class="quizzes-navegacao"><a href="{{ url_for('avaliacoes.publicas') }}">← Todas as avaliações</a></nav>
+<header class="quizzes-introducao"><p class="quizzes-etiqueta">Avaliações públicas</p><h1>{{ atividade.titulo }}</h1></header>
+<section class="quizzes-cartao" aria-label="Notas e comentários">{% include 'avaliacoes/_resumo.html' %}</section>
+<nav class="quizzes-acoes" aria-label="Páginas de comentários">
+{% if pagina > 1 %}<a href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina-1) }}">Comentários anteriores</a>{% endif %}
+{% if pagina * 10 < resumo.comentarios %}<a href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina+1) }}">Próximos comentários</a>{% endif %}
+<a href="{{ url_for('conteudos.detalhe', slug=atividade.slug) if tipo == 'conteudo' else url_for('quizzes.exibir_quiz', quiz_id=atividade.id) }}">Abrir atividade</a>
+</nav>
+{% endblock %}

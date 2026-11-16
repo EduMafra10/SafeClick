@@ -1,0 +1,55 @@
+.erro-pagina {
+    width: min(480px, calc(100% - 32px));
+    margin: auto;
+    padding: 48px 0;
+    text-align: center;
+}
+
+.erro-marca {
+    margin: 0 0 32px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.erro-marca span {
+    color: var(--visual-verde);
+}
+
+.erro-codigo {
+    margin: 0;
+    color: var(--visual-secundario);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.erro-pagina h1 {
+    margin: 8px 0 12px;
+    font-size: 28px;
+    line-height: 1.25;
+}
+
+.erro-pagina p {
+    margin: 0 0 28px;
+    color: var(--visual-secundario);
+}
+
+.erro-botao {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: var(--visual-verde);
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.erro-botao:hover {
+    background: #1f5541;
+}
+
+.erro-botao:focus-visible {
+    outline: 3px solid var(--visual-foco);
+    outline-offset: 3px;
+}

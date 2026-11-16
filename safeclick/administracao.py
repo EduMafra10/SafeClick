@@ -20,7 +20,7 @@ from safeclick.twilio_api import remover_fator_totp
 from safeclick.catalogo_admin import catalogo
 from safeclick.catalogo_validacao import SECOES
 from safeclick.visao_geral_excel import gerar_planilha
-from safeclick.visao_geral_db import PERIODOS, buscar_visao_geral
+from safeclick.visao_geral_db import MINIMO_RESPOSTAS_QUESTAO, PERIODOS, buscar_visao_geral
 
 
 administracao = Blueprint("administracao", __name__, url_prefix="/administracao")
@@ -97,6 +97,7 @@ def inicio():
         avaliacoes=avaliacoes,
         notas_baixas=sum(1 for item in avaliacoes or [] if item["media"] < 3),
         rotulos_atividade=ROTULOS_ATIVIDADE,
+        minimo_respostas=MINIMO_RESPOSTAS_QUESTAO,
     )
 
 

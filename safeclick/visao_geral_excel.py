@@ -108,6 +108,12 @@ def gerar_planilha(dados, rotulos_atividade, secoes, avaliacoes, gerado_em):
         [(q["titulo"], q["tentativas"], _fracao(q["percentual_acertos"])) for q in dados["quizzes"]],
         (None, None, PORCENTAGEM),
     )
+    resumo.tabela(
+        "Questões com mais erros",
+        ("Questão", "Quiz", "Respostas", "Erros"),
+        [(q["enunciado"], q["quiz"], q["respostas"], _fracao(q["percentual_erros"])) for q in dados.get("questoes", [])],
+        (None, None, None, PORCENTAGEM),
+    )
     resumo.tabela("Conteúdo publicado", ("Seção", "Publicados", "Rascunhos"), [
         (rotulo, item["publicados"], item["rascunhos"])
         for chave, rotulo in secoes.items()

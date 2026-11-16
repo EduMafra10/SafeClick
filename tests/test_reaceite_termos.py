@@ -65,6 +65,7 @@ class ReaceiteTermosTeste(unittest.TestCase):
         self.substituir(patch(
             "safeclick.painel.buscar_painel_usuario", return_value=PAINEL_FICTICIO
         ))
+        self.substituir(patch("safeclick.painel.buscar_detalhes_painel", return_value=None))
         usuario = Usuario({
             "id": 7, "nome": "Pessoa Teste",
             "email": "pessoa@example.com", "perfil": "usuario",

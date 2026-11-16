@@ -1,0 +1,1304 @@
+[
+  {
+    "titulo": "Phishing, smishing e sinais de alerta",
+    "formato": "oficina",
+    "questoes": [
+      {
+        "enunciado": "Phishing — mecanismo usado para obter informações",
+        "explicacao": "O trecho pede o mecanismo geral do golpe. Releia “O que é Phishing?”.",
+        "alternativas": [
+          {
+            "texto": "Exposição de dados guardados por uma empresa ou serviço",
+            "correta": false,
+            "explicacao": "Esse cartão define vazamento de dados. A exposição de uma base difere do engano de uma mensagem de phishing. Releia “O que é um vazamento”. Para este trecho, considere: O trecho pede o mecanismo geral do golpe. Releia “O que é Phishing?”."
+          },
+          {
+            "texto": "Bloquear e denunciar o remetente como spam",
+            "correta": false,
+            "explicacao": "Bloquear interrompe o contato naquele canal; denunciar informa o abuso ao aplicativo. Para este trecho, considere: O trecho pede o mecanismo geral do golpe. Releia “O que é Phishing?”."
+          },
+          {
+            "texto": "Abrir o aplicativo ou digitar o endereço oficial conhecido",
+            "correta": false,
+            "explicacao": "O canal oficial aberto por conta própria oferece uma verificação independente. Para este trecho, considere: O trecho pede o mecanismo geral do golpe. Releia “O que é Phishing?”."
+          },
+          {
+            "texto": "Enviar phishing por SMS",
+            "correta": false,
+            "explicacao": "Smishing é o phishing cujo canal é o SMS. Para este trecho, considere: O trecho pede o mecanismo geral do golpe. Releia “O que é Phishing?”."
+          },
+          {
+            "texto": "Imitar uma fonte confiável para obter dados",
+            "correta": true,
+            "explicacao": "Phishing usa uma identidade aparente para induzir a entrega de dados. O trecho pede o mecanismo geral do golpe. Releia “O que é Phishing?”."
+          },
+          {
+            "texto": "Pressionar para agir antes de conferir",
+            "correta": false,
+            "explicacao": "Um prazo curto tenta apressar a decisão e reduzir a verificação. Para este trecho, considere: O trecho pede o mecanismo geral do golpe. Releia “O que é Phishing?”."
+          }
+        ]
+      },
+      {
+        "enunciado": "Smishing — o que especifica esse nome",
+        "explicacao": "O nome distingue o canal SMS dos outros meios. Releia “O que é”, em Golpes por SMS e mensagens.",
+        "alternativas": [
+          {
+            "texto": "Imitar uma fonte confiável para obter dados",
+            "correta": false,
+            "explicacao": "Phishing usa uma identidade aparente para induzir a entrega de dados. Para este trecho, considere: O nome distingue o canal SMS dos outros meios. Releia “O que é”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Enviar phishing por SMS",
+            "correta": true,
+            "explicacao": "Smishing é o phishing cujo canal é o SMS. O nome distingue o canal SMS dos outros meios. Releia “O que é”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Pressionar para agir antes de conferir",
+            "correta": false,
+            "explicacao": "Um prazo curto tenta apressar a decisão e reduzir a verificação. Para este trecho, considere: O nome distingue o canal SMS dos outros meios. Releia “O que é”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Abrir o aplicativo ou digitar o endereço oficial conhecido",
+            "correta": false,
+            "explicacao": "O canal oficial aberto por conta própria oferece uma verificação independente. Para este trecho, considere: O nome distingue o canal SMS dos outros meios. Releia “O que é”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Bloquear e denunciar o remetente como spam",
+            "correta": false,
+            "explicacao": "Bloquear interrompe o contato naquele canal; denunciar informa o abuso ao aplicativo. Para este trecho, considere: O nome distingue o canal SMS dos outros meios. Releia “O que é”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Exposição de dados guardados por uma empresa ou serviço",
+            "correta": false,
+            "explicacao": "Esse cartão define vazamento de dados. A exposição de uma base difere do engano de uma mensagem de phishing. Releia “O que é um vazamento”. Para este trecho, considere: O nome distingue o canal SMS dos outros meios. Releia “O que é”, em Golpes por SMS e mensagens."
+          }
+        ]
+      },
+      {
+        "enunciado": "Urgência exagerada — finalidade do prazo de poucos minutos",
+        "explicacao": "O trecho pede a função da pressão de tempo. Releia “Sinais de alerta”, em Golpes por SMS e mensagens.",
+        "alternativas": [
+          {
+            "texto": "Bloquear e denunciar o remetente como spam",
+            "correta": false,
+            "explicacao": "Bloquear interrompe o contato naquele canal; denunciar informa o abuso ao aplicativo. Para este trecho, considere: O trecho pede a função da pressão de tempo. Releia “Sinais de alerta”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Imitar uma fonte confiável para obter dados",
+            "correta": false,
+            "explicacao": "Phishing usa uma identidade aparente para induzir a entrega de dados. Para este trecho, considere: O trecho pede a função da pressão de tempo. Releia “Sinais de alerta”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Pressionar para agir antes de conferir",
+            "correta": true,
+            "explicacao": "Um prazo curto tenta apressar a decisão e reduzir a verificação. O trecho pede a função da pressão de tempo. Releia “Sinais de alerta”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Exposição de dados guardados por uma empresa ou serviço",
+            "correta": false,
+            "explicacao": "Esse cartão define vazamento de dados. A exposição de uma base difere do engano de uma mensagem de phishing. Releia “O que é um vazamento”. Para este trecho, considere: O trecho pede a função da pressão de tempo. Releia “Sinais de alerta”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Enviar phishing por SMS",
+            "correta": false,
+            "explicacao": "Smishing é o phishing cujo canal é o SMS. Para este trecho, considere: O trecho pede a função da pressão de tempo. Releia “Sinais de alerta”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Abrir o aplicativo ou digitar o endereço oficial conhecido",
+            "correta": false,
+            "explicacao": "O canal oficial aberto por conta própria oferece uma verificação independente. Para este trecho, considere: O trecho pede a função da pressão de tempo. Releia “Sinais de alerta”, em Golpes por SMS e mensagens."
+          }
+        ]
+      },
+      {
+        "enunciado": "A mensagem anuncia bloqueio. Como conferir sem depender do link recebido?",
+        "explicacao": "A tarefa é conferir a situação em outra via. Releia “Como identificar”, em Phishing.",
+        "alternativas": [
+          {
+            "texto": "Bloquear e denunciar o remetente como spam",
+            "correta": false,
+            "explicacao": "Bloquear interrompe o contato naquele canal; denunciar informa o abuso ao aplicativo. Para este trecho, considere: A tarefa é conferir a situação em outra via. Releia “Como identificar”, em Phishing."
+          },
+          {
+            "texto": "Exposição de dados guardados por uma empresa ou serviço",
+            "correta": false,
+            "explicacao": "Esse cartão define vazamento de dados. A exposição de uma base difere do engano de uma mensagem de phishing. Releia “O que é um vazamento”. Para este trecho, considere: A tarefa é conferir a situação em outra via. Releia “Como identificar”, em Phishing."
+          },
+          {
+            "texto": "Imitar uma fonte confiável para obter dados",
+            "correta": false,
+            "explicacao": "Phishing usa uma identidade aparente para induzir a entrega de dados. Para este trecho, considere: A tarefa é conferir a situação em outra via. Releia “Como identificar”, em Phishing."
+          },
+          {
+            "texto": "Pressionar para agir antes de conferir",
+            "correta": false,
+            "explicacao": "Um prazo curto tenta apressar a decisão e reduzir a verificação. Para este trecho, considere: A tarefa é conferir a situação em outra via. Releia “Como identificar”, em Phishing."
+          },
+          {
+            "texto": "Abrir o aplicativo ou digitar o endereço oficial conhecido",
+            "correta": true,
+            "explicacao": "O canal oficial aberto por conta própria oferece uma verificação independente. A tarefa é conferir a situação em outra via. Releia “Como identificar”, em Phishing."
+          },
+          {
+            "texto": "Enviar phishing por SMS",
+            "correta": false,
+            "explicacao": "Smishing é o phishing cujo canal é o SMS. Para este trecho, considere: A tarefa é conferir a situação em outra via. Releia “Como identificar”, em Phishing."
+          }
+        ]
+      },
+      {
+        "enunciado": "Depois de identificar o contato fraudulento, qual medida do aplicativo evita continuar a conversa e registra o abuso?",
+        "explicacao": "A tarefa se refere ao contato fraudulento já identificado. Releia “O que fazer”, em Golpes por SMS e mensagens.",
+        "alternativas": [
+          {
+            "texto": "Imitar uma fonte confiável para obter dados",
+            "correta": false,
+            "explicacao": "Phishing usa uma identidade aparente para induzir a entrega de dados. Para este trecho, considere: A tarefa se refere ao contato fraudulento já identificado. Releia “O que fazer”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Exposição de dados guardados por uma empresa ou serviço",
+            "correta": false,
+            "explicacao": "Esse cartão define vazamento de dados. A exposição de uma base difere do engano de uma mensagem de phishing. Releia “O que é um vazamento”. Para este trecho, considere: A tarefa se refere ao contato fraudulento já identificado. Releia “O que fazer”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Bloquear e denunciar o remetente como spam",
+            "correta": true,
+            "explicacao": "Bloquear interrompe o contato naquele canal; denunciar informa o abuso ao aplicativo. A tarefa se refere ao contato fraudulento já identificado. Releia “O que fazer”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Enviar phishing por SMS",
+            "correta": false,
+            "explicacao": "Smishing é o phishing cujo canal é o SMS. Para este trecho, considere: A tarefa se refere ao contato fraudulento já identificado. Releia “O que fazer”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Pressionar para agir antes de conferir",
+            "correta": false,
+            "explicacao": "Um prazo curto tenta apressar a decisão e reduzir a verificação. Para este trecho, considere: A tarefa se refere ao contato fraudulento já identificado. Releia “O que fazer”, em Golpes por SMS e mensagens."
+          },
+          {
+            "texto": "Abrir o aplicativo ou digitar o endereço oficial conhecido",
+            "correta": false,
+            "explicacao": "O canal oficial aberto por conta própria oferece uma verificação independente. Para este trecho, considere: A tarefa se refere ao contato fraudulento já identificado. Releia “O que fazer”, em Golpes por SMS e mensagens."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Falso conhecido, código do WhatsApp e confirmação",
+    "formato": "oficina",
+    "questoes": [
+      {
+        "enunciado": "Imitação de identidade sem tomar a conta original",
+        "explicacao": "O trecho pede a imitação visual em outro número. Releia “Como funciona”, em Golpe do falso conhecido e Pix.",
+        "alternativas": [
+          {
+            "texto": "Avisar o banco imediatamente e solicitar o MED",
+            "correta": false,
+            "explicacao": "O MED é um mecanismo a solicitar ao banco em caso de golpe com Pix, sem garantia de recuperar o valor. Para este trecho, considere: O trecho pede a imitação visual em outro número. Releia “Como funciona”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Registrar um boletim de ocorrência sobre o golpe",
+            "correta": false,
+            "explicacao": "Registrar a ocorrência é uma providência complementar após um golpe. Não substitui avisar imediatamente o banco sobre o Pix. Releia “Se você já fez o Pix”. Para este trecho, considere: O trecho pede a imitação visual em outro número. Releia “Como funciona”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Ligar para o número antigo que você já conhecia",
+            "correta": false,
+            "explicacao": "Um contato antigo conhecido permite conferir a história fora da conversa suspeita. Para este trecho, considere: O trecho pede a imitação visual em outro número. Releia “Como funciona”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Ativar a confirmação em duas etapas com um PIN",
+            "correta": false,
+            "explicacao": "O PIN da confirmação em duas etapas é uma proteção adicional escolhida pelo titular. Para este trecho, considere: O trecho pede a imitação visual em outro número. Releia “Como funciona”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Registrar a conta do WhatsApp em outro aparelho",
+            "correta": false,
+            "explicacao": "O código de registro pode permitir ativar a conta em outro celular. Para este trecho, considere: O trecho pede a imitação visual em outro número. Releia “Como funciona”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Usar nome e foto de alguém em um número novo",
+            "correta": true,
+            "explicacao": "Copiar nome e foto pode imitar um conhecido sem invadir a conta original. O trecho pede a imitação visual em outro número. Releia “Como funciona”, em Golpe do falso conhecido e Pix."
+          }
+        ]
+      },
+      {
+        "enunciado": "Uso indevido do código de seis dígitos recebido por SMS do WhatsApp",
+        "explicacao": "O trecho trata do código enviado pelo WhatsApp, que deve permanecer em segredo. Releia “Como a conta de WhatsApp é roubada”.",
+        "alternativas": [
+          {
+            "texto": "Avisar o banco imediatamente e solicitar o MED",
+            "correta": false,
+            "explicacao": "O MED é um mecanismo a solicitar ao banco em caso de golpe com Pix, sem garantia de recuperar o valor. Para este trecho, considere: O trecho trata do código enviado pelo WhatsApp, que deve permanecer em segredo. Releia “Como a conta de WhatsApp é roubada”."
+          },
+          {
+            "texto": "Usar nome e foto de alguém em um número novo",
+            "correta": false,
+            "explicacao": "Copiar nome e foto pode imitar um conhecido sem invadir a conta original. Para este trecho, considere: O trecho trata do código enviado pelo WhatsApp, que deve permanecer em segredo. Releia “Como a conta de WhatsApp é roubada”."
+          },
+          {
+            "texto": "Registrar um boletim de ocorrência sobre o golpe",
+            "correta": false,
+            "explicacao": "Registrar a ocorrência é uma providência complementar após um golpe. Não substitui avisar imediatamente o banco sobre o Pix. Releia “Se você já fez o Pix”. Para este trecho, considere: O trecho trata do código enviado pelo WhatsApp, que deve permanecer em segredo. Releia “Como a conta de WhatsApp é roubada”."
+          },
+          {
+            "texto": "Ligar para o número antigo que você já conhecia",
+            "correta": false,
+            "explicacao": "Um contato antigo conhecido permite conferir a história fora da conversa suspeita. Para este trecho, considere: O trecho trata do código enviado pelo WhatsApp, que deve permanecer em segredo. Releia “Como a conta de WhatsApp é roubada”."
+          },
+          {
+            "texto": "Ativar a confirmação em duas etapas com um PIN",
+            "correta": false,
+            "explicacao": "O PIN da confirmação em duas etapas é uma proteção adicional escolhida pelo titular. Para este trecho, considere: O trecho trata do código enviado pelo WhatsApp, que deve permanecer em segredo. Releia “Como a conta de WhatsApp é roubada”."
+          },
+          {
+            "texto": "Registrar a conta do WhatsApp em outro aparelho",
+            "correta": true,
+            "explicacao": "O código de registro pode permitir ativar a conta em outro celular. O trecho trata do código enviado pelo WhatsApp, que deve permanecer em segredo. Releia “Como a conta de WhatsApp é roubada”."
+          }
+        ]
+      },
+      {
+        "enunciado": "Confirmação independente antes de transferir para o número novo",
+        "explicacao": "O trecho pede uma via independente para confirmar o pedido. Releia “Como se proteger”, em Golpe do falso conhecido e Pix.",
+        "alternativas": [
+          {
+            "texto": "Registrar um boletim de ocorrência sobre o golpe",
+            "correta": false,
+            "explicacao": "Registrar a ocorrência é uma providência complementar após um golpe. Não substitui avisar imediatamente o banco sobre o Pix. Releia “Se você já fez o Pix”. Para este trecho, considere: O trecho pede uma via independente para confirmar o pedido. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Ligar para o número antigo que você já conhecia",
+            "correta": true,
+            "explicacao": "Um contato antigo conhecido permite conferir a história fora da conversa suspeita. O trecho pede uma via independente para confirmar o pedido. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Usar nome e foto de alguém em um número novo",
+            "correta": false,
+            "explicacao": "Copiar nome e foto pode imitar um conhecido sem invadir a conta original. Para este trecho, considere: O trecho pede uma via independente para confirmar o pedido. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Registrar a conta do WhatsApp em outro aparelho",
+            "correta": false,
+            "explicacao": "O código de registro pode permitir ativar a conta em outro celular. Para este trecho, considere: O trecho pede uma via independente para confirmar o pedido. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Ativar a confirmação em duas etapas com um PIN",
+            "correta": false,
+            "explicacao": "O PIN da confirmação em duas etapas é uma proteção adicional escolhida pelo titular. Para este trecho, considere: O trecho pede uma via independente para confirmar o pedido. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Avisar o banco imediatamente e solicitar o MED",
+            "correta": false,
+            "explicacao": "O MED é um mecanismo a solicitar ao banco em caso de golpe com Pix, sem garantia de recuperar o valor. Para este trecho, considere: O trecho pede uma via independente para confirmar o pedido. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          }
+        ]
+      },
+      {
+        "enunciado": "Proteção adicional escolhida no WhatsApp para dificultar o registro da conta por outra pessoa",
+        "explicacao": "O PIN não é o código de registro enviado por SMS. Releia “Como se proteger”, em Golpe do falso conhecido e Pix.",
+        "alternativas": [
+          {
+            "texto": "Ligar para o número antigo que você já conhecia",
+            "correta": false,
+            "explicacao": "Um contato antigo conhecido permite conferir a história fora da conversa suspeita. Para este trecho, considere: O PIN não é o código de registro enviado por SMS. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Usar nome e foto de alguém em um número novo",
+            "correta": false,
+            "explicacao": "Copiar nome e foto pode imitar um conhecido sem invadir a conta original. Para este trecho, considere: O PIN não é o código de registro enviado por SMS. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Avisar o banco imediatamente e solicitar o MED",
+            "correta": false,
+            "explicacao": "O MED é um mecanismo a solicitar ao banco em caso de golpe com Pix, sem garantia de recuperar o valor. Para este trecho, considere: O PIN não é o código de registro enviado por SMS. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Registrar a conta do WhatsApp em outro aparelho",
+            "correta": false,
+            "explicacao": "O código de registro pode permitir ativar a conta em outro celular. Para este trecho, considere: O PIN não é o código de registro enviado por SMS. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Ativar a confirmação em duas etapas com um PIN",
+            "correta": true,
+            "explicacao": "O PIN da confirmação em duas etapas é uma proteção adicional escolhida pelo titular. O PIN não é o código de registro enviado por SMS. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          },
+          {
+            "texto": "Registrar um boletim de ocorrência sobre o golpe",
+            "correta": false,
+            "explicacao": "Registrar a ocorrência é uma providência complementar após um golpe. Não substitui avisar imediatamente o banco sobre o Pix. Releia “Se você já fez o Pix”. Para este trecho, considere: O PIN não é o código de registro enviado por SMS. Releia “Como se proteger”, em Golpe do falso conhecido e Pix."
+          }
+        ]
+      },
+      {
+        "enunciado": "Primeira providência depois de perceber que o Pix foi feito a um golpista",
+        "explicacao": "O trecho pede resposta ao prejuízo já ocorrido. Releia “Se você já fez o Pix”.",
+        "alternativas": [
+          {
+            "texto": "Avisar o banco imediatamente e solicitar o MED",
+            "correta": true,
+            "explicacao": "O MED é um mecanismo a solicitar ao banco em caso de golpe com Pix, sem garantia de recuperar o valor. O trecho pede resposta ao prejuízo já ocorrido. Releia “Se você já fez o Pix”."
+          },
+          {
+            "texto": "Ativar a confirmação em duas etapas com um PIN",
+            "correta": false,
+            "explicacao": "O PIN da confirmação em duas etapas é uma proteção adicional escolhida pelo titular. Para este trecho, considere: O trecho pede resposta ao prejuízo já ocorrido. Releia “Se você já fez o Pix”."
+          },
+          {
+            "texto": "Usar nome e foto de alguém em um número novo",
+            "correta": false,
+            "explicacao": "Copiar nome e foto pode imitar um conhecido sem invadir a conta original. Para este trecho, considere: O trecho pede resposta ao prejuízo já ocorrido. Releia “Se você já fez o Pix”."
+          },
+          {
+            "texto": "Registrar a conta do WhatsApp em outro aparelho",
+            "correta": false,
+            "explicacao": "O código de registro pode permitir ativar a conta em outro celular. Para este trecho, considere: O trecho pede resposta ao prejuízo já ocorrido. Releia “Se você já fez o Pix”."
+          },
+          {
+            "texto": "Registrar um boletim de ocorrência sobre o golpe",
+            "correta": false,
+            "explicacao": "Registrar a ocorrência é uma providência complementar após um golpe. Não substitui avisar imediatamente o banco sobre o Pix. Releia “Se você já fez o Pix”. Para este trecho, considere: O trecho pede resposta ao prejuízo já ocorrido. Releia “Se você já fez o Pix”."
+          },
+          {
+            "texto": "Ligar para o número antigo que você já conhecia",
+            "correta": false,
+            "explicacao": "Um contato antigo conhecido permite conferir a história fora da conversa suspeita. Para este trecho, considere: O trecho pede resposta ao prejuízo já ocorrido. Releia “Se você já fez o Pix”."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Compras online: loja, boleto e pós-compra",
+    "formato": "oficina",
+    "questoes": [
+      {
+        "enunciado": "Verificação da loja antes de decidir pela compra",
+        "explicacao": "O trecho trata da loja antes da compra. Releia “Antes de comprar”, em Compras online seguras.",
+        "alternativas": [
+          {
+            "texto": "Usar cartão de crédito, de preferência virtual",
+            "correta": false,
+            "explicacao": "O material recomenda cartão de crédito e destaca a possibilidade de contestar a compra. Para este trecho, considere: O trecho trata da loja antes da compra. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Pesquisar a reputação e conferir o CNPJ",
+            "correta": true,
+            "explicacao": "A reputação em fontes independentes e a conferência do CNPJ ajudam a avaliar o vendedor. O trecho trata da loja antes da compra. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Proteção da conexão com o site",
+            "correta": false,
+            "explicacao": "HTTPS protege a conexão; uma página fraudulenta também pode usá-lo. Para este trecho, considere: O trecho trata da loja antes da compra. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Contar os sete dias a partir do recebimento do produto",
+            "correta": false,
+            "explicacao": "O exemplo da leitura se refere ao prazo contado do recebimento do produto comprado à distância. Para este trecho, considere: O trecho trata da loja antes da compra. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Conferir o beneficiário indicado",
+            "correta": false,
+            "explicacao": "O beneficiário identifica quem receberá o dinheiro do boleto. Para este trecho, considere: O trecho trata da loja antes da compra. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Solicitar o MED ao banco depois de um golpe com Pix",
+            "correta": false,
+            "explicacao": "O MED se aplica à resposta a um golpe com Pix. Não é o nome do meio de pagamento nem do direito de arrependimento. Releia “Se você já fez o Pix”, em Golpe do falso conhecido e Pix. Para este trecho, considere: O trecho trata da loja antes da compra. Releia “Antes de comprar”, em Compras online seguras."
+          }
+        ]
+      },
+      {
+        "enunciado": "Verificação de um boleto antes de pagar",
+        "explicacao": "O trecho pede a conferência do destinatário do pagamento. Releia “Antes de comprar”, em Compras online seguras.",
+        "alternativas": [
+          {
+            "texto": "Conferir o beneficiário indicado",
+            "correta": true,
+            "explicacao": "O beneficiário identifica quem receberá o dinheiro do boleto. O trecho pede a conferência do destinatário do pagamento. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Proteção da conexão com o site",
+            "correta": false,
+            "explicacao": "HTTPS protege a conexão; uma página fraudulenta também pode usá-lo. Para este trecho, considere: O trecho pede a conferência do destinatário do pagamento. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Solicitar o MED ao banco depois de um golpe com Pix",
+            "correta": false,
+            "explicacao": "O MED se aplica à resposta a um golpe com Pix. Não é o nome do meio de pagamento nem do direito de arrependimento. Releia “Se você já fez o Pix”, em Golpe do falso conhecido e Pix. Para este trecho, considere: O trecho pede a conferência do destinatário do pagamento. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Contar os sete dias a partir do recebimento do produto",
+            "correta": false,
+            "explicacao": "O exemplo da leitura se refere ao prazo contado do recebimento do produto comprado à distância. Para este trecho, considere: O trecho pede a conferência do destinatário do pagamento. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Pesquisar a reputação e conferir o CNPJ",
+            "correta": false,
+            "explicacao": "A reputação em fontes independentes e a conferência do CNPJ ajudam a avaliar o vendedor. Para este trecho, considere: O trecho pede a conferência do destinatário do pagamento. Releia “Antes de comprar”, em Compras online seguras."
+          },
+          {
+            "texto": "Usar cartão de crédito, de preferência virtual",
+            "correta": false,
+            "explicacao": "O material recomenda cartão de crédito e destaca a possibilidade de contestar a compra. Para este trecho, considere: O trecho pede a conferência do destinatário do pagamento. Releia “Antes de comprar”, em Compras online seguras."
+          }
+        ]
+      },
+      {
+        "enunciado": "Prazo de arrependimento no exemplo de um produto comprado pela internet e recebido em casa",
+        "explicacao": "O trecho usa o exemplo de produto recebido, sem generalizar a todos os contratos. Releia “Seus direitos”, em Compras online seguras.",
+        "alternativas": [
+          {
+            "texto": "Proteção da conexão com o site",
+            "correta": false,
+            "explicacao": "HTTPS protege a conexão; uma página fraudulenta também pode usá-lo. Para este trecho, considere: O trecho usa o exemplo de produto recebido, sem generalizar a todos os contratos. Releia “Seus direitos”, em Compras online seguras."
+          },
+          {
+            "texto": "Pesquisar a reputação e conferir o CNPJ",
+            "correta": false,
+            "explicacao": "A reputação em fontes independentes e a conferência do CNPJ ajudam a avaliar o vendedor. Para este trecho, considere: O trecho usa o exemplo de produto recebido, sem generalizar a todos os contratos. Releia “Seus direitos”, em Compras online seguras."
+          },
+          {
+            "texto": "Usar cartão de crédito, de preferência virtual",
+            "correta": false,
+            "explicacao": "O material recomenda cartão de crédito e destaca a possibilidade de contestar a compra. Para este trecho, considere: O trecho usa o exemplo de produto recebido, sem generalizar a todos os contratos. Releia “Seus direitos”, em Compras online seguras."
+          },
+          {
+            "texto": "Solicitar o MED ao banco depois de um golpe com Pix",
+            "correta": false,
+            "explicacao": "O MED se aplica à resposta a um golpe com Pix. Não é o nome do meio de pagamento nem do direito de arrependimento. Releia “Se você já fez o Pix”, em Golpe do falso conhecido e Pix. Para este trecho, considere: O trecho usa o exemplo de produto recebido, sem generalizar a todos os contratos. Releia “Seus direitos”, em Compras online seguras."
+          },
+          {
+            "texto": "Contar os sete dias a partir do recebimento do produto",
+            "correta": true,
+            "explicacao": "O exemplo da leitura se refere ao prazo contado do recebimento do produto comprado à distância. O trecho usa o exemplo de produto recebido, sem generalizar a todos os contratos. Releia “Seus direitos”, em Compras online seguras."
+          },
+          {
+            "texto": "Conferir o beneficiário indicado",
+            "correta": false,
+            "explicacao": "O beneficiário identifica quem receberá o dinheiro do boleto. Para este trecho, considere: O trecho usa o exemplo de produto recebido, sem generalizar a todos os contratos. Releia “Seus direitos”, em Compras online seguras."
+          }
+        ]
+      },
+      {
+        "enunciado": "O que o HTTPS demonstra, sem provar que o vendedor é legítimo?",
+        "explicacao": "O trecho distingue proteção técnica da conexão e identidade do vendedor. Releia “Antes de comprar” e a explicação da simulação da loja.",
+        "alternativas": [
+          {
+            "texto": "Usar cartão de crédito, de preferência virtual",
+            "correta": false,
+            "explicacao": "O material recomenda cartão de crédito e destaca a possibilidade de contestar a compra. Para este trecho, considere: O trecho distingue proteção técnica da conexão e identidade do vendedor. Releia “Antes de comprar” e a explicação da simulação da loja."
+          },
+          {
+            "texto": "Contar os sete dias a partir do recebimento do produto",
+            "correta": false,
+            "explicacao": "O exemplo da leitura se refere ao prazo contado do recebimento do produto comprado à distância. Para este trecho, considere: O trecho distingue proteção técnica da conexão e identidade do vendedor. Releia “Antes de comprar” e a explicação da simulação da loja."
+          },
+          {
+            "texto": "Conferir o beneficiário indicado",
+            "correta": false,
+            "explicacao": "O beneficiário identifica quem receberá o dinheiro do boleto. Para este trecho, considere: O trecho distingue proteção técnica da conexão e identidade do vendedor. Releia “Antes de comprar” e a explicação da simulação da loja."
+          },
+          {
+            "texto": "Proteção da conexão com o site",
+            "correta": true,
+            "explicacao": "HTTPS protege a conexão; uma página fraudulenta também pode usá-lo. O trecho distingue proteção técnica da conexão e identidade do vendedor. Releia “Antes de comprar” e a explicação da simulação da loja."
+          },
+          {
+            "texto": "Pesquisar a reputação e conferir o CNPJ",
+            "correta": false,
+            "explicacao": "A reputação em fontes independentes e a conferência do CNPJ ajudam a avaliar o vendedor. Para este trecho, considere: O trecho distingue proteção técnica da conexão e identidade do vendedor. Releia “Antes de comprar” e a explicação da simulação da loja."
+          },
+          {
+            "texto": "Solicitar o MED ao banco depois de um golpe com Pix",
+            "correta": false,
+            "explicacao": "O MED se aplica à resposta a um golpe com Pix. Não é o nome do meio de pagamento nem do direito de arrependimento. Releia “Se você já fez o Pix”, em Golpe do falso conhecido e Pix. Para este trecho, considere: O trecho distingue proteção técnica da conexão e identidade do vendedor. Releia “Antes de comprar” e a explicação da simulação da loja."
+          }
+        ]
+      },
+      {
+        "enunciado": "Preferência indicada na leitura para facilitar eventual contestação de uma compra",
+        "explicacao": "O trecho pede a escolha do meio de pagamento, sem prometer devolução automática. Releia “Antes de comprar”.",
+        "alternativas": [
+          {
+            "texto": "Contar os sete dias a partir do recebimento do produto",
+            "correta": false,
+            "explicacao": "O exemplo da leitura se refere ao prazo contado do recebimento do produto comprado à distância. Para este trecho, considere: O trecho pede a escolha do meio de pagamento, sem prometer devolução automática. Releia “Antes de comprar”."
+          },
+          {
+            "texto": "Pesquisar a reputação e conferir o CNPJ",
+            "correta": false,
+            "explicacao": "A reputação em fontes independentes e a conferência do CNPJ ajudam a avaliar o vendedor. Para este trecho, considere: O trecho pede a escolha do meio de pagamento, sem prometer devolução automática. Releia “Antes de comprar”."
+          },
+          {
+            "texto": "Proteção da conexão com o site",
+            "correta": false,
+            "explicacao": "HTTPS protege a conexão; uma página fraudulenta também pode usá-lo. Para este trecho, considere: O trecho pede a escolha do meio de pagamento, sem prometer devolução automática. Releia “Antes de comprar”."
+          },
+          {
+            "texto": "Usar cartão de crédito, de preferência virtual",
+            "correta": true,
+            "explicacao": "O material recomenda cartão de crédito e destaca a possibilidade de contestar a compra. O trecho pede a escolha do meio de pagamento, sem prometer devolução automática. Releia “Antes de comprar”."
+          },
+          {
+            "texto": "Conferir o beneficiário indicado",
+            "correta": false,
+            "explicacao": "O beneficiário identifica quem receberá o dinheiro do boleto. Para este trecho, considere: O trecho pede a escolha do meio de pagamento, sem prometer devolução automática. Releia “Antes de comprar”."
+          },
+          {
+            "texto": "Solicitar o MED ao banco depois de um golpe com Pix",
+            "correta": false,
+            "explicacao": "O MED se aplica à resposta a um golpe com Pix. Não é o nome do meio de pagamento nem do direito de arrependimento. Releia “Se você já fez o Pix”, em Golpe do falso conhecido e Pix. Para este trecho, considere: O trecho pede a escolha do meio de pagamento, sem prometer devolução automática. Releia “Antes de comprar”."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Senhas e verificação em duas etapas: o que cada proteção faz",
+    "formato": "oficina",
+    "questoes": [
+      {
+        "enunciado": "Função de uma senha longa e sem nomes, datas ou sequências óbvias",
+        "explicacao": "O trecho pede resistência a tentativas de adivinhar a senha. Releia “Como se proteger”, em Proteção de Senhas.",
+        "alternativas": [
+          {
+            "texto": "Limitar o alcance de uma senha exposta a uma única conta",
+            "correta": false,
+            "explicacao": "A senha exclusiva impede que a mesma combinação exposta sirva de senha nos outros serviços. Para este trecho, considere: O trecho pede resistência a tentativas de adivinhar a senha. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Pedir uma segunda prova de identidade",
+            "correta": false,
+            "explicacao": "A segunda etapa pede outra prova, como um código do aplicativo autenticador. Para este trecho, considere: O trecho pede resistência a tentativas de adivinhar a senha. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas mantendo os programas atualizados",
+            "correta": false,
+            "explicacao": "Atualizações tratam vulnerabilidades dos programas. Não criam senhas exclusivas nem geram uma prova adicional de identidade. Releia “Como se proteger”, em Códigos maliciosos e atualizações. Para este trecho, considere: O trecho pede resistência a tentativas de adivinhar a senha. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Usar um aplicativo autenticador",
+            "correta": false,
+            "explicacao": "O autenticador gera códigos temporários no próprio celular. Para este trecho, considere: O trecho pede resistência a tentativas de adivinhar a senha. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Usar um gerenciador de senhas",
+            "correta": false,
+            "explicacao": "Um gerenciador ajuda a guardar e organizar combinações diferentes. Para este trecho, considere: O trecho pede resistência a tentativas de adivinhar a senha. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Dificultar a adivinhação da combinação",
+            "correta": true,
+            "explicacao": "Comprimento e ausência de padrões tornam a combinação menos previsível. O trecho pede resistência a tentativas de adivinhar a senha. Releia “Como se proteger”, em Proteção de Senhas."
+          }
+        ]
+      },
+      {
+        "enunciado": "Função de usar uma senha diferente em cada serviço",
+        "explicacao": "O trecho pede limitar o risco da reutilização. Releia “Por que senhas fracas são perigosas”.",
+        "alternativas": [
+          {
+            "texto": "Usar um gerenciador de senhas",
+            "correta": false,
+            "explicacao": "Um gerenciador ajuda a guardar e organizar combinações diferentes. Para este trecho, considere: O trecho pede limitar o risco da reutilização. Releia “Por que senhas fracas são perigosas”."
+          },
+          {
+            "texto": "Usar um aplicativo autenticador",
+            "correta": false,
+            "explicacao": "O autenticador gera códigos temporários no próprio celular. Para este trecho, considere: O trecho pede limitar o risco da reutilização. Releia “Por que senhas fracas são perigosas”."
+          },
+          {
+            "texto": "Dificultar a adivinhação da combinação",
+            "correta": false,
+            "explicacao": "Comprimento e ausência de padrões tornam a combinação menos previsível. Para este trecho, considere: O trecho pede limitar o risco da reutilização. Releia “Por que senhas fracas são perigosas”."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas mantendo os programas atualizados",
+            "correta": false,
+            "explicacao": "Atualizações tratam vulnerabilidades dos programas. Não criam senhas exclusivas nem geram uma prova adicional de identidade. Releia “Como se proteger”, em Códigos maliciosos e atualizações. Para este trecho, considere: O trecho pede limitar o risco da reutilização. Releia “Por que senhas fracas são perigosas”."
+          },
+          {
+            "texto": "Limitar o alcance de uma senha exposta a uma única conta",
+            "correta": true,
+            "explicacao": "A senha exclusiva impede que a mesma combinação exposta sirva de senha nos outros serviços. O trecho pede limitar o risco da reutilização. Releia “Por que senhas fracas são perigosas”."
+          },
+          {
+            "texto": "Pedir uma segunda prova de identidade",
+            "correta": false,
+            "explicacao": "A segunda etapa pede outra prova, como um código do aplicativo autenticador. Para este trecho, considere: O trecho pede limitar o risco da reutilização. Releia “Por que senhas fracas são perigosas”."
+          }
+        ]
+      },
+      {
+        "enunciado": "Função da verificação em duas etapas depois da senha",
+        "explicacao": "O trecho trata de acrescentar uma prova ao acesso. Releia “O que é”, em Verificação em duas etapas.",
+        "alternativas": [
+          {
+            "texto": "Corrigir falhas conhecidas mantendo os programas atualizados",
+            "correta": false,
+            "explicacao": "Atualizações tratam vulnerabilidades dos programas. Não criam senhas exclusivas nem geram uma prova adicional de identidade. Releia “Como se proteger”, em Códigos maliciosos e atualizações. Para este trecho, considere: O trecho trata de acrescentar uma prova ao acesso. Releia “O que é”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Dificultar a adivinhação da combinação",
+            "correta": false,
+            "explicacao": "Comprimento e ausência de padrões tornam a combinação menos previsível. Para este trecho, considere: O trecho trata de acrescentar uma prova ao acesso. Releia “O que é”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Pedir uma segunda prova de identidade",
+            "correta": true,
+            "explicacao": "A segunda etapa pede outra prova, como um código do aplicativo autenticador. O trecho trata de acrescentar uma prova ao acesso. Releia “O que é”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Usar um gerenciador de senhas",
+            "correta": false,
+            "explicacao": "Um gerenciador ajuda a guardar e organizar combinações diferentes. Para este trecho, considere: O trecho trata de acrescentar uma prova ao acesso. Releia “O que é”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Usar um aplicativo autenticador",
+            "correta": false,
+            "explicacao": "O autenticador gera códigos temporários no próprio celular. Para este trecho, considere: O trecho trata de acrescentar uma prova ao acesso. Releia “O que é”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Limitar o alcance de uma senha exposta a uma única conta",
+            "correta": false,
+            "explicacao": "A senha exclusiva impede que a mesma combinação exposta sirva de senha nos outros serviços. Para este trecho, considere: O trecho trata de acrescentar uma prova ao acesso. Releia “O que é”, em Verificação em duas etapas."
+          }
+        ]
+      },
+      {
+        "enunciado": "Como guardar combinações diferentes sem precisar memorizar todas?",
+        "explicacao": "O trecho pede apoio para administrar senhas exclusivas. Releia “Como se proteger”, em Proteção de Senhas.",
+        "alternativas": [
+          {
+            "texto": "Usar um aplicativo autenticador",
+            "correta": false,
+            "explicacao": "O autenticador gera códigos temporários no próprio celular. Para este trecho, considere: O trecho pede apoio para administrar senhas exclusivas. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Limitar o alcance de uma senha exposta a uma única conta",
+            "correta": false,
+            "explicacao": "A senha exclusiva impede que a mesma combinação exposta sirva de senha nos outros serviços. Para este trecho, considere: O trecho pede apoio para administrar senhas exclusivas. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Pedir uma segunda prova de identidade",
+            "correta": false,
+            "explicacao": "A segunda etapa pede outra prova, como um código do aplicativo autenticador. Para este trecho, considere: O trecho pede apoio para administrar senhas exclusivas. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Usar um gerenciador de senhas",
+            "correta": true,
+            "explicacao": "Um gerenciador ajuda a guardar e organizar combinações diferentes. O trecho pede apoio para administrar senhas exclusivas. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas mantendo os programas atualizados",
+            "correta": false,
+            "explicacao": "Atualizações tratam vulnerabilidades dos programas. Não criam senhas exclusivas nem geram uma prova adicional de identidade. Releia “Como se proteger”, em Códigos maliciosos e atualizações. Para este trecho, considere: O trecho pede apoio para administrar senhas exclusivas. Releia “Como se proteger”, em Proteção de Senhas."
+          },
+          {
+            "texto": "Dificultar a adivinhação da combinação",
+            "correta": false,
+            "explicacao": "Comprimento e ausência de padrões tornam a combinação menos previsível. Para este trecho, considere: O trecho pede apoio para administrar senhas exclusivas. Releia “Como se proteger”, em Proteção de Senhas."
+          }
+        ]
+      },
+      {
+        "enunciado": "Qual método do conteúdo gera códigos temporários no celular mesmo sem internet?",
+        "explicacao": "O trecho pede identificar o método de geração. Releia “Os tipos mais comuns”, em Verificação em duas etapas.",
+        "alternativas": [
+          {
+            "texto": "Usar um aplicativo autenticador",
+            "correta": true,
+            "explicacao": "O autenticador gera códigos temporários no próprio celular. O trecho pede identificar o método de geração. Releia “Os tipos mais comuns”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Usar um gerenciador de senhas",
+            "correta": false,
+            "explicacao": "Um gerenciador ajuda a guardar e organizar combinações diferentes. Para este trecho, considere: O trecho pede identificar o método de geração. Releia “Os tipos mais comuns”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Pedir uma segunda prova de identidade",
+            "correta": false,
+            "explicacao": "A segunda etapa pede outra prova, como um código do aplicativo autenticador. Para este trecho, considere: O trecho pede identificar o método de geração. Releia “Os tipos mais comuns”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Dificultar a adivinhação da combinação",
+            "correta": false,
+            "explicacao": "Comprimento e ausência de padrões tornam a combinação menos previsível. Para este trecho, considere: O trecho pede identificar o método de geração. Releia “Os tipos mais comuns”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas mantendo os programas atualizados",
+            "correta": false,
+            "explicacao": "Atualizações tratam vulnerabilidades dos programas. Não criam senhas exclusivas nem geram uma prova adicional de identidade. Releia “Como se proteger”, em Códigos maliciosos e atualizações. Para este trecho, considere: O trecho pede identificar o método de geração. Releia “Os tipos mais comuns”, em Verificação em duas etapas."
+          },
+          {
+            "texto": "Limitar o alcance de uma senha exposta a uma única conta",
+            "correta": false,
+            "explicacao": "A senha exclusiva impede que a mesma combinação exposta sirva de senha nos outros serviços. Para este trecho, considere: O trecho pede identificar o método de geração. Releia “Os tipos mais comuns”, em Verificação em duas etapas."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Vazamentos e privacidade: proteções e direitos",
+    "formato": "oficina",
+    "questoes": [
+      {
+        "enunciado": "Conter o risco de uma senha reutilizada que já vazou",
+        "explicacao": "O trecho pede uma ação de proteção das contas. Releia “O que fazer”, em Vazamento de dados.",
+        "alternativas": [
+          {
+            "texto": "Solicitar portabilidade dos dados para outro fornecedor",
+            "correta": false,
+            "explicacao": "Portabilidade busca transferir os dados, conforme a regulamentação e os limites legais. É diferente de acesso, correção, informação sobre compartilhamento e revisão de permissões. Releia “Seus direitos pela LGPD”. Para este trecho, considere: O trecho pede uma ação de proteção das contas. Releia “O que fazer”, em Vazamento de dados."
+          },
+          {
+            "texto": "Solicitar confirmação do tratamento e acesso aos dados",
+            "correta": false,
+            "explicacao": "Confirmação esclarece se há tratamento; acesso permite conhecer os dados tratados. Para este trecho, considere: O trecho pede uma ação de proteção das contas. Releia “O que fazer”, em Vazamento de dados."
+          },
+          {
+            "texto": "Trocar a senha em todos os serviços onde ela foi repetida",
+            "correta": true,
+            "explicacao": "A substituição retira a combinação exposta de cada conta afetada. O trecho pede uma ação de proteção das contas. Releia “O que fazer”, em Vazamento de dados."
+          },
+          {
+            "texto": "Solicitar correção ao canal de privacidade",
+            "correta": false,
+            "explicacao": "Correção trata dados incompletos, inexatos ou desatualizados. Para este trecho, considere: O trecho pede uma ação de proteção das contas. Releia “O que fazer”, em Vazamento de dados."
+          },
+          {
+            "texto": "Solicitar informação sobre compartilhamento de dados",
+            "correta": false,
+            "explicacao": "Esse pedido busca conhecer com quais entidades houve compartilhamento. Para este trecho, considere: O trecho pede uma ação de proteção das contas. Releia “O que fazer”, em Vazamento de dados."
+          },
+          {
+            "texto": "Revisar as permissões concedidas ao aplicativo",
+            "correta": false,
+            "explicacao": "Revisar permissões permite controlar acessos concedidos aos recursos do aparelho. Para este trecho, considere: O trecho pede uma ação de proteção das contas. Releia “O que fazer”, em Vazamento de dados."
+          }
+        ]
+      },
+      {
+        "enunciado": "Descobrir se a empresa trata dados seus e quais são",
+        "explicacao": "O trecho pede conhecer o tratamento e os dados. Releia “Seus direitos pela LGPD”.",
+        "alternativas": [
+          {
+            "texto": "Solicitar portabilidade dos dados para outro fornecedor",
+            "correta": false,
+            "explicacao": "Portabilidade busca transferir os dados, conforme a regulamentação e os limites legais. É diferente de acesso, correção, informação sobre compartilhamento e revisão de permissões. Releia “Seus direitos pela LGPD”. Para este trecho, considere: O trecho pede conhecer o tratamento e os dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Trocar a senha em todos os serviços onde ela foi repetida",
+            "correta": false,
+            "explicacao": "A substituição retira a combinação exposta de cada conta afetada. Para este trecho, considere: O trecho pede conhecer o tratamento e os dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar correção ao canal de privacidade",
+            "correta": false,
+            "explicacao": "Correção trata dados incompletos, inexatos ou desatualizados. Para este trecho, considere: O trecho pede conhecer o tratamento e os dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar confirmação do tratamento e acesso aos dados",
+            "correta": true,
+            "explicacao": "Confirmação esclarece se há tratamento; acesso permite conhecer os dados tratados. O trecho pede conhecer o tratamento e os dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar informação sobre compartilhamento de dados",
+            "correta": false,
+            "explicacao": "Esse pedido busca conhecer com quais entidades houve compartilhamento. Para este trecho, considere: O trecho pede conhecer o tratamento e os dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Revisar as permissões concedidas ao aplicativo",
+            "correta": false,
+            "explicacao": "Revisar permissões permite controlar acessos concedidos aos recursos do aparelho. Para este trecho, considere: O trecho pede conhecer o tratamento e os dados. Releia “Seus direitos pela LGPD”."
+          }
+        ]
+      },
+      {
+        "enunciado": "Atualizar um telefone errado no cadastro da empresa",
+        "explicacao": "O trecho pede ajustar uma informação errada. Releia “Seus direitos pela LGPD”.",
+        "alternativas": [
+          {
+            "texto": "Trocar a senha em todos os serviços onde ela foi repetida",
+            "correta": false,
+            "explicacao": "A substituição retira a combinação exposta de cada conta afetada. Para este trecho, considere: O trecho pede ajustar uma informação errada. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar informação sobre compartilhamento de dados",
+            "correta": false,
+            "explicacao": "Esse pedido busca conhecer com quais entidades houve compartilhamento. Para este trecho, considere: O trecho pede ajustar uma informação errada. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar correção ao canal de privacidade",
+            "correta": true,
+            "explicacao": "Correção trata dados incompletos, inexatos ou desatualizados. O trecho pede ajustar uma informação errada. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar portabilidade dos dados para outro fornecedor",
+            "correta": false,
+            "explicacao": "Portabilidade busca transferir os dados, conforme a regulamentação e os limites legais. É diferente de acesso, correção, informação sobre compartilhamento e revisão de permissões. Releia “Seus direitos pela LGPD”. Para este trecho, considere: O trecho pede ajustar uma informação errada. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar confirmação do tratamento e acesso aos dados",
+            "correta": false,
+            "explicacao": "Confirmação esclarece se há tratamento; acesso permite conhecer os dados tratados. Para este trecho, considere: O trecho pede ajustar uma informação errada. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Revisar as permissões concedidas ao aplicativo",
+            "correta": false,
+            "explicacao": "Revisar permissões permite controlar acessos concedidos aos recursos do aparelho. Para este trecho, considere: O trecho pede ajustar uma informação errada. Releia “Seus direitos pela LGPD”."
+          }
+        ]
+      },
+      {
+        "enunciado": "Saber para quais organizações a empresa enviou dados seus",
+        "explicacao": "O trecho pede informação sobre destinatários dos dados. Releia “Seus direitos pela LGPD”.",
+        "alternativas": [
+          {
+            "texto": "Revisar as permissões concedidas ao aplicativo",
+            "correta": false,
+            "explicacao": "Revisar permissões permite controlar acessos concedidos aos recursos do aparelho. Para este trecho, considere: O trecho pede informação sobre destinatários dos dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar confirmação do tratamento e acesso aos dados",
+            "correta": false,
+            "explicacao": "Confirmação esclarece se há tratamento; acesso permite conhecer os dados tratados. Para este trecho, considere: O trecho pede informação sobre destinatários dos dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar informação sobre compartilhamento de dados",
+            "correta": true,
+            "explicacao": "Esse pedido busca conhecer com quais entidades houve compartilhamento. O trecho pede informação sobre destinatários dos dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar portabilidade dos dados para outro fornecedor",
+            "correta": false,
+            "explicacao": "Portabilidade busca transferir os dados, conforme a regulamentação e os limites legais. É diferente de acesso, correção, informação sobre compartilhamento e revisão de permissões. Releia “Seus direitos pela LGPD”. Para este trecho, considere: O trecho pede informação sobre destinatários dos dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Solicitar correção ao canal de privacidade",
+            "correta": false,
+            "explicacao": "Correção trata dados incompletos, inexatos ou desatualizados. Para este trecho, considere: O trecho pede informação sobre destinatários dos dados. Releia “Seus direitos pela LGPD”."
+          },
+          {
+            "texto": "Trocar a senha em todos os serviços onde ela foi repetida",
+            "correta": false,
+            "explicacao": "A substituição retira a combinação exposta de cada conta afetada. Para este trecho, considere: O trecho pede informação sobre destinatários dos dados. Releia “Seus direitos pela LGPD”."
+          }
+        ]
+      },
+      {
+        "enunciado": "Reduzir acessos do aplicativo a câmera, contatos e localização que não sejam necessários",
+        "explicacao": "O trecho trata de permissões no dia a dia. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais.",
+        "alternativas": [
+          {
+            "texto": "Solicitar confirmação do tratamento e acesso aos dados",
+            "correta": false,
+            "explicacao": "Confirmação esclarece se há tratamento; acesso permite conhecer os dados tratados. Para este trecho, considere: O trecho trata de permissões no dia a dia. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais."
+          },
+          {
+            "texto": "Solicitar portabilidade dos dados para outro fornecedor",
+            "correta": false,
+            "explicacao": "Portabilidade busca transferir os dados, conforme a regulamentação e os limites legais. É diferente de acesso, correção, informação sobre compartilhamento e revisão de permissões. Releia “Seus direitos pela LGPD”. Para este trecho, considere: O trecho trata de permissões no dia a dia. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais."
+          },
+          {
+            "texto": "Solicitar correção ao canal de privacidade",
+            "correta": false,
+            "explicacao": "Correção trata dados incompletos, inexatos ou desatualizados. Para este trecho, considere: O trecho trata de permissões no dia a dia. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais."
+          },
+          {
+            "texto": "Trocar a senha em todos os serviços onde ela foi repetida",
+            "correta": false,
+            "explicacao": "A substituição retira a combinação exposta de cada conta afetada. Para este trecho, considere: O trecho trata de permissões no dia a dia. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais."
+          },
+          {
+            "texto": "Revisar as permissões concedidas ao aplicativo",
+            "correta": true,
+            "explicacao": "Revisar permissões permite controlar acessos concedidos aos recursos do aparelho. O trecho trata de permissões no dia a dia. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais."
+          },
+          {
+            "texto": "Solicitar informação sobre compartilhamento de dados",
+            "correta": false,
+            "explicacao": "Esse pedido busca conhecer com quais entidades houve compartilhamento. Para este trecho, considere: O trecho trata de permissões no dia a dia. Releia “Cuidados no dia a dia”, em Privacidade e seus dados pessoais."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Códigos maliciosos: atualizações, backup e antivírus",
+    "formato": "oficina",
+    "questoes": [
+      {
+        "enunciado": "Finalidade de manter sistema, navegador e aplicativos atualizados",
+        "explicacao": "O trecho pede a função de atualizar. Releia “Como eles chegam” e “Como se proteger”, em Códigos maliciosos e atualizações.",
+        "alternativas": [
+          {
+            "texto": "Usar a loja oficial e conferir as permissões pedidas",
+            "correta": false,
+            "explicacao": "A fonte oficial e a conferência de permissões reduzem riscos na instalação. Para este trecho, considere: O trecho pede a função de atualizar. Releia “Como eles chegam” e “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Investigar possíveis sinais de infecção",
+            "correta": false,
+            "explicacao": "O antivírus ajuda a examinar o aparelho diante de sinais suspeitos. Para este trecho, considere: O trecho pede a função de atualizar. Releia “Como eles chegam” e “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Cavalo de troia",
+            "correta": false,
+            "explicacao": "Cavalo de troia parece um programa útil, mas executa ações escondidas. Spyware é definido pela espionagem da digitação e dos acessos. Releia “O que são códigos maliciosos”. Para este trecho, considere: O trecho pede a função de atualizar. Releia “Como eles chegam” e “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas no sistema e nos programas",
+            "correta": true,
+            "explicacao": "Atualizações podem corrigir vulnerabilidades exploradas por criminosos. O trecho pede a função de atualizar. Releia “Como eles chegam” e “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Preparar a recuperação dos arquivos a partir de cópias",
+            "correta": false,
+            "explicacao": "Backups separados e protegidos ajudam a recuperar dados; não impedem a infecção. Para este trecho, considere: O trecho pede a função de atualizar. Releia “Como eles chegam” e “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Spyware",
+            "correta": false,
+            "explicacao": "Spyware espiona atividades como digitação e acessos. Para este trecho, considere: O trecho pede a função de atualizar. Releia “Como eles chegam” e “Como se proteger”, em Códigos maliciosos e atualizações."
+          }
+        ]
+      },
+      {
+        "enunciado": "Finalidade de manter backups regulares e protegidos em local separado",
+        "explicacao": "O trecho pede recuperação dos arquivos. Releia “Como se proteger”, em Códigos maliciosos e atualizações.",
+        "alternativas": [
+          {
+            "texto": "Spyware",
+            "correta": false,
+            "explicacao": "Spyware espiona atividades como digitação e acessos. Para este trecho, considere: O trecho pede recuperação dos arquivos. Releia “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Investigar possíveis sinais de infecção",
+            "correta": false,
+            "explicacao": "O antivírus ajuda a examinar o aparelho diante de sinais suspeitos. Para este trecho, considere: O trecho pede recuperação dos arquivos. Releia “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas no sistema e nos programas",
+            "correta": false,
+            "explicacao": "Atualizações podem corrigir vulnerabilidades exploradas por criminosos. Para este trecho, considere: O trecho pede recuperação dos arquivos. Releia “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Preparar a recuperação dos arquivos a partir de cópias",
+            "correta": true,
+            "explicacao": "Backups separados e protegidos ajudam a recuperar dados; não impedem a infecção. O trecho pede recuperação dos arquivos. Releia “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Usar a loja oficial e conferir as permissões pedidas",
+            "correta": false,
+            "explicacao": "A fonte oficial e a conferência de permissões reduzem riscos na instalação. Para este trecho, considere: O trecho pede recuperação dos arquivos. Releia “Como se proteger”, em Códigos maliciosos e atualizações."
+          },
+          {
+            "texto": "Cavalo de troia",
+            "correta": false,
+            "explicacao": "Cavalo de troia parece um programa útil, mas executa ações escondidas. Spyware é definido pela espionagem da digitação e dos acessos. Releia “O que são códigos maliciosos”. Para este trecho, considere: O trecho pede recuperação dos arquivos. Releia “Como se proteger”, em Códigos maliciosos e atualizações."
+          }
+        ]
+      },
+      {
+        "enunciado": "Finalidade de rodar o antivírus quando aparecem lentidão sem motivo e propagandas inesperadas",
+        "explicacao": "Os sinais merecem investigação e não comprovam sozinhos um diagnóstico. Releia “Sinais de infecção”.",
+        "alternativas": [
+          {
+            "texto": "Preparar a recuperação dos arquivos a partir de cópias",
+            "correta": false,
+            "explicacao": "Backups separados e protegidos ajudam a recuperar dados; não impedem a infecção. Para este trecho, considere: Os sinais merecem investigação e não comprovam sozinhos um diagnóstico. Releia “Sinais de infecção”."
+          },
+          {
+            "texto": "Usar a loja oficial e conferir as permissões pedidas",
+            "correta": false,
+            "explicacao": "A fonte oficial e a conferência de permissões reduzem riscos na instalação. Para este trecho, considere: Os sinais merecem investigação e não comprovam sozinhos um diagnóstico. Releia “Sinais de infecção”."
+          },
+          {
+            "texto": "Spyware",
+            "correta": false,
+            "explicacao": "Spyware espiona atividades como digitação e acessos. Para este trecho, considere: Os sinais merecem investigação e não comprovam sozinhos um diagnóstico. Releia “Sinais de infecção”."
+          },
+          {
+            "texto": "Cavalo de troia",
+            "correta": false,
+            "explicacao": "Cavalo de troia parece um programa útil, mas executa ações escondidas. Spyware é definido pela espionagem da digitação e dos acessos. Releia “O que são códigos maliciosos”. Para este trecho, considere: Os sinais merecem investigação e não comprovam sozinhos um diagnóstico. Releia “Sinais de infecção”."
+          },
+          {
+            "texto": "Investigar possíveis sinais de infecção",
+            "correta": true,
+            "explicacao": "O antivírus ajuda a examinar o aparelho diante de sinais suspeitos. Os sinais merecem investigação e não comprovam sozinhos um diagnóstico. Releia “Sinais de infecção”."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas no sistema e nos programas",
+            "correta": false,
+            "explicacao": "Atualizações podem corrigir vulnerabilidades exploradas por criminosos. Para este trecho, considere: Os sinais merecem investigação e não comprovam sozinhos um diagnóstico. Releia “Sinais de infecção”."
+          }
+        ]
+      },
+      {
+        "enunciado": "Um programa registra o que a pessoa digita e acessa. Qual definição corresponde a essa espionagem?",
+        "explicacao": "O trecho pede o tipo de malware associado à espionagem. Releia “O que são códigos maliciosos”.",
+        "alternativas": [
+          {
+            "texto": "Investigar possíveis sinais de infecção",
+            "correta": false,
+            "explicacao": "O antivírus ajuda a examinar o aparelho diante de sinais suspeitos. Para este trecho, considere: O trecho pede o tipo de malware associado à espionagem. Releia “O que são códigos maliciosos”."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas no sistema e nos programas",
+            "correta": false,
+            "explicacao": "Atualizações podem corrigir vulnerabilidades exploradas por criminosos. Para este trecho, considere: O trecho pede o tipo de malware associado à espionagem. Releia “O que são códigos maliciosos”."
+          },
+          {
+            "texto": "Usar a loja oficial e conferir as permissões pedidas",
+            "correta": false,
+            "explicacao": "A fonte oficial e a conferência de permissões reduzem riscos na instalação. Para este trecho, considere: O trecho pede o tipo de malware associado à espionagem. Releia “O que são códigos maliciosos”."
+          },
+          {
+            "texto": "Preparar a recuperação dos arquivos a partir de cópias",
+            "correta": false,
+            "explicacao": "Backups separados e protegidos ajudam a recuperar dados; não impedem a infecção. Para este trecho, considere: O trecho pede o tipo de malware associado à espionagem. Releia “O que são códigos maliciosos”."
+          },
+          {
+            "texto": "Cavalo de troia",
+            "correta": false,
+            "explicacao": "Cavalo de troia parece um programa útil, mas executa ações escondidas. Spyware é definido pela espionagem da digitação e dos acessos. Releia “O que são códigos maliciosos”. Para este trecho, considere: O trecho pede o tipo de malware associado à espionagem. Releia “O que são códigos maliciosos”."
+          },
+          {
+            "texto": "Spyware",
+            "correta": true,
+            "explicacao": "Spyware espiona atividades como digitação e acessos. O trecho pede o tipo de malware associado à espionagem. Releia “O que são códigos maliciosos”."
+          }
+        ]
+      },
+      {
+        "enunciado": "Antes de instalar um aplicativo, que cuidado com origem e acessos está na leitura?",
+        "explicacao": "O trecho pede cuidados antes de instalar, sem afirmar proteção absoluta. Releia “Como se proteger”.",
+        "alternativas": [
+          {
+            "texto": "Cavalo de troia",
+            "correta": false,
+            "explicacao": "Cavalo de troia parece um programa útil, mas executa ações escondidas. Spyware é definido pela espionagem da digitação e dos acessos. Releia “O que são códigos maliciosos”. Para este trecho, considere: O trecho pede cuidados antes de instalar, sem afirmar proteção absoluta. Releia “Como se proteger”."
+          },
+          {
+            "texto": "Spyware",
+            "correta": false,
+            "explicacao": "Spyware espiona atividades como digitação e acessos. Para este trecho, considere: O trecho pede cuidados antes de instalar, sem afirmar proteção absoluta. Releia “Como se proteger”."
+          },
+          {
+            "texto": "Preparar a recuperação dos arquivos a partir de cópias",
+            "correta": false,
+            "explicacao": "Backups separados e protegidos ajudam a recuperar dados; não impedem a infecção. Para este trecho, considere: O trecho pede cuidados antes de instalar, sem afirmar proteção absoluta. Releia “Como se proteger”."
+          },
+          {
+            "texto": "Investigar possíveis sinais de infecção",
+            "correta": false,
+            "explicacao": "O antivírus ajuda a examinar o aparelho diante de sinais suspeitos. Para este trecho, considere: O trecho pede cuidados antes de instalar, sem afirmar proteção absoluta. Releia “Como se proteger”."
+          },
+          {
+            "texto": "Corrigir falhas conhecidas no sistema e nos programas",
+            "correta": false,
+            "explicacao": "Atualizações podem corrigir vulnerabilidades exploradas por criminosos. Para este trecho, considere: O trecho pede cuidados antes de instalar, sem afirmar proteção absoluta. Releia “Como se proteger”."
+          },
+          {
+            "texto": "Usar a loja oficial e conferir as permissões pedidas",
+            "correta": true,
+            "explicacao": "A fonte oficial e a conferência de permissões reduzem riscos na instalação. O trecho pede cuidados antes de instalar, sem afirmar proteção absoluta. Releia “Como se proteger”."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titulo": "Laboratório: ideia de senha, estimativa e exemplos públicos",
+    "formato": "oficina",
+    "questoes": [
+      {
+        "enunciado": "Entrada adequada para aprender no Analisador sem usar uma credencial real",
+        "explicacao": "O trecho pede a entrada segura da atividade. Releia o aviso do Analisador no Laboratório de senhas.",
+        "alternativas": [
+          {
+            "texto": "Gerar uma nova combinação de senha",
+            "correta": false,
+            "explicacao": "O gerador cria combinações localmente; não altera automaticamente contas de outros serviços. Para este trecho, considere: O trecho pede a entrada segura da atividade. Releia o aviso do Analisador no Laboratório de senhas."
+          },
+          {
+            "texto": "Estimativa de força que não garante segurança",
+            "correta": false,
+            "explicacao": "A ferramenta estima a força por padrões e não garante proteção absoluta. Para este trecho, considere: O trecho pede a entrada segura da atividade. Releia o aviso do Analisador no Laboratório de senhas."
+          },
+          {
+            "texto": "Usar uma senha diferente em cada serviço",
+            "correta": false,
+            "explicacao": "A exclusividade limita o alcance de uma senha exposta a outros serviços. Para este trecho, considere: O trecho pede a entrada segura da atividade. Releia o aviso do Analisador no Laboratório de senhas."
+          },
+          {
+            "texto": "Ativar uma segunda etapa para exigir outra prova de identidade",
+            "correta": false,
+            "explicacao": "O segundo fator acrescenta uma prova ao acesso, mas não torna diferentes as senhas de cada serviço. Releia “O que é”, em Verificação em duas etapas. Para este trecho, considere: O trecho pede a entrada segura da atividade. Releia o aviso do Analisador no Laboratório de senhas."
+          },
+          {
+            "texto": "Ocorrências de dois exemplos públicos em vazamentos",
+            "correta": false,
+            "explicacao": "O jogo compara aparições de exemplos públicos na base consultada, sem usar senhas do participante. Para este trecho, considere: O trecho pede a entrada segura da atividade. Releia o aviso do Analisador no Laboratório de senhas."
+          },
+          {
+            "texto": "Testar uma ideia fictícia ou nova",
+            "correta": true,
+            "explicacao": "O aviso orienta usar ideias novas ou fictícias e nunca uma senha em uso. O trecho pede a entrada segura da atividade. Releia o aviso do Analisador no Laboratório de senhas."
+          }
+        ]
+      },
+      {
+        "enunciado": "Significado de uma nota alta no medidor do Analisador",
+        "explicacao": "O trecho pede interpretar o resultado do medidor. Releia a nota do Analisador.",
+        "alternativas": [
+          {
+            "texto": "Ocorrências de dois exemplos públicos em vazamentos",
+            "correta": false,
+            "explicacao": "O jogo compara aparições de exemplos públicos na base consultada, sem usar senhas do participante. Para este trecho, considere: O trecho pede interpretar o resultado do medidor. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Ativar uma segunda etapa para exigir outra prova de identidade",
+            "correta": false,
+            "explicacao": "O segundo fator acrescenta uma prova ao acesso, mas não torna diferentes as senhas de cada serviço. Releia “O que é”, em Verificação em duas etapas. Para este trecho, considere: O trecho pede interpretar o resultado do medidor. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Gerar uma nova combinação de senha",
+            "correta": false,
+            "explicacao": "O gerador cria combinações localmente; não altera automaticamente contas de outros serviços. Para este trecho, considere: O trecho pede interpretar o resultado do medidor. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Estimativa de força que não garante segurança",
+            "correta": true,
+            "explicacao": "A ferramenta estima a força por padrões e não garante proteção absoluta. O trecho pede interpretar o resultado do medidor. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Usar uma senha diferente em cada serviço",
+            "correta": false,
+            "explicacao": "A exclusividade limita o alcance de uma senha exposta a outros serviços. Para este trecho, considere: O trecho pede interpretar o resultado do medidor. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Testar uma ideia fictícia ou nova",
+            "correta": false,
+            "explicacao": "O aviso orienta usar ideias novas ou fictícias e nunca uma senha em uso. Para este trecho, considere: O trecho pede interpretar o resultado do medidor. Releia a nota do Analisador."
+          }
+        ]
+      },
+      {
+        "enunciado": "Função da área que cria combinações conforme as opções escolhidas no navegador",
+        "explicacao": "O trecho descreve a geração de combinações. Releia “Gere uma senha forte”, no Laboratório.",
+        "alternativas": [
+          {
+            "texto": "Gerar uma nova combinação de senha",
+            "correta": true,
+            "explicacao": "O gerador cria combinações localmente; não altera automaticamente contas de outros serviços. O trecho descreve a geração de combinações. Releia “Gere uma senha forte”, no Laboratório."
+          },
+          {
+            "texto": "Testar uma ideia fictícia ou nova",
+            "correta": false,
+            "explicacao": "O aviso orienta usar ideias novas ou fictícias e nunca uma senha em uso. Para este trecho, considere: O trecho descreve a geração de combinações. Releia “Gere uma senha forte”, no Laboratório."
+          },
+          {
+            "texto": "Ocorrências de dois exemplos públicos em vazamentos",
+            "correta": false,
+            "explicacao": "O jogo compara aparições de exemplos públicos na base consultada, sem usar senhas do participante. Para este trecho, considere: O trecho descreve a geração de combinações. Releia “Gere uma senha forte”, no Laboratório."
+          },
+          {
+            "texto": "Estimativa de força que não garante segurança",
+            "correta": false,
+            "explicacao": "A ferramenta estima a força por padrões e não garante proteção absoluta. Para este trecho, considere: O trecho descreve a geração de combinações. Releia “Gere uma senha forte”, no Laboratório."
+          },
+          {
+            "texto": "Usar uma senha diferente em cada serviço",
+            "correta": false,
+            "explicacao": "A exclusividade limita o alcance de uma senha exposta a outros serviços. Para este trecho, considere: O trecho descreve a geração de combinações. Releia “Gere uma senha forte”, no Laboratório."
+          },
+          {
+            "texto": "Ativar uma segunda etapa para exigir outra prova de identidade",
+            "correta": false,
+            "explicacao": "O segundo fator acrescenta uma prova ao acesso, mas não torna diferentes as senhas de cada serviço. Releia “O que é”, em Verificação em duas etapas. Para este trecho, considere: O trecho descreve a geração de combinações. Releia “Gere uma senha forte”, no Laboratório."
+          }
+        ]
+      },
+      {
+        "enunciado": "O que os números do desafio “Qual vazou mais?” permitem comparar?",
+        "explicacao": "O trecho pede interpretar a comparação do desafio. Releia “Qual vazou mais?”, no Laboratório.",
+        "alternativas": [
+          {
+            "texto": "Testar uma ideia fictícia ou nova",
+            "correta": false,
+            "explicacao": "O aviso orienta usar ideias novas ou fictícias e nunca uma senha em uso. Para este trecho, considere: O trecho pede interpretar a comparação do desafio. Releia “Qual vazou mais?”, no Laboratório."
+          },
+          {
+            "texto": "Ativar uma segunda etapa para exigir outra prova de identidade",
+            "correta": false,
+            "explicacao": "O segundo fator acrescenta uma prova ao acesso, mas não torna diferentes as senhas de cada serviço. Releia “O que é”, em Verificação em duas etapas. Para este trecho, considere: O trecho pede interpretar a comparação do desafio. Releia “Qual vazou mais?”, no Laboratório."
+          },
+          {
+            "texto": "Ocorrências de dois exemplos públicos em vazamentos",
+            "correta": true,
+            "explicacao": "O jogo compara aparições de exemplos públicos na base consultada, sem usar senhas do participante. O trecho pede interpretar a comparação do desafio. Releia “Qual vazou mais?”, no Laboratório."
+          },
+          {
+            "texto": "Estimativa de força que não garante segurança",
+            "correta": false,
+            "explicacao": "A ferramenta estima a força por padrões e não garante proteção absoluta. Para este trecho, considere: O trecho pede interpretar a comparação do desafio. Releia “Qual vazou mais?”, no Laboratório."
+          },
+          {
+            "texto": "Usar uma senha diferente em cada serviço",
+            "correta": false,
+            "explicacao": "A exclusividade limita o alcance de uma senha exposta a outros serviços. Para este trecho, considere: O trecho pede interpretar a comparação do desafio. Releia “Qual vazou mais?”, no Laboratório."
+          },
+          {
+            "texto": "Gerar uma nova combinação de senha",
+            "correta": false,
+            "explicacao": "O gerador cria combinações localmente; não altera automaticamente contas de outros serviços. Para este trecho, considere: O trecho pede interpretar a comparação do desafio. Releia “Qual vazou mais?”, no Laboratório."
+          }
+        ]
+      },
+      {
+        "enunciado": "Cuidado com a reutilização entre serviços que continua necessário mesmo depois de obter uma boa estimativa de força",
+        "explicacao": "A nota do laboratório mantém a orientação de usar cada senha em uma única conta. Releia a nota do Analisador.",
+        "alternativas": [
+          {
+            "texto": "Gerar uma nova combinação de senha",
+            "correta": false,
+            "explicacao": "O gerador cria combinações localmente; não altera automaticamente contas de outros serviços. Para este trecho, considere: A nota do laboratório mantém a orientação de usar cada senha em uma única conta. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Ocorrências de dois exemplos públicos em vazamentos",
+            "correta": false,
+            "explicacao": "O jogo compara aparições de exemplos públicos na base consultada, sem usar senhas do participante. Para este trecho, considere: A nota do laboratório mantém a orientação de usar cada senha em uma única conta. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Estimativa de força que não garante segurança",
+            "correta": false,
+            "explicacao": "A ferramenta estima a força por padrões e não garante proteção absoluta. Para este trecho, considere: A nota do laboratório mantém a orientação de usar cada senha em uma única conta. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Usar uma senha diferente em cada serviço",
+            "correta": true,
+            "explicacao": "A exclusividade limita o alcance de uma senha exposta a outros serviços. A nota do laboratório mantém a orientação de usar cada senha em uma única conta. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Ativar uma segunda etapa para exigir outra prova de identidade",
+            "correta": false,
+            "explicacao": "O segundo fator acrescenta uma prova ao acesso, mas não torna diferentes as senhas de cada serviço. Releia “O que é”, em Verificação em duas etapas. Para este trecho, considere: A nota do laboratório mantém a orientação de usar cada senha em uma única conta. Releia a nota do Analisador."
+          },
+          {
+            "texto": "Testar uma ideia fictícia ou nova",
+            "correta": false,
+            "explicacao": "O aviso orienta usar ideias novas ou fictícias e nunca uma senha em uso. Para este trecho, considere: A nota do laboratório mantém a orientação de usar cada senha em uma única conta. Releia a nota do Analisador."
+          }
+        ]
+      }
+    ]
+  }
+]

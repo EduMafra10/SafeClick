@@ -1,0 +1,10 @@
+<footer class="visual-rodape">
+    <div class="visual-container">
+        <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
+        <p>
+            {% if rodape_fonte %}{{ rodape_fonte }} · {% endif %}
+            <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a> ·
+            <a href="{{ url_for('privacidade.termos') }}">Termos de Uso</a>
+        </p>
+    </div>
+</footer>

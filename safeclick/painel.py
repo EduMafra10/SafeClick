@@ -1,12 +1,13 @@
 from datetime import date, datetime, timedelta, timezone
 
-from flask import Blueprint, abort, redirect, render_template, request, url_for
+from flask import Blueprint, abort, render_template, request
 from flask_login import current_user
 from psycopg import Error
 
 from safeclick.conquistas import carregar_conquistas_painel
 from safeclick.painel_db import buscar_painel_usuario
 from safeclick.sessoes import exigir_perfis
+from safeclick.progresso_db import buscar_detalhes_painel
 
 
 painel = Blueprint("painel", __name__, url_prefix="/painel")
@@ -96,10 +97,6 @@ def ler_filtro_periodo():
 
 @painel.get("/")
 def exibir():
-    # o administrador acompanha a plataforma na Visão geral, não um progresso próprio
-    if current_user.perfil == "administrador":
-        return redirect(url_for("administracao.inicio"))
-
     filtro = ler_filtro_periodo()
 
     try:
@@ -113,7 +110,14 @@ def exibir():
         )
 
     conquistas = carregar_conquistas_painel(int(current_user.id))
+    detalhes = None
+    erro_detalhes = False
+    try:
+        detalhes = buscar_detalhes_painel(int(current_user.id), inicio=filtro['inicio'], fim=filtro['fim'])
+    except (Error, RuntimeError):
+        erro_detalhes = True
 
     return render_template(
-        "painel/usuario.html", dados=dados, filtro=filtro, conquistas=conquistas
+        "painel/usuario.html", dados=dados, filtro=filtro, conquistas=conquistas,
+        detalhes=detalhes, erro_detalhes=erro_detalhes,
     )

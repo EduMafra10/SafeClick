@@ -20,23 +20,29 @@ def _app():
     return app
 
 
+SEM_RODAPE = {"erro.html"}
+RODAPES = ("componentes/_rodape.html", "conteudos/_rodape.html")
+
+
 def test_toda_pagina_completa_tem_os_links_legais():
+
     faltando = []
     for arquivo in sorted(TEMPLATES.rglob("*.html")):
         texto = arquivo.read_text(encoding="utf-8")
-        if "<html" not in texto or "conteudos/_rodape.html" in texto:
+        nome = str(arquivo.relative_to(TEMPLATES)).replace("\\", "/")
+        if "<html" not in texto or nome in SEM_RODAPE or any(r in texto for r in RODAPES):
             continue
         if "privacidade.politica" in texto and "privacidade.termos" in texto:
             continue
-        faltando.append(str(arquivo.relative_to(TEMPLATES)))
+        faltando.append(nome)
     assert faltando == []
 
 
-def test_rodape_comum_tem_os_links_e_o_texto_extra():
+def test_rodape_comum_tem_os_links_e_a_fonte():
     app = _app()
     with app.test_request_context():
-        rodape = render_template("conteudos/_rodape.html")
-        laboratorio = render_template("conteudos/_rodape.html", rodape_extra="Dados do desafio: Pwned Passwords.")
+        rodape = render_template("componentes/_rodape.html")
+        laboratorio = render_template("componentes/_rodape.html", rodape_fonte="Dados do desafio: Pwned Passwords.")
     for link in LINKS:
         assert link in rodape
     assert "Dados do desafio" not in rodape

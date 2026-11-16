@@ -1,3 +1,4 @@
+# Páginas de Política de Privacidade e Termos de Uso (LGPD)
 from flask import Blueprint, abort, render_template, request
 from psycopg import Error
 
@@ -6,18 +7,28 @@ from safeclick.termos_db import buscar_termos
 
 privacidade = Blueprint("privacidade", __name__)
 
+# Informações exibidas nas duas páginas.
+# Ao mudar o texto de um documento, aumente a versão e atualize a vigência;
+# o cadastro grava essa versão para comprovar qual texto foi aceito.
 DOCUMENTOS = {
     "versao": "1.0",
     "vigencia": "28/09/2026",
+    # canal que precisa funcionar de verdade (e-mail do grupo)
     "email_privacidade": "safeclick.privacidade@gmail.com",
+    # integrante que responde pelo canal de privacidade
     "encarregado": "João Souza",
+    # idade mínima para criar conta e usar a plataforma
     "idade_minima_conta": 16,
     "provedor_email": "a definir",
 }
 
+# Antes de mudar esta versao, arquive o novo documento em versoes_termos.
+# A pagina de termos mostra o HTML arquivado; editar termos.html sozinho nao a altera.
 VERSAO_TERMOS = DOCUMENTOS["versao"]
 
-VERSAO_POLITICA = "1.2"
+# A politica tambem fica arquivada no banco (versoes_politica).
+# Para publicar uma nova versao, grave o documento no banco e depois mude este valor.
+VERSAO_POLITICA = "1.4"
 
 
 @privacidade.get("/politica-de-privacidade")
@@ -58,6 +69,7 @@ def termos():
     if documento is None:
         abort(404, description="Esta versão dos Termos de Uso não está disponível.")
 
+    # Exibe o documento arquivado, o mesmo que sera vinculado ao aceite.
     dados_pagina = dict(DOCUMENTOS)
     dados_pagina.update(
         versao=documento["versao"],
