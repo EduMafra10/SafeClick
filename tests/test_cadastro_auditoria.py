@@ -10,7 +10,7 @@ class CadastroAuditoriaTeste(unittest.TestCase):
     def setUp(self):
         self.conexao = MagicMock()
         self.conexao.execute.return_value.fetchone.return_value = {"id": 11}
-        self.published = patch("safeclick.usuarios_db.buscar_termos", return_value={"versao": "1.0"})
+        self.published = patch("safeclick.usuarios_db.buscar_termos", return_value={"versao": "1.1"})
         self.published.start()
         self.addCleanup(self.published.stop)
         self.contexto = MagicMock()
@@ -20,7 +20,7 @@ class CadastroAuditoriaTeste(unittest.TestCase):
         with patch("safeclick.usuarios_db.conectar_banco", return_value=self.contexto), \
              patch("safeclick.usuarios_db.generate_password_hash", return_value="hash-teste"), \
              patch("safeclick.usuarios_db.registrar_evento") as registrar:
-            usuario_id = criar_usuario("Pessoa", "PESSOA@example.com", "senha-teste", aceitou_termos=True, versao_termos="1.0")
+            usuario_id = criar_usuario("Pessoa", "PESSOA@example.com", "senha-teste", aceitou_termos=True, versao_termos="1.1")
 
         self.assertEqual(usuario_id, 11)
         self.assertEqual(registrar.call_args_list[0].kwargs["evento"], "usuario.cadastrado")
@@ -32,7 +32,7 @@ class CadastroAuditoriaTeste(unittest.TestCase):
              patch("safeclick.usuarios_db.generate_password_hash", return_value="hash-teste"), \
              patch("safeclick.usuarios_db.registrar_evento", side_effect=psycopg.Error):
             with self.assertRaises(psycopg.Error):
-                criar_usuario("Pessoa", "pessoa@example.com", "senha-teste", aceitou_termos=True, versao_termos="1.0")
+                criar_usuario("Pessoa", "pessoa@example.com", "senha-teste", aceitou_termos=True, versao_termos="1.1")
 
         self.assertIs(self.contexto.__exit__.call_args.args[0], psycopg.Error)
 

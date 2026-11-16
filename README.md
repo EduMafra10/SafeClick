@@ -173,6 +173,7 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 29. `sql/registrar_politica_1_3_participacao.sql`
 30. `sql/remover_ranking.sql`
 31. `sql/registrar_politica_1_4_avaliacoes.sql`
+32. `sql/registrar_politica_1_5_termos_1_1.sql`
 
 O [guia do RF17](docs/avaliacoes.md) explica como habilitar e testar as avaliações em ambiente de teste e preparar a coleta real.
 
