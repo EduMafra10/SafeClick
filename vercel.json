@@ -1,3 +1,4 @@
 {
+  "buildCommand": "rm -rf public && mkdir public && cp -r safeclick/static public/static",
   "regions": ["gru1"]
 }
