@@ -8,6 +8,7 @@ from flask import Blueprint, current_app, flash, redirect, render_template, requ
 from psycopg import Error
 
 from safeclick.emails import enviar_email
+from safeclick.modelo_email import montar_email
 from safeclick.formularios import FormularioRecuperarSenha, FormularioRedefinirSenha
 from safeclick.limites import permitir_tentativa
 from safeclick.recuperacao_db import (
@@ -91,19 +92,17 @@ def _enviar_recuperacao(email, endereco_pagina):
 
     # O fragmento #token nao e enviado nos enderecos das requisicoes HTTP
     link = f"{endereco_pagina}#token={dados['token']}"
-    texto = (
-        "Olá!\n\n"
-        "Recebemos uma solicitação para redefinir sua senha no SafeClick.\n"
-        "Abra o link abaixo para escolher uma nova senha:\n\n"
-        f"{link}\n\n"
-        "O link é válido por 30 minutos e pode ser utilizado uma única vez. "
-        "Se solicitar outro link, o anterior deixará de funcionar.\n\n"
-        "Se você não fez esta solicitação, ignore esta mensagem. "
-        "Sua senha permanece a mesma.\n\n"
-        "SafeClick"
-    )
     try:
-        enviar_email(dados["email"], "SafeClick - Recuperação de senha", texto)
+        texto, html = montar_email(
+            "Segurança da conta",
+            "Vamos criar uma nova senha",
+            ["Recebemos um pedido para redefinir a senha da sua conta no SafeClick. "
+             "O link abaixo vale por 30 minutos e pode ser usado uma única vez. "
+             "Se você pedir outro link, este deixa de funcionar."],
+            botao=("Redefinir senha", link),
+            aviso=("Não foi você?", "Ignore esta mensagem. Sua senha continua a mesma."),
+        )
+        enviar_email(dados["email"], "SafeClick - Recuperação de senha", texto, html=html)
     except Exception:
         
         cancelar_recuperacao(dados["token"])
@@ -111,15 +110,14 @@ def _enviar_recuperacao(email, endereco_pagina):
 
 
 def _avisar_redefinicao(email):
-    enviar_email(
-        email,
-        "SafeClick - Sua senha foi alterada",
-        "Olá!\n\nSua senha do SafeClick foi alterada. "
-        "As sessões anteriores foram encerradas. "
-        "Para entrar novamente, utilize a nova senha e o código do autenticador.\n\n"
-        "Se você não reconhece essa alteração, entre em contato com a equipe "
-        "pelo canal informado na Política de Privacidade do site.\n\nSafeClick",
+    texto, html = montar_email(
+        "Segurança da conta",
+        "Sua senha foi alterada",
+        ["A senha da sua conta no SafeClick foi redefinida e as sessões anteriores foram encerradas. "
+         "Para entrar novamente, use a nova senha e o código do autenticador."],
+        aviso=("Não foi você?", "Fale com a equipe pelo canal informado na Política de Privacidade do site."),
     )
+    enviar_email(email, "SafeClick - Sua senha foi alterada", texto, html=html)
 
 
 @recuperacao.before_request

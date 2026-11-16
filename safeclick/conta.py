@@ -7,6 +7,7 @@ from wtforms.validators import AnyOf, DataRequired, EqualTo, Length, ValidationE
 
 from safeclick import conta_db
 from safeclick.emails import enviar_email
+from safeclick.modelo_email import montar_email
 from safeclick.formularios import limpar_texto
 from safeclick.icones_perfil import ICONES
 from safeclick.limites import permitir_tentativa
@@ -139,14 +140,15 @@ def salvar_icone():
 
 
 def _avisar_troca_de_senha(email):
-    enviar_email(
-        email,
-        "SafeClick - Sua senha foi alterada",
-        "Olá!\n\nA senha da sua conta no SafeClick foi alterada pela página Minha conta. "
-        "As outras sessões abertas foram encerradas.\n\n"
-        "Se você não reconhece essa alteração, use a opção \"Esqueci minha senha\" na tela de login "
-        "e entre em contato com a equipe pelo canal informado na Política de Privacidade.\n\nSafeClick",
+    texto, html = montar_email(
+        "Segurança da conta",
+        "Sua senha foi alterada",
+        ["A senha da sua conta no SafeClick foi alterada pela página Minha conta. "
+         "As outras sessões abertas foram encerradas."],
+        aviso=("Não foi você?", "Use a opção \"Esqueci minha senha\" na tela de login e fale com a equipe "
+               "pelo canal informado na Política de Privacidade."),
     )
+    enviar_email(email, "SafeClick - Sua senha foi alterada", texto, html=html)
 
 
 @conta.post("/senha")
