@@ -90,7 +90,7 @@ def test_politica_inexistente_404_e_banco_indisponivel_503(cliente):
 def test_versao_da_politica_esta_no_script_do_banco():
     # A versão atual deve ter uma migração própria, preservando as anteriores.
     raiz = Path(__file__).resolve().parents[1] / "sql"
-    script = (raiz / "registrar_politica_1_4_avaliacoes.sql").read_text(encoding="utf-8")
+    script = (raiz / "registrar_politica_1_5_termos_1_1.sql").read_text(encoding="utf-8")
     assert f"VALUES ('{VERSAO_POLITICA}', DATE" in script
     assert "ON CONFLICT (versao) DO NOTHING" in script
     assert "UPDATE public.versoes_politica" not in script

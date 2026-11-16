@@ -11,8 +11,8 @@ privacidade = Blueprint("privacidade", __name__)
 # Ao mudar o texto de um documento, aumente a versão e atualize a vigência;
 # o cadastro grava essa versão para comprovar qual texto foi aceito.
 DOCUMENTOS = {
-    "versao": "1.0",
-    "vigencia": "28/09/2026",
+    "versao": "1.1",
+    "vigencia": "16/11/2026",
     # canal que precisa funcionar de verdade (e-mail do grupo)
     "email_privacidade": "safeclick.privacidade@gmail.com",
     # integrante que responde pelo canal de privacidade
@@ -28,7 +28,7 @@ VERSAO_TERMOS = DOCUMENTOS["versao"]
 
 # A politica tambem fica arquivada no banco (versoes_politica).
 # Para publicar uma nova versao, grave o documento no banco e depois mude este valor.
-VERSAO_POLITICA = "1.4"
+VERSAO_POLITICA = "1.5"
 
 
 @privacidade.get("/politica-de-privacidade")

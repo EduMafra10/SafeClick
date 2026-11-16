@@ -40,11 +40,12 @@ O CSS `avaliacoes_admin.css` é carregado apenas nas páginas de avaliações da
 **Meu progresso** conserva gráficos e filtros de período, acrescentando:
 
 - desempenho por modalidade: quizzes/Oficina, simulações e desafio de senhas;
-- as vinte tentativas válidas mais recentes, com busca e filtro por tipo;
 - sugestão de revisão quando a última tentativa de uma atividade fica abaixo de 70%;
 - até três leituras ainda não concluídas, considerando todo o histórico de leitura.
 
-Os novos resultados são recalculados e validados pela edição realizada. Tentativas incompletas, respostas inconsistentes, cartões repetidos da Oficina e partidas incompletas não entram no novo histórico. Os dados originais e os gráficos anteriores não são apagados. Resultados de atividades despublicadas permanecem no histórico privado. Administradores também têm progresso próprio; suas atividades continuam fora dos indicadores gerais.
+Os resultados são recalculados e validados pela edição realizada. Tentativas incompletas, respostas inconsistentes, cartões repetidos da Oficina e partidas incompletas não entram nos indicadores adicionais. A seção de histórico recente e seus filtros locais foram retirados da dashboard, junto com a consulta usada apenas nessa listagem. Os dados originais, os gráficos, os filtros de período, as conquistas e as sugestões de revisão são preservados. Resultados de atividades despublicadas continuam armazenados e compondo os indicadores privados. Administradores também têm progresso próprio; suas atividades continuam fora dos indicadores gerais.
+
+Os botões de conteúdos, quizzes, avaliações e progresso compartilham o padrão em `visual_base.css`: ação principal escura, secundária com contorno e foco visível. Links de ação nas avaliações e nas sugestões do painel usam esses componentes; links no meio dos textos mantêm aparência de link. A atualização é apenas da interface e da consulta do painel, sem migração de banco.
 
 ## Privacidade e segurança
 

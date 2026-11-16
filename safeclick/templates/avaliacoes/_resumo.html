@@ -8,5 +8,5 @@
             <p class="participacao-texto">{{ item.comentario }}</p>
         </li>{% else %}<li>Ainda não há comentários públicos aprovados para esta atividade.</li>{% endfor %}
     </ul>
-    <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id) }}">Abrir todas as avaliações desta atividade →</a>
+    <a class="visual-botao visual-botao--secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id) }}">Abrir todas as avaliações desta atividade <span aria-hidden="true">→</span></a>
 </div>

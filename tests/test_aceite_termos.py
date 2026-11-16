@@ -13,9 +13,9 @@ from safeclick.usuarios_db import criar_usuario
 
 
 DOCUMENTO = {
-    "versao": "1.0",
+    "versao": "1.1",
     "vigente_desde": date(2026, 9, 28),
-    "conteudo_html": '<h1>Termos de Uso</h1><p>Versão 1.0 — Documento arquivado para teste.</p>',
+    "conteudo_html": '<h1>Termos de Uso</h1><p>Versão 1.1 — Documento arquivado para teste.</p>',
 }
 
 
@@ -79,9 +79,9 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         self.assertEqual(campo["type"], "checkbox")
         self.assertNotIn("checked", campo)
         self.assertIn("required", campo)
-        self.assertEqual(elementos.campos["versao_termos"]["value"], "1.0")
+        self.assertEqual(elementos.campos["versao_termos"]["value"], "1.1")
         links = {a.get("href"): a for a in elementos.links}
-        for endereco in ["/termos-de-uso?versao=1.0", "/politica-de-privacidade"]:
+        for endereco in ["/termos-de-uso?versao=1.1", "/politica-de-privacidade"]:
             self.assertIn(endereco, links)
             self.assertEqual(links[endereco]["target"], "_blank")
             self.assertEqual(links[endereco]["rel"], "noopener")
@@ -111,7 +111,7 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
                 self.assertEqual(resposta.status_code, 400)
                 campos = Elementos(resposta.get_data(as_text=True)).campos
                 self.assertNotIn("checked", campos["aceitou_termos"])
-                self.assertEqual(campos["versao_termos"]["value"], "1.0")
+                self.assertEqual(campos["versao_termos"]["value"], "1.1")
         self.criar.assert_not_called()
 
     def test_csrf_obrigatorio_mesmo_com_aceite(self):
@@ -145,7 +145,7 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         self.assertTrue(resposta.headers["Location"].endswith("/login"))
         self.criar.assert_called_once_with(
             "Pessoa Teste", "pessoa@example.com", "senha-ficticia-longa",
-            aceitou_termos=True, versao_termos="1.0",
+            aceitou_termos=True, versao_termos="1.1",
         )
         with self.client.session_transaction() as sessao:
             self.assertNotIn("_user_id", sessao)
@@ -189,11 +189,11 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
 
     def test_pagina_usa_texto_arquivado(self):
         with patch("safeclick.privacidade.buscar_termos", return_value=DOCUMENTO) as buscar:
-            resposta = self.client.get("/termos-de-uso?versao=1.0")
+            resposta = self.client.get("/termos-de-uso?versao=1.1")
         self.assertEqual(resposta.status_code, 200)
         self.assertIn(DOCUMENTO["conteudo_html"], resposta.get_data(as_text=True))
         self.assertEqual(resposta.headers["Cache-Control"], "no-store")
-        buscar.assert_called_once_with("1.0")
+        buscar.assert_called_once_with("1.1")
 
     def test_pagina_permite_consultar_versao_historica(self):
         antigo = dict(DOCUMENTO, versao="0.9", conteudo_html="<h1>Documento antigo</h1>")
@@ -229,19 +229,19 @@ class CadastroTermosTransacaoTeste(unittest.TestCase):
             self.addCleanup(substituicao.stop)
 
     def criar(self, **kwargs):
-        argumentos = {"aceitou_termos": True, "versao_termos": "1.0"}
+        argumentos = {"aceitou_termos": True, "versao_termos": "1.1"}
         argumentos.update(kwargs)
         return criar_usuario(" Pessoa ", "PESSOA@example.com", "senha-ficticia-longa", **argumentos)
 
     def test_conta_aceite_e_dois_eventos_usam_mesma_transacao(self):
         self.assertEqual(self.criar(), 11)
-        self.mocks["buscar"].assert_called_once_with("1.0", conexao=self.conexao)
+        self.mocks["buscar"].assert_called_once_with("1.1", conexao=self.conexao)
         self.mocks["prazos"].assert_called_once_with(self.conexao)
         chamadas = self.conexao.execute.call_args_list
         self.assertEqual(len(chamadas), 2)
         self.assertIn("INSERT INTO public.usuarios", chamadas[0].args[0])
         self.assertIn("INSERT INTO public.aceites_termos", chamadas[1].args[0])
-        self.assertEqual(chamadas[1].args[1], (11, "1.0"))
+        self.assertEqual(chamadas[1].args[1], (11, "1.1"))
         # aceito_em vem do DEFAULT do banco, nao de um valor enviado pelo navegador.
         self.assertNotIn("aceito_em", chamadas[1].args[0])
         eventos = self.mocks["auditar"].call_args_list
@@ -249,7 +249,7 @@ class CadastroTermosTransacaoTeste(unittest.TestCase):
         for chamada in eventos:
             self.assertIs(chamada.kwargs["conexao"], self.conexao)
             self.assertEqual(chamada.kwargs["usuario_id"], 11)
-        self.assertEqual(eventos[1].kwargs["detalhes"], {"versao": "1.0"})
+        self.assertEqual(eventos[1].kwargs["detalhes"], {"versao": "1.1"})
         self.assertIsNone(self.contexto.__exit__.call_args.args[0])
 
     def test_sem_aceite_nao_abre_banco_nem_calcula_hash(self):
@@ -296,11 +296,11 @@ class ConsultaTermosTeste(unittest.TestCase):
     def test_versao_parametrizada_e_bloqueada_na_transacao(self):
         conexao = MagicMock()
         conexao.execute.return_value.fetchone.return_value = DOCUMENTO
-        self.assertEqual(buscar_termos("1.0", conexao=conexao), DOCUMENTO)
+        self.assertEqual(buscar_termos("1.1", conexao=conexao), DOCUMENTO)
         consulta, parametros = conexao.execute.call_args.args
         self.assertIn("WHERE versao = %s", consulta)
         self.assertIn("FOR SHARE", consulta)
-        self.assertEqual(parametros, ("1.0",))
+        self.assertEqual(parametros, ("1.1",))
 
     def test_versao_invalida_nao_consulta_banco(self):
         with patch("safeclick.termos_db.conectar_banco") as abrir:
