@@ -4,14 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block titulo %}Privacidade | SafeClick{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/privacidade.css') }}">
 </head>
-<body class="privacidade-pagina">
-    <a class="privacidade-pular" href="#conteudo">Pular para o conteúdo</a>
-    <header class="privacidade-cabecalho">
-        <div class="privacidade-container privacidade-cabecalho-interno">
-            <a class="privacidade-marca" href="{{ url_for('conteudos.listar') }}">Safe<span>Click</span></a>
-            <nav class="privacidade-abas" aria-label="Documentos">
+<body class="site-visual privacidade-pagina">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+
+    {# mesmo cabeçalho do sistema, com os dois documentos no lugar do menu (a página também abre sem login) #}
+    <header class="site-cabecalho">
+        <div class="site-barra">
+            <a class="site-marca" href="{{ url_for('simulacoes.listar') }}">
+                <strong>Safe<span>Click</span></strong>
+                <small>Aprenda antes de clicar.</small>
+            </a>
+            <nav class="site-navegacao" aria-label="Documentos">
                 <a href="{{ url_for('privacidade.politica') }}"
                    {% if request.endpoint == 'privacidade.politica' %}aria-current="page"{% endif %}>Política de Privacidade</a>
                 <a href="{{ url_for('privacidade.termos') }}"
@@ -20,16 +27,16 @@
         </div>
     </header>
 
-    <main id="conteudo" class="privacidade-container privacidade-conteudo" tabindex="-1">
+    <main id="conteudo" class="visual-container privacidade-conteudo" tabindex="-1">
         <article class="privacidade-documento">
 {% block conteudo %}{% endblock %}
         </article>
     </main>
 
-    <footer class="privacidade-rodape">
-        <div class="privacidade-container">
-            SafeClick · Projeto Final de Curso · UMC ·
-            Dúvidas sobre seus dados: <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a>
+    <footer class="visual-rodape">
+        <div class="visual-container">
+            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
+            <p>Dúvidas sobre seus dados: <a href="mailto:{{ email_privacidade }}">{{ email_privacidade }}</a></p>
         </div>
     </footer>
 </body>
