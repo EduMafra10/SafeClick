@@ -178,6 +178,8 @@ class ContaRotasTeste(unittest.TestCase):
             ({"nova_senha": "curta", "confirmar_senha": "curta"}, None, 400, "15 a 128"),
             ({"nova_senha": "uma frase nova bem longa", "confirmar_senha": "outra frase nova longa"}, None, 400, "iguais"),
             ({"nova_senha": "senha antiga bem longa", "confirmar_senha": "senha antiga bem longa"}, None, 400, "diferente da atual"),
+            ({"nova_senha": "aaaaaaaaaaaaaaa", "confirmar_senha": "aaaaaaaaaaaaaaa"}, None, 400, "Evite repetições"),
+            ({"nova_senha": "souza gosta de cafe", "confirmar_senha": "souza gosta de cafe"}, None, 400, "o seu nome"),
             ({}, conta_db.SenhaAtualIncorreta(), 400, "senha atual está incorreta"),
             ({}, Error("banco"), 503, "Nada foi alterado"),
         )
@@ -197,7 +199,7 @@ class ContaRotasTeste(unittest.TestCase):
     def test_limite_de_tentativas_da_troca_de_senha(self):
         self.limite.return_value = False
         with patch("safeclick.conta.conta_db.trocar_senha") as trocar:
-            resposta = self.postar("/conta/senha", senha_atual="x" * 20, nova_senha="y" * 20, confirmar_senha="y" * 20)
+            resposta = self.postar("/conta/senha", senha_atual="x" * 20, nova_senha="uma frase nova bem longa", confirmar_senha="uma frase nova bem longa")
         self.assertEqual(resposta.status_code, 429)
         trocar.assert_not_called()
 
