@@ -4,20 +4,33 @@ Projeto de Conclusão de Curso de Sistemas de Informação da Universidade de Mo
 
 O SafeClick é uma plataforma web educativa voltada a estudantes do ensino médio e universitários. Seu objetivo é ajudar os usuários a reconhecer golpes digitais e adotar práticas mais seguras na internet.
 
-A versão desta etapa está reunida na branch **`entrega2809`**.
+A versão desta etapa está reunida na branch **`entrega0911`**.
 
 ## Funcionalidades implementadas
 
-- **Cadastro:** criação de conta com nome, e-mail e senha, validação dos campos e armazenamento da senha com hash `scrypt`.
-- **Login com autenticação em dois fatores:** validação de e-mail e senha, seguida da confirmação de um código do aplicativo autenticador pela API Twilio Verify.
-- **Controle de sessão e acesso:** encerramento da sessão, expiração por tempo e exigência de autenticação para acessar conteúdos, quizzes e simulações.
-- **Conteúdos educativos:** listagem de temas e páginas de leitura sobre phishing e proteção de senhas.
-- **Quizzes interativos:** perguntas de múltipla escolha, correção no servidor, pontuação, explicações e gravação das respostas.
-- **Simulação de golpe digital:** cenário de e-mail fictício de conta bloqueada, com alternativas, consequências e orientações.
-- **Registro das atividades:** novas tentativas de quizzes e simulações vinculadas ao usuário autenticado.
-- **Auditoria:** registro de cadastro, login, saída, acessos negados, atividades educativas e consultas à Twilio, com página de consulta restrita ao administrador.
+**Conta e acesso**
 
-As telas de login, cadastro e segundo fator seguem o mesmo padrão visual. Os campos de senha possuem opção para mostrar ou ocultar o conteúdo digitado.
+- **Cadastro:** nome, e-mail com confirmação, senha com pelo menos 15 caracteres e aceite dos Termos de Uso; senha guardada com hash `scrypt`.
+- **Login com autenticação em dois fatores:** e-mail e senha, seguidos do código de um aplicativo autenticador pela API Twilio Verify.
+- **Recuperação de senha:** link de uso único enviado por e-mail (Gmail), válido por 30 minutos.
+- **Minha conta:** alteração do nome, ícone de perfil entre personagens prontos, troca de senha com aviso por e-mail e encerramento das outras sessões.
+- **Exclusão de conta:** pedido com prazo de 30 dias para reativar pelo link enviado por e-mail; depois disso, os dados pessoais são anonimizados.
+
+**Atividades educativas**
+
+- **Conteúdos educativos:** textos sobre golpes digitais e segurança, com marcação de leitura concluída.
+- **Quizzes e Oficina SafeClick:** perguntas de múltipla escolha e oficinas de cartões, corrigidas no servidor, com explicações.
+- **Simulações de golpes:** e-mail, SMS, conversa e loja falsos, com consequências de cada escolha e as pistas do golpe numeradas na própria mensagem.
+- **Laboratório de senhas:** analisador de força (no próprio navegador), gerador de senhas e frases-senha e o desafio "Qual vazou mais?", que usa a Pwned Passwords API.
+- **Meu progresso e conquistas:** painel com o desempenho por período e conquistas desbloqueadas pelas atividades.
+- **Avaliações:** nota de 1 a 5 e comentário opcional sobre conteúdos e quizzes, ativadas pela variável `AVALIACOES_ATIVAS`.
+
+**Área administrativa**
+
+- **Visão geral:** indicadores de uso em 7, 30 ou 90 dias, sem contar administradores, com as questões que os usuários mais erram e exportação para planilha do Excel.
+- **Contas:** busca, filtros por perfil, autenticador e situação, último acesso, redefinição do autenticador e promoção a administrador.
+- **Catálogo:** editor de conteúdos, quizzes, oficinas, simulações e páginas, com prévia igual à tela do usuário e publicação de versões.
+- **Auditoria:** registro de cadastro, login, saída, acessos negados, atividades e ações administrativas, com filtros.
 
 ## Tecnologias
 
@@ -30,6 +43,13 @@ As telas de login, cadastro e segundo fator seguem o mesmo padrão visual. Os ca
 - Werkzeug para geração e verificação dos hashes de senha.
 - Twilio Verify para o segundo fator.
 - Biblioteca `qrcode` para gerar o QR Code localmente.
+- Gmail (SMTP) para os e-mails de recuperação de senha, troca de senha e exclusão de conta.
+- Pwned Passwords API (Have I Been Pwned) para o desafio do laboratório de senhas.
+- `@zxcvbn-ts` para o analisador de força de senha no navegador.
+- Chart.js para os gráficos.
+- openpyxl para gerar a planilha da Visão geral.
+- Pytest para os testes automatizados.
+- Vercel para a hospedagem.
 
 As versões das dependências estão registradas em `requirements.txt`.
 
@@ -52,6 +72,16 @@ As versões das dependências estão registradas em `requirements.txt`.
 | `safeclick/quizzes.py` | Exibição, correção e gravação dos quizzes. |
 | `safeclick/simulacoes.py` | Cenário, escolhas e feedback da simulação. |
 | `safeclick/privacidade.py` | Páginas de Política de Privacidade e Termos de Uso. |
+| `safeclick/recuperacao.py` | Recuperação de senha por e-mail. |
+| `safeclick/conta.py` e `safeclick/exclusao_conta.py` | Minha conta, exclusão e reativação da conta. |
+| `safeclick/senhas.py` | Laboratório de senhas e desafio "Qual vazou mais?". |
+| `safeclick/painel.py` e `safeclick/conquistas.py` | Meu progresso e conquistas. |
+| `safeclick/avaliacoes.py` | Avaliações de conteúdos e quizzes. |
+| `safeclick/administracao.py` e `safeclick/catalogo_admin.py` | Visão geral, contas e editor do catálogo. |
+| `safeclick/visao_geral_db.py` e `safeclick/visao_geral_excel.py` | Indicadores da Visão geral e planilha do Excel. |
+| `safeclick/emails.py` | Envio dos e-mails pelo Gmail. |
+| `scripts/dados_demonstracao.py` | Cria e apaga as contas fictícias de demonstração. |
+| `app.py` e `vercel.json` | Ponto de entrada e configuração da hospedagem na Vercel. |
 | `safeclick/templates/` | Templates HTML. |
 | `safeclick/static/` | Estilos e JavaScript. |
 | `sql/` | Scripts de criação e atualização do banco. |
@@ -156,9 +186,9 @@ Em um banco novo, após a preparação, carregue os quatro cenários iniciais:
 .\.venv\Scripts\python.exe -m flask --app safeclick importar-cenarios-iniciais
 ```
 
-Para usar a área **Minha conta → Gestão de conteúdo** e preparar um banco existente, siga o [guia de gestão do catálogo](docs/gestao_catalogo.md).
+Para usar o catálogo da **Área administrativa** e preparar um banco existente, siga o [guia de gestão do catálogo](docs/gestao_catalogo.md).
 
-A cobertura dos materiais, os quizzes e as oficinas revisados, os gabaritos e a publicação de novas versões estão no [relatório de revisão didática](docs/revisao_didatica.md).
+A revisão didática dos quizzes e oficinas está em `dados/revisao_didatica/` e é publicada pelo script `scripts/aplicar_revisao_didatica.py`, que primeiro confere o banco e só grava com `--aplicar`.
 
 A Política de Privacidade e os Termos de Uso ficam arquivados no banco (`versoes_politica` e `versoes_termos`), com as leis citadas em `referencias_legais`. Para mudar um texto, publique uma nova versão no banco antes de alterar `VERSAO_POLITICA` ou `VERSAO_TERMOS` em `safeclick/privacidade.py`.
 
@@ -200,12 +230,15 @@ Acesse:
 | --- | --- |
 | Login | [Abrir login](http://127.0.0.1:5000/login) |
 | Cadastro | [Criar conta](http://127.0.0.1:5000/cadastro) |
-| Simulação | [Abrir simulação](http://127.0.0.1:5000/simulacoes/conta-bloqueada) |
+| Meu progresso | [Abrir painel](http://127.0.0.1:5000/painel/) |
 | Conteúdos | [Abrir conteúdos](http://127.0.0.1:5000/conteudos/) |
 | Quizzes | [Abrir quizzes](http://127.0.0.1:5000/quizzes/) |
-| Auditoria (administrador) | [Consultar auditoria](http://127.0.0.1:5000/auditoria/) |
+| Simulações | [Abrir simulações](http://127.0.0.1:5000/simulacoes/) |
+| Laboratório de senhas | [Abrir laboratório](http://127.0.0.1:5000/laboratorio-senhas/) |
+| Minha conta | [Abrir conta](http://127.0.0.1:5000/conta/) |
+| Área administrativa | [Abrir Visão geral](http://127.0.0.1:5000/administracao/) |
 
-As páginas educativas exigem autenticação. A página inicial direciona para a simulação; usuários sem sessão são encaminhados ao login.
+As páginas educativas exigem autenticação. A página inicial leva o usuário ao painel Meu progresso e o administrador à Visão geral; usuários sem sessão são encaminhados ao login.
 
 Mantenha o terminal aberto durante o uso. Para encerrar o servidor, pressione `Ctrl + C`.
 
@@ -214,7 +247,7 @@ Documentação técnica e projeto lógico: [Documentação da integração Twili
 
 O fluxo principal é:
 
-**E-mail e senha → código do autenticador → validação pela Twilio Verify → criação da sessão → página de simulação.**
+**E-mail e senha → código do autenticador → validação pela Twilio Verify → criação da sessão → Meu progresso.**
 
 No primeiro acesso:
 
@@ -256,6 +289,10 @@ O login com segundo fator depende da disponibilidade da API e das condições da
 - Verificação de sessão e perfil antes do acesso aos módulos educativos.
 - Consulta do resultado do quiz restrita ao usuário proprietário da tentativa.
 - Histórico de auditoria restrito ao perfil `administrador`.
+- Troca de senha somente com a senha atual, encerrando as outras sessões da conta.
+- Cabeçalhos de segurança (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` e HSTS em HTTPS).
+- Páginas de erro próprias, em português, sem detalhes internos.
+- Conteúdos do catálogo com formatação simples convertida no servidor; HTML digitado é exibido como texto.
 
 O cadastro público cria contas com perfil `usuario`. O perfil `administrador` não pode ser escolhido pelo formulário de cadastro.
 
@@ -290,21 +327,41 @@ Após uma nova integração, confira:
 2. Rejeição de credenciais inválidas.
 3. Configuração inicial do autenticador e login com novo código.
 4. Solicitação do segundo fator nos acessos seguintes.
-5. Redirecionamento para a simulação após o login.
-6. Acesso autenticado a conteúdos, quizzes e simulações.
+5. Redirecionamento para Meu progresso após o login.
+6. Acesso autenticado a conteúdos, quizzes, simulações e laboratório.
 7. Gravação das novas tentativas com `usuario_id`.
 8. Encerramento da sessão e bloqueio do acesso direto às páginas protegidas.
 9. Consulta dos registros na página `/auditoria/` com uma conta administrativa.
 
 Validações com falhas simuladas não substituem a conferência do ambiente final com Neon e Twilio.
 
+## Testes automatizados
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Os testes não usam o banco real nem as APIs externas: as chamadas são simuladas. A suíte cobre autenticação, conta, quizzes, oficinas, simulações, laboratório, painel, avaliações, auditoria e área administrativa.
+
+## Dados de demonstração
+
+Para apresentar a Visão geral com histórico, o script cria 10 contas fictícias (`@demonstracao.example`), que não fazem login, com atividades dos últimos 30 dias:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\dados_demonstracao.py --criar
+.\.venv\Scripts\python.exe scripts\dados_demonstracao.py --apagar
+```
+
+O script usa o banco configurado no `.env`. Informe na apresentação que esses dados são de demonstração.
+
+## Hospedagem na Vercel
+
+O `app.py` expõe a aplicação para a Vercel, e o `vercel.json` fixa a região de São Paulo (`gru1`), próxima ao banco do Neon. Configure as variáveis do `.env.example` no painel da Vercel com `APP_ENV=producao`, `SESSION_COOKIE_SECURE=true` e `APP_BASE_URL` com o endereço `https://` publicado. Na Vercel, os e-mails são enviados antes da resposta e o IP do usuário é lido pelo proxy.
+
 ## Pendências e limites desta etapa
 
-- Recuperação de senha por e-mail adiada; serviço ainda não definido.
-- Recuperação de acesso após perda do autenticador pendente.
-- Registro de `termo.aceito` junto da futura integração do Termo de Aceite.
-- Conferência e integração dos termos de uso e da política de privacidade na versão conjunta.
-- Validação do ambiente publicado e das configurações de HTTPS.
+- Validação do ambiente publicado na Vercel.
+- O login depende da disponibilidade da Twilio, e os e-mails dependem dos limites de envio do Gmail.
 
 ## Integrantes
 

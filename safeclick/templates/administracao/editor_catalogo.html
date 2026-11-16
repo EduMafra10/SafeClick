@@ -173,7 +173,7 @@
                 <section class="admin-bloco">
                     <h2><i>5</i> Sinais de risco</h2>
                     {% set sinais = dados.get('sinais', '') %}
-                    {{ campo('sinais', 'Sinais que a pessoa deveria notar', sinais if sinais is string else sinais|join('\n'), 3000, 4, dica='um por linha; aparecem depois da escolha') }}
+                    {{ campo('sinais', 'Sinais que a pessoa deveria notar', sinais if sinais is string else sinais|join('\n'), 3000, 4, dica='um por linha; aparecem depois da escolha. Para numerar o sinal na mensagem, comece a linha com [remetente], [assunto], [parágrafo 1], [botão] ou [produto]') }}
                 </section>
             {% endif %}
             <p class="admin-somente-leitor" aria-live="polite" data-editor-mensagem></p>

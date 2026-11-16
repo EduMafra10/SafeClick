@@ -104,8 +104,8 @@ def cadastro():
             status = 503
         else:
             # o redirecionamento evita reenviar o cadastro se atualizarem a pagina
-            flash("Cadastro realizado com sucesso!", "sucesso")
-            return redirect(url_for("autenticacao.cadastro"), code=303)
+            flash("Cadastro realizado com sucesso! Entre com seu e-mail e sua senha.", "sucesso")
+            return redirect(url_for("autenticacao.login"), code=303)
     elif request.method == "POST":
         status = 400
 

@@ -41,6 +41,9 @@
     {% set simulacoes = dados.simulacoes %}
 
     <main id="conteudo" class="visual-container painel-conteudo" tabindex="-1">
+        {% for mensagem in get_flashed_messages(category_filter=["sucesso"]) %}
+            <p class="visual-aviso" role="status">{{ mensagem }}</p>
+        {% endfor %}
         <header class="painel-introducao">
             <div>
                 <p class="visual-etiqueta">Meu progresso</p>
@@ -327,11 +330,6 @@
         {% endif %}
     </main>
 
-    <footer class="visual-rodape">
-        <div class="visual-container">
-            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
-            <p>Educação para uma vida digital mais segura.</p>
-        </div>
-    </footer>
+    {% include "componentes/_rodape.html" %}
 </body>
 </html>

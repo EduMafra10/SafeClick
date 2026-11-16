@@ -159,6 +159,30 @@
         </section>
     </div>
 
+    <div class="admin-vg-linha admin-vg-linha--unica">
+        <section>
+            <h2>Questões com mais erros</h2>
+            <p class="admin-vg-sub">Perguntas e trechos de oficina em que os usuários mais erram, com pelo menos {{ minimo_respostas }} respostas no período</p>
+            {% if dados.questoes %}
+                <table class="admin-vg-tabela admin-vg-questoes">
+                    <thead><tr><th scope="col">Questão</th><th scope="col">Quiz</th><th scope="col" class="admin-vg-num">Respostas</th><th scope="col" class="admin-vg-num">Erros</th></tr></thead>
+                    <tbody>
+                        {% for questao in dados.questoes %}
+                            <tr>
+                                <td>{{ questao.enunciado|truncate(140, true, '…', 0) }}</td>
+                                <td>{{ questao.quiz }}</td>
+                                <td class="admin-vg-num">{{ questao.respostas }}</td>
+                                <td class="admin-vg-num"><span class="{{ 'admin-vg-alerta' if questao.percentual_erros >= 50 }}">{{ percentual(questao.percentual_erros) }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="admin-vg-vazio">Ainda não há respostas suficientes no período.</p>
+            {% endif %}
+        </section>
+    </div>
+
     <div class="admin-vg-linha admin-vg-linha--fim {{ 'admin-vg-linha--unica' if avaliacoes is none }}">
         <section>
             <h2>Segurança nas últimas 24 horas</h2>

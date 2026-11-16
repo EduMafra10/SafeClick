@@ -1,5 +1,9 @@
 
-from flask import Flask, redirect, session, url_for
+import os
+
+from flask import Flask, redirect, render_template, request, session, url_for
+from werkzeug.exceptions import HTTPException
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import current_user
 
 from safeclick.config import carregar_configuracao
@@ -30,6 +34,10 @@ def create_app():
 
     app.config.update(carregar_configuracao())
 
+    # na Vercel o IP do usuário chega pelo proxy
+    if os.environ.get("VERCEL"):
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+
     login_manager.init_app(app)
 
     app.register_blueprint(autenticacao)
@@ -57,6 +65,31 @@ def create_app():
     app.cli.add_command(verificar_twilio)
     app.cli.add_command(verificar_email)
     app.cli.add_command(importar_cenarios_cli)
+
+    @app.after_request
+    def proteger_cabecalhos(resposta):
+        resposta.headers.setdefault("X-Content-Type-Options", "nosniff")
+        resposta.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        resposta.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        resposta.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        if request.is_secure:
+            resposta.headers.setdefault("Strict-Transport-Security", "max-age=31536000")
+        return resposta
+
+    @app.errorhandler(HTTPException)
+    def exibir_erro(erro):
+        if erro.code in (None, 413) or erro.code < 400 or request.path.startswith("/laboratorio-senhas/desafio"):
+            return erro
+        # mantém a mensagem própria da rota, quando ela existir
+        detalhe = erro.description if erro.description != type(erro).description else None
+        resposta = erro.get_response()
+        resposta.set_data(render_template("erro.html", codigo=erro.code, detalhe=detalhe))
+        resposta.content_type = "text/html; charset=utf-8"
+        return resposta
+
+    @app.errorhandler(500)
+    def exibir_erro_interno(erro):
+        return render_template("erro.html", codigo=500), 500
 
     @app.after_request
     def evitar_cache_paginas_autenticadas(resposta):

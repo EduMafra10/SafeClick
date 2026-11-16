@@ -888,6 +888,10 @@ a.admin-botao {
     grid-template-columns: minmax(0, 1fr);
 }
 
+.admin-vg-questoes td:first-child {
+    width: 55%;
+}
+
 .admin-vg-coluna {
     display: flex;
     flex-direction: column;
