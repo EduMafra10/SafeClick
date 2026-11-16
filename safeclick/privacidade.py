@@ -28,7 +28,7 @@ VERSAO_TERMOS = DOCUMENTOS["versao"]
 
 # A politica tambem fica arquivada no banco (versoes_politica).
 # Para publicar uma nova versao, grave o documento no banco e depois mude este valor.
-VERSAO_POLITICA = "1.3"
+VERSAO_POLITICA = "1.4"
 
 
 @privacidade.get("/politica-de-privacidade")

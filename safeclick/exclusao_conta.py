@@ -9,6 +9,7 @@ from wtforms import BooleanField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 
 from safeclick.emails import enviar_email
+from safeclick.modelo_email import montar_email
 from safeclick.exclusao_conta_db import (
     ContaJaExcluida,
     agendar_exclusao,
@@ -77,25 +78,26 @@ def _link_reativacao(token):
     return f"{_base_publica()}{url_for('reativacao_conta.reativar')}#token={token}"
 
 
-def _texto_link(dados, abertura):
-    return (
-        "Olá!\n\n"
-        f"{abertura}\n\n"
-        f"Se você mudar de ideia, abra o link abaixo até {dados['excluir_em']} "
-        "e confirme com a sua senha para reativar a conta:\n\n"
-        f"{_link_reativacao(dados['token'])}\n\n"
-        "Depois dessa data, seu nome e sua senha serão apagados de vez e a conta "
-        "não poderá mais ser recuperada. Seu e-mail ficará guardado por mais 6 meses, "
-        "visível só para a administração, e depois também será apagado.\n\n"
-        "Se você não pediu a exclusão, reative a conta pelo link e troque a sua senha.\n\n"
-        "SafeClick"
+def _montar_link(dados, assunto, abertura):
+    return montar_email(
+        "Exclusão de conta",
+        assunto.removeprefix("SafeClick - "),
+        [abertura,
+         f"Depois de {dados['excluir_em']}, seu nome e sua senha serão apagados de vez e a conta "
+         "não poderá mais ser recuperada. Seu e-mail ficará guardado por mais 6 meses, "
+         "visível só para a administração, e depois também será apagado.",
+         f"Se mudar de ideia, abra o link abaixo até {dados['excluir_em']} "
+         "e confirme com a sua senha para reativar a conta."],
+        botao=("Reativar conta", _link_reativacao(dados["token"])),
+        aviso=("Não pediu a exclusão?", "Reative a conta pelo link e troque a sua senha."),
     )
 
 
 def _enviar_link(dados, assunto, abertura):
     """Envia o link de reativação. Devolve False se o e-mail não saiu."""
     try:
-        enviar_email(dados["email"], assunto, _texto_link(dados, abertura))
+        texto, html = _montar_link(dados, assunto, abertura)
+        enviar_email(dados["email"], assunto, texto, html=html)
     except Exception:
         current_app.logger.error("Link de reativação não enviado.")
         return False
@@ -311,14 +313,15 @@ def reativar():
 
 def _avisar_reativacao(email):
     try:
-        enviar_email(
-            email,
-            "SafeClick - Sua conta foi reativada",
-            "Olá!\n\nSua conta do SafeClick foi reativada e não será mais excluída. "
-            "Para entrar, use seu e-mail e sua senha. Como o aplicativo autenticador foi "
-            "desvinculado na exclusão, o sistema vai pedir para configurá-lo de novo.\n\n"
-            "Se não foi você, troque sua senha pela opção \"Esqueci minha senha\" e fale com "
-            "a equipe pelo canal informado na Política de Privacidade.\n\nSafeClick",
+        texto, html = montar_email(
+            "Sua conta",
+            "Sua conta foi reativada",
+            ["Sua conta do SafeClick foi reativada e não será mais excluída. "
+             "Para entrar, use seu e-mail e sua senha. Como o aplicativo autenticador foi "
+             "desvinculado na exclusão, o sistema vai pedir para configurá-lo de novo."],
+            aviso=("Não foi você?", "Troque sua senha pela opção \"Esqueci minha senha\" e fale com "
+                   "a equipe pelo canal informado na Política de Privacidade."),
         )
+        enviar_email(email, "SafeClick - Sua conta foi reativada", texto, html=html)
     except Exception:
         current_app.logger.error("Aviso de conta reativada não enviado.")

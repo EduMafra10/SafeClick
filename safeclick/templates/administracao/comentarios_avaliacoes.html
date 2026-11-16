@@ -1,22 +1,52 @@
 {% extends 'administracao/base.html' %}
 {% block titulo %}Comentários de avaliações{% endblock %}
-{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">{% endblock %}
+{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
+{% block classe_principal %}admin-avaliacoes{% endblock %}
 {% block conteudo %}
 <header class="admin-introducao"><div><p class="visual-etiqueta">Administração</p><h1>Comentários de avaliações</h1>
-<p>Consulte novas avaliações e modere comentários autorizados para publicação. Comentários antigos não são disponibilizados sem atualização pelo autor.</p></div></header>
-<p><a href="{{ url_for('administracao.listar_avaliacoes') }}">Ver médias e quantidades</a> · <a href="{{ url_for('avaliacoes.publicas') }}">Conferir consulta pública</a></p>
-{% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}<p role="status" class="admin-catalogo-cartao">{{ mensagem }}</p>{% endfor %}
-<form method="get" class="participacao-filtros"><label>Situação <select name="estado">
-{% for valor,texto in [('', 'Todas'),('pendente','Aguardando moderação'),('aprovada','Publicados'),('rejeitada','Não publicados'),('nao_solicitada','Privados')] %}<option value="{{ valor }}" {{ 'selected' if estado == valor }}>{{ texto }}</option>{% endfor %}
-</select></label><button class="admin-botao">Filtrar</button></form>
-<ul class="admin-lista-itens">{% for item in itens %}<li class="admin-catalogo-cartao">
-<h2>{{ item.titulo }}</h2><p>Conta #{{ item.usuario_id }} · {{ item.nota }} de 5 · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
-<p class="participacao-texto">{{ item.comentario or 'Sem comentário.' }}</p>
-<p>Estado: {{ {'pendente':'Aguardando moderação','aprovada':'Publicado','rejeitada':'Não publicado','nao_solicitada':'Privado'}[item.moderacao] }}.</p>
-{% if item.publicar_comentario and item.publicada %}<p>
-<a href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='aprovar') }}">Revisar para publicar</a> ·
-<a href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='ocultar') }}">Impedir publicação</a>
-</p>{% endif %}
-</li>{% else %}<li class="admin-catalogo-cartao">Nenhuma avaliação disponível para esse filtro.</li>{% endfor %}</ul>
-<nav class="quizzes-acoes" aria-label="Páginas de avaliações">{% if pagina > 1 %}<a href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina-1,estado=estado) }}">Anterior</a>{% endif %}<span>Página {{ pagina }}</span>{% if pagina * 20 < total %}<a href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina+1,estado=estado) }}">Próxima</a>{% endif %}</nav>
+<p>Acompanhe as opiniões sobre as atividades e revise os comentários enviados para publicação.</p></div></header>
+{% include 'administracao/_avaliacoes_navegacao.html' %}
+{% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}<p role="status" class="avaliacoes-admin-aviso">{{ mensagem }}</p>{% endfor %}
+<form method="get" class="avaliacoes-admin-filtros">
+    <label>Situação do comentário
+        <select name="estado">
+        {% for valor,texto in [('', 'Todas as situações'),('pendente','Aguardando moderação'),('aprovada','Publicados'),('rejeitada','Publicação bloqueada'),('nao_solicitada','Privados')] %}
+            <option value="{{ valor }}" {{ 'selected' if estado == valor }}>{{ texto }}</option>
+        {% endfor %}
+        </select>
+    </label>
+    <button class="admin-botao" type="submit">Aplicar filtro</button>
+    {% if estado %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar') }}">Limpar filtro</a>{% endif %}
+</form>
+<p class="avaliacoes-admin-total" role="status"><strong>{{ total }}</strong> {{ 'avaliação encontrada' if total == 1 else 'avaliações encontradas' }}</p>
+<ul class="avaliacoes-admin-lista">
+{% for item in itens %}
+    <li class="avaliacoes-admin-cartao">
+        <div class="avaliacoes-admin-cartao-cabecalho">
+            <div>
+                <p class="avaliacoes-admin-tipo">{{ 'Conteúdo educativo' if item.tipo == 'conteudo' else 'Quiz ou oficina' }}</p>
+                <h2>{{ item.titulo }}</h2>
+                <p class="avaliacoes-admin-meta">Conta #{{ item.usuario_id }} · <strong>{{ item.nota }} de 5</strong> · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
+            </div>
+            <span class="avaliacoes-admin-estado avaliacoes-admin-estado--{{ item.moderacao }}">{{ {'pendente':'Aguardando moderação','aprovada':'Publicado','rejeitada':'Publicação bloqueada','nao_solicitada':'Privado'}[item.moderacao] }}</span>
+        </div>
+        <p class="avaliacoes-admin-texto">{{ item.comentario or 'Esta avaliação não possui comentário.' }}</p>
+        {% if item.publicar_comentario and item.publicada %}
+            <div class="avaliacoes-admin-acoes">
+                {% if item.moderacao != 'aprovada' %}<a class="admin-botao" href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='aprovar') }}" aria-label="Revisar para publicar: {{ item.titulo }}">Revisar para publicar</a>{% endif %}
+                {% if item.moderacao != 'rejeitada' %}<a class="admin-botao-secundario admin-botao-perigo" href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='ocultar') }}" aria-label="Bloquear publicação: {{ item.titulo }}">Bloquear publicação</a>{% endif %}
+            </div>
+        {% elif not item.publicada %}<p class="avaliacoes-admin-ajuda">A atividade está fora do catálogo público. O comentário não pode ser publicado.</p>
+        {% else %}<p class="avaliacoes-admin-ajuda">O autor manteve este comentário privado.</p>{% endif %}
+    </li>
+{% else %}
+    <li class="avaliacoes-admin-vazio"><h2>Nenhuma avaliação por aqui</h2><p>Não há avaliações disponíveis para o filtro escolhido. Comentários antigos continuam privados até atualização pelo autor.</p></li>
+{% endfor %}
+</ul>
+<p class="avaliacoes-admin-ajuda">Somente comentários autorizados pelo autor podem ser publicados. Revise o texto antes de confirmar qualquer decisão.</p>
+<nav class="avaliacoes-admin-paginacao" aria-label="Páginas de avaliações">
+    {% if pagina > 1 %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina-1,estado=estado) }}">← Anterior</a>{% endif %}
+    <span>Página {{ pagina }}</span>
+    {% if pagina * 20 < total %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina+1,estado=estado) }}">Próxima →</a>{% endif %}
+</nav>
 {% endblock %}

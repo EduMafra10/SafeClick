@@ -26,5 +26,5 @@
 <span>Página {{ pagina }}</span>
 {% if pagina * 20 < total %}<a href="{{ url_for('avaliacoes.publicas', pagina=pagina+1, tipo=tipo, busca=busca) }}">Próxima</a>{% endif %}
 </nav>{% endif %}
-<p class="participacao-nota">Uma avaliação privada não compõe estes indicadores. <a href="{{ url_for('ranking.privacidade') }}">Entenda a publicação e seus controles de privacidade</a>.</p>
+<p class="participacao-nota">Uma avaliação privada não compõe estes indicadores. <a href="{{ url_for('avaliacoes.privacidade') }}">Entenda a publicação e seus controles de privacidade</a>.</p>
 {% endblock %}

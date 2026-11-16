@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, EmailField, HiddenField, IntegerField, PasswordField, StringField, SubmitField
 from wtforms.validators import AnyOf, DataRequired, Email, EqualTo, InputRequired, Length, NumberRange, Regexp, ValidationError
 
+from safeclick.politica_senha import problema_senha
+
 def limpar_texto(valor):
     # remove espaços das extremidades de nome e email
     return valor.strip() if valor else ""
@@ -55,6 +57,11 @@ class FormularioCadastro(FlaskForm):
             EqualTo("senha", message="As senhas precisam ser iguais."),
         ],
     )
+
+    def validate_senha(self, campo):
+        problema = problema_senha(campo.data, self.nome.data, self.email.data)
+        if problema:
+            raise ValidationError(problema)
 
     versao_termos = HiddenField(
         validators=[
@@ -176,6 +183,11 @@ class FormularioRedefinirSenha(FlaskForm):
     )
 
     enviar = SubmitField("Salvar nova senha")
+
+    def validate_senha(self, campo):
+        problema = problema_senha(campo.data)
+        if problema:
+            raise ValidationError(problema)
 
 class FormularioAceiteTermos(FlaskForm):
     versao_termos = HiddenField(

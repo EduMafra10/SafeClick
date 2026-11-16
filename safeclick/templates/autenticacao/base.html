@@ -43,7 +43,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ titulo }} | SafeClick</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/autenticacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/politica_senha.css') }}">
     <script src="{{ url_for('static', filename='js/autenticacao.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/politica_senha.js') }}" defer></script>
 </head>
 <body class="autenticacao-pagina">
     <main class="autenticacao-layout">
@@ -78,6 +80,11 @@
 
                 <p class="autenticacao-rodape">
                     {% block rodape %}{% endblock %}
+                </p>
+                {# abrem em outra aba para a pessoa não perder o formulário que está preenchendo #}
+                <p class="autenticacao-legal">
+                    <a href="{{ url_for('privacidade.politica') }}" target="_blank" rel="noopener">Política de Privacidade</a> ·
+                    <a href="{{ url_for('privacidade.termos') }}" target="_blank" rel="noopener">Termos de Uso</a>
                 </p>
             </div>
         </section>

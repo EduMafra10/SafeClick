@@ -1,13 +1,26 @@
 {% extends 'administracao/base.html' %}
 {% block titulo %}Revisar comentário{% endblock %}
-{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">{% endblock %}
+{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
+{% block classe_principal %}admin-avaliacoes{% endblock %}
 {% block conteudo %}
-<section class="admin-catalogo-cartao"><h1>{{ 'Publicar comentário sem identificação' if acao == 'aprovar' else 'Impedir publicação do comentário' }}</h1>
-<h2>{{ item.titulo }}</h2><p class="participacao-texto">{{ item.comentario }}</p>
-<p>Antes de publicar, confira se o texto se refere à atividade e não contém dados pessoais, senhas, contatos, ofensas ou informações sensíveis.</p>
-{% if erro %}<p role="alert">{{ erro }}</p>{% endif %}
-<form method="post">{{ formulario.hidden_tag() }}<input type="hidden" name="revisao" value="{{ item.revisao }}">
-<label class="participacao-opcao"><input type="checkbox" name="confirmar" value="1" required> Confirmo que revisei o comentário e esta decisão.</label>
-<button class="admin-botao">{{ 'Confirmar publicação' if acao == 'aprovar' else 'Confirmar bloqueio de publicação' }}</button>
-<a href="{{ url_for('moderacao_avaliacoes.listar') }}">Cancelar</a></form></section>
+<header class="admin-introducao"><div><p class="visual-etiqueta">Moderação de avaliações</p>
+<h1>{{ 'Revisar para publicar' if acao == 'aprovar' else 'Bloquear publicação' }}</h1>
+<p>{{ 'Confira o comentário antes de disponibilizá-lo sem identificação do autor.' if acao == 'aprovar' else 'Esta ação retira somente o comentário da consulta pública, preservando a nota e o registro da avaliação.' }}</p></div></header>
+{% include 'administracao/_avaliacoes_navegacao.html' %}
+<section class="avaliacoes-admin-cartao avaliacoes-admin-revisao">
+    <p class="avaliacoes-admin-tipo">{{ 'Conteúdo educativo' if item.tipo == 'conteudo' else 'Quiz ou oficina' }}</p>
+    <h2>{{ item.titulo }}</h2>
+    <p class="avaliacoes-admin-meta">Conta #{{ item.usuario_id }}</p>
+    <p class="avaliacoes-admin-texto">{{ item.comentario }}</p>
+    <p class="avaliacoes-admin-orientacao">Antes de confirmar, confira se o texto se refere à atividade e não contém dados pessoais, senhas, contatos, ofensas ou informações sensíveis.</p>
+    {% if erro %}<p class="admin-aviso admin-aviso--erro" role="alert">{{ erro }}</p>{% endif %}
+    <form method="post">
+        {{ formulario.hidden_tag() }}<input type="hidden" name="revisao" value="{{ item.revisao }}">
+        <label class="avaliacoes-admin-confirmacao"><input type="checkbox" name="confirmar" value="1" required> <span>Confirmo que revisei o comentário e esta decisão.</span></label>
+        <div class="avaliacoes-admin-acoes">
+            <button class="admin-botao {{ 'avaliacoes-admin-confirmar-bloqueio' if acao == 'ocultar' }}" type="submit">{{ 'Confirmar publicação' if acao == 'aprovar' else 'Confirmar bloqueio' }}</button>
+            <a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar') }}">Cancelar</a>
+        </div>
+    </form>
+</section>
 {% endblock %}

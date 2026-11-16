@@ -12,8 +12,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/conta.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/politica_senha.css') }}">
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/conta.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/politica_senha.js') }}" defer></script>
     <noscript><style>.conta-dialogo { display: block; position: static; margin: 20px 0 0; box-shadow: none; }</style></noscript>
 </head>
 <body class="site-visual">
@@ -154,7 +156,7 @@
 
         <dialog class="conta-dialogo conta-dialogo--estreito" id="dialogo-senha" aria-labelledby="titulo-dialogo-senha"
                 {% if erro_senha or formulario_senha.errors %}data-abrir-ao-carregar{% endif %}>
-            <form method="post" action="{{ url_for('conta.trocar_senha') }}" novalidate>
+            <form method="post" action="{{ url_for('conta.trocar_senha') }}" novalidate data-nome="{{ dados.nome }}" data-email="{{ dados.email }}">
                 {{ formulario_senha.csrf_token(id='csrf-senha') }}
                 <h2 id="titulo-dialogo-senha">Trocar senha</h2>
                 <p>Depois da troca, as outras sessões são encerradas e você recebe um aviso por e-mail.</p>

@@ -39,7 +39,7 @@ def conectar_smtp():
             "Confira a conexão, o servidor e a porta configurada."
         ) from None
 
-def enviar_email(destinatario, assunto, texto):
+def enviar_email(destinatario, assunto, texto, html=None):
     remetente = current_app.config.get("SMTP_USER")
     nome = current_app.config.get("SMTP_FROM_NAME", "SafeClick")
 
@@ -51,6 +51,8 @@ def enviar_email(destinatario, assunto, texto):
     mensagem["To"] = destinatario
     mensagem["Subject"] = assunto
     mensagem.set_content(texto)
+    if html:
+        mensagem.add_alternative(html, subtype="html")
 
     with conectar_smtp() as conexao:
         conexao.send_message(

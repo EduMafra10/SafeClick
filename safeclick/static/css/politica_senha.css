@@ -1,0 +1,95 @@
+.politica-senha {
+    margin: -10px 0 22px;
+    font-size: 13.5px;
+    line-height: 1.4;
+}
+
+.politica-senha ul {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.politica-senha li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    color: #526d7e;
+}
+
+.politica-senha li::before {
+    content: "";
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #a9bac5;
+    transform: translateY(-1px);
+}
+
+.politica-senha li[data-ok="true"] {
+    color: #27684f;
+}
+
+.politica-senha li[data-ok="true"]::before {
+    content: "✓";
+    width: auto;
+    height: auto;
+    background: none;
+    font-weight: 700;
+    transform: none;
+}
+
+.politica-senha li[data-ok="false"] {
+    color: #a64f30;
+}
+
+.politica-senha li[data-ok="false"]::before {
+    background: #a64f30;
+}
+
+.politica-senha-contador {
+    color: #7a8f9c;
+}
+
+.politica-senha-forca {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.politica-senha-forca[hidden] {
+    display: none;
+}
+
+.politica-senha-barra {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    width: 120px;
+}
+
+.politica-senha-barra i {
+    height: 5px;
+    border-radius: 3px;
+    background: #dce5ea;
+}
+
+.politica-senha-forca[data-nivel="0"] i:nth-child(-n+1),
+.politica-senha-forca[data-nivel="1"] i:nth-child(-n+1) { background: #a64f30; }
+.politica-senha-forca[data-nivel="2"] i:nth-child(-n+2) { background: #c9a24e; }
+.politica-senha-forca[data-nivel="3"] i:nth-child(-n+3) { background: #4f8f73; }
+.politica-senha-forca[data-nivel="4"] i:nth-child(-n+4) { background: #27684f; }
+
+.politica-senha-rotulo {
+    color: #526d7e;
+    font-weight: 600;
+}
+
+/* dentro da janela "Trocar senha" da página Minha conta */
+.conta-dialogo .politica-senha {
+    margin: -4px 0 14px;
+}

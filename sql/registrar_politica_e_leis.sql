@@ -1,7 +1,5 @@
 BEGIN;
 
-
--- leis e artigos citados na politica e nos termos
 INSERT INTO public.referencias_legais (norma, dispositivo, assunto, url)
 VALUES
     ('Lei nº 13.709/2018 (LGPD)', 'art. 5º, II e VI', 'Definições de dado pessoal sensível e de controlador', 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm'),
@@ -21,8 +19,6 @@ VALUES
     ('Lei nº 8.078/1990 (Código de Defesa do Consumidor)', NULL, 'Código de Defesa do Consumidor', 'https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm')
 ON CONFLICT ON CONSTRAINT referencias_legais_unica DO NOTHING;
 
-
--- Politica de Privacidade 1.0
 DO $registrar_politica_1_0$
 DECLARE
     texto_politica CONSTANT TEXT := $conteudo_politica_1_0$<h1>Política de Privacidade</h1>
@@ -177,8 +173,6 @@ BEGIN
     VALUES ('1.0', DATE '2026-09-28', texto_politica)
     ON CONFLICT (versao) DO NOTHING;
 
-    -- Reexecutar com o mesmo documento e permitido.
-    -- Um texto diferente com o mesmo numero de versao interrompe a operacao.
     IF NOT EXISTS (
         SELECT 1
         FROM public.versoes_politica
@@ -191,7 +185,6 @@ BEGIN
 END;
 $registrar_politica_1_0$;
 
--- Politica de Privacidade 1.1
 DO $registrar_politica_1_1$
 DECLARE
     texto_politica CONSTANT TEXT := $conteudo_politica_1_1$<h1>Política de Privacidade</h1>
@@ -346,8 +339,6 @@ BEGIN
     VALUES ('1.1', DATE '2026-10-19', texto_politica)
     ON CONFLICT (versao) DO NOTHING;
 
-    -- Reexecutar com o mesmo documento e permitido.
-    -- Um texto diferente com o mesmo numero de versao interrompe a operacao.
     IF NOT EXISTS (
         SELECT 1
         FROM public.versoes_politica
@@ -360,7 +351,6 @@ BEGIN
 END;
 $registrar_politica_1_1$;
 
--- leis citadas: politica_referencias 1.0
 INSERT INTO public.politica_referencias (versao_politica, referencia_id, ordem)
 SELECT '1.0', referencia.id, lista.ordem
 FROM (VALUES
@@ -381,7 +371,6 @@ JOIN public.referencias_legais AS referencia
  AND referencia.dispositivo IS NOT DISTINCT FROM lista.dispositivo
 ON CONFLICT DO NOTHING;
 
--- leis citadas: politica_referencias 1.1
 INSERT INTO public.politica_referencias (versao_politica, referencia_id, ordem)
 SELECT '1.1', referencia.id, lista.ordem
 FROM (VALUES
@@ -402,7 +391,6 @@ JOIN public.referencias_legais AS referencia
  AND referencia.dispositivo IS NOT DISTINCT FROM lista.dispositivo
 ON CONFLICT DO NOTHING;
 
--- leis citadas: termos_referencias 1.0
 INSERT INTO public.termos_referencias (versao_termos, referencia_id, ordem)
 SELECT '1.0', referencia.id, lista.ordem
 FROM (VALUES
@@ -411,6 +399,215 @@ FROM (VALUES
     (3, 'Lei nº 8.069/1990 (ECA)', NULL),
     (4, 'Lei nº 15.211/2025 (ECA Digital)', NULL),
     (5, 'Lei nº 8.078/1990 (Código de Defesa do Consumidor)', NULL)
+) AS lista (ordem, norma, dispositivo)
+JOIN public.referencias_legais AS referencia
+  ON referencia.norma = lista.norma
+ AND referencia.dispositivo IS NOT DISTINCT FROM lista.dispositivo
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.referencias_legais (norma, dispositivo, assunto, url)
+VALUES
+    ('Lei nº 13.709/2018 (LGPD)', 'art. 7º, VI', 'Base legal: exercício regular de direitos', 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm'),
+    ('Lei nº 13.709/2018 (LGPD)', 'arts. 12 e 16', 'Dados anonimizados e conservação após o término do tratamento', 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm')
+ON CONFLICT ON CONSTRAINT referencias_legais_unica DO NOTHING;
+
+DO $registrar_politica_1_2$
+DECLARE
+    texto_politica CONSTANT TEXT := $conteudo_politica_1_2$<h1>Política de Privacidade</h1>
+        <p class="privacidade-meta">Versão 1.2 · vigente desde 15/11/2026</p>
+        <nav class="privacidade-sumario" aria-label="Seções">
+            <p>Nesta página</p>
+            <ol>
+                <li><a href="#1-quem-somos-e-quem-cuida-dos-seus-dados">1. Quem somos e quem cuida dos seus dados</a></li>
+                <li><a href="#2-quais-dados-tratamos">2. Quais dados tratamos</a></li>
+                <li><a href="#3-para-que-usamos-os-dados-e-com-qual-base-legal">3. Para que usamos os dados e com qual base legal</a></li>
+                <li><a href="#4-adolescentes">4. Adolescentes</a></li>
+                <li><a href="#5-cookies">5. Cookies</a></li>
+                <li><a href="#6-com-quem-compartilhamos">6. Com quem compartilhamos</a></li>
+                <li><a href="#7-transferencia-internacional">7. Transferência internacional</a></li>
+                <li><a href="#8-por-quanto-tempo-guardamos">8. Por quanto tempo guardamos</a></li>
+                <li><a href="#9-seus-direitos">9. Seus direitos</a></li>
+                <li><a href="#10-seguranca">10. Segurança</a></li>
+                <li><a href="#11-alteracoes-nesta-politica">11. Alterações nesta política</a></li>
+            </ol>
+        </nav>
+        <section class="privacidade-resumo" aria-labelledby="resumo">
+            <h2 id="resumo">Resumo em linguagem simples</h2>
+            <ul>
+                <li>Para usar o SafeClick é preciso criar uma conta e ter <strong>16 anos ou mais</strong>.</li>
+                <li>Guardamos só o necessário: como você quer ser chamado, seu e-mail, sua senha e o que você faz na plataforma (conteúdos concluídos, quizzes, simulações, desafio de senhas e conquistas). A senha é guardada embaralhada (hash): nem a equipe consegue lê-la.</li>
+                <li>O login tem uma segunda etapa com um aplicativo autenticador no celular. A empresa que confere esses códigos (Twilio) recebe só um identificador aleatório, nunca seu nome, e-mail ou senha.</li>
+                <li>Não vendemos seus dados, não mostramos anúncios, não criamos ranking entre usuários e não usamos cookies de rastreamento.</li>
+                <li>Em <strong>Minha conta</strong> você corrige seu nome, troca a senha e exclui a conta. Depois de excluir, você tem <strong>30 dias</strong> para voltar atrás pelo link enviado ao seu e-mail; passado esse prazo, nome e senha são apagados de vez, e o e-mail fica guardado por mais 6 meses, visível só para a administração.</li>
+                <li>Para ver ou receber uma cópia dos seus dados, ou para qualquer outro pedido, escreva para <a href="mailto:safeclick.privacidade@gmail.com">safeclick.privacidade@gmail.com</a>.</li>
+                <li>O SafeClick é um projeto acadêmico: as contas criadas durante testes e validação serão apagadas até 31/12/2026.</li>
+            </ul>
+        </section>
+
+        <h2 id="1-quem-somos-e-quem-cuida-dos-seus-dados">1. Quem somos e quem cuida dos seus dados</h2>
+        <p>O SafeClick é uma plataforma educativa de segurança digital desenvolvida como Projeto Final de Curso (PFC) do Bacharelado em Sistemas de Informação da Universidade de Mogi das Cruzes (UMC), pelos estudantes Eduardo Mafra dos Santos, Humberto Ribeiro Bezerra e João Henrique Alves de Souza.</p>
+        <p><strong>Controlador.</strong> Durante o PFC, a equipe desenvolvedora decide como os dados são tratados e atua como controladora (art. 5º, VI, da Lei nº 13.709/2018 – LGPD). Em uma implantação real, por exemplo se uma escola ou universidade adotasse o SafeClick para seus estudantes, a instituição passaria a ser a controladora e deveria validar esta política com sua assessoria jurídica.</p>
+        <p><strong>Operadores.</strong> Empresas que tratam dados em nosso nome, apenas para fazer a plataforma funcionar, estão listadas na seção 6.</p>
+        <p><strong>Canal de privacidade.</strong> João Souza responde pelo canal <a href="mailto:safeclick.privacidade@gmail.com">safeclick.privacidade@gmail.com</a>, que recebe dúvidas, pedidos e reclamações sobre dados pessoais (art. 41 da LGPD).</p>
+
+        <h2 id="2-quais-dados-tratamos">2. Quais dados tratamos</h2>
+        <div class="privacidade-tabela" role="region" aria-label="Tabela" tabindex="0">
+            <table>
+                <thead><tr><th scope="col">Dado</th><th scope="col">Quando é coletado</th><th scope="col">Obrigatório?</th><th scope="col">Situação</th></tr></thead>
+                <tbody>
+                    <tr><td data-rotulo="Dado">Nome ou apelido (como você quer ser chamado)</td><td data-rotulo="Quando é coletado">Cadastro e Minha conta</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Ícone de perfil, escolhido entre os personagens desenhados pelo SafeClick (não é foto)</td><td data-rotulo="Quando é coletado">Minha conta</td><td data-rotulo="Obrigatório?">Opcional</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">E-mail</td><td data-rotulo="Quando é coletado">Cadastro e login</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Senha, guardada somente como hash scrypt</td><td data-rotulo="Quando é coletado">Cadastro e login</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Perfil de acesso (usuário ou administrador), data de criação da conta e, quando houver, datas do pedido de exclusão e da exclusão</td><td data-rotulo="Quando é coletado">Definidos pelo sistema</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Vínculo com o aplicativo autenticador: identificador aleatório, código do fator na Twilio e data de confirmação</td><td data-rotulo="Quando é coletado">Configuração do segundo fator</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Sessão de acesso: identificador guardado só como hash, datas de início, última atividade e expiração</td><td data-rotulo="Quando é coletado">Login</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Etapa de login em andamento: identificador temporário (hash) e número de tentativas do código</td><td data-rotulo="Quando é coletado">Entre a senha e o código do autenticador</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Controle de tentativas: e-mail digitado, número da conta ou endereço IP, sempre transformados em código irreversível (HMAC), e contador</td><td data-rotulo="Quando é coletado">Login, configuração do autenticador, recuperação e troca de senha, exclusão e reativação da conta e desafio de senhas</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Conteúdos concluídos: conteúdo e data</td><td data-rotulo="Quando é coletado">Ao marcar um conteúdo como concluído</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Tentativas de quizzes: quiz, alternativas escolhidas, pontuação e data</td><td data-rotulo="Quando é coletado">Envio de um quiz</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Escolhas nas simulações: simulação, opção escolhida e data</td><td data-rotulo="Quando é coletado">Uso de uma simulação</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Cookie de sessão</td><td data-rotulo="Quando é coletado">Navegação e login</td><td data-rotulo="Obrigatório?">Necessário</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Versão e data do aceite dos Termos, com declaração de idade</td><td data-rotulo="Quando é coletado">Cadastro</td><td data-rotulo="Obrigatório?">Sim</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Registros de auditoria: identificador da conta, tipo de evento, resultado, data/hora e, nas ações da administração, o item afetado; quando um administrador exclui a conta de outro, também o motivo informado</td><td data-rotulo="Quando é coletado">Ações de acesso (cadastro, login, logout, troca de senha, exclusão e reativação da conta), de aprendizagem (conteúdos, quizzes, simulações e desafio de senhas) e da administração</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Senha digitada no analisador de força do laboratório: avaliada só no seu navegador, não é enviada ao servidor nem armazenada</td><td data-rotulo="Quando é coletado">Ao usar o analisador</td><td data-rotulo="Obrigatório?">Opcional</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Resultado do desafio "Qual vazou mais?": acertos, total de rodadas e data</td><td data-rotulo="Quando é coletado">Ao terminar uma partida</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Token de recuperação de senha, guardado como hash e válido por 30 minutos</td><td data-rotulo="Quando é coletado">Pedido de recuperação de senha</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Conquistas: conquista liberada e data</td><td data-rotulo="Quando é coletado">Uso da conta</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Link de reativação da conta, guardado como hash e válido até o fim do prazo de 30 dias</td><td data-rotulo="Quando é coletado">Pedido de exclusão da conta ou tentativa de login nesse prazo</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">E-mail da conta excluída, guardado à parte e visível só para a administração</td><td data-rotulo="Quando é coletado">Exclusão definitiva da conta</td><td data-rotulo="Obrigatório?">Automático</td><td data-rotulo="Situação">Em funcionamento</td></tr>
+                    <tr><td data-rotulo="Dado">Avaliações de conteúdos e quizzes: nota de 1 a 5 e comentário opcional de até 500 caracteres</td><td data-rotulo="Quando é coletado">Depois de concluir um conteúdo ou quiz</td><td data-rotulo="Obrigatório?">Opcional</td><td data-rotulo="Situação">Em desenvolvimento (ainda não habilitadas)</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>O código de 6 dígitos do aplicativo autenticador é enviado para conferência e não é guardado. O QR Code usado para configurar o autenticador é gerado no nosso próprio servidor.</p>
+        <p><strong>Não coletamos</strong> CPF, data de nascimento, endereço, telefone, fotografia, localização nem dados pessoais sensíveis (art. 5º, II, da LGPD). Nosso banco de dados não grava endereço IP em texto: ele só entra no controle de tentativas, transformado em código irreversível. A empresa de hospedagem (seção 6) pode registrar dados técnicos das requisições, como o IP, em seus registros de funcionamento.</p>
+        <p>Os itens marcados como "em desenvolvimento" ainda não estão disponíveis para todos os usuários. Quando entrarem em funcionamento, esta política será revisada e a versão atualizada.</p>
+
+        <h2 id="3-para-que-usamos-os-dados-e-com-qual-base-legal">3. Para que usamos os dados e com qual base legal</h2>
+        <div class="privacidade-tabela" role="region" aria-label="Tabela" tabindex="0">
+            <table>
+                <thead><tr><th scope="col">Finalidade</th><th scope="col">Dados usados</th><th scope="col">Base legal (LGPD)</th></tr></thead>
+                <tbody>
+                    <tr><td data-rotulo="Finalidade">Criar e manter sua conta, confirmar sua identidade no login (senha e segundo fator), proteger sua sessão e permitir que você gerencie a conta em Minha conta</td><td data-rotulo="Dados usados">Nome ou apelido, ícone, e-mail, hash da senha, perfil, vínculo com o autenticador, sessão, etapa de login e cookie de sessão</td><td data-rotulo="Base legal (LGPD)">Execução de contrato: os Termos de Uso aceitos no cadastro (art. 7º, V)</td></tr>
+                    <tr><td data-rotulo="Finalidade">Registrar suas atividades, liberar conquistas, mostrar o seu progresso no painel e avaliar, de forma agregada e sem identificar pessoas, se os conteúdos ensinam bem</td><td data-rotulo="Dados usados">Conteúdos concluídos, tentativas de quizzes, escolhas nas simulações, resultados do desafio de senhas e conquistas</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V)</td></tr>
+                    <tr><td data-rotulo="Finalidade">Limitar tentativas em ações sensíveis, para impedir ataques de adivinhação de senha e abuso dos links enviados por e-mail</td><td data-rotulo="Dados usados">Código HMAC do e-mail digitado, do número da conta ou do endereço IP, e contador</td><td data-rotulo="Base legal (LGPD)">Legítimo interesse em segurança (art. 7º, IX), com avaliação documentada pela equipe</td></tr>
+                    <tr><td data-rotulo="Finalidade">Registrar o aceite dos Termos e a declaração de idade</td><td data-rotulo="Dados usados">Versão e data do aceite</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V), para demonstrar o cumprimento do art. 14 da LGPD e da Lei nº 15.211/2025</td></tr>
+                    <tr><td data-rotulo="Finalidade">Registrar acessos e ações para proteger as contas e investigar falhas</td><td data-rotulo="Dados usados">Identificador da conta, ação, data e hora</td><td data-rotulo="Base legal (LGPD)">Legítimo interesse (art. 7º, IX), com avaliação documentada pela equipe</td></tr>
+                    <tr><td data-rotulo="Finalidade">Enviar os e-mails da conta: recuperação de senha, aviso de senha alterada, link de reativação e avisos de exclusão e de reativação</td><td data-rotulo="Dados usados">E-mail e link temporário</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V)</td></tr>
+                    <tr><td data-rotulo="Finalidade">Atender o seu pedido de exclusão da conta, com 30 dias para reativá-la</td><td data-rotulo="Dados usados">Dados da conta, data do pedido e link de reativação</td><td data-rotulo="Base legal (LGPD)">Execução de contrato (art. 7º, V) e direito de eliminação (art. 18, VI)</td></tr>
+                    <tr><td data-rotulo="Finalidade">Guardar por 6 meses o e-mail de uma conta excluída, para comprovar a exclusão, responder a pedidos do titular e apurar incidentes de segurança</td><td data-rotulo="Dados usados">E-mail e datas da exclusão</td><td data-rotulo="Base legal (LGPD)">Exercício regular de direitos (art. 7º, VI) e legítimo interesse em segurança (art. 7º, IX), com acesso restrito à administração</td></tr>
+                    <tr><td data-rotulo="Finalidade">Excluir a conta de um administrador que deixou a equipe</td><td data-rotulo="Dados usados">Dados da conta e motivo informado</td><td data-rotulo="Base legal (LGPD)">Legítimo interesse em segurança (art. 7º, IX), para que só a equipe atual administre a plataforma (art. 46)</td></tr>
+                                        <tr><td data-rotulo="Finalidade">Atender pedidos de privacidade</td><td data-rotulo="Dados usados">E-mail e conteúdo do pedido</td><td data-rotulo="Base legal (LGPD)">Cumprimento de obrigação legal (art. 7º, II, e art. 18)</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>Não usamos o consentimento como base para essas operações. Por isso, a revogação de consentimento (art. 18, IX) não se aplica ao SafeClick; no lugar dela, você pode excluir a sua conta a qualquer momento em Minha conta, como explicado na seção 8.</p>
+
+        <h2 id="4-adolescentes">4. Adolescentes</h2>
+        <p>O SafeClick é voltado a estudantes a partir de 16 anos, do ensino médio e universitários, e parte desse público tem 16 ou 17 anos. Tratamos os dados de adolescentes em seu melhor interesse (art. 14 da LGPD) e seguimos o Estatuto Digital da Criança e do Adolescente (Lei nº 15.211/2025):</p>
+        <ul>
+            <li>Todo o conteúdo do SafeClick exige conta, e a conta só pode ser criada a partir de <strong>16 anos</strong>. Menores de 16 anos não podem usar a plataforma nesta fase do projeto.</li>
+            <li>Entre 16 e 17 anos, o cadastro exige declarar que o responsável legal está ciente e de acordo com o uso da plataforma.</li>
+            <li>Se identificarmos uma conta de menor de 16 anos, ela será excluída; o responsável pode pedir informações pelo canal <a href="mailto:safeclick.privacidade@gmail.com">safeclick.privacidade@gmail.com</a>.</li>
+            <li>Todos os usuários recebem as configurações mais protetivas por padrão: não há perfil público, ranking entre usuários, chat, publicidade, perfilamento ou cookies de rastreamento. Seus resultados em quizzes e simulações não são mostrados a outros usuários.</li>
+            <li>As conquistas não usam sequências diárias obrigatórias nem notificações que incentivem o uso compulsivo.</li>
+        </ul>
+
+        <h2 id="5-cookies">5. Cookies</h2>
+        <p>Usamos apenas um <strong>cookie de sessão, estritamente necessário</strong>: ele mantém você conectado, protege formulários contra envios forjados (CSRF) e evita que um quiz seja enviado duas vezes. O cookie é assinado, inacessível a scripts da página (HttpOnly), restrito ao próprio site (SameSite=Lax), enviado somente por HTTPS em produção e apagado quando você fecha o navegador. Do lado do servidor, a sessão expira após 30 minutos sem atividade ou em até 8 horas, e é encerrada imediatamente quando você sai da conta. As páginas de conta e de login não são guardadas em cache pelo navegador.</p>
+        <p>Não usamos cookies de análise, publicidade ou rastreamento. Por isso, não exibimos banner de cookies.</p>
+
+        <h2 id="6-com-quem-compartilhamos">6. Com quem compartilhamos</h2>
+        <p>Não vendemos dados nem os compartilhamos para marketing. Os serviços abaixo recebem apenas o necessário para a plataforma funcionar:</p>
+        <div class="privacidade-tabela" role="region" aria-label="Tabela" tabindex="0">
+            <table>
+                <thead><tr><th scope="col">Serviço</th><th scope="col">Para quê</th><th scope="col">O que recebe</th><th scope="col">Onde</th></tr></thead>
+                <tbody>
+                    <tr><td data-rotulo="Serviço">Neon (PostgreSQL)</td><td data-rotulo="Para quê">Armazenar o banco de dados</td><td data-rotulo="O que recebe">Os dados guardados listados na seção 2</td><td data-rotulo="Onde">Brasil (AWS São Paulo), com conexão criptografada</td></tr>
+                    <tr><td data-rotulo="Serviço">Vercel</td><td data-rotulo="Para quê">Hospedar a aplicação</td><td data-rotulo="O que recebe">As requisições enquanto são processadas (formulários e cookie de sessão) e dados técnicos de acesso</td><td data-rotulo="Onde">Execução configurada em São Paulo (gru1); empresa sediada nos EUA</td></tr>
+                    <tr><td data-rotulo="Serviço">Twilio (Verify)</td><td data-rotulo="Para quê">Conferir os códigos do aplicativo autenticador (segundo fator); quando a conta é excluída, o vínculo é removido</td><td data-rotulo="O que recebe">Um identificador aleatório que não revela quem você é, o código de 6 dígitos digitado e a chave secreta do autenticador, criada e guardada pela própria Twilio. Não recebe nome, e-mail nem senha</td><td data-rotulo="Onde">EUA</td></tr>
+                    <tr><td data-rotulo="Serviço">Gmail (Google), por SMTP</td><td data-rotulo="Para quê">Enviar o link de recuperação de senha, o aviso de senha alterada, o link de reativação da conta e os avisos de exclusão e de reativação</td><td data-rotulo="O que recebe">Seu e-mail, o link temporário e o texto do aviso; a senha nunca é enviada</td><td data-rotulo="Onde">Fora do Brasil (Google, EUA)</td></tr>
+                    <tr><td data-rotulo="Serviço">Have I Been Pwned – Pwned Passwords</td><td data-rotulo="Para quê">Mostrar, no desafio "Qual vazou mais?" do laboratório, quantas vezes senhas públicas de exemplo apareceram em vazamentos</td><td data-rotulo="O que recebe">Somente os 5 primeiros caracteres do hash SHA-1 das senhas de exemplo do desafio; nada da sua conta e nenhuma senha digitada por você</td><td data-rotulo="Onde">Fora do Brasil</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>O código-fonte fica no GitHub, que não recebe dados de usuários: senhas de acesso e chaves ficam em variáveis de ambiente, fora do repositório.</p>
+
+        <h2 id="7-transferencia-internacional">7. Transferência internacional</h2>
+        <p>O banco de dados fica no Brasil. A Twilio, a Vercel e o Google (Gmail, usado no envio de e-mails) são empresas estrangeiras e podem processar dados fora do país, o que caracteriza transferência internacional (art. 33 da LGPD). Para reduzir esse risco, a Twilio recebe apenas um identificador aleatório, sem dados que identifiquem você diretamente. Em uma implantação real, o controlador deverá formalizar essas transferências por um dos mecanismos do art. 33, como as cláusulas-padrão contratuais da ANPD (Resolução CD/ANPD nº 19/2024).</p>
+
+        <h2 id="8-por-quanto-tempo-guardamos">8. Por quanto tempo guardamos</h2>
+        <ul>
+            <li><strong>Conta, atividades (conteúdos concluídos, quizzes, simulações, desafio de senhas e conquistas) e vínculo com o autenticador:</strong> até a exclusão da conta. As contas criadas em testes e na validação do PFC serão excluídas até 31/12/2026.</li>
+            <li><strong>Exclusão pedida por você:</strong> o acesso é encerrado na hora, em todos os dispositivos, e o vínculo com o aplicativo autenticador é apagado. Durante 30 dias a conta fica desativada e pode ser reativada pelo link enviado ao seu e-mail, que pede a sua senha. Passado esse prazo, nome, e-mail e senha são apagados de vez e a conta não pode mais ser recuperada; para voltar, é preciso criar uma conta nova, que começa do zero.</li>
+            <li><strong>Exclusão de administrador:</strong> quando um administrador deixa a equipe, outro administrador pode excluir a conta dele. Nesse caso, os dados pessoais são apagados na hora, sem o prazo de 30 dias; a pessoa recebe um aviso por e-mail e a exclusão fica registrada na auditoria, com quem excluiu e o motivo.</li>
+            <li><strong>E-mail da conta excluída:</strong> guardado à parte por 6 meses a partir da exclusão definitiva, visível só para a administração. Depois disso, é apagado pelo próprio sistema.</li>
+            <li><strong>Atividades de uma conta excluída:</strong> ficam ligadas a um número de conta sem nome, e-mail nem senha, só para estatísticas. Depois que o e-mail guardado é apagado, não há mais como associá-las a você, e elas passam a ser dados anonimizados (arts. 12 e 16, IV, da LGPD).</li>
+            <li><strong>Link de reativação da conta:</strong> vale até o fim do prazo de 30 dias e só pode ser usado uma vez; um novo envio substitui o anterior.</li>
+            <li><strong>Sessão de acesso:</strong> até 30 minutos sem atividade, no máximo 8 horas, ou até você sair da conta. Registros vencidos são apagados automaticamente.</li>
+            <li><strong>Etapa de login em andamento:</strong> 5 minutos; o registro é substituído no próximo login e apagado quando a conta é excluída.</li>
+            <li><strong>Controle de tentativas:</strong> janela de 5 minutos; o registro é apagado automaticamente um dia depois de vencer.</li>
+            <li><strong>Registros de auditoria:</strong> até 6 meses, para investigar falhas e acessos indevidos. Quando a conta é excluída de vez, eles passam a apontar para um número de conta sem dados pessoais.</li>
+            <li><strong>Token de recuperação de senha:</strong> válido por 30 minutos e de uso único; o registro é substituído no pedido seguinte e apagado quando a conta é excluída.</li>
+            <li><strong>Senha digitada no analisador de força:</strong> não sai do seu navegador e não é armazenada.</li>
+            <li><strong>Cópias de segurança do banco:</strong> até 6 horas, janela de restauração do plano utilizado no Neon.</li>
+        </ul>
+        <p>O plano completo de retenção e descarte faz parte da documentação do projeto.</p>
+
+        <h2 id="9-seus-direitos">9. Seus direitos</h2>
+        <p>Pelo art. 18 da LGPD, você pode pedir a qualquer momento:</p>
+        <ul>
+            <li>confirmação de que tratamos seus dados e acesso a eles;</li>
+            <li>correção de dados incompletos, inexatos ou desatualizados;</li>
+            <li>anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade com a lei;</li>
+            <li>portabilidade, recebendo os dados da sua conta e os seus resultados em formato legível;</li>
+            <li>informação sobre com quem compartilhamos dados (seção 6);</li>
+            <li>eliminação dos seus dados, com a exclusão da conta.</li>
+        </ul>
+        <p><strong>Na própria plataforma</strong>, em Minha conta, você corrige seu nome, troca a senha, encerra as sessões abertas em outros aparelhos e exclui a conta. A exclusão pede a sua senha atual e a confirmação de que você entendeu as consequências; o que acontece depois está na seção 8.</p>
+        <p><strong>Para os outros pedidos</strong>, como acesso e cópia dos dados: envie um e-mail para <a href="mailto:safeclick.privacidade@gmail.com">safeclick.privacidade@gmail.com</a> a partir do e-mail cadastrado na sua conta, para que possamos confirmar que o pedido é seu. Respondemos de forma simplificada imediatamente ou com uma declaração completa em até 15 dias (art. 19).</p>
+        <p>Você também pode apresentar reclamação à Autoridade Nacional de Proteção de Dados (ANPD), em www.gov.br/anpd.</p>
+
+        <h2 id="10-seguranca">10. Segurança</h2>
+        <p>Adotamos medidas técnicas para proteger os dados (art. 46 da LGPD): senhas guardadas apenas como hash scrypt com salt; login em duas etapas com aplicativo autenticador; limite de 5 tentativas a cada 5 minutos no login, na troca de senha, na exclusão e na reativação da conta; confirmação da senha atual antes de trocar a senha, excluir a conta ou excluir a conta de um administrador; links enviados por e-mail guardados apenas como hash, com prazo e uso único; sessões registradas no servidor, com identificadores guardados apenas como hash, expiração após 30 minutos sem atividade ou em 8 horas e encerramento no logout; registros de auditoria sem senhas, códigos, tokens, IP ou dados digitados nos formulários, consultados somente pelo administrador; exigência de login e verificação do perfil no servidor em todas as páginas de conteúdo; proteção de formulários contra CSRF; comunicação por HTTPS; consultas parametrizadas ao banco; e credenciais fora do código-fonte.</p>
+        <p>Se ocorrer um incidente de segurança que possa causar risco ou dano relevante, comunicaremos a ANPD e as pessoas afetadas no prazo de três dias úteis, conforme a Resolução CD/ANPD nº 15/2024 (art. 48 da LGPD).</p>
+
+        <h2 id="11-alteracoes-nesta-politica">11. Alterações nesta política</h2>
+        <p>A versão e a data de vigência aparecem no topo desta página. Mudanças importantes serão avisadas em destaque na plataforma e, quando alterarem o que foi aceito no cadastro, pediremos um novo aceite dos Termos de Uso.</p>$conteudo_politica_1_2$;
+BEGIN
+    INSERT INTO public.versoes_politica (versao, vigente_desde, conteudo_html)
+    VALUES ('1.2', DATE '2026-11-15', texto_politica)
+    ON CONFLICT (versao) DO NOTHING;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.versoes_politica
+        WHERE versao = '1.2'
+          AND vigente_desde = DATE '2026-11-15'
+          AND conteudo_html = texto_politica
+    ) THEN
+        RAISE EXCEPTION 'A versao 1.2 da politica ja existe com outro texto ou vigencia. Nenhum documento foi substituido.';
+    END IF;
+END;
+$registrar_politica_1_2$;
+
+INSERT INTO public.politica_referencias (versao_politica, referencia_id, ordem)
+SELECT '1.2', referencia.id, lista.ordem
+FROM (VALUES
+    (1, 'Lei nº 13.709/2018 (LGPD)', 'art. 5º, II e VI'),
+    (2, 'Lei nº 13.709/2018 (LGPD)', 'art. 7º, II, V e IX'),
+    (3, 'Lei nº 13.709/2018 (LGPD)', 'art. 7º, VI'),
+    (4, 'Lei nº 13.709/2018 (LGPD)', 'arts. 12 e 16'),
+    (5, 'Lei nº 13.709/2018 (LGPD)', 'art. 14'),
+    (6, 'Lei nº 13.709/2018 (LGPD)', 'arts. 18 e 19'),
+    (7, 'Lei nº 13.709/2018 (LGPD)', 'art. 33'),
+    (8, 'Lei nº 13.709/2018 (LGPD)', 'art. 41'),
+    (9, 'Lei nº 13.709/2018 (LGPD)', 'art. 46'),
+    (10, 'Lei nº 13.709/2018 (LGPD)', 'art. 48'),
+    (11, 'Lei nº 15.211/2025 (ECA Digital)', NULL),
+    (12, 'Resolução CD/ANPD nº 15/2024', NULL),
+    (13, 'Resolução CD/ANPD nº 19/2024', NULL)
 ) AS lista (ordem, norma, dispositivo)
 JOIN public.referencias_legais AS referencia
   ON referencia.norma = lista.norma

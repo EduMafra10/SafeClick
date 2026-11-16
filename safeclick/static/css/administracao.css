@@ -136,6 +136,16 @@
     text-decoration: underline;
 }
 
+.admin-legal {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #5b6f6a;
+}
+
+.admin-legal a {
+    color: inherit;
+}
+
 .admin-principal {
     min-width: 0;
     padding: 36px 48px 56px;

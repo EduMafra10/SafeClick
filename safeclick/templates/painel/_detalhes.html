@@ -1,9 +1,8 @@
 <section class="painel-cartao progresso-detalhes" aria-labelledby="titulo-pratica">
     <h2 id="titulo-pratica">Seu próximo passo</h2>
     {% if erro_detalhes %}<p role="alert">Não foi possível carregar alguns indicadores adicionais. <a href="{{ url_for('painel.exibir') }}">Tentar novamente</a></p>{% endif %}
-    {% if pontuacao %}<p><strong>{{ ('%.2f'|format(pontuacao.pontos)).replace('.', ',') }} pontos</strong> nos melhores resultados de {{ pontuacao.atividades }} atividades atualmente publicadas, considerando todo o histórico.</p>
-    <p>{% if pontuacao.posicao %}Sua posição no ranking é {{ pontuacao.posicao }}.{% else %}Seu progresso continua privado; participar do ranking é opcional.{% endif %}</p>{% endif %}
-    <div class="progresso-acoes"><a href="{{ url_for('ranking.listar') }}">Ver ranking e regra de pontuação</a><a href="{{ url_for('ranking.participacao') }}">Controlar participação</a><a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a></div>
+    <p>Acompanhe seu aprendizado no seu ritmo. Seu histórico e seus resultados permanecem privados.</p>
+    <div class="progresso-acoes"><a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a></div>
     {% if detalhes %}
     <h3>Oportunidades de revisão</h3><p>A última tentativa válida de cada atividade abaixo de 70% aparece aqui como sugestão, sem impedir sua navegação.</p>
     <ul class="progresso-revisar">{% for item in detalhes.revisar %}<li><strong>{{ item.titulo }}</strong> · {{ ('%.0f'|format(item.pontos)) }}%
