@@ -4,7 +4,7 @@ from .navegacao_atividades import PROXIMO_CONTEUDO
 
 
 def listar_conteudos(secao="conteudos"):
-   
+
     with conectar_banco() as conexao:
         return conexao.execute(
             """
@@ -61,7 +61,7 @@ def buscar_conteudos(slug, secao="conteudos"):
 
 
 def concluir_conteudo(usuario_id, slug):
-    
+
     with conectar_banco() as conexao:
         conteudo = conexao.execute(
             """
@@ -75,7 +75,6 @@ def concluir_conteudo(usuario_id, slug):
         if conteudo is None:
             return None
 
-        
         registro = conexao.execute(
             """
             INSERT INTO public.conclusoes_conteudo (usuario_id, conteudo_id)
@@ -89,7 +88,6 @@ def concluir_conteudo(usuario_id, slug):
         if registro is None:
             return False
 
-        
         registrar_evento(
             usuario_id=usuario_id,
             evento="conteudo.concluido",

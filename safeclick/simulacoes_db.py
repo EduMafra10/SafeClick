@@ -19,14 +19,12 @@ def importar_cenarios_iniciais():
     criadas = 0
     existentes = 0
 
-    
     with conectar_banco() as conexao:
         for ordem, (identificador, tipo) in enumerate(tipos.items(), start=1):
             conteudo = deepcopy(CENARIOS[identificador])
             conteudo["tipo"] = tipo
             conteudo["ordem_catalogo"] = ordem
 
-        
             conteudo["ordem_opcoes"] = list(conteudo["opcoes"])
 
             simulacao = conexao.execute(
@@ -124,7 +122,7 @@ def _preparar_cenario_publicado(registro):
 
 
 def listar_simulacoes_publicadas():
-    
+
     with conectar_banco() as conexao:
         registros = conexao.execute(
             _CONSULTA_PUBLICADAS
@@ -138,7 +136,7 @@ def listar_simulacoes_publicadas():
 
 
 def buscar_simulacao_publicada(slug):
-    
+
     if not isinstance(slug, str) or not 1 <= len(slug) <= 80:
         return None
 
@@ -154,13 +152,12 @@ def buscar_simulacao_publicada(slug):
     return _preparar_cenario_publicado(registro)
 
 
-
 class SimulacaoAlterada(ValueError):
     """O cenário foi atualizado ou retirado de publicação durante a resposta."""
 
 
 def salvar_tentativa_publicada(usuario_id, slug, versao_id, opcao):
-    
+
     from safeclick.auditoria_db import registrar_evento
 
     with conectar_banco() as conexao:
@@ -206,7 +203,7 @@ def salvar_tentativa_publicada(usuario_id, slug, versao_id, opcao):
 
 
 def buscar_resultado_simulacao(usuario_id, slug, tentativa_id):
-    
+
     with conectar_banco() as conexao:
         registro = conexao.execute(
             """

@@ -49,6 +49,7 @@ A versão desta etapa está reunida na branch **`entrega0911`**.
 - Chart.js para os gráficos.
 - openpyxl para gerar a planilha da Visão geral.
 - Pytest para os testes automatizados.
+- Flake8 para a padronização do código Python.
 - Vercel para a hospedagem.
 
 As versões das dependências estão registradas em `requirements.txt`.
@@ -343,6 +344,14 @@ Validações com falhas simuladas não substituem a conferência do ambiente fin
 ```
 
 Os testes não usam o banco real nem as APIs externas: as chamadas são simuladas. A suíte cobre autenticação, conta, quizzes, oficinas, simulações, laboratório, painel, avaliações, auditoria e área administrativa.
+
+Para conferir a padronização do código (regras em `.flake8`):
+
+```powershell
+.\.venv\Scripts\python.exe -m flake8
+```
+
+O resultado esperado é nenhum aviso.
 
 ## Dados de demonstração
 

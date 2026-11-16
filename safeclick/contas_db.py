@@ -49,7 +49,7 @@ SITUACOES_AUTENTICADOR = {
 
 
 def _filtros(busca, autenticador, situacao="ativas"):
-    
+
     condicoes, parametros = [], {}
     if busca:
         if busca.isdecimal() and len(busca) <= 9:
@@ -159,7 +159,6 @@ def redefinir_autenticador(administrador_id, usuario_id):
     return {"identidade": conta["mfa_identidade"], "fator_sid": conta["mfa_fator_sid"]}
 
 
-
 PERFIS = ("usuario", "administrador")
 
 
@@ -168,7 +167,7 @@ class AlteracaoDePerfilRecusada(ValueError):
 
 
 def alterar_perfil(administrador_id, usuario_id, novo_perfil):
-    
+
     if novo_perfil not in PERFIS:
         raise ValueError("Perfil inválido.")
     if administrador_id == usuario_id:
@@ -220,6 +219,7 @@ def alterar_perfil(administrador_id, usuario_id, novo_perfil):
             },
             conexao=conexao,
         )
+
 
 class ExclusaoRecusada(ValueError):
     pass

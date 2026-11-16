@@ -57,7 +57,7 @@ def buscar_atividade(conexao, tipo, usuario_id, referencia, *, bloquear=False):
 
 
 def salvar_avaliacao(conexao, tipo, usuario_id, item_id, nota, comentario, *,
-                    publicar_nota=False, publicar_comentario=False, maior_de_idade=False, aviso_versao=None):
+                     publicar_nota=False, publicar_comentario=False, maior_de_idade=False, aviso_versao=None):
     # Tabela e coluna vêm do mapa interno de tipos de atividade.
     _, _, tabela, coluna = _ALVOS[tipo]
     if type(nota) is not int or not 1 <= nota <= 5:
@@ -227,23 +227,23 @@ def excluir_avaliacao(usuario_id, tipo, item_id):
     _, _, tabela, coluna = _ALVOS[tipo]
     with conectar_banco() as conexao:
         excluida = conexao.execute(f'DELETE FROM public.{tabela} WHERE usuario_id=%s AND {coluna}=%s RETURNING usuario_id',
-                                  (usuario_id, item_id)).fetchone()
+                                   (usuario_id, item_id)).fetchone()
         if excluida:
             registrar_evento(usuario_id, 'avaliacao.excluida', 'sucesso', recurso_tipo='avaliacao_' + tipo, conexao=conexao)
     return excluida is not None
 
 
 def retirar_publicacao(usuario_id, tipo, item_id):
-    _,_,tabela,coluna = _ALVOS[tipo]
+    _, _, tabela, coluna = _ALVOS[tipo]
     with conectar_banco() as conexao:
         item = conexao.execute(f"""
             UPDATE public.{tabela} SET publicar_nota=FALSE,publicar_comentario=FALSE,
                 autorizado_em=NULL,moderacao='nao_solicitada',moderado_por=NULL,moderado_em=NULL,revisao=revisao+1
             WHERE usuario_id=%s AND {coluna}=%s RETURNING usuario_id
-        """,(usuario_id,item_id)).fetchone()
+        """, (usuario_id, item_id)).fetchone()
         if item:
-            registrar_evento(usuario_id,'avaliacao.publicacao_retirada','sucesso',
-                             recurso_tipo='avaliacao_'+tipo,conexao=conexao)
+            registrar_evento(usuario_id, 'avaliacao.publicacao_retirada', 'sucesso',
+                             recurso_tipo='avaliacao_' + tipo, conexao=conexao)
     return item is not None
 
 
@@ -254,8 +254,8 @@ def listar_gestao(pagina=1, estado=''):
     with conectar_banco() as conexao:
         total = conexao.execute(origem + 'SELECT COUNT(*) AS total' + filtro, parametros).fetchone()['total']
         itens = conexao.execute(origem + """SELECT tipo,item_id,titulo,usuario_id,nota,comentario,publicar_nota,
-            publicar_comentario,moderacao,revisao,publicada""" + filtro +
-            ' ORDER BY atualizada_em DESC,usuario_id,item_id LIMIT 20 OFFSET %(inicio)s', parametros).fetchall()
+            publicar_comentario,moderacao,revisao,publicada""" + filtro
+                                + ' ORDER BY atualizada_em DESC,usuario_id,item_id LIMIT 20 OFFSET %(inicio)s', parametros).fetchall()
     return itens, total
 
 
@@ -270,7 +270,8 @@ def moderar_comentario(administrador_id, tipo, item_id, autor_id, revisao, acao)
             SELECT comentario,publicada,conta_ativa,publicar_nota,publicar_comentario,maior_de_idade,aviso_versao
             FROM avaliacoes WHERE tipo=%s AND item_id=%s AND usuario_id=%s
         """, (tipo, item_id, autor_id)).fetchone()
-        if not item or not all(item[k] for k in ('publicada','conta_ativa','publicar_nota','publicar_comentario','maior_de_idade')) or item['aviso_versao'] != VERSAO_AVISO:
+        exigidos = ('publicada', 'conta_ativa', 'publicar_nota', 'publicar_comentario', 'maior_de_idade')
+        if not item or not all(item[k] for k in exigidos) or item['aviso_versao'] != VERSAO_AVISO:
             raise ValueError('O comentário não está disponível para publicação.')
         # A revisão impede aprovar um texto alterado depois da leitura do administrador.
         alterada = conexao.execute(f"""

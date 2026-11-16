@@ -5,6 +5,7 @@ from safeclick.db import conectar_banco
 from safeclick.exclusao_conta_db import aplicar_prazos
 from safeclick.termos_db import TermosDesatualizados, buscar_termos
 
+
 def buscar_usuario_por_email(email):
     email = email.strip().lower()
 
@@ -18,6 +19,7 @@ def buscar_usuario_por_email(email):
             (email,),
         ).fetchone()
 
+
 def buscar_usuario_por_id(usuario_id):
     # sessao precisa dos dados do usuario sem carregar o hash da senha
     with conectar_banco() as conexao:
@@ -29,6 +31,7 @@ def buscar_usuario_por_id(usuario_id):
             """,
             (usuario_id,),
         ).fetchone()
+
 
 def criar_usuario(nome, email, senha, *, aceitou_termos, versao_termos):
     from safeclick.privacidade import VERSAO_TERMOS
@@ -91,6 +94,7 @@ def criar_usuario(nome, email, senha, *, aceitou_termos, versao_termos):
 
     return registro["id"]
 
+
 def buscar_mfa_por_usuario(usuario_id):
     with conectar_banco() as conexao:
         return conexao.execute(
@@ -101,6 +105,7 @@ def buscar_mfa_por_usuario(usuario_id):
             """,
             (usuario_id,),
         ).fetchone()
+
 
 def salvar_fator_mfa(usuario_id, fator_sid, fator_anterior=None):
     # so altera uma configuracao pendente que ainda nao foi substituida
@@ -117,6 +122,7 @@ def salvar_fator_mfa(usuario_id, fator_sid, fator_anterior=None):
             (fator_sid, usuario_id, fator_anterior),
         ).fetchone()
     return registro is not None
+
 
 def confirmar_mfa(usuario_id, fator_sid):
     # é usado apos o twilio confirmar o primeiro codigo do autenticador

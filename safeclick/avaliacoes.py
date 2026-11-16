@@ -137,12 +137,12 @@ def retirar(tipo, item_id):
             or request.files or not formulario.validate_on_submit()):
         abort(400)
     try:
-        if not db.retirar_publicacao(int(current_user.id),tipo,item_id):
+        if not db.retirar_publicacao(int(current_user.id), tipo, item_id):
             abort(404)
     except (Error, RuntimeError):
-        return render_template('avaliacoes/indisponivel.html'),503
-    flash('Publicação retirada. Sua avaliação permanece privada.','avaliacao')
-    return redirect(url_for('avaliacoes.minhas'),code=303)
+        return render_template('avaliacoes/indisponivel.html'), 503
+    flash('Publicação retirada. Sua avaliação permanece privada.', 'avaliacao')
+    return redirect(url_for('avaliacoes.minhas'), code=303)
 
 
 @avaliacoes.route("/conteudos/<slug>", methods=["GET", "POST"])
@@ -180,7 +180,7 @@ def _editar(tipo, referencia, voltar):
                     and all(len(request.form.getlist(nome)) == 1 for nome in request.form)
                     and not request.files
                     and formulario.validate_on_submit()
-                    and all(request.form.get(nome) in (None, '1') for nome in ('publicar_nota','publicar_comentario','maior_de_idade'))
+                    and all(request.form.get(nome) in (None, '1') for nome in ('publicar_nota', 'publicar_comentario', 'maior_de_idade'))
                     and (not notificado or formulario.aviso_versao.data == VERSAO_AVISO)
                     and (not publico or notificado and formulario.maior_de_idade.data)
                     and (not formulario.publicar_comentario.data or formulario.publicar_nota.data and bool(formulario.comentario.data.strip()))
@@ -200,7 +200,7 @@ def _editar(tipo, referencia, voltar):
             else:
                 formulario.nota.data = str(atividade["nota"]) if atividade["nota"] is not None else None
                 formulario.comentario.data = atividade["comentario"] or ""
-                for nome in ('publicar_nota','publicar_comentario','maior_de_idade'):
+                for nome in ('publicar_nota', 'publicar_comentario', 'maior_de_idade'):
                     getattr(formulario, nome).data = bool(atividade.get(nome))
     except PermissionError:
         abort(403, description='Sua conta não está disponível para enviar avaliações.')

@@ -138,9 +138,11 @@ class FluxosMaterialRevisadoTeste(unittest.TestCase):
                     self.auditar.reset_mock()
                     questoes, alternativas, gabarito = materializar(dados)
                     quiz = dados | {'id': 33, 'versao_id': 333, 'proxima_referencia': 34}
-                    consultas = lambda: [Mock(fetchone=Mock(return_value=quiz)),
-                                        Mock(fetchall=Mock(return_value=questoes)),
-                                        Mock(fetchall=Mock(return_value=alternativas))]
+
+                    def consultas():
+                        return [Mock(fetchone=Mock(return_value=quiz)),
+                                Mock(fetchall=Mock(return_value=questoes)),
+                                Mock(fetchall=Mock(return_value=alternativas))]
                     self.conexao.execute.side_effect = consultas()
                     resposta = self.cliente.get('/quizzes/33')
                     self.assertEqual(resposta.status_code, 200)
@@ -170,7 +172,7 @@ class FluxosMaterialRevisadoTeste(unittest.TestCase):
                                                         *[Mock() for _ in questoes]]
                     resposta = self.cliente.post('/quizzes/33', data=envio)
                     self.assertEqual(resposta.status_code, 303)
-                    gravacoes = self.conexao.execute.call_args_list[-len(questoes)-1:]
+                    gravacoes = self.conexao.execute.call_args_list[-len(questoes) - 1:]
                     pontos = len(questoes) if acertar else 0
                     self.assertEqual(gravacoes[0].args[1][2:4], (pontos, len(questoes)))
                     self.auditar.assert_called_once()

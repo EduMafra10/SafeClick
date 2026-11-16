@@ -102,6 +102,7 @@ def cancelar_recuperacao(token):
 
     return registro is not None
 
+
 def redefinir_senha(token, nova_senha):
     token_hash = _hash_token(token)
     if token_hash is None:

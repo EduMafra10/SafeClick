@@ -3,11 +3,13 @@ import secrets
 
 from safeclick.db import conectar_banco
 
+
 def _hash_token(token):
     if not isinstance(token, str) or len(token) != 43:
         return None
 
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
 
 def iniciar_login_pendente(usuario_id, senha_hash_verificado):
     if not isinstance(senha_hash_verificado, str):
@@ -60,6 +62,7 @@ def iniciar_login_pendente(usuario_id, senha_hash_verificado):
 
     return token if registro is not None else None
 
+
 def buscar_login_pendente(token):
     token_hash = _hash_token(token)
     if token_hash is None:
@@ -76,6 +79,7 @@ def buscar_login_pendente(token):
             """,
             (token_hash,),
         ).fetchone()
+
 
 def reservar_tentativa_mfa(token):
     token_hash = _hash_token(token)
@@ -97,6 +101,7 @@ def reservar_tentativa_mfa(token):
             (token_hash,)
         ).fetchone()
 
+
 def concluir_login_pendente(token):
     token_hash = _hash_token(token)
     if token_hash is None:
@@ -105,7 +110,7 @@ def concluir_login_pendente(token):
     # chamada somente após a aprovacao do segundo fator
     with conectar_banco() as conexao:
         registro = conexao.execute(
-             """
+            """
             UPDATE public.logins_pendentes
             SET concluido_em = CURRENT_TIMESTAMP
             WHERE token_hash = %s

@@ -3,7 +3,7 @@ from psycopg.types.json import Jsonb
 
 from safeclick.auditoria_db import registrar_evento
 from safeclick.catalogo_validacao import (
-    DadosInvalidos, html_do_texto, texto_do_html, validar, validar_slug,
+    html_do_texto, texto_do_html, validar, validar_slug,
 )
 from safeclick.db import conectar_banco
 

@@ -12,6 +12,7 @@ from safeclick import visao_geral_db
 from safeclick.visao_geral_excel import gerar_planilha
 from safeclick.sessoes import Usuario
 
+
 def dados_visao_geral(**alteracoes):
     dados = {
         "dias": 30,
@@ -302,7 +303,7 @@ class VisaoGeralPlanilhaTeste(unittest.TestCase):
         ativos = self.celula(resumo, "Usuários ativos no período")
         self.assertEqual(resumo.cell(ativos.row, 3).number_format, "0%")
         self.assertTrue(self.celula(resumo, "Indicador").font.bold)
-        self.assertFalse(any(l and "Menores notas" in str(l[0]) for l in linhas))
+        self.assertFalse(any(linha and "Menores notas" in str(linha[0]) for linha in linhas))
 
     def test_atividades_por_dia_com_datas_e_total(self):
         aba = self.gerar()["Atividades por dia"]
@@ -315,7 +316,7 @@ class VisaoGeralPlanilhaTeste(unittest.TestCase):
 
     def test_nao_inclui_dados_pessoais(self):
         planilha = self.gerar()
-        textos = " ".join(str(v) for aba in planilha for l in self.linhas(aba) for v in l)
+        textos = " ".join(str(v) for aba in planilha for linha in self.linhas(aba) for v in linha)
         self.assertNotIn("Login recusado", textos)
         self.assertNotIn("login.falha", textos)
 

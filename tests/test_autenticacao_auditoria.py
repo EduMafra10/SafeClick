@@ -38,7 +38,7 @@ class AutenticacaoAuditoriaTeste(unittest.TestCase):
         with self.app.app_context(), \
              patch("safeclick.sessoes.conectar_banco", return_value=self.contexto), \
              patch("safeclick.sessoes.registrar_evento") as registrar:
-             token = criar_sessao(7, "x" * 43)
+            token = criar_sessao(7, "x" * 43)
 
         self.assertEqual(len(token), 43)
         self.assertEqual(registrar.call_args.kwargs["evento"], "login.sucesso")

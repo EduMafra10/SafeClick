@@ -138,7 +138,6 @@ def exibir_quiz(quiz_id):
     respostas = {}
     status = 200
 
-
     if request.method == "POST":
         # Aceita apenas o token e uma alternativa válida por pergunta.
         campos_esperados = {
@@ -256,6 +255,7 @@ def exibir_quiz(quiz_id):
         respostas=respostas,
         token_envio=token_envio,
     ), status
+
 
 def corrigir_respostas(quiz_id, questoes, respostas):
     # Calcula os acertos pelo gabarito e prepara as explicações.

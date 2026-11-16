@@ -267,9 +267,9 @@ class RotasDesafioTeste(unittest.TestCase):
         self.assertEqual(self.responder(1, 0).status_code, 200)
 
     def test_falha_ao_salvar_permite_reenviar_a_ultima_rodada(self):
-        dados = self.iniciar()
+        self.iniciar()
         for numero in range(1, TOTAL_RODADAS):
-            dados = self.responder(numero, 0).get_json()["proxima"]
+            self.responder(numero, 0)
         self.salvar.side_effect = Error("falha simulada")
         self.assertEqual(self.responder(TOTAL_RODADAS, 0).status_code, 503)
         self.salvar.side_effect = None

@@ -3,7 +3,7 @@ from safeclick.db import conectar_banco
 
 
 def salvar_desafio_senha(usuario_id, acertos, total_rodadas, token_partida):
-    
+
     with conectar_banco() as conexao:
         registro = conexao.execute(
             """

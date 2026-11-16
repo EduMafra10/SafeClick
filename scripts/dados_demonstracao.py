@@ -11,11 +11,11 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from werkzeug.security import generate_password_hash  
+from werkzeug.security import generate_password_hash
 
-from safeclick import create_app 
-from safeclick.db import conectar_banco 
-from safeclick.privacidade import VERSAO_TERMOS  
+from safeclick import create_app
+from safeclick.db import conectar_banco
+from safeclick.privacidade import VERSAO_TERMOS
 
 DOMINIO = "@demonstracao.example"
 NOMES = [

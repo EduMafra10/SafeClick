@@ -36,7 +36,7 @@ def _booleano(nome, padrao=False):
 
 
 def carregar_configuracao():
-    
+
     ambiente = _texto("APP_ENV", "desenvolvimento").lower()
     if ambiente not in AMBIENTES:
         raise RuntimeError("A variável APP_ENV aceita somente desenvolvimento ou producao.")

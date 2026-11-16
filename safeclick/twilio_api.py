@@ -35,8 +35,10 @@ def _erro_twilio(mensagem, erro):
         return ErroTwilio(mensagem, tipo, erro.code)
     return ErroTwilio(mensagem, "sem_conexao")
 
+
 def _codigo_valido(codigo):
     return isinstance(codigo, str) and bool(re.fullmatch(r"[0-9]{6}", codigo))
+
 
 def auditar_consulta_api(operacao, *, exige_codigo=False):
     """Registra o resultado da chamada sem incluir dados enviados à Twilio."""
@@ -61,6 +63,7 @@ def auditar_consulta_api(operacao, *, exige_codigo=False):
 
     return decorar
 
+
 def _registrar_consulta_api(operacao, resultado, usuario_id=None, erro=None):
     # usuario_id vem do login pendente: a senha da conta já foi conferida.
     detalhes = {"servico": "twilio_verify", "operacao": operacao}
@@ -78,6 +81,7 @@ def _registrar_consulta_api(operacao, resultado, usuario_id=None, erro=None):
         )
     except (Error, RuntimeError):
         current_app.logger.warning("Falha ao registrar consulta da API na auditoria")
+
 
 def obter_servico_twilio():
     account_sid = current_app.config.get("TWILIO_ACCOUNT_SID")
@@ -100,6 +104,7 @@ def obter_servico_twilio():
 
     return cliente.verify.v2.services(service_sid)
 
+
 @click.command("verificar-twilio")
 @with_appcontext
 def verificar_twilio():
@@ -120,6 +125,7 @@ def verificar_twilio():
         ) from None
 
     click.echo(f"Conexão realizada com sucesso. Serviço: {servico.friendly_name}")
+
 
 @auditar_consulta_api("criar_fator_totp")
 def criar_fator_totp(identidade):
@@ -143,6 +149,7 @@ def criar_fator_totp(identidade):
 
     return {"sid": fator.sid, "uri": uri}
 
+
 @auditar_consulta_api("validar_ativacao_totp", exige_codigo=True)
 def validar_ativacao_totp(identidade, fator_sid, codigo):
     if not _codigo_valido(codigo):
@@ -157,6 +164,7 @@ def validar_ativacao_totp(identidade, fator_sid, codigo):
         ) from None
 
     return fator.status == "verified"
+
 
 @auditar_consulta_api("validar_codigo_totp", exige_codigo=True)
 def validar_codigo_totp(identidade, fator_sid, codigo):
@@ -177,6 +185,7 @@ def validar_codigo_totp(identidade, fator_sid, codigo):
     # apenas um desafio aprovado comprova o segundo fator do login
     return desafio.status == "approved"
 
+
 @auditar_consulta_api("consultar_fator_totp")
 def consultar_fator_totp(identidade, fator_sid):
     try:
@@ -193,10 +202,11 @@ def consultar_fator_totp(identidade, fator_sid):
     except RequestException as erro:
         raise _erro_twilio("Não foi possível consultar o autenticador.", erro) from None
 
-    if fator.status not in("unverified", "verified"):
+    if fator.status not in ("unverified", "verified"):
         raise RuntimeError("A Twilio retornou uma situação inesperada.")
 
     return fator.status
+
 
 @auditar_consulta_api("remover_fator_totp")
 def remover_fator_totp(identidade, fator_sid):

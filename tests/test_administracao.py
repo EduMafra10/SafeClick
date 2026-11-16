@@ -1,8 +1,7 @@
 import os
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-from psycopg import Error
 
 from safeclick import create_app
 from safeclick.sessoes import Usuario
