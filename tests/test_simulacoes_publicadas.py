@@ -337,6 +337,15 @@ class RotasSimulacoesPublicadasTeste(unittest.TestCase):
         self.buscar.assert_not_called()
         self.salvar.assert_not_called()
 
+    def test_pistas_aparecem_so_depois_da_resposta(self):
+        antes = self.client.get('/simulacoes/conta-bloqueada').get_data(as_text=True)
+        self.assertNotIn('simulacao-pista', antes)
+        self.assertNotIn('[assunto]', antes)
+        depois = self.client.get('/simulacoes/conta-bloqueada?tentativa=21').get_data(as_text=True)
+        self.assertEqual(depois.count('class="simulacao-pista"'), 4)
+        self.assertIn('Ameaça de bloqueio com prazo curto.', depois)
+        self.assertNotIn('[assunto]', depois)
+
     def test_resultado_nao_localizado_retorna_404(self):
         self.resultado_salvo.return_value = None
         self.assertEqual(self.client.get('/simulacoes/conta-bloqueada?tentativa=999').status_code, 404)

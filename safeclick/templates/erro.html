@@ -1,0 +1,28 @@
+{% set textos = {
+    400: ("Não foi possível processar o pedido", "Confira as informações e tente novamente."),
+    403: ("Acesso não permitido", "Esta página não está disponível para o seu perfil de acesso."),
+    404: ("Página não encontrada", "O endereço pode estar incorreto ou a página não existe mais."),
+    405: ("Ação não permitida", "Volte à página anterior e tente novamente."),
+    429: ("Muitas tentativas", "Aguarde alguns minutos antes de tentar novamente."),
+    503: ("Serviço indisponível", "Não foi possível concluir agora. Tente novamente em instantes."),
+} %}
+{% set titulo, descricao = textos.get(codigo, ("Algo deu errado", "Tente novamente em instantes. Se o problema continuar, fale com o suporte.")) %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }} | SafeClick</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/erro.css') }}">
+</head>
+<body class="site-visual">
+    <main id="conteudo" class="erro-pagina">
+        <p class="erro-marca">Safe<span>Click</span></p>
+        <p class="erro-codigo">Erro {{ codigo }}</p>
+        <h1>{{ titulo }}</h1>
+        <p>{{ detalhe or descricao }}</p>
+        <a class="erro-botao" href="{{ url_for('inicio') }}">Voltar ao início</a>
+    </main>
+</body>
+</html>

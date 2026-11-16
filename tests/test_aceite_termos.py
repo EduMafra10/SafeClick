@@ -142,7 +142,7 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
     def test_sucesso_encaminha_aceite_versao_e_nao_autentica(self):
         resposta = self.client.post("/cadastro", data=self.dados())
         self.assertEqual(resposta.status_code, 303)
-        self.assertTrue(resposta.headers["Location"].endswith("/cadastro"))
+        self.assertTrue(resposta.headers["Location"].endswith("/login"))
         self.criar.assert_called_once_with(
             "Pessoa Teste", "pessoa@example.com", "senha-ficticia-longa",
             aceitou_termos=True, versao_termos="1.0",

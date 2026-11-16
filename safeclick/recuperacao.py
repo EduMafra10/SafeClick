@@ -1,3 +1,4 @@
+import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from threading import BoundedSemaphore
@@ -69,6 +70,10 @@ def _executar(app, funcao, argumentos):
 def _agendar(funcao, *argumentos):
     if not _VAGAS.acquire(blocking=False):
         return False
+    # na Vercel a função congela depois da resposta, então o e-mail sai antes dela
+    if os.environ.get("VERCEL"):
+        _executar(current_app._get_current_object(), funcao, argumentos)
+        return True
     try:
         _EXECUTOR.submit(
             _executar, current_app._get_current_object(), funcao, argumentos

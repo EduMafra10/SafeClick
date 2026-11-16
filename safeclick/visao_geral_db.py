@@ -86,6 +86,30 @@ _QUIZZES = f"""
     LIMIT 5
 """
 
+# só entram questões com respostas suficientes para a porcentagem fazer sentido
+MINIMO_RESPOSTAS_QUESTAO = 3
+
+_QUESTOES = f"""
+    SELECT
+        questao.enunciado,
+        quiz.titulo,
+        count(*) AS respostas,
+        count(*) FILTER (WHERE NOT alternativa.correta) AS erros
+    FROM public.respostas_tentativa_quiz AS r
+    JOIN public.tentativas_quiz AS t ON t.id = r.tentativa_id
+    {_SO_USUARIOS.format(tabela='t')}
+    JOIN public.questoes AS questao ON questao.id = r.questao_id
+    JOIN public.quizzes AS quiz ON quiz.id = questao.quiz_id
+    JOIN public.alternativas AS alternativa ON alternativa.id = r.alternativa_id
+    WHERE t.criada_em >= {_DESDE}
+    GROUP BY questao.id, questao.enunciado, quiz.titulo
+    HAVING count(*) >= {MINIMO_RESPOSTAS_QUESTAO}
+       AND count(*) FILTER (WHERE NOT alternativa.correta) > 0
+    ORDER BY count(*) FILTER (WHERE NOT alternativa.correta)::numeric / count(*) DESC,
+             count(*) DESC, questao.enunciado
+    LIMIT 5
+"""
+
 _CATALOGO = """
     SELECT secao,
         count(*) FILTER (WHERE estado = 'publicada') AS publicados,
@@ -157,6 +181,7 @@ def buscar_visao_geral(dias, hoje):
         por_dia = conexao.execute(_POR_DIA, parametros).fetchall()
         simulacoes = conexao.execute(_SIMULACOES, parametros).fetchall()
         quizzes = conexao.execute(_QUIZZES, parametros).fetchall()
+        questoes = conexao.execute(_QUESTOES, parametros).fetchall()
         catalogo = conexao.execute(_CATALOGO).fetchall()
         seguranca = conexao.execute(_SEGURANCA).fetchall()
         ultimos = conexao.execute(_ULTIMOS_EVENTOS).fetchall()
@@ -197,6 +222,15 @@ def buscar_visao_geral(dias, hoje):
                 "percentual_acertos": _percentual(linha["acertos"], linha["questoes"]),
             }
             for linha in quizzes
+        ],
+        "questoes": [
+            {
+                "enunciado": linha["enunciado"],
+                "quiz": linha["titulo"],
+                "respostas": linha["respostas"],
+                "percentual_erros": _percentual(linha["erros"], linha["respostas"]),
+            }
+            for linha in questoes
         ],
         "catalogo": {
             linha["secao"]: {"publicados": linha["publicados"], "rascunhos": linha["rascunhos"]}

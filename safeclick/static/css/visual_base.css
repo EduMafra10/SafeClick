@@ -127,6 +127,20 @@
     margin: 0;
 }
 
+.visual-rodape a {
+    color: var(--visual-verde);
+}
+
+.visual-aviso {
+    margin: 24px 0 0;
+    padding: 12px 16px;
+    border: 1px solid #b9d7c5;
+    border-left: 3px solid var(--visual-verde);
+    border-radius: 8px;
+    background: var(--visual-verde-suave);
+    font-size: 14px;
+}
+
 .visual-rodape strong {
     color: var(--visual-verde);
     font-weight: 600;

@@ -74,6 +74,7 @@
 
                 <h2 class="admin-previa-subtitulo">Depois da escolha</h2>
                 <p class="admin-previa-nota">O usuário vê o resultado da alternativa que escolheu e os sinais de risco.</p>
+                {% set pistas, marcas = separar_pistas(dados.get('sinais', [])) %}
                 <div class="admin-previa-resultados">
                     <ul class="simulacao-opcoes" role="list">
                         {% for opcao in opcoes %}
@@ -91,12 +92,15 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    <aside class="simulacao-sinais">
-                        <h2>Sinais de risco nesta mensagem</h2>
-                        <ol>
-                            {% for sinal in dados.get('sinais', []) %}<li>{{ sinal }}</li>{% else %}<li>Nenhum sinal informado.</li>{% endfor %}
-                        </ol>
-                    </aside>
+                    <div>
+                        {% if marcas %}{{ mensagem_simulacao(dados, marcas) }}{% endif %}
+                        <aside class="simulacao-sinais">
+                            <h2>Sinais de risco nesta mensagem</h2>
+                            <ol>
+                                {% for sinal in pistas %}<li>{{ sinal }}</li>{% else %}<li>Nenhum sinal informado.</li>{% endfor %}
+                            </ol>
+                        </aside>
+                    </div>
                 </div>
             </div>
 
