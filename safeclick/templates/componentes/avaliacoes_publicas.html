@@ -1,7 +1,7 @@
 {% macro avaliacoes_publicas(tipo, item_id) %}
 <details class="participacao-widget" data-avaliacoes-url="{{ url_for('avaliacoes.resumo_publico', tipo=tipo, item_id=item_id) }}">
     <summary>Avaliações desta atividade</summary>
-    <div data-avaliacoes-dados><p><a href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=item_id) }}">Ver notas e comentários compartilhados →</a></p></div>
-    <p data-avaliacoes-status role="status" hidden></p><button type="button" class="participacao-repetir" data-avaliacoes-repetir hidden>Tentar novamente</button>
+    <div data-avaliacoes-dados><p><a class="visual-botao visual-botao--secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=item_id) }}">Ver notas e comentários compartilhados <span aria-hidden="true">→</span></a></p></div>
+    <p data-avaliacoes-status role="status" hidden></p><button type="button" class="visual-botao visual-botao--secundario" data-avaliacoes-repetir hidden>Tentar novamente</button>
 </details>
 {% endmacro %}

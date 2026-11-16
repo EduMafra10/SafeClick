@@ -20,7 +20,7 @@ def _app():
     return app
 
 
-SEM_RODAPE = {"erro.html"}
+SEM_RODAPE = {"erro.html", "emails/modelo.html"}
 RODAPES = ("componentes/_rodape.html", "conteudos/_rodape.html")
 
 

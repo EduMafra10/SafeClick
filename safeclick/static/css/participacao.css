@@ -8,20 +8,18 @@
 .participacao-comentarios li { border-top: 1px solid var(--visual-borda, #c7ddec); padding: 16px 0; }
 .participacao-texto { white-space: pre-wrap; overflow-wrap: anywhere; }
 .participacao-item { margin-bottom: 16px; }
+.participacao-item h2 { margin-top: 0; }
+.participacao-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+.participacao-acoes form { margin: 0; max-width: 100%; }
 .participacao-filtros { display: flex; gap: 16px; align-items: end; flex-wrap: wrap; margin: 24px 0; }
 .participacao-filtros label { display: grid; gap: 6px; flex: 1 1 180px; }
 .participacao-filtros select, .participacao-filtros input { width: 100%; min-width: 0; border: 1px solid #a6bec8; background: #fff; color: #153849; padding: 10px 12px; border-radius: 7px; font: inherit; }
-.participacao-tabela { overflow-x: auto; border: 1px solid var(--visual-borda, #c7ddec); border-radius: 10px; background: #fff; margin: 24px 0; }
-.participacao-tabela table { width: 100%; border-collapse: collapse; text-align: left; }
-.participacao-tabela caption { padding: 16px; text-align: left; font-weight: 650; }
-.participacao-tabela th, .participacao-tabela td { padding: 12px 16px; border-top: 1px solid var(--visual-borda, #c7ddec); }
-.participacao-tabela th { background: var(--visual-azul-suave, #e2f0fc); }
-.participacao-repetir { padding: 8px 14px; font: inherit; cursor: pointer; }
-.progresso-acoes { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
-.progresso-categorias { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 16px; }
-.progresso-categorias article { padding: 16px; border: 1px solid var(--visual-borda, #c7ddec); border-radius: 8px; }
-.progresso-detalhes { margin-top: 24px; }
-.progresso-revisar { display: grid; gap: 16px; padding: 0; list-style: none; }
-.progresso-revisar li { border-top: 1px solid var(--visual-borda, #c7ddec); padding-top: 12px; }
 [hidden] { display: none !important; }
-@media (max-width: 600px) { .participacao-filtros { display: grid; } .participacao-tabela th, .participacao-tabela td { padding: 10px; } .participacao-widget { padding: 14px; } }
+@media (max-width: 600px) {
+    .participacao-filtros { display: grid; }
+    .participacao-filtros label { min-width: 0; }
+    .participacao-widget { padding: 14px; }
+    .participacao-widget .visual-botao,
+    .participacao-acoes > *,
+    .participacao-acoes button { width: 100%; }
+}

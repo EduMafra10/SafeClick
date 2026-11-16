@@ -3,14 +3,16 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from psycopg import Error
 from wtforms import PasswordField, StringField
-from wtforms.validators import AnyOf, DataRequired, EqualTo, Length
+from wtforms.validators import AnyOf, DataRequired, EqualTo, Length, ValidationError
 
 from safeclick import conta_db
 from safeclick.emails import enviar_email
+from safeclick.modelo_email import montar_email
 from safeclick.formularios import limpar_texto
 from safeclick.icones_perfil import ICONES
 from safeclick.limites import permitir_tentativa
 from safeclick.painel import FUSO_BRASILIA
+from safeclick.politica_senha import problema_senha
 from safeclick.privacidade import VERSAO_POLITICA, VERSAO_TERMOS
 from safeclick.recuperacao import _agendar
 from safeclick.sessoes import exigir_perfis, hash_sessao_atual
@@ -50,6 +52,11 @@ class FormularioSenha(FlaskForm):
         DataRequired(message="Confirme a nova senha."),
         EqualTo("nova_senha", message="As senhas precisam ser iguais."),
     ])
+
+    def validate_nova_senha(self, campo):
+        problema = problema_senha(campo.data, getattr(current_user, "nome", None), getattr(current_user, "email", None))
+        if problema:
+            raise ValidationError(problema)
 
 
 @conta.before_request
@@ -133,14 +140,15 @@ def salvar_icone():
 
 
 def _avisar_troca_de_senha(email):
-    enviar_email(
-        email,
-        "SafeClick - Sua senha foi alterada",
-        "Olá!\n\nA senha da sua conta no SafeClick foi alterada pela página Minha conta. "
-        "As outras sessões abertas foram encerradas.\n\n"
-        "Se você não reconhece essa alteração, use a opção \"Esqueci minha senha\" na tela de login "
-        "e entre em contato com a equipe pelo canal informado na Política de Privacidade.\n\nSafeClick",
+    texto, html = montar_email(
+        "Segurança da conta",
+        "Sua senha foi alterada",
+        ["A senha da sua conta no SafeClick foi alterada pela página Minha conta. "
+         "As outras sessões abertas foram encerradas."],
+        aviso=("Não foi você?", "Use a opção \"Esqueci minha senha\" na tela de login e fale com a equipe "
+               "pelo canal informado na Política de Privacidade."),
     )
+    enviar_email(email, "SafeClick - Sua senha foi alterada", texto, html=html)
 
 
 @conta.post("/senha")

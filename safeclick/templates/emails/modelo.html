@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{{ titulo }}</title>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;">
+<div style="display:none;max-height:0;overflow:hidden;">{{ paragrafos[0] }}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+<tr><td align="center" style="padding:40px 16px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;">
+    <tr><td style="padding-bottom:28px;border-bottom:1px solid #e3ecf1;">
+      <span style="font:700 20px Arial,sans-serif;color:#153849;">Safe<span style="color:#286b53;">Click</span></span>
+    </td></tr>
+    <tr><td style="padding-top:32px;">
+      <p style="margin:0 0 6px;font:700 12px Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#286b53;">{{ etiqueta }}</p>
+      <h1 style="margin:0 0 20px;font:700 28px/1.25 Arial,sans-serif;color:#153849;">{{ titulo }}</h1>
+      {% for paragrafo in paragrafos %}
+      <p style="margin:0 0 16px;font:16px/1.65 Arial,sans-serif;color:#3d5868;">{{ paragrafo }}</p>
+      {% endfor %}
+      {% if botao %}
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;"><tr><td style="border:2px solid #153849;border-radius:999px;">
+        <a href="{{ botao[1] }}" style="display:inline-block;padding:12px 26px;font:700 15px Arial,sans-serif;color:#153849;text-decoration:none;">{{ botao[0] }} &rarr;</a>
+      </td></tr></table>
+      {% endif %}
+      {% if aviso %}
+      <p style="margin:32px 0 0;font:14px/1.6 Arial,sans-serif;color:#3d5868;"><b>{{ aviso[0] }}</b> {{ aviso[1] }}</p>
+      {% endif %}
+      <p style="margin:28px 0 0;padding-top:20px;border-top:1px solid #e3ecf1;font:12px/1.6 Arial,sans-serif;color:#8a9ca7;">
+        {% if botao %}Link direto: <a href="{{ botao[1] }}" style="color:#28638d;word-break:break-all;">{{ botao[1] }}</a><br>{% endif %}
+        Mensagem automática, não responda. Suporte: {{ suporte }}
+      </p>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</body>
+</html>

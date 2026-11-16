@@ -192,7 +192,8 @@ class ProcessamentoEmailTeste(unittest.TestCase):
         self.dados = {"email": "aluno@example.com", "token": TOKEN, "usuario_id": 7}
 
     def test_envio_contem_link_confiavel_e_prazo_sem_mudar_senha(self):
-        with patch.object(MODULO, "criar_recuperacao", return_value=self.dados), \
+        with self.app.app_context(), \
+             patch.object(MODULO, "criar_recuperacao", return_value=self.dados), \
              patch.object(MODULO, "enviar_email") as enviar, \
              patch.object(MODULO, "redefinir_senha") as redefinir:
             MODULO._enviar_recuperacao("aluno@example.com", "https://safeclick.example/redefinir-senha")
@@ -208,7 +209,8 @@ class ProcessamentoEmailTeste(unittest.TestCase):
         enviar.assert_not_called()
 
     def test_falha_smtp_cancela_apenas_token_desse_envio(self):
-        with patch.object(MODULO, "criar_recuperacao", return_value=self.dados), \
+        with self.app.app_context(), \
+             patch.object(MODULO, "criar_recuperacao", return_value=self.dados), \
              patch.object(MODULO, "enviar_email", side_effect=RuntimeError("falha smtp")), \
              patch.object(MODULO, "cancelar_recuperacao") as cancelar:
             with self.assertRaises(RuntimeError):
@@ -255,7 +257,7 @@ class ProcessamentoEmailTeste(unittest.TestCase):
                 MODULO._avisar_redefinicao, ("aluno@example.com",))
 
     def test_aviso_de_troca_nao_contem_senha_ou_token(self):
-        with patch.object(MODULO, "enviar_email") as enviar:
+        with self.app.app_context(), patch.object(MODULO, "enviar_email") as enviar:
             MODULO._avisar_redefinicao("aluno@example.com")
         self.assertNotIn(TOKEN, str(enviar.call_args))
         self.assertNotIn(SENHA, str(enviar.call_args))

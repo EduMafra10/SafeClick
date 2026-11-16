@@ -1,14 +1,36 @@
 <section class="painel-cartao progresso-detalhes" aria-labelledby="titulo-pratica">
     <h2 id="titulo-pratica">Seu próximo passo</h2>
-    {% if erro_detalhes %}<p role="alert">Não foi possível carregar alguns indicadores adicionais. <a href="{{ url_for('painel.exibir') }}">Tentar novamente</a></p>{% endif %}
+    {% if erro_detalhes %}
+        <p role="alert">Não foi possível carregar alguns indicadores adicionais.</p>
+        <div class="progresso-acoes"><a class="painel-botao painel-botao--secundario" href="{{ url_for('painel.exibir') }}">Tentar novamente</a></div>
+    {% endif %}
     <p>Acompanhe seu aprendizado no seu ritmo. Seu histórico e seus resultados permanecem privados.</p>
-    <div class="progresso-acoes"><a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a></div>
+    <div class="progresso-acoes"><a class="painel-botao painel-botao--secundario" href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a></div>
     {% if detalhes %}
-    <h3>Oportunidades de revisão</h3><p>A última tentativa válida de cada atividade abaixo de 70% aparece aqui como sugestão, sem impedir sua navegação.</p>
-    <ul class="progresso-revisar">{% for item in detalhes.revisar %}<li><strong>{{ item.titulo }}</strong> · {{ ('%.0f'|format(item.pontos)) }}%
-    <a href="{{ url_for('quizzes.exibir_resultado',tentativa_id=item.tentativa_id) if item.tipo == 'quiz' else url_for('simulacoes.listar') if item.tipo == 'simulacao' else url_for('senhas.pagina') }}">{{ 'Rever respostas e explicações' if item.tipo == 'quiz' else 'Praticar novamente' }}</a></li>
-    {% else %}<li>Nenhuma sugestão de revisão nesse período. Continue explorando as atividades.</li>{% endfor %}</ul>
-    {% if detalhes.proximos %}<h3>Leituras ainda não concluídas</h3><ul>{% for item in detalhes.proximos %}<li><a href="{{ url_for('conteudos.detalhe',slug=item.slug) }}">{{ item.titulo }}</a></li>{% endfor %}</ul><p class="participacao-nota">Essas sugestões consideram todo o seu histórico de leitura.</p>{% endif %}
+    <h3>Oportunidades de revisão</h3>
+    <p>A última tentativa válida de cada atividade abaixo de 70% aparece aqui como sugestão, sem impedir sua navegação.</p>
+    <ul class="progresso-revisar">
+        {% for item in detalhes.revisar %}
+            <li>
+                <div>
+                    <strong>{{ item.titulo }}</strong>
+                    <p class="progresso-resultado">{{ ('%.0f'|format(item.pontos)) }}% na última tentativa</p>
+                </div>
+                <a class="painel-botao painel-botao--secundario" href="{{ url_for('quizzes.exibir_resultado',tentativa_id=item.tentativa_id) if item.tipo == 'quiz' else url_for('simulacoes.listar') if item.tipo == 'simulacao' else url_for('senhas.pagina') }}">{{ 'Rever respostas e explicações' if item.tipo == 'quiz' else 'Praticar novamente' }}</a>
+            </li>
+        {% else %}
+            <li>Nenhuma sugestão de revisão nesse período. Continue explorando as atividades.</li>
+        {% endfor %}
+    </ul>
+    {% if detalhes.proximos %}
+        <h3>Leituras ainda não concluídas</h3>
+        <ul class="progresso-leituras">
+            {% for item in detalhes.proximos %}
+                <li><a class="painel-botao painel-botao--secundario" href="{{ url_for('conteudos.detalhe',slug=item.slug) }}">{{ item.titulo }} <span aria-hidden="true">→</span></a></li>
+            {% endfor %}
+        </ul>
+        <p class="participacao-nota">Essas sugestões consideram todo o seu histórico de leitura.</p>
+    {% endif %}
     {% endif %}
 </section>
 {% if detalhes %}
@@ -17,13 +39,4 @@
 <div class="progresso-categorias">{% for item in detalhes.categorias %}<article><h3>{{ {'quiz':'Quizzes e oficinas','simulacao':'Simulações','laboratorio':'Desafio de senhas'}[item.tipo] }}</h3>
 <p><strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }}%</strong> de acertos ou decisões seguras</p><p>{{ item.tentativas }} tentativas · {{ item.atividades }} atividades diferentes</p></article>
 {% else %}<p>Ainda não há resultados completos neste período.</p>{% endfor %}</div></section>
-<section class="painel-cartao progresso-detalhes" aria-labelledby="titulo-historico"><h2 id="titulo-historico">Histórico recente</h2>
-<p>As vinte tentativas válidas mais recentes no período escolhido.</p>
-<div class="participacao-filtros"><label>Filtrar tipo <select data-historico-filtro><option value="">Todos</option><option value="quiz">Quizzes e oficinas</option><option value="simulacao">Simulações</option><option value="laboratorio">Desafio de senhas</option></select></label><label>Buscar no histórico <input type="search" data-historico-busca maxlength="100"></label></div>
-<p role="status" data-historico-status>{{ detalhes.historico|length }} atividades exibidas.</p>
-<div class="participacao-tabela"><table><caption>Seu histórico privado de prática</caption><thead><tr><th scope="col">Data (Brasília)</th><th scope="col">Atividade</th><th scope="col">Resultado</th><th scope="col">Revisar</th></tr></thead><tbody>
-{% for item in detalhes.historico %}<tr data-historico-tipo="{{ item.tipo }}"><td>{{ item.data }}</td><td>{{ item.titulo }} <small>({{ 'Oficina' if item.formato == 'oficina' else {'quiz':'Quiz','simulacao':'Simulação','laboratorio':'Laboratório'}[item.tipo] }})</small></td><td>{{ item.acertos }} de {{ item.total }} · {{ ('%.0f'|format(item.pontos)) }}%</td><td>
-{% if item.tipo == 'quiz' %}<a href="{{ url_for('quizzes.exibir_resultado',tentativa_id=item.tentativa_id) }}">Rever resultado</a>{% else %}{{ 'Escolha segura' if item.pontos == 100 and item.tipo == 'simulacao' else 'Escolha de risco' if item.tipo == 'simulacao' else 'Desafio concluído' }}{% endif %}</td></tr>
-{% else %}<tr><td colspan="4">Nenhuma tentativa válida encontrada neste período.</td></tr>{% endfor %}
-</tbody></table></div></section>
 {% endif %}

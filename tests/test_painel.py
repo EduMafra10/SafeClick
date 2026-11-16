@@ -186,7 +186,7 @@ class RotaPainelTeste(unittest.TestCase):
             "safeclick.painel.buscar_painel_usuario", return_value=painel()
         ))
         self.detalhes = self.substituir(patch('safeclick.painel.buscar_detalhes_painel', return_value={
-            'historico': [], 'categorias': [], 'revisar': [], 'proximos': [],
+            'categorias': [], 'revisar': [], 'proximos': [],
         }))
         self.substituir(patch('safeclick.painel.carregar_conquistas_painel', return_value=[]))
 
@@ -269,6 +269,34 @@ class RotaPainelTeste(unittest.TestCase):
         self.assertNotIn("Você ainda não fez nenhuma atividade.", html)
         self.assertIn("Responda um quiz para acompanhar sua evolução.", html)
         self.assertIn("Faça uma simulação para ver suas escolhas por cenário.", html)
+
+    def test_laboratorio_sozinho_continua_contando_como_atividade(self):
+        self.entrar()
+        self.buscar.return_value = PAINEL_VAZIO
+        self.detalhes.return_value['categorias'] = [
+            {'tipo': 'laboratorio', 'media': 80, 'tentativas': 1, 'atividades': 1},
+        ]
+        html = self.client.get('/painel/').get_data(as_text=True)
+        self.assertNotIn('Você ainda não fez nenhuma atividade.', html)
+        self.assertIn('Desafio de senhas', html)
+        self.assertIn('80,0%', html)
+
+    def test_retira_historico_recente_mas_preserva_revisao_e_leituras(self):
+        self.entrar()
+        self.detalhes.return_value.update(
+            revisar=[{'tipo': 'quiz', 'tentativa_id': 42, 'titulo': 'Proteção de senhas', 'pontos': 40}],
+            proximos=[{'slug': 'privacidade', 'titulo': 'Privacidade e seus dados pessoais'}],
+        )
+        html = self.client.get('/painel/').get_data(as_text=True)
+        self.assertNotIn('Histórico recente', html)
+        self.assertNotIn('data-historico-', html)
+        self.assertNotIn('participacao-tabela', html)
+        self.assertIn('Evolução nos quizzes', html)
+        self.assertIn('Desempenho por atividade', html)
+        self.assertIn('40% na última tentativa', html)
+        self.assertIn('href="/quizzes/resultado/42"', html)
+        self.assertIn('href="/conteudos/privacidade"', html)
+        self.assertIn('Minhas avaliações', html)
 
     def test_administrador_pode_ver_seu_progresso_privado(self):
         self.entrar(perfil="administrador")

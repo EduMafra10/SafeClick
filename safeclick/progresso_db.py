@@ -7,10 +7,6 @@ def buscar_detalhes_painel(usuario_id, inicio=None, fim=None):
     origem = """ FROM public.resultados_validos_atividades r
         WHERE usuario_id = %(usuario_id)s """ + _filtro_periodo('r.realizada_em')
     with conectar_banco() as conexao:
-        historico = conexao.execute("""
-            SELECT tipo,formato,item_id,tentativa_id,titulo,pontos,acertos,total,disponivel,
-                   to_char(realizada_em AT TIME ZONE 'America/Sao_Paulo','DD/MM/YYYY HH24:MI') AS data
-        """ + origem + ' ORDER BY realizada_em DESC,tipo,tentativa_id DESC LIMIT 20', parametros).fetchall()
         categorias = conexao.execute("""
             SELECT tipo, COUNT(*) AS tentativas, COUNT(DISTINCT chave) AS atividades,
                    round(avg(pontos),1) AS media
@@ -28,4 +24,4 @@ def buscar_detalhes_painel(usuario_id, inicio=None, fim=None):
                               WHERE cc.conteudo_id=c.id AND cc.usuario_id=%s)
             ORDER BY c.id LIMIT 3
         """, (usuario_id,)).fetchall()
-    return {'historico': historico, 'categorias': categorias, 'revisar': revisar, 'proximos': proximos}
+    return {'categorias': categorias, 'revisar': revisar, 'proximos': proximos}

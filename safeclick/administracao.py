@@ -11,6 +11,7 @@ from safeclick import auditoria_textos, contas_db
 from safeclick.auditoria_db import registrar_evento
 from safeclick.avaliacoes_db import listar_resumo_avaliacoes
 from safeclick.emails import enviar_email
+from safeclick.modelo_email import montar_email
 from safeclick.formularios import limpar_texto
 from safeclick.limites import permitir_tentativa
 from safeclick.painel import FUSO_BRASILIA
@@ -361,16 +362,16 @@ class FormularioExcluirAdministrador(FlaskForm):
 
 
 def _avisar_conta_excluida(email):
-    enviar_email(
-        email,
-        "SafeClick - Sua conta foi excluída",
-        "Olá!\n\nSua conta de administrador no SafeClick foi excluída por outro administrador da equipe. "
-        "Seu nome, sua senha e o vínculo com o aplicativo autenticador foram apagados, e o acesso "
-        "foi encerrado em todos os dispositivos.\n\n"
-        "Seu e-mail fica guardado por 6 meses, visível só para a administração, e depois é apagado. "
-        "Se você acha que isso foi um engano, fale com a equipe pelo canal informado na "
-        "Política de Privacidade.\n\nSafeClick",
+    texto, html = montar_email(
+        "Sua conta",
+        "Sua conta foi excluída",
+        ["Sua conta de administrador no SafeClick foi excluída por outro administrador da equipe. "
+         "Seu nome, sua senha e o vínculo com o aplicativo autenticador foram apagados, e o acesso "
+         "foi encerrado em todos os dispositivos.",
+         "Seu e-mail fica guardado por 6 meses, visível só para a administração, e depois é apagado."],
+        aviso=("Acha que foi um engano?", "Fale com a equipe pelo canal informado na Política de Privacidade."),
     )
+    enviar_email(email, "SafeClick - Sua conta foi excluída", texto, html=html)
 
 
 @administracao.route("/contas/<int:usuario_id>/excluir", methods=["GET", "POST"])
