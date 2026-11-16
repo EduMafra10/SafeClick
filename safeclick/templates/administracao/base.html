@@ -60,6 +60,10 @@
                 {{ formulario_saida.csrf_token(id='csrf-saida') }}
                 <button class="admin-rodape-acao" type="submit">{{ icone('sair') }}Sair</button>
             </form>
+            <p class="admin-legal">
+                <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a> ·
+                <a href="{{ url_for('privacidade.termos') }}">Termos de Uso</a>
+            </p>
         </div>
     </aside>
 

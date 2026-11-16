@@ -247,11 +247,6 @@
         </p>
     </main>
 
-    <footer class="visual-rodape">
-        <div class="visual-container">
-            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
-            <p>Dados do desafio: Pwned Passwords, do Have I Been Pwned.</p>
-        </div>
-    </footer>
+        {% with rodape_extra="Dados do desafio: Pwned Passwords, do Have I Been Pwned." %}{% include "conteudos/_rodape.html" %}{% endwith %}
 </body>
 </html>

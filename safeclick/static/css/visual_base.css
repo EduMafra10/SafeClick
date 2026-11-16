@@ -132,6 +132,10 @@
     font-weight: 600;
 }
 
+.visual-rodape-links a {
+    color: var(--visual-verde);
+}
+
 @media (max-width: 600px) {
     .visual-container,
     .site-visual .site-barra {
