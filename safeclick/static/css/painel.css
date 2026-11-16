@@ -35,18 +35,6 @@
     font-size: 18px;
 }
 
-.painel-continuar {
-    padding-block: 10px;
-    color: var(--visual-verde);
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.painel-continuar:hover {
-    color: var(--visual-texto);
-    text-decoration: underline;
-}
-
 /* ---------- filtro por período ---------- */
 .painel-filtro {
     display: flex;
@@ -361,30 +349,94 @@
     margin-top: 20px;
 }
 
-.painel-botao {
-    display: inline-block;
-    padding: 12px 22px;
-    border: 1px solid var(--visual-texto);
+.progresso-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0 0;
+}
+
+.progresso-detalhes {
+    gap: 0;
+}
+
+.progresso-detalhes > p {
+    margin: 8px 0 0;
+    color: var(--visual-secundario);
+}
+
+.progresso-categorias p {
+    color: var(--visual-secundario);
+}
+
+.progresso-detalhes h3 {
+    margin: 28px 0 8px;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.progresso-revisar,
+.progresso-leituras {
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.progresso-revisar li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 24px;
+    padding: 16px 0;
+    border-top: 1px solid var(--visual-borda);
+}
+
+.progresso-revisar li > div {
+    flex: 1 1 240px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.progresso-resultado {
+    margin: 4px 0 0;
+    color: var(--visual-secundario);
+    font-size: 14px;
+}
+
+.progresso-leituras {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.progresso-leituras li {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.progresso-categorias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.progresso-categorias article {
+    padding: 20px;
+    border: 1px solid var(--visual-borda);
     border-radius: 10px;
-    background: var(--visual-texto);
-    color: #ffffff;
-    font-weight: 600;
-    text-decoration: none;
+    background: var(--visual-fundo);
 }
 
-.painel-botao:hover {
-    background: #0f2a31;
+.progresso-categorias h3 {
+    margin-top: 0;
 }
 
-.painel-botao--secundario {
-    background: transparent;
-    color: var(--visual-texto);
+.progresso-categorias p:last-child {
+    margin-bottom: 0;
+    font-size: 14px;
 }
-
-.painel-botao--secundario:hover {
-    background: var(--visual-azul-suave);
-}
-
 
 .painel-oculto {
     position: absolute;
@@ -427,5 +479,11 @@
 
     .painel-cartao {
         padding: 22px 20px;
+    }
+
+    .progresso-revisar .painel-botao,
+    .progresso-leituras li,
+    .progresso-leituras .painel-botao {
+        width: 100%;
     }
 }

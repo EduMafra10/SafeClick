@@ -53,7 +53,7 @@
                 </p>
             </div>
 
-            <a class="painel-continuar" href="{{ url_for('simulacoes.listar') }}">
+            <a class="painel-botao" href="{{ url_for('simulacoes.listar') }}">
                 Continuar praticando <span aria-hidden="true">→</span>
             </a>
         </header>
@@ -110,7 +110,7 @@
             {% endif %}
         </section>
 
-        {% set sem_atividade = conteudos.concluidos == 0 and quizzes.tentativas == 0 and simulacoes.tentativas == 0 and not (detalhes and detalhes.historico) %}
+        {% set sem_atividade = conteudos.concluidos == 0 and quizzes.tentativas == 0 and simulacoes.tentativas == 0 and not (detalhes and detalhes.categorias) %}
 
         {% if sem_atividade and filtro.ativo %}
             <section class="painel-vazio" aria-labelledby="titulo-vazio">

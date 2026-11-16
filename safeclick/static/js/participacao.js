@@ -50,15 +50,3 @@ window.addEventListener('pageshow', () => {
     for (const formulario of document.querySelectorAll('[aria-busy]')) formulario.setAttribute('aria-busy','false');
     for (const aviso of document.querySelectorAll('[data-carregando]')) aviso.hidden = true;
 });
-const filtroHistorico = document.querySelector('[data-historico-filtro]');
-if (filtroHistorico) {
-    const busca = document.querySelector('[data-historico-busca]');
-    const linhas = [...document.querySelectorAll('[data-historico-tipo]')];
-    function filtrar() {
-        const texto = busca.value.trim().toLocaleLowerCase('pt-BR');
-        for (const linha of linhas) linha.hidden = Boolean((filtroHistorico.value && linha.dataset.historicoTipo !== filtroHistorico.value) || !linha.textContent.toLocaleLowerCase('pt-BR').includes(texto));
-        document.querySelector('[data-historico-status]').textContent = `${linhas.filter(linha => !linha.hidden).length} atividades exibidas.`;
-    }
-    filtroHistorico.addEventListener('change', filtrar);
-    busca.addEventListener('input', filtrar);
-}

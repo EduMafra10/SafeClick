@@ -181,7 +181,10 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         self.tentativa(1)
         self.c.execute("UPDATE catalogo_quizzes SET estado='rascunho' WHERE id=21")
         self.assertEqual(self.c.execute('SELECT count(*) n FROM resultados_validos_atividades WHERE disponivel').fetchone()['n'],0)
-        self.assertEqual(len(progresso_db.buscar_detalhes_painel(1)['historico']),1)
+        dados=progresso_db.buscar_detalhes_painel(1)
+        self.assertEqual(dados['categorias'][0]['tentativas'],1)
+        self.assertEqual(dados['revisar'],[])
+        self.assertEqual(self.c.execute('SELECT count(*) n FROM resultados_validos_atividades').fetchone()['n'],1)
 
     def test_politica_nova_preserva_a_versao_anterior_e_copia_referencias(self):
         self.c.execute('CREATE TABLE versoes_politica(versao text PRIMARY KEY,vigente_desde date,conteudo_html text)')
@@ -220,7 +223,7 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         self.c.execute(retirada)
         self.assertIsNone(self.c.execute("SELECT to_regclass('public.preferencias_ranking') tabela").fetchone()['tabela'])
         self.assertEqual(len(avaliacoes_db.listar_minhas(1)),1)
-        self.assertEqual(len(progresso_db.buscar_detalhes_painel(1)['historico']),1)
+        self.assertEqual(progresso_db.buscar_detalhes_painel(1)['categorias'][0]['tentativas'],1)
 
     def test_politica_usa_versao_1_2_quando_existir_sem_perder_a_exclusao(self):
         self.c.execute('CREATE TABLE versoes_politica(versao text PRIMARY KEY,vigente_desde date,conteudo_html text)')
@@ -263,7 +266,12 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         self.tentativa(1,1)
         self.tentativa(2,2)
         dados=progresso_db.buscar_detalhes_painel(1)
-        self.assertEqual(len(dados['historico']),1)
-        self.assertEqual(dados['historico'][0]['acertos'],1)
+        self.assertNotIn('historico',dados)
+        self.assertEqual(len(dados['categorias']),1)
+        self.assertEqual(dados['categorias'][0]['tentativas'],1)
+        self.assertEqual(dados['categorias'][0]['media'],50)
         self.assertEqual(len(dados['revisar']),1)
-        self.assertEqual(progresso_db.buscar_detalhes_painel(1,inicio='2099-01-01')['historico'],[])
+        self.assertEqual(dados['revisar'][0]['pontos'],50)
+        fora_do_periodo=progresso_db.buscar_detalhes_painel(1,inicio='2099-01-01')
+        self.assertEqual(fora_do_periodo['categorias'],[])
+        self.assertEqual(fora_do_periodo['revisar'],[])

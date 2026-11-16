@@ -41,6 +41,66 @@
     text-transform: uppercase;
 }
 
+:where(.site-visual) a {
+    color: var(--visual-verde);
+    text-underline-offset: 3px;
+}
+
+/* Ações compartilhadas por conteúdos, quizzes, avaliações e progresso. */
+.visual-botao,
+.conteudos-botao,
+.quizzes-botao,
+.painel-botao {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    max-width: 100%;
+    padding: 12px 22px;
+    border: 1px solid var(--visual-texto);
+    border-radius: 10px;
+    background: var(--visual-texto);
+    color: var(--visual-superficie);
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+}
+
+.visual-botao:hover,
+.conteudos-botao:hover,
+.quizzes-botao:hover,
+.painel-botao:hover {
+    background: #0f2a31;
+}
+
+.visual-botao--secundario,
+.conteudos-botao-secundario,
+.quizzes-botao-secundario,
+.painel-botao--secundario {
+    background: transparent;
+    color: var(--visual-texto);
+}
+
+.visual-botao--secundario:hover,
+.conteudos-botao-secundario:hover,
+.quizzes-botao-secundario:hover,
+.painel-botao--secundario:hover {
+    background: var(--visual-azul-suave);
+}
+
+.visual-botao:disabled,
+.conteudos-botao:disabled,
+.quizzes-botao:disabled,
+.painel-botao:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
 .site-visual a:focus-visible,
 .site-visual button:focus-visible,
 .site-visual summary:focus-visible {

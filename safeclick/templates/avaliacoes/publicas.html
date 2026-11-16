@@ -14,17 +14,17 @@
 {% if erro %}<p class="quizzes-erro" role="alert">Não foi possível carregar as avaliações. <a href="{{ url_for('avaliacoes.publicas') }}">Tentar novamente</a></p>
 {% else %}
 <ul class="quizzes-grade quizzes-lista">
-{% for item in itens %}<li class="quizzes-cartao">
+{% for item in itens %}<li class="quizzes-cartao quizzes-tema">
     <p class="quizzes-etiqueta">{{ 'Conteúdo' if item.tipo == 'conteudo' else 'Quiz ou oficina' }}</p>
     <h2>{{ item.titulo }}</h2>
     <p>{% if item.total %}<strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5</strong> · {{ item.total }} {{ 'avaliação pública' if item.total == 1 else 'avaliações públicas' }}{% else %}Sem avaliações públicas{% endif %}</p>
-    <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=item.tipo, item_id=item.id) }}">Ver avaliações e comentários →</a>
+    <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=item.tipo, item_id=item.id) }}">Ver avaliações e comentários <span aria-hidden="true">→</span></a>
 </li>{% else %}<li class="quizzes-cartao">Nenhuma atividade encontrada para esses filtros.</li>{% endfor %}
 </ul>
 <nav class="quizzes-acoes" aria-label="Páginas de avaliações">
-{% if pagina > 1 %}<a href="{{ url_for('avaliacoes.publicas', pagina=pagina-1, tipo=tipo, busca=busca) }}">Anterior</a>{% endif %}
+{% if pagina > 1 %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', pagina=pagina-1, tipo=tipo, busca=busca) }}">Anterior</a>{% endif %}
 <span>Página {{ pagina }}</span>
-{% if pagina * 20 < total %}<a href="{{ url_for('avaliacoes.publicas', pagina=pagina+1, tipo=tipo, busca=busca) }}">Próxima</a>{% endif %}
+{% if pagina * 20 < total %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', pagina=pagina+1, tipo=tipo, busca=busca) }}">Próxima</a>{% endif %}
 </nav>{% endif %}
 <p class="participacao-nota">Uma avaliação privada não compõe estes indicadores. <a href="{{ url_for('avaliacoes.privacidade') }}">Entenda a publicação e seus controles de privacidade</a>.</p>
 {% endblock %}
