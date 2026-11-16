@@ -59,7 +59,7 @@ def _executar(app, funcao, argumentos):
         with app.app_context():
             funcao(*argumentos)
     except Exception as erro:
-        
+
         app.logger.error(
             "Falha no processamento de e-mail da recuperacao de senha (%s).",
             type(erro).__name__,
@@ -104,7 +104,7 @@ def _enviar_recuperacao(email, endereco_pagina):
         )
         enviar_email(dados["email"], "SafeClick - Recuperação de senha", texto, html=html)
     except Exception:
-        
+
         cancelar_recuperacao(dados["token"])
         raise
 
@@ -149,7 +149,6 @@ def solicitar():
                     "recuperacao_email", formulario.email.data, 3
                 )
 
-            
             if permitido and not _agendar(
                 _enviar_recuperacao, formulario.email.data, endereco
             ):
@@ -159,7 +158,7 @@ def solicitar():
             erro = "Não foi possível receber a solicitação. Tente novamente em instantes."
             status = 503
         else:
-            
+
             flash(
                 "Se houver uma conta com esse e-mail e o limite de solicitações "
                 "não tiver sido atingido, enviaremos um link de recuperação. "
@@ -194,7 +193,7 @@ def redefinir():
             elif buscar_recuperacao(token) is None:
                 link_invalido = True
             else:
-                
+
                 usuario = redefinir_senha(token, formulario.senha.data)
                 if usuario is None:
                     link_invalido = True

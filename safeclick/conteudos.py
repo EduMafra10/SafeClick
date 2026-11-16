@@ -36,14 +36,16 @@ def detalhe_pagina(slug):
         abort(404)
     return render_template("conteudos/detalhe.html", conteudo=pagina, pagina_editorial=True)
 
+
 @conteudos_bp.route("/")
 def listar():
     try:
         conteudos = conteudos_db.listar_conteudos()
     except Exception:
-        logging.exception ("Falha em consultar os conteúdos")
+        logging.exception("Falha em consultar os conteúdos")
         return render_template("conteudos/indisponivel.html"), 503
     return render_template("conteudos/listar.html", conteudos=conteudos)
+
 
 @conteudos_bp.route("/<slug>")
 def detalhe(slug):
@@ -59,6 +61,7 @@ def detalhe(slug):
         "conteudos/detalhe.html", conteudo=conteudo, formulario=FlaskForm()
     )
 
+
 @conteudos_bp.post("/<slug>/concluir")
 def concluir(slug):
     formulario = FlaskForm()
@@ -73,6 +76,7 @@ def concluir(slug):
         abort(404)
     # Volta para o conteúdo por GET: atualizar a página não reenvia o formulário
     return redirect(url_for("conteudos.detalhe", slug=slug), code=303)
+
 
 @conteudos_bp.before_request
 @exigir_perfis("usuario", "administrador")

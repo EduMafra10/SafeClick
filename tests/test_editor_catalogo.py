@@ -156,7 +156,6 @@ class EditorCatalogoTeste(unittest.TestCase):
         self.assertIn("Pergunta 1 de 1", html)
         self.assertRegex(html, r'admin-previa-correta">\s*<input type="radio">\s*<span><strong>B\.</strong> Frase longa')
 
-
     def test_oficina_tem_regra_ajuda_e_previa_propria(self):
         html = self.client.get("/administracao/catalogo/quizzes/novo").get_data(as_text=True)
         self.assertIn('data-regra="oficina" hidden', html)

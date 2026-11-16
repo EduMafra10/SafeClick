@@ -59,10 +59,12 @@ def _registrar_falha_login(etapa, motivo, usuario_id=None):
         detalhes={"etapa": etapa, "motivo": motivo},
     )
 
+
 @autenticacao.after_request
 def evitar_cache_autenticacao(resposta):
     resposta.headers["Cache-Control"] = "no-store"
     return resposta
+
 
 @autenticacao.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
@@ -122,6 +124,7 @@ def cadastro():
         idade_minima_conta=DOCUMENTOS["idade_minima_conta"],
     ), status
 
+
 @autenticacao.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
@@ -147,7 +150,7 @@ def login():
             senha_hash = usuario["senha_hash"] if usuario else _HASH_LOGIN
             senha_valida = check_password_hash(
                 senha_hash,
-                formulario.senha.data,  
+                formulario.senha.data,
             )
 
             if usuario is None or not senha_valida:
@@ -354,11 +357,13 @@ def configurar_mfa():
 
     return _tela_autenticador(configuracao=configuracao)
 
+
 @autenticacao.app_context_processor
 def disponibilizar_formulario_saida():
     if current_user.is_authenticated:
         return {"formulario_saida": FormularioSair()}
     return {}
+
 
 @autenticacao.post("/sair")
 @login_required

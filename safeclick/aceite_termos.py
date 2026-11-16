@@ -69,13 +69,13 @@ def aceitar():
         termos_disponiveis=termos_disponiveis,
     ), status
 
+
 @aceite_termos.before_app_request
 def exigir_aceite_dos_termos():
-    
+
     if request.endpoint is None or request.endpoint == "static":
         return None
 
-   
     if request.blueprint in {
         "autenticacao",
         "recuperacao",

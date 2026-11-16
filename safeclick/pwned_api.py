@@ -30,7 +30,7 @@ def consultar_prefixo_senha(prefixo):
             timeout=(3.05, 10),
             allow_redirects=False,
         ) as resposta:
-            
+
             if resposta.status_code != 200:
                 raise ServicoSenhasIndisponivel(
                     "Não foi possível consultar a base de senhas agora."
@@ -44,7 +44,6 @@ def consultar_prefixo_senha(prefixo):
 
     linhas = texto.splitlines()
 
-    
     if not linhas or any(
         re.fullmatch(r"[A-Fa-f0-9]{35}:[0-9]{1,15}", linha) is None
         for linha in linhas
@@ -53,8 +52,8 @@ def consultar_prefixo_senha(prefixo):
             "A base de senhas retornou uma resposta inválida."
         )
 
-    
     return "\r\n".join(linhas).upper()
+
 
 def contar_vazamentos(senha):
 

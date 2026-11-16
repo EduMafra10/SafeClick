@@ -73,7 +73,7 @@ class FluxoRecuperacaoTeste(unittest.TestCase):
         resposta = self.solicitar("  ALUNO@example.com  ")
         self.assertEqual(resposta.status_code, 303)
         self.agendar.assert_called_once_with(MODULO._enviar_recuperacao,
-                                            "aluno@example.com", "http://127.0.0.1:5000/redefinir-senha")
+                                             "aluno@example.com", "http://127.0.0.1:5000/redefinir-senha")
         self.permitir.assert_any_call("recuperacao_email", "aluno@example.com", 3)
         self.permitir.assert_any_call("recuperacao_ip", "127.0.0.1", 5)
         self.buscar.assert_not_called()
@@ -81,8 +81,8 @@ class FluxoRecuperacaoTeste(unittest.TestCase):
     def test_email_inexistente_e_limite_usam_mesma_resposta(self):
         respostas = []
         for permitido, email in ((True, "aluno@example.com"),
-                                  (True, "inexistente@example.com"),
-                                  (False, "aluno@example.com")):
+                                 (True, "inexistente@example.com"),
+                                 (False, "aluno@example.com")):
             self.permitir.return_value = permitido
             resposta = self.solicitar(email)
             self.assertEqual(resposta.status_code, 303)
@@ -228,6 +228,7 @@ class ProcessamentoEmailTeste(unittest.TestCase):
 
     def test_trabalho_tem_contexto_da_app_sem_contexto_da_requisicao(self):
         from flask import current_app, has_request_context
+
         def executar():
             self.assertIs(current_app._get_current_object(), self.app)
             self.assertFalse(has_request_context())
@@ -254,7 +255,7 @@ class ProcessamentoEmailTeste(unittest.TestCase):
             self.assertTrue(MODULO._agendar(MODULO._avisar_redefinicao, "aluno@example.com"))
             executor.submit.return_value.result.assert_not_called()
             executor.submit.assert_called_once_with(MODULO._executar, self.app,
-                MODULO._avisar_redefinicao, ("aluno@example.com",))
+                                                    MODULO._avisar_redefinicao, ("aluno@example.com",))
 
     def test_aviso_de_troca_nao_contem_senha_ou_token(self):
         with self.app.app_context(), patch.object(MODULO, "enviar_email") as enviar:

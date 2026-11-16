@@ -173,8 +173,10 @@ FILTROS_SITUACAO = {
     "excluidas": "Excluídas",
 }
 
+
 def _no_fuso(momento):
     return momento.astimezone(FUSO_BRASILIA) if momento else None
+
 
 def _preparar_conta(conta):
     situacao, rotulo = _situacao_autenticador(conta)
@@ -190,6 +192,7 @@ def _preparar_conta(conta):
         "situacao_rotulo": rotulo,
         "propria": conta["id"] == int(current_user.id),
     }
+
 
 @administracao.get("/contas")
 def listar_contas():
@@ -239,6 +242,7 @@ def listar_contas():
         pagina=pagina,
         ultima_pagina=ultima_pagina,
     )
+
 
 @administracao.route("/contas/<int:usuario_id>/redefinir-autenticador", methods=["GET", "POST"])
 def redefinir_autenticador(usuario_id):
@@ -299,7 +303,6 @@ def redefinir_autenticador(usuario_id):
     ), status
 
 
-
 @administracao.route("/contas/<int:usuario_id>/perfil", methods=["GET", "POST"])
 def alterar_perfil(usuario_id):
     request.max_content_length = 4096
@@ -349,6 +352,7 @@ def alterar_perfil(usuario_id):
         bloqueio=bloqueio,
         mensagem=mensagem,
     ), status
+
 
 class FormularioExcluirAdministrador(FlaskForm):
     senha = PasswordField("Sua senha", validators=[

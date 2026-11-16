@@ -197,7 +197,7 @@ class AvaliacoesBancoTeste(unittest.TestCase):
                 self.assertEqual(titular.args[1], (7,))
                 self.assertIn(f"INSERT INTO public.avaliacoes_{tipo}", gravacao.args[0])
                 self.assertEqual(gravacao.args[1][:4], (7, 42, 4, "Comentário privado"))
-                self.assertEqual(gravacao.args[1][4:], (False,False,False,None,False,'nao_solicitada'))
+                self.assertEqual(gravacao.args[1][4:], (False, False, False, None, False, 'nao_solicitada'))
                 self.assertIn("INSERT INTO public.logs_auditoria", auditoria.args[0])
                 campos = auditoria.args[1]
                 self.assertEqual(campos[:-1], (7, "avaliacao.salva", "sucesso", f"avaliacao_{tipo}", None))

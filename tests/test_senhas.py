@@ -15,7 +15,6 @@ PAGINA = "/laboratorio-senhas/"
 
 
 class ElementosHTML(HTMLParser):
-    
 
     def __init__(self, html):
         super().__init__()

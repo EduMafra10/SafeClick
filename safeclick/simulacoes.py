@@ -63,7 +63,6 @@ def _processar_cenario(slug):
     status = 200
     pode_repetir = True
 
-    
     if request.method == "GET" and "tentativa" in request.args:
         valores = request.args.getlist("tentativa")
         valor = valores[0]
@@ -115,7 +114,7 @@ def _processar_cenario(slug):
                     request.form["opcao"],
                 )
             except SimulacaoAlterada:
-                
+
                 cenario = _carregar_publicada(slug)
                 erro = "A simulação foi atualizada. Leia o cenário abaixo antes de responder novamente."
                 status = 409

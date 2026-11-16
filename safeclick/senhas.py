@@ -65,14 +65,14 @@ def _registrar_consulta(resultado):
 
 @senhas.get("/")
 def pagina():
-    
+
     return render_template("laboratorio_senhas.html", formulario=FlaskForm())
 
 
 # ---------- Desafio "Qual vazou mais?" ----------
 
 def _formato_invalido(campos):
-    
+
     return bool(
         request.args
         or request.mimetype != "application/x-www-form-urlencoded"
@@ -126,7 +126,6 @@ def iniciar_desafio():
         resposta.headers["Retry-After"] = "300"
         return resposta
 
-    
     partida = {
         "token": secrets.token_urlsafe(32),
         "pares": sortear_partida(),
@@ -168,7 +167,7 @@ def responder_desafio():
         try:
             salvar_desafio_senha(int(current_user.id), acertos, TOTAL_RODADAS, partida["token"])
         except (Error, RuntimeError):
-            
+
             return jsonify(erro="Não foi possível salvar o resultado. Tente responder novamente."), 503
         session.pop("desafio_senha", None)
         final = {"acertos": acertos, "total": TOTAL_RODADAS}

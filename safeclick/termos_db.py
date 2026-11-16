@@ -16,14 +16,15 @@ def buscar_termos(versao, *, conexao=None):
     """
 
     if conexao is not None:
-        
+
         return conexao.execute(consulta + " FOR SHARE", (versao,)).fetchone()
 
     with conectar_banco() as nova_conexao:
         return nova_conexao.execute(consulta, (versao,)).fetchone()
 
+
 def usuario_aceitou_termos_atuais(usuario_id):
-    
+
     from safeclick.privacidade import VERSAO_TERMOS
 
     with conectar_banco() as conexao:
@@ -41,7 +42,6 @@ def usuario_aceitou_termos_atuais(usuario_id):
             (usuario_id, VERSAO_TERMOS),
         ).fetchone()
 
-    
     if registro is None:
         raise RuntimeError(
             "A versão atual dos Termos de Uso ainda não foi publicada."
@@ -49,12 +49,12 @@ def usuario_aceitou_termos_atuais(usuario_id):
 
     return registro["aceitou"]
 
+
 def registrar_aceite_termos(usuario_id, versao, *, aceitou):
-    
+
     from safeclick.auditoria_db import registrar_evento
     from safeclick.privacidade import VERSAO_TERMOS
 
-  
     if aceitou is not True:
         raise ValueError("É necessário aceitar os Termos de Uso para continuar.")
 

@@ -107,8 +107,6 @@ def test_indisponibilidade_publica_nao_revela_erro_do_banco(site, monkeypatch, m
     assert 'segredo-do-banco' not in resposta.text
 
 
-
-
 @pytest.mark.parametrize('rota', ['/avaliacoes/minhas', '/administracao/avaliacoes/comentarios'])
 def test_controles_privados_exigem_login(site, rota):
     assert site[1].get(rota).status_code == 302
@@ -122,12 +120,6 @@ def test_usuario_nao_pode_moderar_nem_por_post_direto(site, monkeypatch):
                          ('post', '/administracao/avaliacoes/comentarios/conteudo/11/7/aprovar')]:
         assert getattr(site[1], metodo)(rota).status_code == 403
     moderar.assert_not_called()
-
-
-
-
-
-
 
 
 def test_retirada_e_exclusao_proprias_continuam_disponiveis_com_recurso_desligado(site, monkeypatch):
@@ -165,7 +157,7 @@ def test_nova_avaliacao_publica_exige_escolhas_explicitas(site, monkeypatch):
     salvar.assert_not_called()
     assert site[1].post(rota, data=dados).status_code == 303
     assert salvar.call_args.kwargs == {'publicar_nota': True, 'publicar_comentario': True,
-                                     'maior_de_idade': True, 'aviso_versao': VERSAO_AVISO}
+                                       'maior_de_idade': True, 'aviso_versao': VERSAO_AVISO}
 
 
 def test_administrador_confirma_moderacao_com_revisao_e_csrf(site, monkeypatch):
@@ -191,14 +183,14 @@ def test_administrador_confirma_moderacao_com_revisao_e_csrf(site, monkeypatch):
     assert site[1].post(rota, data=base).status_code == 409
 
 
-@pytest.mark.parametrize('situacao,publico', [('pendente',True),('aprovada',True),('rejeitada',True),('nao_solicitada',False)])
+@pytest.mark.parametrize('situacao,publico', [('pendente', True), ('aprovada', True), ('rejeitada', True), ('nao_solicitada', False)])
 def test_painel_de_comentarios_respeita_estado_e_autorizacao(site, monkeypatch, situacao, publico):
     entrar(site, 'administrador')
-    item = {'tipo':'conteudo','item_id':11,'titulo':'Senhas','usuario_id':7,'nota':5,
-            'comentario':'<script>exemplo</script>','moderacao':situacao,'publicar_comentario':publico,
-            'publicar_nota':publico,'publicada':True}
-    monkeypatch.setattr(avaliacoes_db,'listar_gestao',Mock(return_value=([item],1)))
-    resposta=site[1].get('/administracao/avaliacoes/comentarios')
+    item = {'tipo': 'conteudo', 'item_id': 11, 'titulo': 'Senhas', 'usuario_id': 7, 'nota': 5,
+            'comentario': '<script>exemplo</script>', 'moderacao': situacao, 'publicar_comentario': publico,
+            'publicar_nota': publico, 'publicada': True}
+    monkeypatch.setattr(avaliacoes_db, 'listar_gestao', Mock(return_value=([item], 1)))
+    resposta = site[1].get('/administracao/avaliacoes/comentarios')
     assert resposta.status_code == 200
     assert '&lt;script&gt;exemplo' in resposta.text and '<script>exemplo' not in resposta.text
     assert 'ranking' not in resposta.text.lower()

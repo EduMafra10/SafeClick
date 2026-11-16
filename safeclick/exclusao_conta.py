@@ -133,6 +133,7 @@ def avisar_conta_agendada(usuario_id):
         403,
     )
 
+
 @exclusao_conta.before_request
 @exigir_perfis("usuario", "administrador")
 def verificar_acesso():

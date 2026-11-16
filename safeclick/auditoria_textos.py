@@ -150,7 +150,7 @@ def _legivel(valor):
 
 
 def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
-    
+
     detalhes = dict(detalhes or {})
     frases = []
 
@@ -255,7 +255,7 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
 
 
 def explicar_sem_usuario(evento, detalhes):
-    
+
     detalhes = detalhes or {}
     motivo = detalhes.get("motivo")
     if evento == "login.falha" and motivo in ("email_nao_cadastrado", "limite_tentativas"):

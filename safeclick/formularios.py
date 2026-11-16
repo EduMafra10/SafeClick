@@ -4,9 +4,11 @@ from wtforms.validators import AnyOf, DataRequired, Email, EqualTo, InputRequire
 
 from safeclick.politica_senha import problema_senha
 
+
 def limpar_texto(valor):
     # remove espaços das extremidades de nome e email
     return valor.strip() if valor else ""
+
 
 class FormularioCadastro(FlaskForm):
     nome = StringField(
@@ -87,6 +89,7 @@ class FormularioCadastro(FlaskForm):
 
     enviar = SubmitField("Criar conta")
 
+
 class FormularioLogin(FlaskForm):
     email = EmailField(
         "E-mail",
@@ -112,6 +115,7 @@ class FormularioLogin(FlaskForm):
 
     enviar = SubmitField("Continuar")
 
+
 class FormularioMFA(FlaskForm):
     # mantem o código como texto para preservar zeros no inicio
     codigo = StringField(
@@ -132,12 +136,15 @@ class FormularioMFA(FlaskForm):
 
     enviar = SubmitField("Confirmar")
 
+
 class FormularioConfigurarMFA(FlaskForm):
     fator_anterior = HiddenField(validators=[Length(max=34)])
     enviar = SubmitField("Gerar o QR Code")
 
+
 class FormularioSair(FlaskForm):
     enviar = SubmitField("Sair da conta")
+
 
 class FormularioRecuperarSenha(FlaskForm):
     email = EmailField(
@@ -189,6 +196,7 @@ class FormularioRedefinirSenha(FlaskForm):
         if problema:
             raise ValidationError(problema)
 
+
 class FormularioAceiteTermos(FlaskForm):
     versao_termos = HiddenField(
         validators=[
@@ -215,6 +223,7 @@ class FormularioAceiteTermos(FlaskForm):
             )
 
     enviar = SubmitField("Aceitar e continuar")
+
 
 class FormularioRespostaDesafio(FlaskForm):
     # Usado pelo desafio "Qual vazou mais?" do Laboratório de senhas.

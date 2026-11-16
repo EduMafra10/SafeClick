@@ -29,6 +29,7 @@ from safeclick.avaliacoes import avaliacoes
 from safeclick.exclusao_conta import exclusao_conta, reativacao_conta
 from safeclick.moderacao_avaliacoes import moderacao_avaliacoes
 
+
 def create_app():
     app = Flask(__name__)
 

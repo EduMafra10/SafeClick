@@ -39,11 +39,11 @@ def html_do_texto(texto):
     def fechar():
         if paragrafo:
             classe = ' class="conteudos-fonte"' if _FONTE.match(paragrafo[0]) else ""
-            partes.append(f"<p{classe}>" + "<br>\n".join(_em_linha(l) for l in paragrafo) + "</p>")
+            partes.append(f"<p{classe}>" + "<br>\n".join(_em_linha(linha) for linha in paragrafo) + "</p>")
         if lista:
-            partes.append("<ul>\n" + "".join(f"<li>{_em_linha(l)}</li>\n" for l in lista) + "</ul>")
+            partes.append("<ul>\n" + "".join(f"<li>{_em_linha(linha)}</li>\n" for linha in lista) + "</ul>")
         if destaque:
-            partes.append(f'<p class="{_PRATIQUE}">' + "<br>\n".join(_em_linha(l) for l in destaque) + "</p>")
+            partes.append(f'<p class="{_PRATIQUE}">' + "<br>\n".join(_em_linha(linha) for linha in destaque) + "</p>")
         paragrafo.clear()
         lista.clear()
         destaque.clear()

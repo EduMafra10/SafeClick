@@ -17,10 +17,12 @@ from safeclick.twilio_api import (
     validar_codigo_totp,
 )
 
+
 class ErroMFA(Exception):
     def __init__(self, mensagem, status=400):
         super().__init__(mensagem)
         self.status = status
+
 
 @contextmanager
 def _bloquear_pendencia(token):
@@ -68,6 +70,7 @@ def _bloquear_pendencia(token):
 
         yield conexao, usuario, atual, token_hash
 
+
 def configurar_autenticador(token, fator_anterior):
     with _bloquear_pendencia(token) as (conexao, usuario, pendencia, _):
         if pendencia["tentativas"] >= 5:
@@ -84,7 +87,7 @@ def configurar_autenticador(token, fator_anterior):
                 409,
             )
 
-        if(fator_sid or "") != (fator_anterior or ""):
+        if (fator_sid or "") != (fator_anterior or ""):
             raise ErroMFA(
                 "A configuração mudou. Recarregue esta página.",
                 409,
@@ -145,6 +148,7 @@ def configurar_autenticador(token, fator_anterior):
 
     # a imagem fica somente na resposta e nao vai para o cookie e nem pro nosso banco
     return {"qr_code": qr_code, "chave": chave}
+
 
 def confirmar_autenticador(token, codigo):
     # grava a tentativa antes da chamada externa, mesmo se houver falha da API

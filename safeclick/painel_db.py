@@ -1,5 +1,6 @@
 from safeclick.db import conectar_banco
 
+
 def _filtro_periodo(coluna):
     return f"""
         AND (%(inicio)s::date IS NULL
@@ -71,7 +72,6 @@ _SIMULACOES_POR_CENARIO = """
 """
 
 
-
 _RESUMO_CONTEUDOS = """
     SELECT
         (SELECT COUNT(*) FROM public.conteudos WHERE secao = 'conteudos' AND estado = 'publicada') AS total,
@@ -84,6 +84,7 @@ _RESUMO_CONTEUDOS = """
 """ + _filtro_periodo("concluido_em") + """
         ) AS concluidos
 """
+
 
 def _percentual(parte, total):
     # Evita divisão por zero: sem atividades, não existe percentual.

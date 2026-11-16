@@ -5,6 +5,7 @@ from flask import current_app
 
 from safeclick.db import conectar_banco
 
+
 def permitir_tentativa(acao, identificador, limite):
     chave = hmac.new(
         current_app.secret_key.encode("utf-8"),

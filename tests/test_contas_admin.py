@@ -187,6 +187,7 @@ class ContasRotasTeste(unittest.TestCase):
         self.assertNotIn('href="/administracao/contas/7/redefinir-autenticador"', html)
         self.listar.assert_called_once_with(busca="jo", autenticador=None, situacao="ativas", pagina=1, por_pagina=20)
         self.assertIn("Último acesso em 10/11/2026 às 19:15", html)
+
     def test_situacoes_do_autenticador(self):
         self.listar.return_value = ([conta(autenticador_ativo=False), conta(id=13, tem_autenticador=False,
                                                                             autenticador_ativo=False)], 2)
@@ -325,8 +326,6 @@ class ContasRotasTeste(unittest.TestCase):
         self.assertEqual(self.client.post("/administracao/contas/12/perfil").status_code, 403)
         self.alterar.assert_not_called()
 
-
-    
 
 class AjudaAutenticadorTeste(unittest.TestCase):
     def setUp(self):

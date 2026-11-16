@@ -74,7 +74,7 @@ _trava_cache = threading.Lock()
 
 
 def sortear_partida():
-    
+
     sorteadas = secrets.SystemRandom().sample(range(len(LISTA_SENHAS)), TOTAL_RODADAS * 2)
     return [[sorteadas[i], sorteadas[i + 1]] for i in range(0, len(sorteadas), 2)]
 
@@ -102,5 +102,5 @@ def limpar_cache():
 
 
 def escolha_correta(contagens, escolha):
-   
+
     return contagens[escolha] >= contagens[1 - escolha]

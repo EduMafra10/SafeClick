@@ -38,7 +38,7 @@ def _hoje():
 
 
 def _ler_data(nome):
-    
+
     valor = request.args.get(nome, "").strip()
     if not valor:
         return None, None
@@ -57,20 +57,18 @@ def _ler_data(nome):
 
 
 def ler_filtro_periodo():
-    
+
     hoje = _hoje()
     inicio, erro_inicio = _ler_data("inicio")
     fim, erro_fim = _ler_data("fim")
     erro = erro_inicio or erro_fim
 
-    
     if fim and fim > hoje:
         fim = hoje
 
     if not erro and inicio and fim and inicio > fim:
         erro = "A data inicial precisa ser igual ou anterior à data final."
 
-    
     if erro:
         inicio = fim = None
 

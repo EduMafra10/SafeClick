@@ -8,6 +8,7 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 
+
 @contextmanager
 def conectar_smtp():
     servidor = current_app.config.get("SMTP_HOST")
@@ -22,7 +23,7 @@ def conectar_smtp():
 
     try:
         with smtplib.SMTP(servidor, porta, timeout=10) as conexao:
-            #protege a conexao antes de enviar as credenciais
+            # protege a conexao antes de enviar as credenciais
             conexao.ehlo()
             conexao.starttls(context=ssl.create_default_context())
             conexao.ehlo()
@@ -38,6 +39,7 @@ def conectar_smtp():
             "Não foi possível concluir a comunicação com o servidor de e-mail. "
             "Confira a conexão, o servidor e a porta configurada."
         ) from None
+
 
 def enviar_email(destinatario, assunto, texto, html=None):
     remetente = current_app.config.get("SMTP_USER")
@@ -60,6 +62,7 @@ def enviar_email(destinatario, assunto, texto, html=None):
             from_addr=remetente,
             to_addrs=[destinatario],
         )
+
 
 @click.command("verificar-email")
 @with_appcontext
