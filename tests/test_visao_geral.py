@@ -206,7 +206,7 @@ class VisaoGeralRotasTeste(unittest.TestCase):
             self.assertIn("Você está vendo a plataforma como usuário", html)
             self.assertIn("Área administrativa", html)
             self.assertIn("Meu progresso", html)
-            self.assertIn("não entram nos indicadores gerais nem no ranking", html)
+            self.assertIn("não entram nos indicadores gerais", html)
             self.usuario.perfil = "usuario"
             html = self.client.get("/simulacoes/").get_data(as_text=True)
             self.assertNotIn("Você está vendo a plataforma como usuário", html)

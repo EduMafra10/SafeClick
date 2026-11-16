@@ -11,7 +11,8 @@ import psycopg
 from psycopg.conninfo import conninfo_to_dict
 from psycopg.rows import dict_row
 
-from safeclick import avaliacoes_db, ranking_db, progresso_db
+from safeclick import avaliacoes_db, progresso_db
+from safeclick.avaliacoes_config import VERSAO_AVISO
 
 RAIZ = Path(__file__).resolve().parents[1]
 CONEXAO = os.environ.get('SAFECLICK_TEST_DATABASE_URL')
@@ -57,10 +58,11 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         cls.c.execute(ESQUEMA)
         cls.c.execute((RAIZ/'sql/criar_avaliacoes.sql').read_text(encoding='utf-8'))
         cls.c.execute((RAIZ/'sql/adicionar_avaliacoes_publicas_ranking.sql').read_text(encoding='utf-8'))
+        cls.c.execute((RAIZ/'sql/remover_ranking.sql').read_text(encoding='utf-8'))
 
     @classmethod
     def tearDownClass(cls):
-        cls.c.execute('DROP VIEW public.resultados_validos_atividades; DROP TABLE preferencias_ranking,logs_auditoria,avaliacoes_conteudo,avaliacoes_quiz,conclusoes_conteudo,respostas_tentativa_quiz,tentativas_quiz,alternativas,questoes,quizzes,catalogo_quizzes,conteudos,tentativas_simulacao,versoes_simulacao,simulacoes,desafios_senha,usuarios CASCADE; DROP FUNCTION public.limpar_participacao_conta()')
+        cls.c.execute('DROP VIEW public.resultados_validos_atividades; DROP TABLE logs_auditoria,avaliacoes_conteudo,avaliacoes_quiz,conclusoes_conteudo,respostas_tentativa_quiz,tentativas_quiz,alternativas,questoes,quizzes,catalogo_quizzes,conteudos,tentativas_simulacao,versoes_simulacao,simulacoes,desafios_senha,usuarios CASCADE; DROP FUNCTION public.limpar_participacao_conta()')
         cls.c.close()
 
     def setUp(self):
@@ -68,7 +70,7 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         self.addCleanup(lambda: self.c.execute('ROLLBACK'))
         ajustes = ExitStack()
         self.addCleanup(ajustes.close)
-        for modulo in (avaliacoes_db, ranking_db, progresso_db):
+        for modulo in (avaliacoes_db, progresso_db):
             ajustes.enter_context(patch.object(modulo,'conectar_banco',return_value=nullcontext(self.c)))
         self.c.execute("""INSERT INTO usuarios(id,nome,email,perfil) VALUES
             (1,'Pessoa Um','pessoa1@example.test','usuario'),(2,'Pessoa Dois','pessoa2@example.test','usuario'),
@@ -95,13 +97,14 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
 
     def avaliar(self, tipo='conteudo', comentario='Ajuda a entender o tema.', **opcoes):
         avaliacoes_db.salvar_avaliacao(self.c,tipo,1,11 if tipo=='conteudo' else 21,4,comentario,
-            aviso_versao=ranking_db.VERSAO_AVISO,**opcoes)
+            aviso_versao=VERSAO_AVISO,**opcoes)
 
     def test_avaliacoes_anteriores_continuam_privadas_apos_reexecutar_migracao(self):
         self.c.execute("INSERT INTO avaliacoes_conteudo(usuario_id,conteudo_id,nota,comentario) VALUES(1,11,5,'Antigo privado')")
         # Os comandos de controle de transação são retirados só para o teste com rollback.
         sql=(RAIZ/'sql/adicionar_avaliacoes_publicas_ranking.sql').read_text(encoding='utf-8').replace('BEGIN;','').replace('COMMIT;','')
         self.c.execute(sql)
+        self.c.execute((RAIZ/'sql/remover_ranking.sql').read_text(encoding='utf-8').strip().removeprefix('BEGIN;').removesuffix('COMMIT;'))
         _,resumo,comentarios=avaliacoes_db.detalhar_publicas('conteudo',11)
         self.assertEqual(resumo['total'],0)
         self.assertEqual(comentarios,[])
@@ -159,44 +162,25 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         avaliacoes_db.moderar_comentario(3,'conteudo',11,1,1,'aprovar')
         for item in avaliacoes_db.detalhar_publicas('conteudo',11)[2]:
             self.assertEqual(set(item),{'nota','comentario','data'})
-        ranking_db.alterar_participacao(1,True,True)
-        self.tentativa(1)
-        itens,_=ranking_db.buscar_ranking()
-        self.assertEqual(set(itens[0]),{'apelido','pontos','atividades','posicao'})
-
-    def test_ranking_soma_melhor_por_atividade_sem_pontos_por_repeticao(self):
-        ranking_db.alterar_participacao(1,True,True)
-        self.tentativa(1,1)
-        self.tentativa(1,2)
-        self.tentativa(1,2)
-        self.c.execute("INSERT INTO tentativas_simulacao(usuario_id,simulacao,opcao,versao_simulacao_id) VALUES(1,'cenario','risco',501),(1,'cenario','segura',501),(1,'cenario','segura',501)")
-        self.c.execute("INSERT INTO desafios_senha(usuario_id,acertos,total_rodadas,token_partida) VALUES(1,3,5,'a'),(1,4,5,'b')")
-        itens,total=ranking_db.buscar_ranking()
-        self.assertEqual(total,1)
-        self.assertEqual((itens[0]['pontos'],itens[0]['atividades']),(Decimal('280.00'),3))
-
-    def test_tentativas_incompletas_inconsistentes_e_opcoes_invalidas_nao_pontuam(self):
-        ranking_db.alterar_participacao(1,True,True)
+    def test_tentativas_incompletas_inconsistentes_nao_entram_no_historico_validado(self):
         self.tentativa(1,completa=False)
         self.tentativa(1,acertos=0,pontuacao=2)
         self.c.execute("INSERT INTO tentativas_simulacao(usuario_id,simulacao,opcao,versao_simulacao_id) VALUES(1,'cenario','nao_existe',501),(1,'outro','segura',501)")
         self.c.execute("INSERT INTO desafios_senha(usuario_id,acertos,total_rodadas,token_partida) VALUES(1,4,4,'a'),(1,9,5,'b')")
-        self.assertEqual(ranking_db.buscar_ranking(),([],0))
+        self.assertEqual(self.c.execute('SELECT count(*) n FROM resultados_validos_atividades WHERE disponivel').fetchone()['n'],0)
 
     def test_oficina_nao_conta_cartao_reutilizado_em_duas_perguntas(self):
-        ranking_db.alterar_participacao(1,True,True)
         self.c.execute("UPDATE quizzes SET formato='oficina' WHERE id=201")
         self.c.execute("UPDATE alternativas SET texto='Mesmo cartão' WHERE id IN (401,403)")
         self.tentativa(1)
-        self.assertEqual(ranking_db.buscar_ranking(),([],0))
+        self.assertEqual(self.c.execute('SELECT count(*) n FROM resultados_validos_atividades WHERE disponivel').fetchone()['n'],0)
         self.c.execute("UPDATE alternativas SET texto='Cartão diferente' WHERE id=403")
-        self.assertEqual(ranking_db.buscar_ranking()[0][0]['pontos'],100)
+        self.assertEqual(self.c.execute('SELECT pontos FROM resultados_validos_atividades').fetchone()['pontos'],100)
 
-    def test_despublicar_retira_pontos_sem_apagar_o_historico(self):
-        ranking_db.alterar_participacao(1,True,True)
+    def test_historico_preserva_atividade_despublicada(self):
         self.tentativa(1)
         self.c.execute("UPDATE catalogo_quizzes SET estado='rascunho' WHERE id=21")
-        self.assertEqual(ranking_db.buscar_ranking(),([],0))
+        self.assertEqual(self.c.execute('SELECT count(*) n FROM resultados_validos_atividades WHERE disponivel').fetchone()['n'],0)
         self.assertEqual(len(progresso_db.buscar_detalhes_painel(1)['historico']),1)
 
     def test_politica_nova_preserva_a_versao_anterior_e_copia_referencias(self):
@@ -215,6 +199,28 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         self.assertNotIn('não criamos ranking entre usuários',nova)
         self.assertIn('participacao-publica',nova)
         self.assertEqual(self.c.execute("SELECT count(*) n FROM politica_referencias WHERE versao_politica='1.3'").fetchone()['n'],1)
+        retirada=(RAIZ/'sql/registrar_politica_1_4_avaliacoes.sql').read_text(encoding='utf-8').strip().removeprefix('BEGIN;').removesuffix('COMMIT;')
+        self.c.execute(retirada)
+        self.c.execute(retirada)
+        atual=self.c.execute("SELECT conteudo_html FROM versoes_politica WHERE versao='1.4'").fetchone()['conteudo_html']
+        self.assertIn('Versão 1.4',atual)
+        self.assertIn('/avaliacoes/privacidade',atual)
+        self.assertNotIn('/ranking/',atual)
+        self.assertNotIn('ranking',atual.lower())
+        self.assertEqual(self.c.execute("SELECT conteudo_html FROM versoes_politica WHERE versao='1.3'").fetchone()['conteudo_html'],nova)
+        self.assertEqual(self.c.execute("SELECT count(*) n FROM politica_referencias WHERE versao_politica='1.4'").fetchone()['n'],1)
+
+    def test_remocao_do_ranking_preserva_avaliacoes_e_resultados(self):
+        self.avaliar(publicar_nota=True,maior_de_idade=True)
+        self.tentativa(1)
+        self.c.execute("CREATE TABLE preferencias_ranking(usuario_id integer,apelido text)")
+        self.c.execute("INSERT INTO preferencias_ranking VALUES(1,'Participante antigo')")
+        retirada=(RAIZ/'sql/remover_ranking.sql').read_text(encoding='utf-8').strip().removeprefix('BEGIN;').removesuffix('COMMIT;')
+        self.c.execute(retirada)
+        self.c.execute(retirada)
+        self.assertIsNone(self.c.execute("SELECT to_regclass('public.preferencias_ranking') tabela").fetchone()['tabela'])
+        self.assertEqual(len(avaliacoes_db.listar_minhas(1)),1)
+        self.assertEqual(len(progresso_db.buscar_detalhes_painel(1)['historico']),1)
 
     def test_politica_usa_versao_1_2_quando_existir_sem_perder_a_exclusao(self):
         self.c.execute('CREATE TABLE versoes_politica(versao text PRIMARY KEY,vigente_desde date,conteudo_html text)')
@@ -228,38 +234,23 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         self.assertIn('Versão 1.3',nova)
         self.assertEqual(self.c.execute("SELECT referencia_id FROM politica_referencias WHERE versao_politica='1.3'").fetchone()['referencia_id'],2)
 
-    def test_versoes_do_mesmo_quiz_nao_criam_duas_atividades(self):
-        ranking_db.alterar_participacao(1,True,True)
+    def test_versoes_preservam_o_historico_da_mesma_atividade(self):
         self.tentativa(1,1)
         self.c.execute("INSERT INTO quizzes(id,catalogo_id,titulo) VALUES(202,21,'Quiz revisado')")
         self.c.execute("INSERT INTO questoes VALUES(303,202,1,'Nova primeira','Explicação'),(304,202,2,'Nova segunda','Explicação')")
         self.c.execute("INSERT INTO alternativas VALUES(405,303,1,'A',true),(406,303,2,'B',false),(407,304,1,'C',true),(408,304,2,'D',false)")
         self.tentativa(1,2,quiz_id=202,respostas=[(303,405),(304,407)])
         self.c.execute('UPDATE catalogo_quizzes SET versao_publicada_id=202 WHERE id=21')
-        linha=ranking_db.buscar_ranking()[0][0]
-        self.assertEqual((linha['pontos'],linha['atividades']),(100,1))
+        linha=self.c.execute('SELECT count(*) n,count(DISTINCT chave) atividades FROM resultados_validos_atividades').fetchone()
+        self.assertEqual((linha['n'],linha['atividades']),(2,1))
 
-    def test_posicao_compartilhada_e_participacao_opcional(self):
-        for usuario in (1,2): ranking_db.alterar_participacao(usuario,True,True)
-        for usuario in (1,2,3,4): self.tentativa(usuario)
-        itens,total=ranking_db.buscar_ranking()
-        self.assertEqual(total,2)
-        self.assertEqual([i['posicao'] for i in itens],[1,1])
-        ranking_db.alterar_participacao(1,False,False)
-        self.assertEqual(ranking_db.buscar_ranking()[1],1)
-        self.assertIsNone(ranking_db.buscar_resumo_pessoal(1)['posicao'])
-        self.assertEqual(ranking_db.buscar_resumo_pessoal(1)['pontos'],100)
 
-    def test_menores_e_conta_admin_nao_podem_aderir(self):
-        with self.assertRaises(ValueError): ranking_db.alterar_participacao(1,True,False)
-        with self.assertRaises(PermissionError): ranking_db.alterar_participacao(3,True,True)
 
     def test_exclusao_oculta_imediatamente_e_elimina_avaliacoes_ao_final(self):
         self.avaliar(publicar_nota=True,publicar_comentario=True,maior_de_idade=True)
-        ranking_db.alterar_participacao(1,True,True)
         self.tentativa(1)
         self.c.execute('UPDATE usuarios SET exclusao_solicitada_em=now() WHERE id=1')
-        self.assertEqual(ranking_db.buscar_ranking()[1],0)
+        self.assertIsNone(self.c.execute("SELECT to_regclass('public.preferencias_ranking') tabela").fetchone()['tabela'])
         self.assertEqual(avaliacoes_db.detalhar_publicas('conteudo',11)[1]['total'],0)
         self.assertEqual(len(avaliacoes_db.listar_minhas(1)),1)
         self.c.execute('UPDATE usuarios SET excluida_em=now() WHERE id=1')

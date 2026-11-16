@@ -188,7 +188,6 @@ class RotaPainelTeste(unittest.TestCase):
         self.detalhes = self.substituir(patch('safeclick.painel.buscar_detalhes_painel', return_value={
             'historico': [], 'categorias': [], 'revisar': [], 'proximos': [],
         }))
-        self.substituir(patch('safeclick.painel.buscar_resumo_pessoal', return_value={'pontos':0,'atividades':0,'posicao':None}))
         self.substituir(patch('safeclick.painel.carregar_conquistas_painel', return_value=[]))
 
     def entrar(self, perfil="usuario"):
@@ -275,7 +274,7 @@ class RotaPainelTeste(unittest.TestCase):
         self.entrar(perfil="administrador")
         resposta = self.client.get("/painel/")
         self.assertEqual(resposta.status_code, 200)
-        self.assertIn('não entram nos indicadores gerais nem no ranking', resposta.text)
+        self.assertIn('não entram nos indicadores gerais', resposta.text)
         self.buscar.assert_called_once_with(7, inicio=None, fim=None)
 
     def hoje(self, dia):

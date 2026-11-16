@@ -40,7 +40,7 @@
                   {% if rota in ('administracao.listar_contas', 'administracao.redefinir_autenticador', 'administracao.alterar_perfil') %}aria-current="page"{% endif %}>{{ icone('contas') }}Contas</a>
                 {% if config.AVALIACOES_ATIVAS %}
                     <a href="{{ url_for('administracao.listar_avaliacoes') }}"
-                       {% if rota == 'administracao.listar_avaliacoes' %}aria-current="page"{% endif %}>{{ icone('avaliacoes') }}Avaliações</a>
+                       {% if rota == 'administracao.listar_avaliacoes' or request.blueprint == 'moderacao_avaliacoes' %}aria-current="page"{% endif %}>{{ icone('avaliacoes') }}Avaliações</a>
                 {% endif %}
 
                 <p class="admin-menu-grupo">Segurança</p>

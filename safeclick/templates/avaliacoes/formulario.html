@@ -49,7 +49,7 @@
                 <p class="participacao-nota">Menores de 18 anos podem avaliar de forma privada. A publicação não inclui nome, e-mail ou número da sua conta. Alterar o texto público exige nova moderação.</p>
                 {% if atividade.moderacao %}<p>Comentário: {{ {'pendente':'aguardando moderação','aprovada':'publicado','rejeitada':'não publicado pela moderação','nao_solicitada':'privado'}.get(atividade.moderacao,'privado') }}.</p>{% endif %}
             </fieldset>
-            <p id="aviso-avaliacao">A avaliação fica vinculada à sua conta para edição e exclusão. Você pode retirar a autorização desmarcando as opções e salvando, ou excluir em <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>. Leia o <a href="{{ url_for('ranking.privacidade') }}">aviso de participação</a> e a <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
+            <p id="aviso-avaliacao">A avaliação fica vinculada à sua conta para edição e exclusão. Você pode retirar a autorização desmarcando as opções e salvando, ou excluir em <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>. Leia o <a href="{{ url_for('avaliacoes.privacidade') }}">aviso de participação</a> e a <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
             <button class="quizzes-botao" type="submit">{{ 'Atualizar avaliação' if atividade.nota is not none else 'Enviar avaliação' }}</button>
         </form>
         <nav class="quizzes-acoes" aria-label="Próximas atividades">

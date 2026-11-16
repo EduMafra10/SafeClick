@@ -1,7 +1,7 @@
 from safeclick.auditoria_db import registrar_evento
 from safeclick.db import conectar_banco
 from safeclick.navegacao_atividades import PROXIMO_CONTEUDO, PROXIMO_QUIZ
-from safeclick.ranking_db import VERSAO_AVISO
+from safeclick.avaliacoes_config import VERSAO_AVISO
 
 
 _ALVOS = {

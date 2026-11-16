@@ -12,8 +12,7 @@
                 ('simulacoes', 'simulacoes.listar', 'Simulações'),
                 ('conteudos', 'conteudos.listar', 'Conteúdos'),
                 ('quizzes', 'quizzes.listar_quizzes', 'Quizzes'),
-                ('senhas', 'senhas.pagina', 'Laboratório'),
-                ('ranking', 'ranking.listar', 'Ranking')
+                ('senhas', 'senhas.pagina', 'Laboratório')
             ] %}
                 <a
                     href="{{ url_for(destino) }}"
@@ -62,7 +61,6 @@
 
                     <a class="site-conta-link" href="{{ url_for('conta.exibir') }}">Minha conta</a>
                     <a class="site-conta-link" href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>
-                    <a class="site-conta-link" href="{{ url_for('ranking.participacao') }}">Participação no ranking</a>
 
                     {% if current_user.perfil == 'administrador' %}
                         <a class="site-conta-link" href="{{ url_for('administracao.inicio') }}">
@@ -97,7 +95,7 @@
 {% if current_user.is_authenticated and current_user.perfil == 'administrador' %}
     <div class="site-aviso-admin" role="note">
         <p>
-            Você está vendo a plataforma como usuário. As suas atividades ficam no seu progresso privado e não entram nos indicadores gerais nem no ranking.
+            Você está vendo a plataforma como usuário. As suas atividades ficam no seu progresso privado e não entram nos indicadores gerais.
             <a href="{{ url_for('administracao.inicio') }}">Voltar à área administrativa</a>
         </p>
     </div>

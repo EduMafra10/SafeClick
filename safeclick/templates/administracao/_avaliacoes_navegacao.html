@@ -1,0 +1,7 @@
+<nav class="avaliacoes-admin-atalhos" aria-label="Gestão de avaliações">
+    <a class="admin-botao-secundario" href="{{ url_for('administracao.listar_avaliacoes') }}"
+       {% if request.endpoint == 'administracao.listar_avaliacoes' %}aria-current="page"{% endif %}>Médias e quantidades</a>
+    <a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar') }}"
+       {% if request.blueprint == 'moderacao_avaliacoes' %}aria-current="page"{% endif %}>Comentários e moderação</a>
+    <a class="admin-botao-secundario" href="{{ url_for('avaliacoes.publicas') }}">Ver avaliações públicas <span aria-hidden="true">↗</span></a>
+</nav>

@@ -7,9 +7,9 @@ from unittest.mock import Mock
 
 import pytest
 from psycopg import Error
-from werkzeug.datastructures import MultiDict
 
-from safeclick import create_app, avaliacoes_db, ranking_db
+from safeclick import create_app, avaliacoes_db
+from safeclick.avaliacoes_config import VERSAO_AVISO
 from safeclick.sessoes import Usuario
 
 
@@ -41,15 +41,29 @@ def token(cliente, rota):
     return re.search(r'name="csrf_token"[^>]+value="([^"]+)"', resposta.text)[1]
 
 
-def test_avaliacoes_e_ranking_sao_consultaveis_sem_login(site, monkeypatch):
+def test_avaliacoes_e_aviso_sao_consultaveis_sem_login(site, monkeypatch):
     _, cliente, _ = site
     monkeypatch.setattr(avaliacoes_db, 'listar_publicas', Mock(return_value=([], 0)))
-    monkeypatch.setattr(ranking_db, 'buscar_ranking', Mock(return_value=([], 0)))
-    for rota in ('/avaliacoes/publicas', '/ranking/', '/ranking/privacidade'):
+    for rota in ('/avaliacoes/publicas', '/avaliacoes/privacidade'):
         resposta = cliente.get(rota)
         assert resposta.status_code == 200
         assert resposta.headers['Cache-Control'] == 'no-store'
         assert resposta.headers['X-Robots-Tag'] == 'noindex, nofollow'
+
+
+@pytest.mark.parametrize('rota', ['/ranking/', '/ranking/participacao', '/ranking/privacidade'])
+def test_ranking_foi_removido_inclusive_das_rotas(site, rota):
+    assert not any(regra.rule.startswith('/ranking') for regra in site[0].url_map.iter_rules())
+    assert site[1].get(rota).status_code == 404
+    entrar(site, 'administrador')
+    assert site[1].get(rota).status_code == 404
+
+
+def test_aviso_de_avaliacoes_continua_acessivel_com_coleta_desligada(site):
+    site[0].config['AVALIACOES_ATIVAS'] = False
+    resposta = site[1].get('/avaliacoes/privacidade')
+    assert resposta.status_code == 200
+    assert 'ranking' not in resposta.text.lower()
 
 
 def test_comentarios_publicos_escapam_html_e_nao_expoem_identificadores(site, monkeypatch):
@@ -77,14 +91,13 @@ def test_consulta_publica_retorna_404_para_atividade_nao_publicada(site, monkeyp
 @pytest.mark.parametrize('consulta', ['pagina=0', 'pagina=-1', 'pagina=10001', 'pagina=a', 'pagina=1&pagina=2'])
 def test_paginacao_invalida_nao_consulta_o_banco(site, monkeypatch, consulta):
     buscar = Mock()
-    monkeypatch.setattr(ranking_db, 'buscar_ranking', buscar)
-    assert site[1].get('/ranking/?' + consulta).status_code == 400
+    monkeypatch.setattr(avaliacoes_db, 'listar_publicas', buscar)
+    assert site[1].get('/avaliacoes/publicas?' + consulta).status_code == 400
     buscar.assert_not_called()
 
 
 @pytest.mark.parametrize('modulo,metodo,rota', [
     (avaliacoes_db, 'listar_publicas', '/avaliacoes/publicas'),
-    (ranking_db, 'buscar_ranking', '/ranking/'),
 ])
 def test_indisponibilidade_publica_nao_revela_erro_do_banco(site, monkeypatch, modulo, metodo, rota):
     monkeypatch.setattr(modulo, metodo, Mock(side_effect=Error('segredo-do-banco')))
@@ -94,17 +107,9 @@ def test_indisponibilidade_publica_nao_revela_erro_do_banco(site, monkeypatch, m
     assert 'segredo-do-banco' not in resposta.text
 
 
-def test_ranking_publica_somente_pseudonimo_e_pontuacao(site, monkeypatch):
-    linha = {'apelido': 'Participante ABCD-1234-5678', 'posicao': 1, 'pontos': Decimal('280'),
-             'atividades': 3, 'nome': 'Nome secreto', 'email': 'secreto@example.test', 'usuario_id': 4567}
-    monkeypatch.setattr(ranking_db, 'buscar_ranking', Mock(return_value=([linha], 1)))
-    html = site[1].get('/ranking/').text
-    assert linha['apelido'] in html and '280,00' in html
-    for privado in ('Nome secreto', 'secreto@example.test', '4567'):
-        assert privado not in html
 
 
-@pytest.mark.parametrize('rota', ['/avaliacoes/minhas', '/ranking/participacao', '/administracao/avaliacoes/comentarios'])
+@pytest.mark.parametrize('rota', ['/avaliacoes/minhas', '/administracao/avaliacoes/comentarios'])
 def test_controles_privados_exigem_login(site, rota):
     assert site[1].get(rota).status_code == 302
 
@@ -119,44 +124,10 @@ def test_usuario_nao_pode_moderar_nem_por_post_direto(site, monkeypatch):
     moderar.assert_not_called()
 
 
-def test_participacao_requer_csrf_aviso_atual_e_autodeclaracao(site, monkeypatch):
-    entrar(site)
-    monkeypatch.setattr(ranking_db, 'buscar_preferencia', Mock(return_value=None))
-    salvar = Mock()
-    monkeypatch.setattr(ranking_db, 'alterar_participacao', salvar)
-    csrf = token(site[1], '/ranking/participacao')
-    base = {'csrf_token': csrf, 'aviso_versao': ranking_db.VERSAO_AVISO, 'participar': '1', 'maior_de_idade': '1'}
-    invalidos = [base | {'csrf_token': ''}, base | {'aviso_versao': 'antigo'},
-                 base | {'maior_de_idade': '0'}, base | {'participar': 'sim'},
-                 base | {'usuario_id': '99'}, {k: v for k, v in base.items() if k != 'maior_de_idade'},
-                 MultiDict(list(base.items()) + [('participar', '1')])]
-    for dados in invalidos:
-        assert site[1].post('/ranking/participacao', data=dados).status_code == 400
-    salvar.assert_not_called()
 
 
-def test_adesao_e_saida_atuam_apenas_na_conta_da_sessao(site, monkeypatch):
-    entrar(site)
-    monkeypatch.setattr(ranking_db, 'buscar_preferencia', Mock(return_value=None))
-    monkeypatch.setattr(import_module('safeclick.ranking'), 'permitir_tentativa', Mock(return_value=True))
-    salvar = Mock()
-    monkeypatch.setattr(ranking_db, 'alterar_participacao', salvar)
-    base = {'csrf_token': token(site[1], '/ranking/participacao'), 'aviso_versao': ranking_db.VERSAO_AVISO}
-    assert site[1].post('/ranking/participacao', data=base | {'participar': '1', 'maior_de_idade': '1'}).status_code == 303
-    salvar.assert_called_with(7, True, True)
-    assert site[1].post('/ranking/participacao', data=base).status_code == 303
-    salvar.assert_called_with(7, False, False)
 
 
-def test_limite_de_escritas_impede_abuso(site, monkeypatch):
-    entrar(site)
-    monkeypatch.setattr(ranking_db, 'buscar_preferencia', Mock(return_value=None))
-    monkeypatch.setattr(import_module('safeclick.ranking'), 'permitir_tentativa', Mock(return_value=False))
-    salvar = Mock()
-    monkeypatch.setattr(ranking_db, 'alterar_participacao', salvar)
-    dados = {'csrf_token': token(site[1], '/ranking/participacao'), 'aviso_versao': ranking_db.VERSAO_AVISO}
-    assert site[1].post('/ranking/participacao', data=dados).status_code == 429
-    salvar.assert_not_called()
 
 
 def test_retirada_e_exclusao_proprias_continuam_disponiveis_com_recurso_desligado(site, monkeypatch):
@@ -188,20 +159,20 @@ def test_nova_avaliacao_publica_exige_escolhas_explicitas(site, monkeypatch):
     monkeypatch.setattr(modulo, 'salvar_avaliacao', salvar)
     rota = '/avaliacoes/conteudos/senhas'
     dados = {'csrf_token': token(site[1], rota), 'nota': '5', 'comentario': 'Entendi melhor.',
-             'aviso_versao': ranking_db.VERSAO_AVISO, 'publicar_nota': '1', 'publicar_comentario': '1', 'maior_de_idade': '1'}
+             'aviso_versao': VERSAO_AVISO, 'publicar_nota': '1', 'publicar_comentario': '1', 'maior_de_idade': '1'}
     for remover in ('maior_de_idade', 'aviso_versao', 'publicar_nota'):
         assert site[1].post(rota, data={k: v for k, v in dados.items() if k != remover}).status_code == 400
     salvar.assert_not_called()
     assert site[1].post(rota, data=dados).status_code == 303
     assert salvar.call_args.kwargs == {'publicar_nota': True, 'publicar_comentario': True,
-                                     'maior_de_idade': True, 'aviso_versao': ranking_db.VERSAO_AVISO}
+                                     'maior_de_idade': True, 'aviso_versao': VERSAO_AVISO}
 
 
 def test_administrador_confirma_moderacao_com_revisao_e_csrf(site, monkeypatch):
     entrar(site, 'administrador')
     item = {'tipo': 'conteudo', 'item_id': 11, 'titulo': 'Senhas', 'usuario_id': 7,
             'comentario': '<script>exemplo</script>', 'revisao': 4, 'publicar_comentario': True,
-            'aviso_versao': ranking_db.VERSAO_AVISO}
+            'aviso_versao': VERSAO_AVISO}
     conexao = Mock()
     conexao.execute.return_value.fetchone.return_value = item
     monkeypatch.setattr(avaliacoes_db, 'conectar_banco', lambda: nullcontext(conexao))
@@ -218,3 +189,18 @@ def test_administrador_confirma_moderacao_com_revisao_e_csrf(site, monkeypatch):
     moderar.assert_called_once_with(7, 'conteudo', 11, 7, 4, 'aprovar')
     moderar.side_effect = ValueError('A avaliação mudou. Reabra a lista antes de moderar.')
     assert site[1].post(rota, data=base).status_code == 409
+
+
+@pytest.mark.parametrize('situacao,publico', [('pendente',True),('aprovada',True),('rejeitada',True),('nao_solicitada',False)])
+def test_painel_de_comentarios_respeita_estado_e_autorizacao(site, monkeypatch, situacao, publico):
+    entrar(site, 'administrador')
+    item = {'tipo':'conteudo','item_id':11,'titulo':'Senhas','usuario_id':7,'nota':5,
+            'comentario':'<script>exemplo</script>','moderacao':situacao,'publicar_comentario':publico,
+            'publicar_nota':publico,'publicada':True}
+    monkeypatch.setattr(avaliacoes_db,'listar_gestao',Mock(return_value=([item],1)))
+    resposta=site[1].get('/administracao/avaliacoes/comentarios')
+    assert resposta.status_code == 200
+    assert '&lt;script&gt;exemplo' in resposta.text and '<script>exemplo' not in resposta.text
+    assert 'ranking' not in resposta.text.lower()
+    assert ('/conteudo/11/7/aprovar' in resposta.text) == (publico and situacao != 'aprovada')
+    assert ('/conteudo/11/7/ocultar' in resposta.text) == (publico and situacao != 'rejeitada')

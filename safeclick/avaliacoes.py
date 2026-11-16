@@ -10,7 +10,7 @@ from safeclick.db import conectar_banco
 from safeclick.sessoes import exigir_perfis
 from safeclick import avaliacoes_db as db
 from safeclick.limites import permitir_tentativa
-from safeclick.ranking_db import VERSAO_AVISO
+from safeclick.avaliacoes_config import VERSAO_AVISO
 
 
 avaliacoes = Blueprint("avaliacoes", __name__, url_prefix="/avaliacoes")
@@ -46,9 +46,9 @@ class FormularioAvaliacao(FlaskForm):
 
 @avaliacoes.before_request
 def verificar_acesso():
-    livres = {'avaliacoes.publicas', 'avaliacoes.detalhe_publico', 'avaliacoes.resumo_publico'}
+    livres = {'avaliacoes.publicas', 'avaliacoes.detalhe_publico', 'avaliacoes.resumo_publico', 'avaliacoes.privacidade'}
     controles = {'avaliacoes.minhas', 'avaliacoes.excluir', 'avaliacoes.retirar'}
-    if not current_app.config["AVALIACOES_ATIVAS"] and request.endpoint not in controles:
+    if not current_app.config["AVALIACOES_ATIVAS"] and request.endpoint not in controles | {'avaliacoes.privacidade'}:
         abort(404)
     request.max_content_length = 16 * 1024
     if request.endpoint not in livres:
@@ -70,6 +70,11 @@ def pagina_atual():
     if not 1 <= pagina <= 10000:
         abort(400, description='Página inválida.')
     return pagina
+
+
+@avaliacoes.get('/privacidade')
+def privacidade():
+    return render_template('avaliacoes/privacidade.html', versao=VERSAO_AVISO)
 
 
 @avaliacoes.get('/publicas')
