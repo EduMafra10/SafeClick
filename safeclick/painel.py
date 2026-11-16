@@ -4,8 +4,11 @@ from flask import Blueprint, abort, render_template, request
 from flask_login import current_user
 from psycopg import Error
 
+from safeclick.conquistas import carregar_conquistas_painel
 from safeclick.painel_db import buscar_painel_usuario
 from safeclick.sessoes import exigir_perfis
+from safeclick.progresso_db import buscar_detalhes_painel
+from safeclick.ranking_db import buscar_resumo_pessoal
 
 
 painel = Blueprint("painel", __name__, url_prefix="/painel")
@@ -107,4 +110,17 @@ def exibir():
             description="Não foi possível carregar o seu painel agora. Tente novamente em instantes.",
         )
 
-    return render_template("painel/usuario.html", dados=dados, filtro=filtro)
+    conquistas = carregar_conquistas_painel(int(current_user.id))
+    detalhes = None
+    pontuacao = None
+    erro_detalhes = False
+    try:
+        detalhes = buscar_detalhes_painel(int(current_user.id), inicio=filtro['inicio'], fim=filtro['fim'])
+        pontuacao = buscar_resumo_pessoal(int(current_user.id))
+    except (Error, RuntimeError):
+        erro_detalhes = True
+
+    return render_template(
+        "painel/usuario.html", dados=dados, filtro=filtro, conquistas=conquistas,
+        detalhes=detalhes, pontuacao=pontuacao, erro_detalhes=erro_detalhes,
+    )

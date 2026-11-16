@@ -1,0 +1,1164 @@
+{
+  "data_revisao": "2026-11-15",
+  "fontes": {
+    "phishing": {
+      "titulo": "Phishing",
+      "url": "/conteudos/phishing",
+      "tipo": "conteudo"
+    },
+    "protecao-de-senhas": {
+      "titulo": "Proteção de Senhas",
+      "url": "/conteudos/protecao-de-senhas",
+      "tipo": "conteudo"
+    },
+    "golpes-por-mensagem": {
+      "titulo": "Golpes por SMS e mensagens",
+      "url": "/conteudos/golpes-por-mensagem",
+      "tipo": "conteudo"
+    },
+    "falso-conhecido-e-pix": {
+      "titulo": "Golpe do falso conhecido e Pix",
+      "url": "/conteudos/falso-conhecido-e-pix",
+      "tipo": "conteudo"
+    },
+    "compras-online-seguras": {
+      "titulo": "Compras online seguras",
+      "url": "/conteudos/compras-online-seguras",
+      "tipo": "conteudo"
+    },
+    "verificacao-em-duas-etapas": {
+      "titulo": "Verificação em duas etapas",
+      "url": "/conteudos/verificacao-em-duas-etapas",
+      "tipo": "conteudo"
+    },
+    "vazamento-de-dados": {
+      "titulo": "Vazamento de dados: o que fazer",
+      "url": "/conteudos/vazamento-de-dados",
+      "tipo": "conteudo"
+    },
+    "privacidade-e-dados-pessoais": {
+      "titulo": "Privacidade e seus dados pessoais",
+      "url": "/conteudos/privacidade-e-dados-pessoais",
+      "tipo": "conteudo"
+    },
+    "codigos-maliciosos-e-atualizacoes": {
+      "titulo": "Códigos maliciosos e atualizações",
+      "url": "/conteudos/codigos-maliciosos-e-atualizacoes",
+      "tipo": "conteudo"
+    },
+    "laboratorio": {
+      "titulo": "Laboratório de senhas",
+      "url": "/laboratorio-senhas/",
+      "tipo": "laboratorio",
+      "arquivo": "safeclick/templates/laboratorio_senhas.html"
+    }
+  },
+  "atividades": [
+    {
+      "titulo": "Proteção de senhas e contas",
+      "catalogo_id_anterior": 1,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "protecao-de-senhas",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Reconhecer uma senha longa, imprevisível e exclusiva"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "protecao-de-senhas",
+              "secao": "Por que senhas fracas são perigosas"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Explicar credential stuffing"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "verificacao-em-duas-etapas",
+              "secao": "O que é"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir segundo fator de outras proteções"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "verificacao-em-duas-etapas",
+              "secao": "Cuidados"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Manter códigos em segredo"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "vazamento-de-dados",
+              "secao": "O que fazer"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Trocar senhas expostas"
+        },
+        {
+          "numero": 6,
+          "fontes": [
+            {
+              "fonte": "protecao-de-senhas",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Usar gerenciador para senhas distintas"
+        },
+        {
+          "numero": 7,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Analisador"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir comprimento de imprevisibilidade"
+        }
+      ],
+      "arquivo": "01_quizzes.json",
+      "indice": 0,
+      "sha256_anterior": "519e0c68288b0f0301d7a7a2d049d6bbe9d853e72b2d45faff89377e5ebc2463"
+    },
+    {
+      "titulo": "Phishing: aprenda antes de clicar",
+      "catalogo_id_anterior": 2,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "phishing",
+              "secao": "Como identificar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Verificar ameaças de bloqueio"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "phishing",
+              "secao": "O que é Phishing?"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir aparência de identidade"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Verificar anexos inesperados"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "phishing",
+              "secao": "Como identificar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Conferir links de conhecidos"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Cuidados no dia a dia"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Evitar cadastros excessivos"
+        },
+        {
+          "numero": 6,
+          "fontes": [
+            {
+              "fonte": "phishing",
+              "secao": "Como identificar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Comparar texto e destino do link"
+        },
+        {
+          "numero": 7,
+          "fontes": [
+            {
+              "fonte": "phishing",
+              "secao": "Como identificar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Avaliar sinais em conjunto"
+        }
+      ],
+      "arquivo": "01_quizzes.json",
+      "indice": 1,
+      "sha256_anterior": "121f351b05f914b5841fb50f40a005e25fd1628cec8ce57d73d2c5ecffda1174"
+    },
+    {
+      "titulo": "Golpes digitais: phishing, mensagens e Pix",
+      "catalogo_id_anterior": 3,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "phishing",
+              "secao": "O que é Phishing?"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Definir phishing"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "golpes-por-mensagem",
+              "secao": "Sinais de alerta"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Reconhecer cobrança suspeita"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "falso-conhecido-e-pix",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Confirmar identidade por via independente"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "falso-conhecido-e-pix",
+              "secao": "Como a conta de WhatsApp é roubada"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir código de registro e PIN"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "falso-conhecido-e-pix",
+              "secao": "Se você já fez o Pix"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Contatar o banco e solicitar o MED"
+        },
+        {
+          "numero": 6,
+          "fontes": [
+            {
+              "fonte": "golpes-por-mensagem",
+              "secao": "O que é"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Delimitar o termo smishing"
+        },
+        {
+          "numero": 7,
+          "fontes": [
+            {
+              "fonte": "golpes-por-mensagem",
+              "secao": "O que fazer"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Reagir à exposição de dados"
+        }
+      ],
+      "arquivo": "01_quizzes.json",
+      "indice": 2,
+      "sha256_anterior": "e330ff728ad9bca5bcbfe0daaedfe3e79d4b579af25e9f9a4752e6b514ba80e9"
+    },
+    {
+      "titulo": "Contas protegidas: senhas, 2FA e vazamentos",
+      "catalogo_id_anterior": 4,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "protecao-de-senhas",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Integrar comprimento, imprevisibilidade e exclusividade"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "vazamento-de-dados",
+              "secao": "O que fazer"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Conter reutilização após vazamento"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "verificacao-em-duas-etapas",
+              "secao": "No SafeClick"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Reconhecer autenticador do projeto"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "verificacao-em-duas-etapas",
+              "secao": "Cuidados"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Recusar aprovação não iniciada"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "vazamento-de-dados",
+              "secao": "Por que isso importa para você"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Reconhecer golpes personalizados"
+        },
+        {
+          "numero": 6,
+          "fontes": [
+            {
+              "fonte": "verificacao-em-duas-etapas",
+              "secao": "Os tipos mais comuns"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Comparar SMS e aplicativo"
+        },
+        {
+          "numero": 7,
+          "fontes": [
+            {
+              "fonte": "vazamento-de-dados",
+              "secao": "O que fazer"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Reconhecer a finalidade do Registrato"
+        }
+      ],
+      "arquivo": "01_quizzes.json",
+      "indice": 3,
+      "sha256_anterior": "ceb4c5108fa48101e44c197dc5c8cef997aad7f26ed19349b34a2e5b0cc0eab9"
+    },
+    {
+      "titulo": "Compras seguras, privacidade e proteção do dispositivo",
+      "catalogo_id_anterior": 5,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "compras-online-seguras",
+              "secao": "Antes de comprar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Pesquisar loja e CNPJ"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "compras-online-seguras",
+              "secao": "Antes de comprar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Conferir beneficiário do boleto"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Seus direitos pela LGPD"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Pedir acesso e correção"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Relacionar ransomware e recuperação por backup"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Complementar atualização e verificação de anexos"
+        },
+        {
+          "numero": 6,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "O que são códigos maliciosos"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir tipos de malware"
+        },
+        {
+          "numero": 7,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "Sinais de infecção"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Investigar sinais sem diagnóstico automático"
+        }
+      ],
+      "arquivo": "01_quizzes.json",
+      "indice": 4,
+      "sha256_anterior": "cd5113568ec9d0b4b4092dca1fb019f6750471bdf8069b35973e64fd8e84c09d"
+    },
+    {
+      "titulo": "Privacidade na prática: dados, permissões e direitos",
+      "catalogo_id_anterior": null,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "O que são dados pessoais"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Reconhecer identificação direta e indireta"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "O que são dados pessoais"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Distinguir exemplos de dados sensíveis"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Cuidados no dia a dia"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Revisar permissões e finalidade"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Seus direitos pela LGPD"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Solicitar informação sobre compartilhamento"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Seus direitos pela LGPD"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Solicitar eliminação sem prometer resultado absoluto"
+        },
+        {
+          "numero": 6,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Seus direitos pela LGPD"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Encaminhar reclamação por canal oficial"
+        }
+      ],
+      "arquivo": "01_quizzes.json",
+      "indice": 5
+    },
+    {
+      "titulo": "Laboratório de senhas: interpretar, gerar e revisar",
+      "catalogo_id_anterior": null,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Analisador"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Usar apenas ideias fictícias"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Analisador"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Interpretar estimativa sem garantia"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Analisador"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Combinar comprimento e ausência de padrões"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Gerador"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Reconhecer finalidade e limite do gerador"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Qual vazou mais?"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Interpretar a comparação de exemplos públicos"
+        },
+        {
+          "numero": 6,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Qual vazou mais?"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir frequência relativa de segurança"
+        }
+      ],
+      "arquivo": "01_quizzes.json",
+      "indice": 6
+    },
+    {
+      "titulo": "Phishing, smishing e sinais de alerta",
+      "catalogo_id_anterior": 6,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "phishing",
+              "secao": "O que é Phishing?"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Definir phishing"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "golpes-por-mensagem",
+              "secao": "O que é"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Distinguir o canal do smishing"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "golpes-por-mensagem",
+              "secao": "Sinais de alerta"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Explicar a urgência"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "phishing",
+              "secao": "Como identificar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Escolher verificação independente"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "golpes-por-mensagem",
+              "secao": "O que fazer"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Interromper contato fraudulento"
+        }
+      ],
+      "cartao_excedente": {
+        "texto": "Exposição de dados guardados por uma empresa ou serviço",
+        "fonte": "vazamento-de-dados",
+        "secao": "O que é um vazamento"
+      },
+      "arquivo": "02_oficinas.json",
+      "indice": 0,
+      "sha256_anterior": "12f9b5859c5fb61c748d439e5e59f7dbf858889886f26ebb429b9f1de1a5b7e2"
+    },
+    {
+      "titulo": "Falso conhecido, código do WhatsApp e confirmação",
+      "catalogo_id_anterior": 7,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "falso-conhecido-e-pix",
+              "secao": "Como funciona"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Distinguir perfil copiado e conta tomada"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "falso-conhecido-e-pix",
+              "secao": "Como a conta de WhatsApp é roubada"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Reconhecer uso do código de registro"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "falso-conhecido-e-pix",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Confirmar pedido por outra via"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "falso-conhecido-e-pix",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir PIN de código recebido"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "falso-conhecido-e-pix",
+              "secao": "Se você já fez o Pix"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Acionar banco após golpe"
+        }
+      ],
+      "cartao_excedente": {
+        "texto": "Registrar um boletim de ocorrência sobre o golpe",
+        "fonte": "falso-conhecido-e-pix",
+        "secao": "Se você já fez o Pix"
+      },
+      "arquivo": "02_oficinas.json",
+      "indice": 1,
+      "sha256_anterior": "1b53f512e722aa8ace90a780891e3d45e8eb5e0c8ea1cd6deff7bff6383cf308"
+    },
+    {
+      "titulo": "Compras online: loja, boleto e pós-compra",
+      "catalogo_id_anterior": 8,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "compras-online-seguras",
+              "secao": "Antes de comprar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Verificar vendedor"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "compras-online-seguras",
+              "secao": "Antes de comprar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Verificar destinatário do boleto"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "compras-online-seguras",
+              "secao": "Seus direitos"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Aplicar prazo ao exemplo de produto"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "compras-online-seguras",
+              "secao": "Antes de comprar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir conexão protegida de loja legítima"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "compras-online-seguras",
+              "secao": "Antes de comprar"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir contestação de garantia de reembolso"
+        }
+      ],
+      "cartao_excedente": {
+        "texto": "Solicitar o MED ao banco depois de um golpe com Pix",
+        "fonte": "falso-conhecido-e-pix",
+        "secao": "Se você já fez o Pix"
+      },
+      "arquivo": "02_oficinas.json",
+      "indice": 2,
+      "sha256_anterior": "99b7ffc5047a2f1f9ffec3d41bd3b8e52ea1f5d0ca69c56242ec1bf673e2f318"
+    },
+    {
+      "titulo": "Senhas e verificação em duas etapas: o que cada proteção faz",
+      "catalogo_id_anterior": 9,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "protecao-de-senhas",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Relacionar comprimento e imprevisibilidade"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "protecao-de-senhas",
+              "secao": "Por que senhas fracas são perigosas"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Entender exclusividade"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "verificacao-em-duas-etapas",
+              "secao": "O que é"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Entender segundo fator"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "protecao-de-senhas",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Escolher apoio para senhas exclusivas"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "verificacao-em-duas-etapas",
+              "secao": "Os tipos mais comuns"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir autenticador de SMS"
+        }
+      ],
+      "cartao_excedente": {
+        "texto": "Corrigir falhas conhecidas mantendo os programas atualizados",
+        "fonte": "codigos-maliciosos-e-atualizacoes",
+        "secao": "Como se proteger"
+      },
+      "arquivo": "02_oficinas.json",
+      "indice": 3,
+      "sha256_anterior": "d7bd8d15680c64b95b4d15374fb2c65981339561c3bc521b385b3b22a9a4a351"
+    },
+    {
+      "titulo": "Vazamentos e privacidade: proteções e direitos",
+      "catalogo_id_anterior": 10,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "vazamento-de-dados",
+              "secao": "O que fazer"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Conter reutilização"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Seus direitos pela LGPD"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Distinguir confirmação e acesso"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Seus direitos pela LGPD"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Pedir correção"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Seus direitos pela LGPD"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Pedir informação sobre compartilhamento"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "privacidade-e-dados-pessoais",
+              "secao": "Cuidados no dia a dia"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Minimizar permissões"
+        }
+      ],
+      "cartao_excedente": {
+        "texto": "Solicitar portabilidade dos dados para outro fornecedor",
+        "fonte": "privacidade-e-dados-pessoais",
+        "secao": "Seus direitos pela LGPD"
+      },
+      "arquivo": "02_oficinas.json",
+      "indice": 4,
+      "sha256_anterior": "76931768d6e03298acfe08ea3629e9bb6cfc2ca5cd26246f506fdb8bfc57e001"
+    },
+    {
+      "titulo": "Códigos maliciosos: atualizações, backup e antivírus",
+      "catalogo_id_anterior": 11,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Entender atualização"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Entender recuperação por backup"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "Sinais de infecção"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Distinguir sinal e diagnóstico"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "O que são códigos maliciosos"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Reconhecer spyware"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "codigos-maliciosos-e-atualizacoes",
+              "secao": "Como se proteger"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Verificar origem e permissões"
+        }
+      ],
+      "cartao_excedente": {
+        "texto": "Cavalo de troia",
+        "fonte": "codigos-maliciosos-e-atualizacoes",
+        "secao": "O que são códigos maliciosos"
+      },
+      "arquivo": "02_oficinas.json",
+      "indice": 5,
+      "sha256_anterior": "b98578da929a7212766532a73c61becf43d1645af6e3adaf599b1e4c2f13c127"
+    },
+    {
+      "titulo": "Laboratório: ideia de senha, estimativa e exemplos públicos",
+      "catalogo_id_anterior": null,
+      "questoes": [
+        {
+          "numero": 1,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Analisador"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Usar apenas ideias fictícias"
+        },
+        {
+          "numero": 2,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Analisador"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Interpretar força estimada"
+        },
+        {
+          "numero": 3,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Gerador"
+            }
+          ],
+          "nivel": "compreensao",
+          "objetivo": "Entender geração local"
+        },
+        {
+          "numero": 4,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Qual vazou mais?"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Interpretar contagem comparativa"
+        },
+        {
+          "numero": 5,
+          "fontes": [
+            {
+              "fonte": "laboratorio",
+              "secao": "Analisador"
+            }
+          ],
+          "nivel": "aplicacao",
+          "objetivo": "Aplicar exclusividade após a análise"
+        }
+      ],
+      "cartao_excedente": {
+        "texto": "Ativar uma segunda etapa para exigir outra prova de identidade",
+        "fonte": "verificacao-em-duas-etapas",
+        "secao": "O que é"
+      },
+      "arquivo": "02_oficinas.json",
+      "indice": 6
+    }
+  ],
+  "conteudos": [
+    {
+      "slug": "protecao-de-senhas",
+      "sha256_anterior": "bf2579df7e219fdce4588e93380aa40781b0b460eafe37a1ae4f6567a0ac50be"
+    },
+    {
+      "slug": "golpes-por-mensagem",
+      "sha256_anterior": "f22c3f9ac3b2ff32c0adcd71f1c8d39c75605eeaa5bb88bacfb457bb0bfc81b0"
+    },
+    {
+      "slug": "falso-conhecido-e-pix",
+      "sha256_anterior": "22d9b1aacbad1582258b8e85b1415ad1786fc97bc2520b9648428ed5db474a86"
+    },
+    {
+      "slug": "compras-online-seguras",
+      "sha256_anterior": "242311c63c2d3417ca611b66ee52761bed9d140dd8b8096f7771e5aa3a756252"
+    },
+    {
+      "slug": "privacidade-e-dados-pessoais",
+      "sha256_anterior": "bb72283fd76b00643838ab15f2ab8bb50f7388d26589afffa48aa4e4d3e68627"
+    },
+    {
+      "slug": "codigos-maliciosos-e-atualizacoes",
+      "sha256_anterior": "9b5f83713580995f558add4e28dea9f23a5abd3169a3d536cf6b0b2b944e18d6"
+    }
+  ],
+  "pendencias": [
+    {
+      "slug": "golpes-por-mensagem1",
+      "motivo": "O único corpo publicado é “Apenas um teste”. Não permite avaliar ensino ou criar gabarito. Preservado para decisão da equipe."
+    },
+    {
+      "slug": "falso-suporte-tecnico",
+      "motivo": "Cenário em rascunho sem versão publicada. Não é requisito de conhecimento dos quizzes."
+    }
+  ],
+  "fontes_externas": [
+    "https://cartilha.cert.br/fasciculos/autenticacao/",
+    "https://pages.nist.gov/800-63-4/sp800-63b.html",
+    "https://www.gov.br/gsi/pt-br/seguranca-da-informacao-e-cibernetica/osic/copy_of_osic-01-2023",
+    "https://www.bcb.gov.br/meubc/faqs/p/o-que-e-e-como-funciona-o-mecanismo-especial-de-devolucao-med",
+    "https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados/direito-dos-titulares",
+    "https://www.gov.br/anpd/pt-br/acesso-a-informacao/institucional/base-juridica",
+    "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+    "https://cartilha.cert.br/ransomware/"
+  ]
+}

@@ -145,6 +145,9 @@
     overflow-wrap: anywhere;
 }
 
+.autenticacao-ajuda[hidden] {
+    display: none;
+}
 .autenticacao-ajuda {
     color: #526d7e;
 }
@@ -344,8 +347,9 @@
     }
 }
 
+/* "Esqueci minha senha": logo abaixo do campo, à esquerda, sem sublinhado */
 .autenticacao-senha-login {
-    margin-bottom: 18px;
+    margin-bottom: 24px;
 }
 
 .autenticacao-senha-login .autenticacao-campo {
@@ -353,17 +357,22 @@
 }
 
 .autenticacao-recuperar {
-    display: flex;
-    justify-content: flex-end;
-    margin: 8px 0 0;
+    margin: 10px 0 0;
     font-size: 14px;
 }
 
 .autenticacao-recuperar a {
     display: inline-flex;
     align-items: center;
-    min-height: 32px;
-    padding: 4px 0;
+    min-height: 28px;
+    color: #27684f;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.autenticacao-recuperar a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 /* aceite dos termos no cadastro */
@@ -403,4 +412,28 @@
 .autenticacao-botao:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.autenticacao-exclusao {
+    margin: 0 0 24px;
+}
+
+.autenticacao-lista {
+    margin: 8px 0 12px;
+    padding-left: 20px;
+    font-size: 14px;
+}
+
+.autenticacao-lista li + li {
+    margin-top: 6px;
+}
+
+.autenticacao-botao-perigo {
+    border-color: #a64f30;
+    background-color: #a64f30;
+}
+
+.autenticacao-botao-perigo:hover {
+    border-color: #833d28;
+    background-color: #833d28;
 }

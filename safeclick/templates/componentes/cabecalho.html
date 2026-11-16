@@ -1,3 +1,4 @@
+{% from "componentes/_icone_perfil.html" import icone_perfil %}
 <header class="site-cabecalho">
     <div class="site-barra">
         <a class="site-marca" href="{{ url_for('simulacoes.listar') }}">
@@ -11,7 +12,8 @@
                 ('simulacoes', 'simulacoes.listar', 'Simulações'),
                 ('conteudos', 'conteudos.listar', 'Conteúdos'),
                 ('quizzes', 'quizzes.listar_quizzes', 'Quizzes'),
-                ('senhas', 'senhas.pagina', 'Laboratório')
+                ('senhas', 'senhas.pagina', 'Laboratório'),
+                ('ranking', 'ranking.listar', 'Ranking')
             ] %}
                 <a
                     href="{{ url_for(destino) }}"
@@ -31,9 +33,7 @@
                     class="site-conta-botao"
                     aria-label="Menu da conta de {{ nome }}"
                 >
-                    <span class="site-avatar" aria-hidden="true">
-                        {{ partes[0][0]|upper }}{% if partes|length > 1 %}{{ partes[-1][0]|upper }}{% endif %}
-                    </span>
+                    {{ icone_perfil(current_user.icone, nome, 38, 'site-avatar') }}
 
                     <span class="site-conta-resumo" aria-hidden="true">
                         <strong>{{ partes[0] }}</strong>
@@ -60,22 +60,13 @@
                         <span>{{ current_user.email }}</span>
                     </div>
 
+                    <a class="site-conta-link" href="{{ url_for('conta.exibir') }}">Minha conta</a>
+                    <a class="site-conta-link" href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>
+                    <a class="site-conta-link" href="{{ url_for('ranking.participacao') }}">Participação no ranking</a>
+
                     {% if current_user.perfil == 'administrador' %}
                         <a class="site-conta-link" href="{{ url_for('administracao.inicio') }}">
-                            Gestão de conteúdo
-                        </a>
-                        <a
-                            class="site-conta-link"
-                            href="{{ url_for('administracao.listar_simulacoes') }}"
-                        >
-                            Gestão de simulações
-                        </a>
-
-                        <a
-                            class="site-conta-link"
-                            href="{{ url_for('auditoria.listar') }}"
-                        >
-                            Logs de auditoria
+                            Área administrativa
                         </a>
                     {% endif %}
 
@@ -102,3 +93,14 @@
         {% endif %}
     </div>
 </header>
+
+{% if current_user.is_authenticated and current_user.perfil == 'administrador' %}
+    <div class="site-aviso-admin" role="note">
+        <p>
+            Você está vendo a plataforma como usuário. As suas atividades ficam no seu progresso privado e não entram nos indicadores gerais nem no ranking.
+            <a href="{{ url_for('administracao.inicio') }}">Voltar à área administrativa</a>
+        </p>
+    </div>
+{% endif %}
+
+{% include "componentes/_aviso_conquistas.html" %}

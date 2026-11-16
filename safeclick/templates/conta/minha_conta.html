@@ -1,0 +1,184 @@
+{% from "componentes/_icone_perfil.html" import icone_perfil %}
+{% macro erros(campo) %}
+    {% for mensagem in campo.errors %}<span class="conta-erro-campo">{{ mensagem }}</span>{% endfor %}
+{% endmacro %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha conta | SafeClick</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conta.css') }}">
+    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/conta.js') }}" defer></script>
+    <noscript><style>.conta-dialogo { display: block; position: static; margin: 20px 0 0; box-shadow: none; }</style></noscript>
+</head>
+<body class="site-visual">
+    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+    {% include "componentes/cabecalho.html" %}
+    <main id="conteudo" class="visual-container conta-pagina" tabindex="-1">
+        <header class="conta-topo">
+            <h1>Minha conta</h1>
+            <p>Seus dados, sua senha e sua privacidade.</p>
+        </header>
+
+        {% for aviso in get_flashed_messages(category_filter=['conta_sucesso']) %}
+            <p class="conta-aviso" role="status">{{ aviso }}</p>
+        {% endfor %}
+        {% if erro %}<p class="conta-aviso conta-aviso--erro" role="alert">{{ erro }}</p>{% endif %}
+
+        <div class="conta-casca">
+            <nav class="conta-menu" aria-label="Seções da conta">
+                <p>Conta</p>
+                <a href="#perfil" data-secao="perfil">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Meu perfil</a>
+                <a href="#seguranca" data-secao="seguranca">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg>Segurança</a>
+                <p>Dados</p>
+                <a href="#privacidade" data-secao="privacidade">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Privacidade</a>
+            </nav>
+
+            <div class="conta-conteudo">
+                <section id="perfil" aria-labelledby="titulo-perfil">
+                    <h2 id="titulo-perfil">Meu perfil</h2>
+                    <div class="conta-perfil">
+                        {{ icone_perfil(dados.icone, dados.nome, 76) }}
+                        <div>
+                            <div class="conta-botoes">
+                                <button class="conta-botao" type="button" data-abrir="dialogo-icone">Trocar ícone</button>
+                                {% if dados.icone %}
+                                    <form method="post" action="{{ url_for('conta.salvar_icone') }}">
+                                        {{ formulario_icone.csrf_token(id='csrf-iniciais') }}
+                                        <input type="hidden" name="icone" value="iniciais">
+                                        <button class="conta-botao conta-botao--claro" type="submit">Usar iniciais</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            <small>Escolha um dos personagens do SafeClick. Não usamos fotos.</small>
+                        </div>
+                    </div>
+                    <form method="post" action="{{ url_for('conta.salvar_nome') }}" novalidate>
+                        {{ formulario_nome.csrf_token(id='csrf-nome') }}
+                        <label class="conta-campo conta-campo--nome">
+                            Nome completo
+                            {{ formulario_nome.nome(maxlength=100, autocomplete='name', required=true) }}
+                            {{ erros(formulario_nome.nome) }}
+                        </label>
+                        <div class="conta-fim"><button class="conta-botao" type="submit">Salvar alterações</button></div>
+                    </form>
+                </section>
+
+                <section id="seguranca" aria-labelledby="titulo-seguranca">
+                    <h2 id="titulo-seguranca">Segurança da conta</h2>
+                    <div class="conta-linha">
+                        <label class="conta-rotulo">E-mail <input value="{{ dados.email }}" disabled></label>
+                        <span class="conta-nota">Usado no login</span>
+                    </div>
+                    <div class="conta-linha">
+                        <label class="conta-rotulo">Senha <input value="••••••••••••••••" disabled aria-label="Senha oculta"></label>
+                        <button class="conta-botao conta-botao--claro" type="button" data-abrir="dialogo-senha">Trocar senha</button>
+                    </div>
+                    <div class="conta-linha">
+                        <div>
+                            <strong>Verificação em duas etapas</strong>
+                            <span>Código do aplicativo autenticador pedido a cada login. Trocou de celular ou perdeu o acesso ao aplicativo? Fale com o suporte para redefinir.</span>
+                        </div>
+                        <span class="conta-selo">{{ '✓ Ativa' if dados.autenticador_ativo else 'Pendente' }}</span>
+                    </div>
+                    <div class="conta-linha">
+                        <div>
+                            <strong>Sair de todos os dispositivos</strong>
+                            <span>Encerra as outras sessões abertas, menos esta.
+                                {% if dados.outras_sessoes %}Agora: {{ dados.outras_sessoes }} {{ 'outra sessão' if dados.outras_sessoes == 1 else 'outras sessões' }}.{% else %}Nenhuma outra sessão aberta.{% endif %}</span>
+                        </div>
+                        <form method="post" action="{{ url_for('conta.encerrar_sessoes') }}">
+                            {{ formulario_sessoes.csrf_token(id='csrf-sessoes') }}
+                            <button class="conta-botao conta-botao--claro" type="submit">Encerrar sessões</button>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="privacidade" aria-labelledby="titulo-privacidade">
+                    <h2 id="titulo-privacidade">Privacidade</h2>
+                    <div class="conta-linha">
+                        <div><strong>Política de Privacidade</strong><span>Versão {{ versao_politica }} em vigor</span></div>
+                        <a class="conta-botao conta-botao--claro" href="{{ url_for('privacidade.politica') }}">Ver</a>
+                    </div>
+                    <div class="conta-linha">
+                        <div>
+                            <strong>Termos de Uso</strong>
+                            <span>{% if aceite_em %}Versão {{ dados.versao_termos }} aceita em {{ aceite_em.strftime('%d/%m/%Y') }}{% else %}Versão {{ versao_termos }} em vigor{% endif %}</span>
+                        </div>
+                        <a class="conta-botao conta-botao--claro" href="{{ url_for('privacidade.termos') }}">Ver</a>
+                    </div>
+                    <div class="conta-linha">
+                        <div><strong class="conta-vermelho">Excluir minha conta</strong><span>Apaga sua conta e todo o seu progresso. Não pode ser desfeito.</span></div>
+                        {% if endereco_exclusao %}
+                            <a class="conta-botao conta-botao--claro conta-botao--perigo" href="{{ endereco_exclusao }}">Excluir conta</a>
+                        {% else %}
+                            <span class="conta-nota">Disponível em breve</span>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <dialog class="conta-dialogo" id="dialogo-icone" aria-labelledby="titulo-dialogo-icone">
+            <form method="post" action="{{ url_for('conta.salvar_icone') }}">
+                {{ formulario_icone.csrf_token(id='csrf-icone') }}
+                <h2 id="titulo-dialogo-icone">Escolha seu ícone</h2>
+                <p>Ele aparece no topo do site e na sua conta.</p>
+                <fieldset class="conta-icones">
+                    <legend class="conta-somente-leitor">Ícones disponíveis</legend>
+                    <label>
+                        <input type="radio" name="icone" value="iniciais" {% if not dados.icone %}checked{% endif %}>
+                        {{ icone_perfil(none, dados.nome, 64) }}<small>Iniciais</small>
+                    </label>
+                    {% for chave, personagem in icones.items() %}
+                        <label>
+                            <input type="radio" name="icone" value="{{ chave }}" {% if dados.icone == chave %}checked{% endif %}>
+                            {{ icone_perfil(chave, dados.nome, 64) }}<small>{{ personagem.nome }}</small>
+                        </label>
+                    {% endfor %}
+                </fieldset>
+                <div class="conta-fim">
+                    <button class="conta-botao conta-botao--claro" type="button" data-fechar>Cancelar</button>
+                    <button class="conta-botao" type="submit">Usar este ícone</button>
+                </div>
+            </form>
+        </dialog>
+
+        <dialog class="conta-dialogo conta-dialogo--estreito" id="dialogo-senha" aria-labelledby="titulo-dialogo-senha"
+                {% if erro_senha or formulario_senha.errors %}data-abrir-ao-carregar{% endif %}>
+            <form method="post" action="{{ url_for('conta.trocar_senha') }}" novalidate>
+                {{ formulario_senha.csrf_token(id='csrf-senha') }}
+                <h2 id="titulo-dialogo-senha">Trocar senha</h2>
+                <p>Depois da troca, as outras sessões são encerradas e você recebe um aviso por e-mail.</p>
+                {% if erro_senha %}<p class="conta-aviso conta-aviso--erro" role="alert">{{ erro_senha }}</p>{% endif %}
+                <label class="conta-campo">Senha atual
+                    {{ formulario_senha.senha_atual(autocomplete='current-password', maxlength=128, required=true) }}
+                    {{ erros(formulario_senha.senha_atual) }}
+                </label>
+                <label class="conta-campo">Nova senha
+                    {{ formulario_senha.nova_senha(autocomplete='new-password', minlength=15, maxlength=128, required=true) }}
+                    {{ erros(formulario_senha.nova_senha) }}
+                </label>
+                <label class="conta-campo">Confirmar nova senha
+                    {{ formulario_senha.confirmar_senha(autocomplete='new-password', maxlength=128, required=true) }}
+                    {{ erros(formulario_senha.confirmar_senha) }}
+                </label>
+                <p class="conta-dica">Use pelo menos 15 caracteres. Uma frase longa é fácil de lembrar e difícil de adivinhar.</p>
+                <div class="conta-fim">
+                    <button class="conta-botao conta-botao--claro" type="button" data-fechar>Cancelar</button>
+                    <button class="conta-botao" type="submit">Trocar senha</button>
+                </div>
+            </form>
+        </dialog>
+    </main>
+    {% include "conteudos/_rodape.html" %}
+</body>
+</html>

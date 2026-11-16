@@ -1,5 +1,6 @@
 from .db import conectar_banco
 from .auditoria_db import registrar_evento, usuario_autenticado_id
+from .navegacao_atividades import PROXIMO_CONTEUDO
 
 
 def listar_conteudos(secao="conteudos"):
@@ -26,21 +27,22 @@ def listar_conteudos(secao="conteudos"):
 def buscar_conteudos(slug, secao="conteudos"):
     with conectar_banco() as conexao:
         conteudo = conexao.execute(
-            """
+            f"""
             SELECT
-                c.id,
-                c.slug,
-                c.titulo,
-                c.texto,
+                item.id,
+                item.slug,
+                item.titulo,
+                item.texto,
                 to_char(
                     cc.concluido_em AT TIME ZONE 'America/Sao_Paulo',
                     'DD/MM/YYYY'
-                ) AS concluido_em
-            FROM public.conteudos AS c
+                ) AS concluido_em,
+                {PROXIMO_CONTEUDO}
+            FROM public.conteudos AS item
             LEFT JOIN public.conclusoes_conteudo AS cc
-                ON cc.conteudo_id = c.id
+                ON cc.conteudo_id = item.id
                AND cc.usuario_id = %s
-            WHERE c.slug = %s AND c.secao = %s AND c.estado = 'publicada'
+            WHERE item.slug = %s AND item.secao = %s AND item.estado = 'publicada'
             """,
             (usuario_autenticado_id(), slug, secao),
         ).fetchone()

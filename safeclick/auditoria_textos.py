@@ -13,9 +13,20 @@ EVENTOS = {
     "login.falha": ("Login recusado", "acesso"),
     "logout.realizado": ("Saiu da conta", "acesso"),
     "usuario.senha_redefinida": ("Senha redefinida", "acesso"),
+    "usuario.senha_alterada": ("Senha trocada em Minha conta", "acesso"),
+    "usuario.perfil_atualizado": ("Dados do perfil atualizados", "acesso"),
+    "sessoes.encerradas": ("Outras sessões encerradas", "acesso"),
+    "conta.exclusao_agendada": ("Exclusão da conta pedida pelo titular", "acesso"),
+    "conta.reativada": ("Conta reativada pelo titular", "acesso"),
+    "conta.excluida": ("Conta excluída de vez (dados pessoais apagados)", "acesso"),
     "acesso.negado": ("Acesso negado", "acesso"),
     "conteudo.visualizado": ("Conteúdo aberto", "aprendizado"),
     "conteudo.concluido": ("Conteúdo concluído", "aprendizado"),
+    "avaliacao.salva": ("Avaliação salva", "aprendizado"),
+    "avaliacao.excluida": ("Avaliação excluída pelo titular", "aprendizado"),
+    "avaliacao.publicacao_retirada": ("Publicação da avaliação retirada pelo titular", "aprendizado"),
+    "avaliacao.moderada": ("Comentário de avaliação moderado", "administracao"),
+    "ranking.preferencia_atualizada": ("Participação no ranking atualizada", "aprendizado"),
     "quiz.concluido": ("Quiz respondido", "aprendizado"),
     "simulacao.concluida": ("Simulação respondida", "aprendizado"),
     "desafio_senha.concluido": ("Desafio de senhas concluído", "aprendizado"),
@@ -28,6 +39,8 @@ EVENTOS = {
     "catalogo.excluido": ("Rascunho excluído", "administracao"),
     "catalogo.restaurado": ("Item restaurado", "administracao"),
     "mfa.reconfiguracao_administrativa": ("Autenticador redefinido pelo administrador", "administracao"),
+    "usuario.perfil_alterado": ("Perfil de acesso alterado", "administracao"),
+    "visao_geral.exportada": ("Indicadores exportados para o Excel", "administracao"),
     "auditoria.consultada": ("Auditoria consultada", "administracao"),
     "api.consultada": ("Consulta a serviço externo", "integracoes"),
 }
@@ -38,6 +51,8 @@ EVENTOS_ANTIGOS = {
 }
 
 RESULTADOS = {"sucesso": "Sucesso", "falha": "Falha", "negado": "Negado"}
+
+PERFIS = {"usuario": "usuário", "administrador": "administrador"}
 
 MOTIVOS_LOGIN = {
     "email_nao_cadastrado": "E-mail não cadastrado",
@@ -93,6 +108,8 @@ RECURSOS = {
     "tentativa_simulacao": "Tentativa de simulação",
     "simulacao": "Simulação",
     "conteudo": "Conteúdo",
+    "avaliacao_conteudo": "Avaliação de conteúdo",
+    "avaliacao_quiz": "Avaliação de quiz",
     "desafio_senha": "Partida do desafio",
     "usuario": "Conta",
     "aceite_termos": "Aceite",
@@ -196,6 +213,30 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
         if sessoes is not None:
             frases.append(f"Sessões encerradas: {sessoes}")
 
+    elif evento in ("usuario.senha_alterada", "sessoes.encerradas", "usuario.perfil_atualizado"):
+        if detalhes.pop("motivo", None) == "senha_atual_incorreta":
+            frases.append("Senha atual incorreta")
+        sessoes = detalhes.pop("sessoes_encerradas", None)
+        if sessoes is not None:
+            frases.append(f"Outras sessões encerradas: {sessoes}")
+        campos = detalhes.pop("campos", None)
+        if campos:
+            frases.append("Alterado: " + ", ".join(_legivel(campo) for campo in campos))
+
+    elif evento == "usuario.perfil_alterado":
+        anterior = detalhes.pop("perfil_anterior", None)
+        novo = detalhes.pop("perfil_novo", None)
+        sessoes = detalhes.pop("sessoes_encerradas", None)
+        if anterior and novo:
+            frases.append(f"De {PERFIS.get(anterior, anterior)} para {PERFIS.get(novo, novo)}")
+        if sessoes is not None:
+            frases.append(f"Sessões encerradas: {sessoes}")
+
+    elif evento == "visao_geral.exportada":
+        dias = detalhes.pop("periodo_dias", None)
+        if dias:
+            frases.append(f"Período: últimos {dias} dias")
+
     elif evento == "termo.aceito":
         versao = detalhes.pop("versao", None)
         if versao:
@@ -207,6 +248,8 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
 
     if recurso_tipo in RECURSOS and recurso_id:
         frases.append(f"{RECURSOS[recurso_tipo]} nº {recurso_id}")
+    elif evento == "avaliacao.salva" and recurso_tipo in RECURSOS:
+        frases.append(RECURSOS[recurso_tipo])
 
     return frases
 

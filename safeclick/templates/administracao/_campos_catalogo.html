@@ -1,7 +1,7 @@
-{% macro campo(nome, rotulo, valor='', maximo=150, linhas=0, dinamico=false, obrigatorio=false) %}
+{% macro campo(nome, rotulo, valor='', maximo=150, linhas=0, dinamico=false, obrigatorio=false, dica='', oculto=false) %}
     <div class="admin-campo">
         <label>
-            {{ rotulo }}
+            {% if oculto %}<span class="admin-somente-leitor">{{ rotulo }}</span>{% else %}{{ rotulo }}{% endif %}{% if dica %} <small>{{ dica }}</small>{% endif %}
             {% if linhas %}
                 <textarea {{ 'data-campo' if dinamico else 'name' }}="{{ nome }}" rows="{{ linhas }}" maxlength="{{ maximo }}"
                           {% if obrigatorio %}required{% endif %}>{{ valor }}</textarea>
@@ -13,42 +13,51 @@
     </div>
 {% endmacro %}
 
-{% macro ordem() %}
-    <div class="admin-acoes admin-acoes-edicao">
-        <button class="admin-botao-secundario" data-editor-acao="subir" type="button">Subir</button>
-        <button class="admin-botao-secundario" data-editor-acao="descer" type="button">Descer</button>
-        <button class="admin-botao-secundario admin-botao-perigo" data-editor-acao="remover" type="button">Remover</button>
-    </div>
+{% macro ordem(rotulo) %}
+    <button class="admin-botao-icone" data-editor-acao="subir" type="button" aria-label="Subir {{ rotulo }}">↑</button>
+    <button class="admin-botao-icone" data-editor-acao="descer" type="button" aria-label="Descer {{ rotulo }}">↓</button>
+    <button class="admin-botao-icone admin-botao-perigo" data-editor-acao="remover" type="button">Remover</button>
 {% endmacro %}
 
 {% macro alternativa(item, simulacao=false, numero=1) %}
-    <fieldset class="admin-subbloco" data-item="{{ 'opcao' if simulacao else 'alternativa' }}">
+    <fieldset class="admin-subbloco admin-alternativa" data-item="{{ 'opcao' if simulacao else 'alternativa' }}">
         <legend>Alternativa <span data-numero>{{ numero }}</span></legend>
-        {{ campo('texto', 'Texto da alternativa', item.get('texto', ''), 500, 2, true) }}
+        <div class="admin-acoes admin-acoes-edicao">
+            {% if simulacao %}
+                <label class="admin-alt-tipo">
+                    <input type="checkbox" data-campo="segura" aria-label="Escolha segura" {% if item.get('segura') is sameas true %}checked{% endif %}>
+                    <span>De risco</span><span>Segura</span>
+                </label>
+            {% else %}
+                <label class="admin-alt-correta">
+                    <input type="checkbox" data-campo="correta" {% if item.get('correta') is sameas true %}checked{% endif %}>
+                    <span>Resposta correta</span>
+                </label>
+            {% endif %}
+            {{ ordem('alternativa') }}
+        </div>
         {% if simulacao %}
-            {{ campo('consequencia', 'Consequência', item.get('consequencia', ''), 1200, 2, true) }}
-            {{ campo('explicacao', 'Explicação', item.get('explicacao', ''), 1200, 2, true) }}
+            {{ campo('texto', 'O que a pessoa faz', item.get('texto', ''), 500, 0, true) }}
+            <div class="admin-campos-duplos">
+                {{ campo('consequencia', 'O que acontece', item.get('consequencia', ''), 1200, 3, true) }}
+                {{ campo('explicacao', 'Por quê', item.get('explicacao', ''), 1200, 3, true) }}
+            </div>
         {% else %}
-            {{ campo('explicacao', 'Comentário desta alternativa (opcional)', item.get('explicacao', ''), 800, 2, true) }}
+            {{ campo('texto', 'Texto da alternativa', item.get('texto', ''), 500, 0, true, oculto=true) }}
+            {{ campo('explicacao', 'Comentário', item.get('explicacao', ''), 800, 0, true, dica='opcional, aparece no resultado') }}
         {% endif %}
-        {% set chave = 'segura' if simulacao else 'correta' %}
-        <label class="admin-marcacao">
-            <input type="checkbox" data-campo="{{ chave }}" {% if item.get(chave) is sameas true %}checked{% endif %}>
-            {{ 'É uma escolha segura' if simulacao else 'É a resposta correta' }}
-        </label>
-        {{ ordem() }}
     </fieldset>
 {% endmacro %}
 
 {% macro pergunta(item, max_alternativas, numero=1) %}
-    <fieldset class="admin-editor-bloco" data-item="questao">
+    <fieldset class="admin-subbloco admin-pergunta" data-item="questao">
         <legend>Pergunta <span data-numero>{{ numero }}</span></legend>
+        <div class="admin-acoes admin-acoes-edicao">{{ ordem('pergunta') }}</div>
         {{ campo('enunciado', 'Enunciado', item.get('enunciado', ''), 1000, 2, true) }}
-        {{ campo('explicacao', 'Explicação exibida no resultado', item.get('explicacao', ''), 1200, 3, true) }}
+        {{ campo('explicacao', 'Explicação exibida no resultado', item.get('explicacao', ''), 1200, 2, true) }}
         <div class="admin-itens-editor" data-lista="alternativa" data-limite="{{ max_alternativas }}">
             {% for opcao in item.get('alternativas', []) %}{{ alternativa(opcao, false, loop.index) }}{% endfor %}
         </div>
-        <button class="admin-botao-secundario" data-editor-acao="adicionar" data-tipo="alternativa" type="button">+ Adicionar alternativa</button>
-        {{ ordem() }}
+        <button class="admin-botao-adicionar" data-editor-acao="adicionar" data-tipo="alternativa" type="button">+ Adicionar alternativa</button>
     </fieldset>
 {% endmacro %}

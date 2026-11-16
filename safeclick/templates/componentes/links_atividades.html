@@ -1,0 +1,9 @@
+{% macro links_atividades(tipo, proxima_referencia, classe_botao='quizzes-botao') %}
+    {% set eh_quiz = tipo == 'quiz' %}
+    {% if proxima_referencia %}
+        {% set proxima = url_for('quizzes.exibir_quiz', quiz_id=proxima_referencia) if eh_quiz else url_for('conteudos.detalhe', slug=proxima_referencia) %}
+        <a class="{{ classe_botao }}" href="{{ proxima }}">{{ 'Próximo quiz' if eh_quiz else 'Próximo conteúdo' }} <span aria-hidden="true">→</span></a>
+    {% endif %}
+    {% set lista = url_for('quizzes.listar_quizzes') if eh_quiz else url_for('conteudos.listar') %}
+    <a class="{{ classe_botao }} {{ classe_botao }}-secundario" href="{{ lista }}">{{ 'Ver todos os quizzes' if eh_quiz else 'Ver todos os conteúdos' }}</a>
+{% endmacro %}

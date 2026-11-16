@@ -26,6 +26,15 @@ class FormularioCadastro(FlaskForm):
         ],
     )
 
+    confirmar_email = EmailField(
+        "Confirme o e-mail",
+        filters=[limpar_texto, str.lower],
+        validators=[
+            DataRequired(message="Confirme o seu e-mail."),
+            EqualTo("email", message="Os e-mails precisam ser iguais."),
+        ],
+    )
+
     # a senha mantem exatamente os caracteres digitados, incluindo os espacos
     senha = PasswordField(
         "Senha",

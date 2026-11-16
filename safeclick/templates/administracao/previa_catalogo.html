@@ -1,68 +1,168 @@
-{% extends "administracao/base_catalogo.html" %}
-{% block titulo %}Prévia · {{ dados.get('titulo', 'Item') }}{% endblock %}
+{% extends "administracao/base.html" %}
+{% from "componentes/_mensagem_simulacao.html" import mensagem_simulacao %}
+{% set titulo_item = dados.get('titulo') or 'Item sem título' %}
+{% block titulo %}Prévia · {{ titulo_item }}{% endblock %}
+{% block classe_principal %}admin-editor-pagina{% endblock %}
+{% block recursos %}
+    {% set estilos = {'conteudos': 'conteudos.css', 'paginas': 'conteudos.css', 'simulacoes': 'simulacao.css', 'quizzes': 'quizzes.css'} %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/' ~ estilos[secao]) }}">
+{% endblock %}
 {% block conteudo %}
-    <header class="admin-introducao">
+    <nav class="admin-trilha" aria-label="Você está em">
+        <a href="{{ url_for('administracao.catalogo.listar', secao=secao) }}">{{ secoes[secao] }}</a>
+        <span aria-hidden="true">/</span> Prévia
+    </nav>
+    <div class="admin-previa-barra">
         <div>
-            <p class="visual-etiqueta">Prévia administrativa</p>
-            <h1>{{ dados.get('titulo', 'Item') }}</h1>
-            <p>{{ 'Rascunho salvo. Apenas administradores veem esta revisão.' if item.rascunho else 'Última versão publicada do item.' }}</p>
+            <h1>Prévia: {{ titulo_item }}</h1>
+            <p>{{ 'Rascunho salvo. Só administradores veem esta versão.' if item.rascunho else 'Versão publicada, como está no site agora.' }}</p>
         </div>
-        <div class="admin-acoes">
+        <div class="admin-previa-acoes">
             {% if item.estado != 'removida' %}
-                <a class="admin-link" href="{{ url_for('administracao.catalogo.editar', secao=secao, item_id=item.id) }}">Editar item</a>
+                <a class="admin-botao-contorno admin-botao-largo" href="{{ url_for('administracao.catalogo.editar', secao=secao, item_id=item.id) }}">Voltar ao editor</a>
             {% endif %}
-            {% if url_publica %}<a class="admin-link" href="{{ url_publica }}">Abrir no site</a>{% endif %}
+            {% if item.rascunho or (item.estado == 'arquivada' and item.versao) %}
+                <a class="admin-botao-publicar admin-botao-largo" href="{{ url_for('administracao.catalogo.confirmar', secao=secao, item_id=item.id, acao='publicar') }}">{{ 'Publicar revisão' if item.estado == 'publicada' else 'Publicar' }}</a>
+            {% elif url_publica %}
+                <a class="admin-botao-contorno admin-botao-largo" href="{{ url_publica }}">Abrir no site</a>
+            {% endif %}
         </div>
-    </header>
-    {% if secao == 'quizzes' %}
-        <div class="admin-previa">
-            {% for questao in dados.get('questoes', []) %}
-                <section class="admin-catalogo-cartao">
-                    <p class="visual-etiqueta">{{ 'Trecho' if dados.get('formato') == 'oficina' else 'Pergunta' }} {{ loop.index }}</p>
-                    <h2>{{ questao.get('enunciado') or 'Enunciado pendente' }}</h2>
-                    <ol type="A">
-                        {% for opcao in questao.get('alternativas', []) %}
-                            <li>
-                                {{ opcao.get('texto') or 'Alternativa vazia' }}{% if opcao.get('correta') %} <strong>· Correta</strong>{% endif %}
-                                {% if opcao.get('explicacao') %}<p>{{ opcao.explicacao }}</p>{% endif %}
+    </div>
+
+    <div class="admin-previa-tela" aria-label="Como o usuário vai ver">
+        <p class="admin-previa-rotulo">Como o usuário vai ver</p>
+
+        {% if secao in ('conteudos', 'paginas') %}
+            <article class="conteudos-artigo">
+                <header class="conteudos-artigo-cabecalho">
+                    <p class="visual-etiqueta">{{ 'Página do SafeClick' if secao == 'paginas' else 'Conteúdo educativo' }}</p>
+                    <h1>{{ titulo_item }}</h1>
+                </header>
+                <div class="conteudos-corpo">
+                    {% if corpo %}{{ corpo | safe }}{% else %}<p>O texto ainda está vazio.</p>{% endif %}
+                </div>
+                {% if secao == 'conteudos' %}
+                    <div class="conteudos-conclusao">
+                        <p>Terminou a leitura? Registre para acompanhar no seu progresso.</p>
+                        <button class="conteudos-botao" type="button" disabled>Marcar como concluído</button>
+                    </div>
+                {% endif %}
+            </article>
+
+        {% elif secao == 'simulacoes' %}
+            <div class="simulacao-pagina">
+                <header class="simulacao-introducao">
+                    <p class="visual-etiqueta">{{ dados.get('canal', '') }} · Simulação</p>
+                    <h1>{{ titulo_item }}</h1>
+                    <p class="simulacao-instrucao">Observe a mensagem. O que você faria se recebesse algo assim?</p>
+                </header>
+                <div class="simulacao-exercicio">
+                    <div class="simulacao-coluna">{{ mensagem_simulacao(dados) }}</div>
+                    <div class="simulacao-decisao">
+                        <fieldset class="simulacao-alternativas" disabled>
+                            <legend>O que você faria?</legend>
+                            <p class="simulacao-instrucao">Escolha uma alternativa para ver a consequência.</p>
+                            <div class="simulacao-opcoes">
+                                {% for opcao in opcoes %}
+                                    <label class="simulacao-opcao"><input type="radio"><span>{{ opcao.texto or 'Alternativa sem texto' }}</span></label>
+                                {% endfor %}
+                            </div>
+                        </fieldset>
+                        <button class="simulacao-botao" type="button" disabled>Ver consequência</button>
+                    </div>
+                </div>
+
+                <h2 class="admin-previa-subtitulo">Depois da escolha</h2>
+                <p class="admin-previa-nota">O usuário vê o resultado da alternativa que escolheu e os sinais de risco.</p>
+                {% set pistas, marcas = separar_pistas(dados.get('sinais', [])) %}
+                <div class="admin-previa-resultados">
+                    <ul class="simulacao-opcoes" role="list">
+                        {% for opcao in opcoes %}
+                            {% set tipo = 'segura' if opcao.segura else 'risco' %}
+                            <li class="simulacao-opcao simulacao-escolhida simulacao-escolhida--{{ tipo }}">
+                                <div class="simulacao-escolhida-texto">
+                                    <span class="simulacao-marcador" aria-hidden="true"></span>
+                                    <span>{{ opcao.texto or 'Alternativa sem texto' }}</span>
+                                </div>
+                                <div class="simulacao-retorno">
+                                    <p class="simulacao-veredito">{{ 'Escolha segura' if opcao.segura else 'Escolha de risco' }}</p>
+                                    <p>{{ opcao.consequencia }}</p>
+                                    <p class="simulacao-porque">{{ opcao.explicacao }}</p>
+                                </div>
                             </li>
                         {% endfor %}
-                    </ol>
-                    {% if questao.get('explicacao') %}<p><strong>Explicação:</strong> {{ questao.explicacao }}</p>{% endif %}
-                </section>
-            {% else %}
-                <p class="admin-vazio">Ainda não há perguntas neste rascunho.</p>
-            {% endfor %}
-        </div>
-    {% elif secao == 'simulacoes' %}
-        <div class="admin-previa">
-            <section class="admin-catalogo-cartao">
-                <p class="visual-etiqueta">{{ dados.get('canal', '') }}</p>
-                <h2>{{ dados.get('assunto') or 'Assunto pendente' }}</h2>
-                <p>{{ dados.get('resumo', '') }}</p>
-                <p><strong>{{ dados.get('origem', '') }}</strong></p>
-                {% for paragrafo in dados.get('mensagem', []) %}<p>{{ paragrafo }}</p>{% endfor %}
-                <p>{{ dados.get('chamada', '') }}</p>
-                {% if dados.get('produto') %}
-                    <p><strong>{{ dados.produto.nome }}</strong> · {{ dados.produto.preco_anterior }} → {{ dados.produto.preco_atual }}</p>
+                    </ul>
+                    <div>
+                        {% if marcas %}{{ mensagem_simulacao(dados, marcas) }}{% endif %}
+                        <aside class="simulacao-sinais">
+                            <h2>Sinais de risco nesta mensagem</h2>
+                            <ol>
+                                {% for sinal in pistas %}<li>{{ sinal }}</li>{% else %}<li>Nenhum sinal informado.</li>{% endfor %}
+                            </ol>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            {% set oficina = dados.get('formato') == 'oficina' %}
+            <div class="quizzes-responder">
+                <div class="quizzes-introducao quizzes-cartao">
+                    <p class="quizzes-etiqueta">{{ 'Oficina SafeClick' if oficina else 'Teste seus conhecimentos' }}</p>
+                    <h1>{{ titulo_item }}</h1>
+                    <p>{% if oficina %}Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez. Pode haver cartões que ficam sem uso.
+                       {% else %}Selecione uma alternativa por pergunta. Todas as perguntas são obrigatórias.{% endif %}</p>
+                </div>
+                {% if oficina and questoes %}
+                    <section class="quizzes-cartao quizzes-banco-cartoes">
+                        <h2>Cartões do guia</h2>
+                        <ul>{% for cartao in questoes[0].alternativas %}<li>{{ cartao.get('texto') }}</li>{% endfor %}</ul>
+                    </section>
                 {% endif %}
-                {% if dados.get('sinais') %}
-                    <h3>Sinais de risco</h3>
-                    <ul>{% for sinal in dados.sinais %}<li>{{ sinal }}</li>{% endfor %}</ul>
+                <div class="quizzes-perguntas">
+                    {% for questao in questoes %}
+                        <div class="quizzes-cartao">
+                            {% if oficina %}
+                                <p class="quizzes-enunciado">
+                                    <span class="quizzes-etiqueta">Trecho {{ loop.index }} de {{ questoes|length }}</span>
+                                    {{ questao.get('enunciado') or 'Trecho sem texto' }}
+                                </p>
+                                <select class="quizzes-encaixe" disabled aria-label="Cartão do trecho {{ loop.index }}">
+                                    <option>Escolha um cartão</option>
+                                </select>
+                                {% set correta = questao.alternativas|selectattr('correta')|first %}
+                                <p class="admin-previa-gabarito"><strong>Cartão correto:</strong> {{ correta.texto if correta else 'nenhum marcado' }}
+                                    {% if questao.get('explicacao') %}<br><strong>No resultado:</strong> {{ questao.explicacao }}{% endif %}</p>
+                            {% else %}
+                            <fieldset class="quizzes-pergunta" disabled>
+                                <legend>
+                                    <span class="quizzes-etiqueta">{{ 'Trecho' if oficina else 'Pergunta' }} {{ loop.index }} de {{ questoes|length }}</span>
+                                    {{ questao.get('enunciado') or 'Enunciado pendente' }}
+                                </legend>
+                                <div class="quizzes-opcoes">
+                                    {% for alternativa in questao.alternativas %}
+                                        <label class="quizzes-opcao{{ ' admin-previa-correta' if alternativa.get('correta') }}">
+                                            <input type="radio">
+                                            <span><strong>{{ 'ABCDEFGH'[loop.index0] }}.</strong> {{ alternativa.get('texto') or 'Alternativa vazia' }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                {% if questao.get('explicacao') %}
+                                    <p class="admin-previa-gabarito"><strong>No resultado:</strong> {{ questao.explicacao }}</p>
+                                {% endif %}
+                            </fieldset>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="quizzes-cartao">Este quiz ainda não possui perguntas.</p>
+                    {% endfor %}
+                </div>
+                {% if oficina %}
+                    <p class="admin-previa-nota">O cartão correto e a explicação aparecem só aqui na prévia. O usuário vê depois de enviar.</p>
+                {% else %}
+                    <p class="admin-previa-nota">A alternativa destacada em verde é a correta. O usuário só vê isso depois de enviar.</p>
                 {% endif %}
-            </section>
-            {% for opcao in opcoes %}
-                <section class="admin-catalogo-cartao">
-                    <p class="visual-etiqueta">Alternativa {{ loop.index }} · {{ 'Segura' if opcao.segura else 'De risco' }}</p>
-                    <h2>{{ opcao.texto or 'Alternativa pendente' }}</h2>
-                    <p><strong>Consequência:</strong> {{ opcao.consequencia }}</p>
-                    <p><strong>Explicação:</strong> {{ opcao.explicacao }}</p>
-                </section>
-            {% endfor %}
-        </div>
-    {% else %}
-        <article class="admin-catalogo-cartao admin-previa admin-corpo-previa">
-            {% if corpo %}{{ corpo | safe }}{% else %}<p>O texto ainda está vazio.</p>{% endif %}
-        </article>
-    {% endif %}
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

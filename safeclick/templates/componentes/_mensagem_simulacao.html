@@ -1,0 +1,49 @@
+{# Cartão da mensagem fictícia, usado na simulação e na prévia do administrador. #}
+{% macro _pista(marcas, alvo) %}{% for numero in marcas.get(alvo, []) %}<span class="simulacao-pista"><span class="simulacao-oculto">Sinal </span>{{ numero }}</span>{% endfor %}{% endmacro %}
+
+{% macro _marcada(marcas, alvo) %}{{ ' mensagem-marcada' if alvo in marcas }}{% endmacro %}
+
+{% macro mensagem_simulacao(cenario, marcas={}) %}
+    {% set modelos_visuais = {
+        'email': 'conta-bloqueada',
+        'sms': 'entrega-sms',
+        'conversa': 'falso-conhecido',
+        'loja': 'loja-falsa'
+    } %}
+    {% set paragrafos = cenario.get('mensagem') or [] %}
+    {% if paragrafos is string %}{% set paragrafos = paragrafos.splitlines() %}{% endif %}
+    <section
+        class="simulacao-mensagem mensagem--{{ modelos_visuais.get(cenario.get('tipo'), 'conta-bloqueada') }}"
+        aria-labelledby="titulo-mensagem"
+    >
+        <div class="mensagem-barra">{{ cenario.get('canal', '') }}</div>
+
+        {% if cenario.get('tipo') == "loja" and cenario.get("produto") %}
+            <div class="mensagem-produto{{ _marcada(marcas, 'produto') }}">
+                <div class="produto-celular" aria-hidden="true"></div>
+
+                <div>
+                    <p class="produto-nome">{{ cenario["produto"]["nome"] }}</p>
+                    <p class="produto-preco-anterior">De <s>{{ cenario["produto"]["preco_anterior"] }}</s></p>
+                    <p class="produto-preco">{{ cenario["produto"]["preco_atual"] }}{{ _pista(marcas, 'produto') }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="mensagem-cabecalho">
+            <h2 id="titulo-mensagem"><span class="{{ _marcada(marcas, 'assunto') }}">{{ cenario.get("assunto", "") }}</span>{{ _pista(marcas, 'assunto') }}</h2>
+            <p class="mensagem-origem"><span class="{{ _marcada(marcas, 'origem') }}">{{ cenario.get("origem", "") }}</span>{{ _pista(marcas, 'origem') }}</p>
+        </div>
+
+        <div class="mensagem-corpo">
+            {% for paragrafo in paragrafos %}
+                {% set alvo = 'paragrafo-' ~ loop.index %}
+                <p class="mensagem-paragrafo"><span class="{{ _marcada(marcas, alvo) }}">{{ paragrafo }}</span>{{ _pista(marcas, alvo) }}</p>
+            {% endfor %}
+
+            {% if cenario.get('tipo') != "conversa" and cenario.get("chamada") %}
+                <p class="mensagem-chamada{{ _marcada(marcas, 'chamada') }}">{{ cenario["chamada"] }}{{ _pista(marcas, 'chamada') }}</p>
+            {% endif %}
+        </div>
+    </section>
+{% endmacro %}

@@ -8,6 +8,12 @@ from safeclick.db import conectar_banco
 EVENTOS_PERMITIDOS = {
     "usuario.cadastrado",
     "usuario.senha_redefinida",
+    "usuario.senha_alterada",
+    "usuario.perfil_atualizado",
+    "sessoes.encerradas",
+    "conta.exclusao_agendada",
+    "conta.reativada",
+    "conta.excluida",
     "login.sucesso",
     "login.falha",
     "logout.realizado",
@@ -17,6 +23,11 @@ EVENTOS_PERMITIDOS = {
     "simulacao.criada",
     "conteudo.visualizado",
     "conteudo.concluido",
+    "avaliacao.salva",
+    "avaliacao.excluida",
+    "avaliacao.publicacao_retirada",
+    "avaliacao.moderada",
+    "ranking.preferencia_atualizada",
     "api.consultada",
     "desafio_senha.concluido",
     "termo.aceito",
@@ -29,6 +40,8 @@ EVENTOS_PERMITIDOS = {
     "catalogo.excluido",
     "catalogo.restaurado",
     "mfa.reconfiguracao_administrativa",
+    "usuario.perfil_alterado",
+    "visao_geral.exportada",
 }
 
 RESULTADOS_PERMITIDOS = {

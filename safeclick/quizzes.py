@@ -14,6 +14,7 @@ import psycopg
 from safeclick.db import conectar_banco
 from safeclick.auditoria_db import registrar_evento
 from safeclick.catalogo_validacao import MAX_ALTERNATIVAS, MAX_QUESTOES
+from safeclick.navegacao_atividades import PROXIMO_QUIZ
 from safeclick.sessoes import exigir_perfis
 from flask_login import current_user
 
@@ -61,11 +62,12 @@ def exibir_quiz(quiz_id):
     # Exibe as perguntas e processa o envio das respostas.
     with conectar_banco() as conexao:
         quiz = conexao.execute(
-            """
-            SELECT c.id, q.id AS versao_id, q.titulo, q.formato
-            FROM public.catalogo_quizzes AS c
-            JOIN public.quizzes AS q ON q.id = c.versao_publicada_id
-            WHERE c.id = %s AND c.estado = 'publicada'
+            f"""
+            SELECT item.id, publicada.id AS versao_id, publicada.titulo, publicada.formato,
+                {PROXIMO_QUIZ}
+            FROM public.catalogo_quizzes AS item
+            JOIN public.quizzes AS publicada ON publicada.id = item.versao_publicada_id
+            WHERE item.id = %s AND item.estado = 'publicada'
             """,
             (quiz_id,),
         ).fetchone()
@@ -456,7 +458,7 @@ def exibir_resultado(tentativa_id=None):
 
     with conectar_banco() as conexao:
         tentativa = conexao.execute(
-            """
+            f"""
             SELECT
                 tentativa.id,
                 tentativa.quiz_id,
@@ -464,13 +466,16 @@ def exibir_resultado(tentativa_id=None):
                 tentativa.total_questoes,
                 quiz.titulo,
                 quiz.formato,
-                catalogo.id AS catalogo_id,
-                catalogo.estado = 'publicada' AS pode_repetir
+                item.id AS catalogo_id,
+                item.estado = 'publicada' AS pode_repetir,
+                {PROXIMO_QUIZ}
             FROM public.tentativas_quiz AS tentativa
             JOIN public.quizzes AS quiz
                 ON quiz.id = tentativa.quiz_id
-            JOIN public.catalogo_quizzes AS catalogo
-                ON catalogo.id = quiz.catalogo_id
+            JOIN public.catalogo_quizzes AS item
+                ON item.id = quiz.catalogo_id
+            LEFT JOIN public.quizzes AS publicada
+                ON publicada.id = item.versao_publicada_id
             WHERE tentativa.id = %s
               AND tentativa.usuario_id = %s
             """,
@@ -529,6 +534,7 @@ def exibir_resultado(tentativa_id=None):
         "titulo": tentativa["titulo"],
         "formato": tentativa["formato"],
         "pode_repetir": tentativa["pode_repetir"],
+        "proxima_referencia": tentativa["proxima_referencia"],
     }
 
     resultado = {
@@ -542,6 +548,7 @@ def exibir_resultado(tentativa_id=None):
             "quizzes/resultado.html",
             quiz=quiz,
             resultado=resultado,
+            tentativa_id=tentativa["id"],
         )
     )
 

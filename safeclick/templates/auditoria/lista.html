@@ -1,23 +1,11 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logs de auditoria | SafeClick</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+{% extends "administracao/base.html" %}
+{% block titulo %}Auditoria{% endblock %}
+{% block recursos %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auditoria.css') }}">
-
-    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/auditoria.js') }}" defer></script>
-</head>
-<body class="site-visual">
-    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
-
-    {% include "componentes/cabecalho.html" %}
-
-    <main id="conteudo" class="visual-container auditoria-conteudo" tabindex="-1">
+{% endblock %}
+{% block classe_principal %}auditoria-conteudo{% endblock %}
+{% block conteudo %}
         <header class="auditoria-introducao">
             <p class="visual-etiqueta">Administração</p>
             <h1>Logs de auditoria</h1>
@@ -204,13 +192,4 @@
                 {% endif %}
             </nav>
         {% endif %}
-    </main>
-
-    <footer class="visual-rodape">
-        <div class="visual-container">
-            <p><strong>SafeClick · Aprenda antes de clicar.</strong></p>
-            <p>Os registros de auditoria não podem ser alterados.</p>
-        </div>
-    </footer>
-</body>
-</html>
+{% endblock %}

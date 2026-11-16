@@ -3,6 +3,7 @@ from flask import Blueprint, abort, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
 
+from safeclick.pistas_simulacao import separar_pistas
 from safeclick.sessoes import exigir_perfis
 from safeclick.simulacoes_db import (
     SimulacaoAlterada,
@@ -14,6 +15,7 @@ from safeclick.simulacoes_db import (
 
 
 simulacoes = Blueprint("simulacoes", __name__, url_prefix="/simulacoes")
+simulacoes.record_once(lambda estado: estado.app.jinja_env.globals.update(separar_pistas=separar_pistas))
 
 
 @simulacoes.before_request
@@ -144,49 +146,3 @@ def _processar_cenario(slug):
         erro=erro,
         pode_repetir=pode_repetir,
     ), status
-
-def listar_simulacoes_administrativas(*, estado="", pagina=1, por_pagina=20):
-    
-    if not isinstance(estado, str) or estado not in {"", "rascunho", "publicada", "arquivada"}:
-        raise ValueError("Estado inválido.")
-    if type(pagina) is not int or not 1 <= pagina <= 1000000:
-        raise ValueError("Página inválida.")
-    if type(por_pagina) is not int or not 1 <= por_pagina <= 100:
-        raise ValueError("Quantidade por página inválida.")
-
-    filtro = " WHERE s.estado = %s" if estado else ""
-    parametros = [estado] if estado else []
-
-    with conectar_banco() as conexao:
-        total = conexao.execute(
-            "SELECT COUNT(*) AS total FROM public.simulacoes AS s" + filtro,
-            parametros,
-        ).fetchone()["total"]
-
-        registros = conexao.execute(
-            """
-            SELECT
-                s.id,
-                s.identificador,
-                s.slug,
-                s.estado,
-                COALESCE(
-                    NULLIF(v.conteudo->>'titulo', ''),
-                    NULLIF(s.rascunho->>'titulo', ''),
-                    s.identificador
-                ) AS titulo,
-                COALESCE(
-                    NULLIF(v.conteudo->>'tipo', ''),
-                    NULLIF(s.rascunho->>'tipo', ''),
-                    ''
-                ) AS tipo,
-                v.numero AS versao
-            FROM public.simulacoes AS s
-            LEFT JOIN public.versoes_simulacao AS v
-                ON v.simulacao_id = s.id
-               AND v.id = s.versao_publicada_id
-            """ + filtro + " ORDER BY s.id LIMIT %s OFFSET %s",
-            [*parametros, por_pagina, (pagina - 1) * por_pagina],
-        ).fetchall()
-
-    return registros, total

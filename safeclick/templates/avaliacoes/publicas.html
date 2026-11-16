@@ -1,0 +1,30 @@
+{% extends 'quizzes/base.html' %}
+{% block titulo %}Avaliações públicas | SafeClick{% endblock %}
+{% block conteudo %}
+<header class="quizzes-introducao"><p class="quizzes-etiqueta">Aprender com outras experiências</p>
+    <h1>Avaliações de conteúdos e quizzes</h1>
+    <p>Notas compartilhadas por escolha dos participantes. Os comentários aparecem após moderação, sem nome ou e-mail do autor.</p>
+</header>
+<form class="participacao-filtros" method="get" data-espera>
+    <label>Tipo <select name="tipo"><option value="">Todos</option><option value="conteudo" {{ 'selected' if tipo == 'conteudo' }}>Conteúdos</option><option value="quiz" {{ 'selected' if tipo == 'quiz' }}>Quizzes e oficinas</option></select></label>
+    <label>Buscar atividade <input name="busca" type="search" maxlength="100" value="{{ busca }}"></label>
+    <button class="quizzes-botao">Filtrar</button>
+</form>
+<p role="status" data-carregando hidden>Carregando avaliações…</p>
+{% if erro %}<p class="quizzes-erro" role="alert">Não foi possível carregar as avaliações. <a href="{{ url_for('avaliacoes.publicas') }}">Tentar novamente</a></p>
+{% else %}
+<ul class="quizzes-grade quizzes-lista">
+{% for item in itens %}<li class="quizzes-cartao">
+    <p class="quizzes-etiqueta">{{ 'Conteúdo' if item.tipo == 'conteudo' else 'Quiz ou oficina' }}</p>
+    <h2>{{ item.titulo }}</h2>
+    <p>{% if item.total %}<strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5</strong> · {{ item.total }} {{ 'avaliação pública' if item.total == 1 else 'avaliações públicas' }}{% else %}Sem avaliações públicas{% endif %}</p>
+    <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=item.tipo, item_id=item.id) }}">Ver avaliações e comentários →</a>
+</li>{% else %}<li class="quizzes-cartao">Nenhuma atividade encontrada para esses filtros.</li>{% endfor %}
+</ul>
+<nav class="quizzes-acoes" aria-label="Páginas de avaliações">
+{% if pagina > 1 %}<a href="{{ url_for('avaliacoes.publicas', pagina=pagina-1, tipo=tipo, busca=busca) }}">Anterior</a>{% endif %}
+<span>Página {{ pagina }}</span>
+{% if pagina * 20 < total %}<a href="{{ url_for('avaliacoes.publicas', pagina=pagina+1, tipo=tipo, busca=busca) }}">Próxima</a>{% endif %}
+</nav>{% endif %}
+<p class="participacao-nota">Uma avaliação privada não compõe estes indicadores. <a href="{{ url_for('ranking.privacidade') }}">Entenda a publicação e seus controles de privacidade</a>.</p>
+{% endblock %}

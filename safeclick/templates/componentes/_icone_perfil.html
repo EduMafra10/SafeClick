@@ -1,0 +1,17 @@
+{# Ícone de perfil: personagem escolhido ou as iniciais do nome. #}
+{% macro icone_perfil(chave, nome, tamanho=38, classe='') %}
+    {% set personagem = icones_perfil.get(chave) if chave else none %}
+    {% if personagem %}
+        <span class="perfil-icone {{ classe }}" style="width: {{ tamanho }}px; height: {{ tamanho }}px">
+            <svg viewBox="0 0 64 64" width="{{ tamanho }}" height="{{ tamanho }}" aria-hidden="true" focusable="false">
+                <rect width="64" height="64" fill="{{ personagem.fundo }}"/>{{ personagem.desenho | safe }}
+            </svg>
+        </span>
+    {% else %}
+        {% set partes = ((nome or '')|trim or 'Usuário').split() %}
+        <span class="perfil-icone perfil-icone--iniciais {{ classe }}"
+              style="width: {{ tamanho }}px; height: {{ tamanho }}px; font-size: {{ (tamanho * 0.34)|round|int }}px" aria-hidden="true">
+            {{- partes[0][0]|upper }}{% if partes|length > 1 %}{{ partes[-1][0]|upper }}{% endif -%}
+        </span>
+    {% endif %}
+{% endmacro %}

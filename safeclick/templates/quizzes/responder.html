@@ -1,4 +1,6 @@
 {% extends "quizzes/base.html" %}
+{% from "componentes/links_atividades.html" import links_atividades %}
+{% from "componentes/avaliacoes_publicas.html" import avaliacoes_publicas %}
 {% block titulo %}{{ quiz.titulo }} | SafeClick{% endblock %}
 
 {% block conteudo %}
@@ -11,7 +13,7 @@
             <p class="quizzes-etiqueta">{{ 'Oficina SafeClick' if oficina else 'Teste seus conhecimentos' }}</p>
             <h1>{{ quiz.titulo }}</h1>
             <p id="orientacao-quiz">
-                {% if oficina %}Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez.
+                {% if oficina %}Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez. Pode haver cartões que ficam sem uso.
                 {% else %}Selecione uma alternativa por pergunta. Todas as perguntas são obrigatórias.{% endif %}
             </p>
         </div>
@@ -58,5 +60,9 @@
                 </div>
             {% endif %}
         </form>
+        {% if config.AVALIACOES_ATIVAS %}{{ avaliacoes_publicas('quiz', quiz.id) }}{% endif %}
+        <nav class="quizzes-acoes" aria-label="Próximas atividades">
+            {{ links_atividades('quiz', quiz.proxima_referencia) }}
+        </nav>
     </div>
 {% endblock %}

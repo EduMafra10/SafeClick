@@ -402,6 +402,25 @@
     margin: 0;
 }
 
+.avaliacao-comentario {
+    display: grid;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.avaliacao-comentario p {
+    margin: 0;
+}
+
+.avaliacao-comentario textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--visual-borda);
+    border-radius: 8px;
+    font: inherit;
+    resize: vertical;
+}
+
 .quizzes-acoes {
     display: flex;
     flex-wrap: wrap;

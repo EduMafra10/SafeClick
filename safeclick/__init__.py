@@ -1,5 +1,10 @@
 
-from flask import Flask, redirect, session, url_for
+import os
+
+from flask import Flask, redirect, render_template, request, session, url_for
+from werkzeug.exceptions import HTTPException
+from werkzeug.middleware.proxy_fix import ProxyFix
+from flask_login import current_user
 
 from safeclick.config import carregar_configuracao
 from safeclick.conteudos import conteudos_bp, paginas_bp
@@ -16,22 +21,29 @@ from safeclick.emails import verificar_email
 from safeclick.recuperacao import recuperacao
 from safeclick.aceite_termos import aceite_termos
 from safeclick.senhas import senhas
+from safeclick.conta import conta
 from safeclick.administracao import administracao
 from safeclick.painel import painel
+from safeclick.conquistas import conquistas
+from safeclick.avaliacoes import avaliacoes
+from safeclick.exclusao_conta import exclusao_conta, reativacao_conta
+from safeclick.ranking import ranking
+from safeclick.moderacao_avaliacoes import moderacao_avaliacoes
 
 def create_app():
     app = Flask(__name__)
 
-    # toda a configuração vem de safeclick/config.py (variáveis de ambiente)
     app.config.update(carregar_configuracao())
+
+    # na Vercel o IP do usuário chega pelo proxy
+    if os.environ.get("VERCEL"):
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     login_manager.init_app(app)
 
-    # registra as paginas de autenticacao
     app.register_blueprint(autenticacao)
     app.register_blueprint(recuperacao)
 
-    # registra as funcionalidades ja desenvolvidas
     app.register_blueprint(conteudos_bp)
     app.register_blueprint(paginas_bp)
     app.register_blueprint(simulacoes)
@@ -39,17 +51,47 @@ def create_app():
     app.register_blueprint(auditoria)
     app.register_blueprint(administracao)
     app.register_blueprint(painel)
+    app.register_blueprint(conquistas)
+    app.register_blueprint(avaliacoes)
+    app.register_blueprint(exclusao_conta)
+    app.register_blueprint(reativacao_conta)
+    app.register_blueprint(ranking)
+    app.register_blueprint(moderacao_avaliacoes)
 
-    # Registra as páginas de LGPD (política de privacidade e termos de uso).
     app.register_blueprint(privacidade)
     app.register_blueprint(aceite_termos)
     app.register_blueprint(senhas)
+    app.register_blueprint(conta)
 
-    # Disponibiliza o comando de verificação do banco.
     app.cli.add_command(verificar_banco)
     app.cli.add_command(verificar_twilio)
     app.cli.add_command(verificar_email)
     app.cli.add_command(importar_cenarios_cli)
+
+    @app.after_request
+    def proteger_cabecalhos(resposta):
+        resposta.headers.setdefault("X-Content-Type-Options", "nosniff")
+        resposta.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        resposta.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        resposta.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        if request.is_secure:
+            resposta.headers.setdefault("Strict-Transport-Security", "max-age=31536000")
+        return resposta
+
+    @app.errorhandler(HTTPException)
+    def exibir_erro(erro):
+        if erro.code in (None, 413) or erro.code < 400 or request.path.startswith("/laboratorio-senhas/desafio"):
+            return erro
+        # mantém a mensagem própria da rota, quando ela existir
+        detalhe = erro.description if erro.description != type(erro).description else None
+        resposta = erro.get_response()
+        resposta.set_data(render_template("erro.html", codigo=erro.code, detalhe=detalhe))
+        resposta.content_type = "text/html; charset=utf-8"
+        return resposta
+
+    @app.errorhandler(500)
+    def exibir_erro_interno(erro):
+        return render_template("erro.html", codigo=500), 500
 
     @app.after_request
     def evitar_cache_paginas_autenticadas(resposta):
@@ -59,7 +101,8 @@ def create_app():
 
     @app.get("/")
     def inicio():
-        # O painel de progresso é a página inicial de quem está logado
+        if current_user.is_authenticated and current_user.perfil == "administrador":
+            return redirect(url_for("administracao.inicio"))
         return redirect(url_for("painel.exibir"))
 
     return app

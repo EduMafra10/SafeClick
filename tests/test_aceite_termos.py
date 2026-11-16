@@ -64,6 +64,7 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         return {
             "nome": "Pessoa Teste",
             "email": "PESSOA@example.com",
+            "confirmar_email": " pessoa@EXAMPLE.com ",
             "senha": "senha-ficticia-longa",
             "confirmar_senha": "senha-ficticia-longa",
             "aceitou_termos": "y",
@@ -128,10 +129,20 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         self.assertNotIn(dados["senha"], resposta.get_data(as_text=True))
         self.criar.assert_not_called()
 
+    def test_emails_diferentes_nao_criam_conta(self):
+        dados = self.dados()
+        dados["confirmar_email"] = "pessoa@exemplo.com"
+        resposta = self.client.post("/cadastro", data=dados)
+        self.assertEqual(resposta.status_code, 400)
+        self.assertIn("Os e-mails precisam ser iguais.", resposta.get_data(as_text=True))
+        dados.pop("confirmar_email")
+        self.assertEqual(self.client.post("/cadastro", data=dados).status_code, 400)
+        self.criar.assert_not_called()
+
     def test_sucesso_encaminha_aceite_versao_e_nao_autentica(self):
         resposta = self.client.post("/cadastro", data=self.dados())
         self.assertEqual(resposta.status_code, 303)
-        self.assertTrue(resposta.headers["Location"].endswith("/cadastro"))
+        self.assertTrue(resposta.headers["Location"].endswith("/login"))
         self.criar.assert_called_once_with(
             "Pessoa Teste", "pessoa@example.com", "senha-ficticia-longa",
             aceitou_termos=True, versao_termos="1.0",
@@ -212,6 +223,7 @@ class CadastroTermosTransacaoTeste(unittest.TestCase):
             "hash": patch("safeclick.usuarios_db.generate_password_hash", return_value="hash-ficticio"),
             "buscar": patch("safeclick.usuarios_db.buscar_termos", return_value=DOCUMENTO),
             "auditar": patch("safeclick.usuarios_db.registrar_evento"),
+            "prazos": patch("safeclick.usuarios_db.aplicar_prazos"),
         }.items():
             self.mocks[nome] = substituicao.start()
             self.addCleanup(substituicao.stop)
@@ -224,6 +236,7 @@ class CadastroTermosTransacaoTeste(unittest.TestCase):
     def test_conta_aceite_e_dois_eventos_usam_mesma_transacao(self):
         self.assertEqual(self.criar(), 11)
         self.mocks["buscar"].assert_called_once_with("1.0", conexao=self.conexao)
+        self.mocks["prazos"].assert_called_once_with(self.conexao)
         chamadas = self.conexao.execute.call_args_list
         self.assertEqual(len(chamadas), 2)
         self.assertIn("INSERT INTO public.usuarios", chamadas[0].args[0])

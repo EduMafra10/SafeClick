@@ -1,0 +1,45 @@
+{% extends "autenticacao/base.html" %}
+
+{% set titulo = "Reativar minha conta" %}
+{% set descricao = "Confirme com a sua senha para cancelar a exclusão. Depois, entre normalmente: como o aplicativo autenticador foi desvinculado, o sistema vai pedir para configurá-lo de novo." %}
+
+{% block conteudo %}
+    {% if not link_invalido %}
+        <noscript>
+            <p class="autenticacao-mensagem" role="alert">
+                Ative o JavaScript e abra novamente o link recebido por e-mail.
+            </p>
+        </noscript>
+
+        <form method="post" action="{{ url_for('reativacao_conta.reativar') }}">
+            {{ formulario.hidden_tag() }}
+
+            <input
+                type="hidden"
+                name="token_reativacao"
+                id="token-reativacao"
+                value="{{ token_reativacao }}"
+            >
+
+            {{ exibir_campo(formulario.senha, "current-password") }}
+
+            {{ formulario.enviar(class_="autenticacao-botao") }}
+        </form>
+
+        <p class="autenticacao-ajuda" id="reativacao-orientacao" hidden>
+            Para continuar, abra o link recebido por e-mail.
+        </p>
+    {% endif %}
+
+    <script
+        src="{{ url_for('static', filename='js/reativacao.js') }}"
+        defer
+    ></script>
+{% endblock %}
+
+{% block rodape %}
+    Esqueceu a senha?
+    <a href="{{ url_for('recuperacao.solicitar') }}">Recuperar a senha</a>
+    ·
+    <a href="{{ url_for('autenticacao.login') }}">Voltar para o login</a>
+{% endblock %}

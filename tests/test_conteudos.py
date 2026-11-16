@@ -135,6 +135,16 @@ class RotasConteudosTeste(unittest.TestCase):
         self.assertIn("Marcar como concluído", html)
         self.assertIn('action="/conteudos/phishing/concluir"', html)
 
+    def test_navegacao_da_leitura_independe_da_conclusao(self):
+        self.buscar.return_value = dict(CONTEUDO, proxima_referencia="senhas")
+        html = self.client.get("/conteudos/phishing").text
+        self.assertIn('href="/conteudos/senhas">Próximo conteúdo', html)
+        self.assertIn('href="/conteudos/">Ver todos os conteúdos', html)
+        self.concluir.assert_not_called()
+
+        html_editorial = self.client.get("/paginas/phishing").text
+        self.assertNotIn("Próximo conteúdo", html_editorial)
+
     def test_conteudo_concluido_mostra_a_data(self):
         self.buscar.return_value = dict(CONTEUDO, concluido_em="04/11/2026")
         html = self.client.get("/conteudos/phishing").get_data(as_text=True)

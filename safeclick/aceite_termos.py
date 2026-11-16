@@ -81,6 +81,8 @@ def exigir_aceite_dos_termos():
         "recuperacao",
         "privacidade",
         "aceite_termos",
+        "exclusao_conta",
+        "reativacao_conta",
     }:
         return None
 

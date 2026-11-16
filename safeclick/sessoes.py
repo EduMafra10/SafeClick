@@ -24,6 +24,7 @@ class Usuario(UserMixin):
         self.nome = dados["nome"]
         self.email = dados["email"]
         self.perfil = dados["perfil"]
+        self.icone = dados.get("icone")
 
 
 def _hash_sessao(token):
@@ -31,6 +32,10 @@ def _hash_sessao(token):
         return None
 
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def hash_sessao_atual():
+    return _hash_sessao(session.get("sessao_token"))
 
 
 def criar_sessao(usuario_id, token_pendente):
@@ -124,10 +129,12 @@ def carregar_usuario(usuario_id):
                   AND sessao.usuario_id = %s
                   AND usuario.id = sessao.usuario_id
                   AND usuario.mfa_confirmado_em IS NOT NULL
+                  AND usuario.excluida_em IS NULL
+                  AND usuario.exclusao_solicitada_em IS NULL
                   AND sessao.expira_em > clock_timestamp()
                   AND sessao.ultima_atividade >
                       clock_timestamp() - INTERVAL '30 minutes'
-                RETURNING usuario.id, usuario.nome, usuario.email, usuario.perfil
+                RETURNING usuario.id, usuario.nome, usuario.email, usuario.perfil, usuario.icone
                 """,
                 (token_hash, usuario_id),
             ).fetchone()

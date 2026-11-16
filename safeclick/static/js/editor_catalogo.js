@@ -67,13 +67,13 @@ if (editor) {
         }
     });
 
-    const tipo = editor.querySelector('[name="tipo"]');
     function atualizarProduto() {
-        if (tipo) editor.querySelector("[data-produto]").hidden = tipo.value !== "loja";
+        const produto = editor.querySelector("[data-produto]");
+        if (produto) produto.hidden = editor.elements.tipo.value !== "loja";
     }
 
     editor.addEventListener("change", evento => {
-        if (evento.target === tipo) atualizarProduto();
+        if (evento.target.name === "tipo") atualizarProduto();
         if (evento.target.matches('[data-campo="correta"]:checked')) {
             const pergunta = evento.target.closest("[data-item=questao]");
             for (const caixa of pergunta.querySelectorAll('[data-campo="correta"]')) {

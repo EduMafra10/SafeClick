@@ -1,3 +1,5 @@
+{% from "componentes/links_atividades.html" import links_atividades -%}
+{% from "componentes/avaliacoes_publicas.html" import avaliacoes_publicas -%}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,6 +10,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">
+    <script src="{{ url_for('static', filename='js/participacao.js') }}" defer></script>
 
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>
@@ -39,6 +43,9 @@
                             <span aria-hidden="true">✓</span>
                             Você concluiu este conteúdo em {{ conteudo.concluido_em }}.
                         </p>
+                        {% if config.AVALIACOES_ATIVAS %}
+                            <a class="conteudos-botao" href="{{ url_for('avaliacoes.conteudo', slug=conteudo.slug) }}">Avaliar conteúdo</a>
+                        {% endif %}
                     {% else %}
                         <p>Terminou a leitura? Registre para acompanhar no seu progresso.</p>
 
@@ -50,6 +57,12 @@
                 </div>
                 {% endif %}
             </article>
+            {% if not pagina_editorial %}
+                {% if config.AVALIACOES_ATIVAS %}{{ avaliacoes_publicas('conteudo', conteudo.id) }}{% endif %}
+                <nav class="conteudos-acoes" aria-label="Próximas atividades">
+                    {{ links_atividades('conteudo', conteudo.proxima_referencia, 'conteudos-botao') }}
+                </nav>
+            {% endif %}
         </div>
     </main>
 
