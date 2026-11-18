@@ -30,8 +30,16 @@
                 {% endfor %}
             </select>
         </div>
+        <div>
+            <label for="ordem">Ordenar por</label>
+            <select id="ordem" name="ordem">
+                {% for valor, rotulo in filtros_ordem.items() %}
+                    <option value="{{ valor }}" {% if ordem == valor %}selected{% endif %}>{{ rotulo }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <button class="admin-botao" type="submit">Filtrar</button>
-        {% if busca or autenticador or situacao != 'ativas' %}
+        {% if busca or autenticador or situacao != 'ativas' or ordem != 'recentes' %}
             <a class="admin-link" href="{{ url_for('administracao.listar_contas') }}">Limpar filtros</a>
         {% endif %}
     </form>
@@ -124,11 +132,11 @@
     {% if ultima_pagina > 1 %}
         <nav class="admin-paginacao" aria-label="Paginação das contas">
             {% if pagina > 1 %}
-                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, situacao=situacao if situacao != 'ativas' else None, pagina=pagina-1) }}">← Anterior</a>
+                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, situacao=situacao if situacao != 'ativas' else None, ordem=ordem if ordem != 'recentes' else None, pagina=pagina-1) }}">← Anterior</a>
             {% endif %}
             <span>Página {{ pagina }} de {{ ultima_pagina }}</span>
             {% if pagina < ultima_pagina %}
-                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, situacao=situacao if situacao != 'ativas' else None, pagina=pagina+1) }}">Próxima →</a>
+                <a class="admin-link" href="{{ url_for('administracao.listar_contas', busca=busca or None, autenticador=autenticador, situacao=situacao if situacao != 'ativas' else None, ordem=ordem if ordem != 'recentes' else None, pagina=pagina+1) }}">Próxima →</a>
             {% endif %}
         </nav>
     {% endif %}

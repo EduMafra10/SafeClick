@@ -69,7 +69,14 @@ def _filtros(busca, autenticador, situacao="ativas"):
     return filtro, parametros
 
 
-def listar_contas(*, busca="", autenticador=None, situacao="ativas", pagina=1, por_pagina=20):
+ORDENS_CONTAS = {
+    "recentes": "id DESC",
+    "antigas": "id",
+    "nome": "lower(nome), id",
+}
+
+
+def listar_contas(*, busca="", autenticador=None, situacao="ativas", ordem="recentes", pagina=1, por_pagina=20):
     if not isinstance(pagina, int) or isinstance(pagina, bool) or not 1 <= pagina <= 1000000:
         raise ValueError("Página inválida.")
     if not isinstance(por_pagina, int) or not 1 <= por_pagina <= 100:
@@ -79,6 +86,8 @@ def listar_contas(*, busca="", autenticador=None, situacao="ativas", pagina=1, p
         raise ValueError("Situação do autenticador inválida.")
     if situacao not in SITUACOES_CONTA:
         raise ValueError("Situação da conta inválida.")
+    if ordem not in ORDENS_CONTAS:
+        raise ValueError("Ordem inválida.")
 
     filtro, parametros = _filtros(busca, autenticador, situacao)
     with conectar_banco() as conexao:
@@ -92,7 +101,7 @@ def listar_contas(*, busca="", autenticador=None, situacao="ativas", pagina=1, p
             FROM public.usuarios
             {_GUARDADO}
             {filtro}
-            ORDER BY id
+            ORDER BY {ORDENS_CONTAS[ordem]}
             LIMIT %(limite)s OFFSET %(deslocamento)s
             """,
             {**parametros, "limite": por_pagina, "deslocamento": (pagina - 1) * por_pagina},
