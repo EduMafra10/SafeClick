@@ -90,7 +90,10 @@
     grid-template-columns: 54px minmax(0, 1fr);
     gap: 16px;
     padding-block: 24px;
+    padding-inline: 16px;
     border-bottom: 1px solid var(--visual-borda);
+    border-left: 4px solid transparent;
+    border-radius: 12px;
 }
 
 .conteudos-numero {
@@ -102,8 +105,19 @@
     letter-spacing: -1px;
 }
 
+.conteudos-item--concluido {
+    background: var(--visual-verde-suave);
+    border-left-color: var(--visual-verde);
+    border-bottom-color: transparent;
+}
+
 .conteudos-item--concluido .conteudos-numero {
-    color: var(--visual-borda);
+    color: var(--visual-verde);
+}
+
+.conteudos-item--concluido .conteudos-card-selo {
+    background: var(--visual-verde);
+    color: #ffffff;
 }
 
 .conteudos-item h2 {
