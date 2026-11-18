@@ -423,6 +423,24 @@
     margin-block: 16px 24px;
 }
 
+.quizzes-catalogo-descricao {
+    margin: 6px 0 0;
+    color: var(--visual-secundario);
+    font-size: 14px;
+}
+
+.quizzes-catalogo-oficinas {
+    margin-top: 40px;
+}
+
+.quizzes-catalogo-oficinas:first-child {
+    margin-top: 0;
+}
+
+.quizzes-catalogo-oficinas .quizzes-titulo-secao {
+    margin: 0 0 8px;
+}
+
 @media (max-width: 800px) {
     .quizzes-grade,
     .quizzes-resumo {

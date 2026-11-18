@@ -4,7 +4,9 @@ import os
 import unittest
 from contextlib import ExitStack, nullcontext
 from decimal import Decimal
+from importlib import import_module
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import psycopg
@@ -98,6 +100,47 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
     def avaliar(self, tipo='conteudo', comentario='Ajuda a entender o tema.', **opcoes):
         avaliacoes_db.salvar_avaliacao(self.c, tipo, 1, 11 if tipo == 'conteudo' else 21, 4, comentario,
                                        aviso_versao=VERSAO_AVISO, **opcoes)
+
+    def consultar_catalogo(self, usuario=1):
+        modulo = import_module('safeclick.quizzes')
+        with patch.object(modulo, 'conectar_banco', return_value=nullcontext(self.c)), \
+                patch.object(modulo, 'current_user', SimpleNamespace(id=usuario)), \
+                patch.object(modulo, 'render_template', side_effect=lambda _, **dados: dados):
+            return modulo.listar_quizzes()['quizzes']
+
+    def test_conclusao_no_catalogo_exige_tentativa_completa_valida_da_propria_conta(self):
+        self.tentativa(2)
+        self.tentativa(1, completa=False)
+        self.tentativa(1, pontuacao=0)  # Pontuação incompatível com as respostas.
+        self.assertFalse(self.consultar_catalogo()[0]['concluido'])
+        self.assertTrue(self.consultar_catalogo(2)[0]['concluido'])
+        self.tentativa(1, acertos=0)
+        self.assertTrue(self.consultar_catalogo()[0]['concluido'])
+        self.assertFalse(self.consultar_catalogo(4)[0]['concluido'])
+        self.tentativa(1)
+        self.assertEqual(sum(item['concluido'] for item in self.consultar_catalogo()), 1)
+
+    def test_oficina_invalida_nao_marca_conclusao_e_oficina_valida_permanece_concluida(self):
+        self.c.execute("UPDATE quizzes SET formato='oficina' WHERE id=201")
+        self.c.execute("UPDATE alternativas SET texto='Mesmo cartão' WHERE id IN (401,403)")
+        self.tentativa(1)
+        self.assertFalse(self.consultar_catalogo()[0]['concluido'])
+        self.tentativa(1, acertos=1)
+        self.assertTrue(self.consultar_catalogo()[0]['concluido'])
+
+    def test_catalogo_preserva_conclusao_na_nova_edicao_e_oculta_itens_removidos(self):
+        self.tentativa(1)
+        self.c.execute("INSERT INTO quizzes(id,catalogo_id,titulo) VALUES(202,21,'Quiz revisado')")
+        self.c.execute("""INSERT INTO questoes SELECT id+10,202,ordem,enunciado,explicacao
+            FROM questoes WHERE quiz_id=201""")
+        self.c.execute("""INSERT INTO alternativas SELECT a.id+10,a.questao_id+10,a.ordem,a.texto,a.correta
+            FROM alternativas a JOIN questoes q ON q.id=a.questao_id WHERE q.quiz_id=201""")
+        self.c.execute('UPDATE catalogo_quizzes SET versao_publicada_id=202 WHERE id=21')
+        self.assertEqual([(i['titulo'], i['concluido']) for i in self.consultar_catalogo()], [('Quiz revisado', True)])
+        self.c.execute("UPDATE catalogo_quizzes SET estado='arquivada' WHERE id=21")
+        self.assertEqual(self.consultar_catalogo(), [])
+        self.c.execute("UPDATE catalogo_quizzes SET estado='publicada',removido_em=now() WHERE id=21")
+        self.assertEqual(self.consultar_catalogo(), [])
 
     def test_auditoria_identifica_criacao_edicao_moderacao_retirada_e_exclusao_nos_tres_formatos(self):
         from safeclick.auditoria_db import listar_eventos

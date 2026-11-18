@@ -1,55 +1,80 @@
 {% extends "quizzes/base.html" %}
+{% block recursos %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+{% endblock %}
+
+{% macro item_catalogo(quiz, numero, oficina=false) %}
+    {% set acao = ('Refazer oficina' if quiz.concluido else 'Abrir oficina') if oficina else ('Refazer quiz' if quiz.concluido else 'Começar quiz') %}
+    <li class="conteudos-item{% if quiz.concluido %} conteudos-item--concluido{% endif %}" data-quiz-id="{{ quiz.id }}">
+        <span class="conteudos-numero" aria-hidden="true">{{ "%02d"|format(numero) }}</span>
+        <div>
+            {% if quiz.concluido %}<span class="conteudos-card-selo">✓ Concluído</span>{% endif %}
+            {% if oficina %}<h3>{{ quiz.titulo }}</h3>{% else %}<h2>{{ quiz.titulo }}</h2>{% endif %}
+            <p class="quizzes-catalogo-descricao">
+                {% if oficina %}{{ quiz.total_questoes }} trechos para revisar.
+                {% else %}Responda {{ 'à pergunta' if quiz.total_questoes == 1 else 'às ' ~ quiz.total_questoes ~ ' perguntas' }} e confira as explicações no final.{% endif %}
+            </p>
+            <a class="conteudos-card-link" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}"
+               aria-label="{{ acao }}: {{ quiz.titulo }}">{{ acao }} →</a>
+        </div>
+    </li>
+{% endmacro %}
 
 {% block conteudo %}
     {% set oficinas = quizzes|selectattr('formato', 'equalto', 'oficina')|list %}
     {% set tradicionais = quizzes|rejectattr('formato', 'equalto', 'oficina')|list %}
-    <div class="quizzes-introducao">
-        <p class="quizzes-etiqueta">Aprenda na prática</p>
-        <h1>Quizzes do SafeClick</h1>
-        <p>Escolha um tema e teste seus conhecimentos sobre segurança digital.</p>
-        {% if config.AVALIACOES_ATIVAS %}<p class="quizzes-acoes"><a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', tipo='quiz') }}">Ver avaliações dos quizzes <span aria-hidden="true">→</span></a></p>{% endif %}
-    </div>
-
-    {% if tradicionais or not oficinas %}
-    <ul class="quizzes-grade quizzes-lista">
-        {% for quiz in tradicionais %}
-            <li class="quizzes-cartao quizzes-tema">
-                <p class="quizzes-etiqueta">Quiz {{ loop.index }}</p>
-                <h2>{{ quiz.titulo }}</h2>
-                <p>Responda {{ 'à pergunta' if quiz.total_questoes == 1 else 'às ' ~ quiz.total_questoes ~ ' perguntas' }} e confira as explicações no final.</p>
-                <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}"
-                   aria-label="Começar quiz: {{ quiz.titulo }}">Começar quiz <span aria-hidden="true">→</span></a>
-            </li>
-        {% else %}
-            <li class="quizzes-cartao">Nenhum quiz disponível no momento.</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-
-    {% if oficinas %}
-        <section aria-labelledby="titulo-oficina">
-            <h2 class="quizzes-titulo-secao" id="titulo-oficina">Oficina SafeClick</h2>
-            <p>Associe conceitos e cuidados aos trechos do guia e confira o que vale revisar.</p>
-            <div class="quizzes-acoes quizzes-acoes-secao">
-                <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.exibir_guia') }}">Meu guia de revisão <span aria-hidden="true">→</span></a>
-                {% if config.AVALIACOES_ATIVAS %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', tipo='oficina') }}">Ver avaliações das oficinas <span aria-hidden="true">→</span></a>{% endif %}
+    {% set concluidos = quizzes|selectattr('concluido')|list|length %}
+    <header class="conteudos-introducao">
+        <div>
+            <p class="visual-etiqueta">Aprenda na prática</p>
+            <h1>Quizzes do SafeClick</h1>
+            <p class="conteudos-descricao">Escolha um tema e teste seus conhecimentos sobre segurança digital.</p>
+            {% if config.AVALIACOES_ATIVAS %}
+                <p><a class="conteudos-botao conteudos-botao-secundario" href="{{ url_for('avaliacoes.publicas', tipo='quiz') }}">Ver avaliações dos quizzes <span aria-hidden="true">→</span></a></p>
+            {% endif %}
+        </div>
+        {% if quizzes %}
+            <div class="conteudos-progresso">
+                <p class="conteudos-progresso-texto"><strong>{{ concluidos }}</strong> de {{ quizzes|length }}
+                    {{ 'atividade concluída' if quizzes|length == 1 else 'atividades concluídas' }}</p>
+                <progress class="conteudos-progresso-barra" max="{{ quizzes|length }}" value="{{ concluidos }}"
+                          aria-label="Quizzes e oficinas concluídos">{{ concluidos }} de {{ quizzes|length }}</progress>
             </div>
-            <ul class="quizzes-grade quizzes-lista">
-                {% for oficina in oficinas %}
-                    <li class="quizzes-cartao quizzes-tema">
-                        <p class="quizzes-etiqueta">Oficina {{ loop.index }}</p>
-                        <h3>{{ oficina.titulo }}</h3>
-                        <p>{{ oficina.total_questoes }} trechos para revisar.</p>
-                        <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=oficina.id) }}"
-                           aria-label="Abrir oficina: {{ oficina.titulo }}">Abrir oficina <span aria-hidden="true">→</span></a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </section>
-    {% endif %}
+        {% endif %}
+    </header>
 
-    {% if tradicionais %}<aside class="quizzes-faixa">
-        <h2>Um passo de cada vez</h2>
-        <p>Cada pergunta tem uma resposta correta. Leia com calma e use o resultado para aprender.</p>
-    </aside>{% endif %}
+    <div class="conteudos-organizacao">
+        <div>
+            {% if tradicionais %}
+                <ol class="conteudos-lista" aria-label="Quizzes disponíveis" role="list">
+                    {% for quiz in tradicionais %}{{ item_catalogo(quiz, loop.index) }}{% endfor %}
+                </ol>
+            {% elif not oficinas %}
+                <p class="conteudos-vazio">Nenhum quiz disponível no momento.</p>
+            {% endif %}
+
+            {% if oficinas %}
+                <section class="quizzes-catalogo-oficinas" aria-labelledby="titulo-oficina">
+                    <h2 class="quizzes-titulo-secao" id="titulo-oficina">Oficina SafeClick</h2>
+                    <p class="conteudos-descricao">Associe conceitos e cuidados aos trechos do guia e confira o que vale revisar.</p>
+                    <div class="quizzes-acoes quizzes-acoes-secao">
+                        <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.exibir_guia') }}">Meu guia de revisão <span aria-hidden="true">→</span></a>
+                        {% if config.AVALIACOES_ATIVAS %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', tipo='oficina') }}">Ver avaliações das oficinas <span aria-hidden="true">→</span></a>{% endif %}
+                    </div>
+                    <ol class="conteudos-lista" aria-label="Oficinas disponíveis" role="list">
+                        {% for oficina in oficinas %}{{ item_catalogo(oficina, loop.index, oficina=true) }}{% endfor %}
+                    </ol>
+                </section>
+            {% endif %}
+        </div>
+
+        <aside class="conteudos-orientacao" aria-labelledby="titulo-orientacao">
+            <h2 id="titulo-orientacao">Um passo de cada vez.</h2>
+            <ol class="conteudos-passos" role="list">
+                <li><strong>Leia</strong><p>Revise os <a href="{{ url_for('conteudos.listar') }}">conteúdos</a> antes de começar.</p></li>
+                <li><strong>Responda</strong><p>Cada pergunta tem uma resposta correta. Leia com calma e finalize para registrar a conclusão.</p></li>
+                <li><strong>Entenda</strong><p>Confira as explicações e tente novamente para aprender. A conclusão não depende de acertar todas as respostas.</p></li>
+            </ol>
+        </aside>
+    </div>
 {% endblock %}

@@ -120,7 +120,8 @@
     color: #ffffff;
 }
 
-.conteudos-item h2 {
+.conteudos-item h2,
+.conteudos-item h3 {
     margin: 0 0 6px;
     font-size: 21px;
     line-height: 1.3;

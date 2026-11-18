@@ -85,12 +85,16 @@
 .avaliacoes-distribuicao meter::-moz-meter-bar { border-radius: 8px; background: var(--visual-verde, #287154); }
 .avaliacoes-somente-leitor { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-.participacao-item {
-    margin-bottom: 16px;
+.conteudos-lista.participacao-minhas-lista {
+    grid-template-columns: minmax(0, 1fr);
 }
 
-.participacao-item h2 {
-    margin-top: 0;
+.participacao-minhas-lista .participacao-nota {
+    margin: 8px 0 0;
+}
+
+.participacao-minhas-lista .participacao-texto {
+    margin: 16px 0;
 }
 
 .participacao-acoes {

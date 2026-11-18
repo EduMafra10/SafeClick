@@ -133,6 +133,40 @@ def test_controles_privados_exigem_login(site, rota):
     assert site[1].get(rota).status_code == 302
 
 
+@pytest.mark.parametrize('publicada,publica', [(True, True), (True, False), (False, True)])
+def test_minhas_preserva_edicao_privacidade_exclusao_e_escape_dos_comentarios(site, monkeypatch, publicada, publica):
+    entrar(site)
+    buscar = Mock(return_value=[{
+        'tipo': 'quiz', 'formato': 'oficina', 'item_id': 21, 'titulo': 'Guia de senhas',
+        'nota': 4, 'comentario': '<script>texto não confiável</script>', 'publicar_nota': publica,
+        'publicar_comentario': publica, 'moderacao': 'pendente' if publica else 'nao_solicitada',
+        'publicada': publicada, 'ultimo_resultado': 31,
+    }])
+    monkeypatch.setattr(avaliacoes_db, 'listar_minhas', buscar)
+    resposta = site[1].get('/avaliacoes/minhas')
+    assert resposta.status_code == 200
+    buscar.assert_called_once_with(7)
+    assert '&lt;script&gt;texto não confiável&lt;/script&gt;' in resposta.text
+    assert '<script>texto não confiável</script>' not in resposta.text
+    assert ('href="/avaliacoes/quizzes/31"' in resposta.text) == publicada
+    assert ('action="/avaliacoes/minhas/quiz/21/retirar"' in resposta.text) == publica
+    assert ('Nota pública' if publica else 'Nota privada') in resposta.text
+    assert 'action="/avaliacoes/minhas/quiz/21/excluir"' in resposta.text
+    assert 'data-confirmar="Excluir esta avaliação?' in resposta.text
+    principal = re.search(r'<main\b[^>]*>(.*?)</main>', resposta.text, re.S)[1]
+    assert principal.count('name="csrf_token"') == (2 if publica else 1)
+
+
+def test_minhas_sem_avaliacoes_oferece_destinos_para_atividades(site, monkeypatch):
+    entrar(site)
+    monkeypatch.setattr(avaliacoes_db, 'listar_minhas', Mock(return_value=[]))
+    html = site[1].get('/avaliacoes/minhas').text
+    assert 'Você ainda não enviou avaliações.' in html
+    assert 'aria-label="Atividades para avaliar"' in html
+    assert 'href="/conteudos/"' in html and 'href="/quizzes/"' in html
+    assert 'Como seus dados são utilizados' in html
+
+
 def test_usuario_nao_pode_moderar_nem_por_post_direto(site, monkeypatch):
     entrar(site)
     moderar = Mock()
