@@ -49,15 +49,35 @@
     <script src="{{ url_for('static', filename='js/politica_senha.js') }}" defer></script>
 </head>
 <body class="autenticacao-pagina">
-    <main class="autenticacao-layout">
-        <section class="autenticacao-acesso" aria-labelledby="titulo-pagina">
-            <header>
-                <a class="autenticacao-marca" href="{{ url_for('inicio') }}">Safe<span>Click</span></a>
-                <p class="autenticacao-frase">Aprenda antes de clicar.</p>
-            </header>
+    <div class="autenticacao-layout">
+        <aside class="autenticacao-apresentacao {% block apresentacao_classe %}{% endblock %}" aria-label="Sobre o SafeClick">
+            <a class="autenticacao-marca" href="{{ url_for('inicio') }}">Safe<span>Click</span></a>
+            {% block apresentacao %}
+                <svg class="autenticacao-anzol" viewBox="0 0 260 980" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true" focusable="false">
+                    <path d="M126 0V640"/>
+                    <circle cx="126" cy="652" r="11"/>
+                    <path d="M126 663V790C126 880 30 885 24 805L23 770"/>
+                    <path d="M23 770L8 796"/>
+                    <g transform="rotate(-8 90 880)">
+                        <rect x="20" y="830" width="170" height="112" rx="6"/>
+                        <path d="M20 836L105 896L190 836"/>
+                    </g>
+                </svg>
+                <div class="autenticacao-chamada">
+                    <p class="autenticacao-serif">Aprenda antes de clicar</p>
+                    <p class="autenticacao-chamada-texto">Reconheça golpes, proteja seus dados e faça escolhas mais seguras na internet.</p>
+                </div>
+            {% endblock %}
+            <p class="autenticacao-projeto">Projeto de Fim de Curso de Sistemas de Informação, Universidade de Mogi das Cruzes.</p>
+        </aside>
+
+        <main class="autenticacao-acesso" aria-labelledby="titulo-pagina">
+            <div class="autenticacao-topo">
+                <a class="autenticacao-voltar" href="{{ url_for('inicio') }}">Voltar para o início</a>
+            </div>
 
             <div class="autenticacao-formulario">
-                <h1 id="titulo-pagina">{{ titulo }}</h1>
+                <h1 class="autenticacao-serif" id="titulo-pagina">{{ titulo }}</h1>
                 <p class="autenticacao-introducao">{{ descricao }}</p>
 
                 {% for mensagem in get_flashed_messages(category_filter=categorias_mensagens|default(["sucesso", "aviso"])) %}
@@ -88,44 +108,7 @@
                     <a href="{{ url_for('privacidade.termos') }}" target="_blank" rel="noopener">Termos de Uso</a>
                 </p>
             </div>
-        </section>
-
-        <aside class="autenticacao-apresentacao" aria-labelledby="titulo-apresentacao">
-            <h2 id="titulo-apresentacao">Aprenda antes<br>de clicar.</h2>
-            <p>
-                Reconheça golpes, proteja seus dados e faça escolhas
-                mais seguras na internet.
-            </p>
-
-            <svg class="autenticacao-ilustracao" viewBox="0 0 480 360" aria-hidden="true" focusable="false">
-                <circle cx="246" cy="183" r="160" fill="none" stroke="#86b3c1" opacity="0.2" />
-                <circle cx="246" cy="183" r="125" fill="none" stroke="#86b3c1" opacity="0.2" />
-                <circle cx="60" cy="238" r="7" fill="#8dd3ba" />
-                <circle cx="420" cy="70" r="5" fill="#b5d8e8" />
-
-                <rect x="67" y="76" width="310" height="222" rx="18" fill="#0c2837" opacity="0.25" />
-                <rect x="60" y="64" width="310" height="222" rx="18" fill="#f3f8fc" />
-                <path d="M60 106H370" stroke="#c7ddec" stroke-width="2" />
-                <circle cx="81" cy="85" r="4" fill="#6a91a5" />
-                <circle cx="96" cy="85" r="4" fill="#9dbdce" />
-                <circle cx="111" cy="85" r="4" fill="#c7ddec" />
-                <rect x="265" y="80" width="81" height="10" rx="5" fill="#dceaf2" />
-
-                <rect x="95" y="131" width="170" height="100" rx="12" fill="#dcecf6" />
-                <rect x="119" y="153" width="122" height="60" rx="8" fill="#ffffff" stroke="#779fb5" stroke-width="2" />
-                <path d="M122 158L180 190L238 158" fill="none" stroke="#28638d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                <rect x="98" y="247" width="100" height="7" rx="3.5" fill="#8fadc0" />
-                <rect x="98" y="262" width="65" height="6" rx="3" fill="#c7ddec" />
-
-                <path d="M336 148L404 174V226C404 267 377 296 336 315C295 296 268 267 268 226V174Z" fill="#0c2837" opacity="0.2" />
-                <path d="M329 136L397 162V214C397 255 370 284 329 303C288 284 261 255 261 214V162Z" fill="#8dd3ba" />
-                <path d="M329 153L382 173V214C382 246 362 269 329 287C296 269 276 246 276 214V173Z" fill="#286b53" />
-                <path d="M303 218L322 237L355 198" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
-
-                <path d="M223 256L224 315L240 299L253 324L267 316L254 292L277 289Z" fill="#ffffff" stroke="#153849" stroke-width="4" stroke-linejoin="round" />
-                <path d="M213 250L203 242M225 240L226 226M238 247L250 238" fill="none" stroke="#8dd3ba" stroke-width="4" stroke-linecap="round" />
-            </svg>
-        </aside>
-    </main>
+        </main>
+    </div>
 </body>
 </html>

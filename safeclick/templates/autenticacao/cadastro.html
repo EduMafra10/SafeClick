@@ -4,6 +4,18 @@
 {% set descricao = "Preencha seus dados para começar a aprender com o SafeClick." %}
 {% set categorias_mensagens = ["sucesso"] %}
 
+{% block apresentacao_classe %}autenticacao-apresentacao-passos{% endblock %}
+{% block apresentacao %}
+    <div class="autenticacao-chamada">
+        <p class="autenticacao-serif">Do cadastro ao primeiro treino</p>
+    </div>
+    <ol class="autenticacao-passos">
+        <li><b>Crie sua conta</b><span>Nome, e-mail e uma senha longa, de pelo menos 15 caracteres.</span></li>
+        <li><b>Entre com e-mail e senha</b><span>Use os dados que você acabou de cadastrar.</span></li>
+        <li><b>Ative o autenticador</b><span>No primeiro acesso, escaneie o QR Code no Google Authenticator. Depois, cada login pede o código de 6 números.</span></li>
+    </ol>
+{% endblock %}
+
 {% block conteudo %}
     <form method="post" action="{{ url_for('autenticacao.cadastro') }}">
         {{ formulario.hidden_tag() }}

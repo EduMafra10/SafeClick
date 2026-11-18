@@ -3,6 +3,38 @@
 {% set titulo = "Entre na sua conta" %}
 {% set descricao = "Acesse seus conteúdos, quizzes e simulações." %}
 
+{% block apresentacao_classe %}autenticacao-apresentacao-simulacao{% endblock %}
+{% block apresentacao %}
+    <div class="autenticacao-chamada">
+        <p class="autenticacao-serif">Aprenda antes de clicar</p>
+        <p class="autenticacao-chamada-texto">Reconheça golpes, proteja seus dados e faça escolhas mais seguras na internet.</p>
+    </div>
+    <div class="autenticacao-cena" aria-hidden="true">
+        <span class="autenticacao-cena-linha"></span>
+        <span class="autenticacao-cena-argola"></span>
+        <div class="autenticacao-fone">
+            <div class="autenticacao-fone-tela">
+                <div class="autenticacao-fone-status"><span>9:41</span><span>●●●</span></div>
+                <div class="autenticacao-fone-cabecalho">
+                    <span class="autenticacao-fone-avatar">?</span>
+                    <span><b>Remetente desconhecido</b><br><small>SMS fictício</small></span>
+                </div>
+                <div class="autenticacao-fone-mensagem">
+                    <span>Não conseguimos concluir sua entrega por uma pendência no endereço.</span>
+                    <span>Pague uma taxa de <span class="autenticacao-fone-sinal">R$ 4,90 nos próximos 20 minutos</span> para evitar a devolução.</span>
+                    <span>Atualize seus dados e efetue o pagamento em <span class="autenticacao-fone-sinal">entrega-pendente.example</span></span>
+                </div>
+                <p class="autenticacao-fone-pergunta">Observe a mensagem. O que você faria se recebesse algo assim?</p>
+                <div class="autenticacao-fone-opcoes">
+                    <span>Pagar a taxa pelo link, pois o valor é pequeno.</span>
+                    <span>Abrir o link e informar meu CPF e endereço, sem fazer o pagamento.</span>
+                    <span class="autenticacao-fone-segura">Abrir o aplicativo ou site oficial da compra e consultar o pedido por lá.<svg class="autenticacao-fone-cursor" width="30" height="30" viewBox="0 0 24 24"><path d="M5 3l14 7.5-6.2 1.6L9.8 18z" fill="#fff" stroke="#173b45" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block conteudo %}
     <form method="post" action="{{ url_for('autenticacao.login') }}">
         {{ formulario.hidden_tag() }}
