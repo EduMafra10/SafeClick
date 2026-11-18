@@ -41,6 +41,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "componentes/_favicon.html" %}
     <title>{{ titulo }} | SafeClick</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/autenticacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/politica_senha.css') }}">
@@ -51,7 +52,7 @@
     <main class="autenticacao-layout">
         <section class="autenticacao-acesso" aria-labelledby="titulo-pagina">
             <header>
-                <p class="autenticacao-marca">Safe<span>Click</span></p>
+                <a class="autenticacao-marca" href="{{ url_for('inicio') }}">Safe<span>Click</span></a>
                 <p class="autenticacao-frase">Aprenda antes de clicar.</p>
             </header>
 

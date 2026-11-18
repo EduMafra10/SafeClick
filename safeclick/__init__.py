@@ -1,7 +1,7 @@
 
 import os
 
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, redirect, render_template, request, send_from_directory, session, url_for
 from werkzeug.exceptions import HTTPException
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import current_user
@@ -28,6 +28,9 @@ from safeclick.conquistas import conquistas
 from safeclick.avaliacoes import avaliacoes
 from safeclick.exclusao_conta import exclusao_conta, reativacao_conta
 from safeclick.moderacao_avaliacoes import moderacao_avaliacoes
+
+
+REPOSITORIO = "https://github.com/EduMafra10/SafeClick"
 
 
 def create_app():
@@ -100,8 +103,16 @@ def create_app():
 
     @app.get("/")
     def inicio():
-        if current_user.is_authenticated and current_user.perfil == "administrador":
+        if not current_user.is_authenticated:
+            return render_template("inicio.html", repositorio=REPOSITORIO)
+        if current_user.perfil == "administrador":
             return redirect(url_for("administracao.inicio"))
         return redirect(url_for("painel.exibir"))
+
+    @app.get("/favicon.ico")
+    def favicon():
+        return send_from_directory(
+            os.path.join(app.static_folder, "img"), "favicon.ico", mimetype="image/vnd.microsoft.icon", max_age=86400
+        )
 
     return app
