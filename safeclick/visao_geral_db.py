@@ -2,12 +2,14 @@
 from datetime import timedelta
 
 from safeclick.db import conectar_banco
+from safeclick.avaliacoes_db import listar_resumo_avaliacoes
 
 PERIODOS = (7, 30, 90)
 TIPOS_ATIVIDADE = ("conteudo", "quiz", "simulacao", "desafio")
 
 _DESDE = "(%(inicio)s::date)::timestamp AT TIME ZONE 'America/Sao_Paulo'"
-_SO_USUARIOS = "JOIN public.usuarios AS u ON u.id = {tabela}.usuario_id AND u.perfil = 'usuario'"
+_SO_USUARIOS = """JOIN public.usuarios AS u ON u.id = {tabela}.usuario_id AND u.perfil = 'usuario'
+    AND u.excluida_em IS NULL AND u.exclusao_solicitada_em IS NULL"""
 
 _ATIVIDADES = f"""
     SELECT 'conteudo' AS tipo, c.usuario_id, c.concluido_em AS momento
@@ -29,6 +31,7 @@ _ATIVIDADES = f"""
 
 _CONTAS = f"""
     SELECT
+        transaction_timestamp() AS atualizado_em,
         count(*) AS total,
         count(*) FILTER (WHERE criado_em >= {_DESDE}) AS novas,
         count(*) FILTER (WHERE mfa_confirmado_em IS NOT NULL) AS autenticador_ativo,
@@ -168,7 +171,7 @@ def _serie_por_dia(linhas, inicio, hoje):
     }
 
 
-def buscar_visao_geral(dias, hoje):
+def buscar_visao_geral(dias, hoje, *, incluir_avaliacoes=False):
     if dias not in PERIODOS:
         raise ValueError("Período inválido.")
 
@@ -176,6 +179,8 @@ def buscar_visao_geral(dias, hoje):
     parametros = {"inicio": inicio.isoformat()}
 
     with conectar_banco() as conexao:
+        # Todos os cartões usam o mesmo retrato do banco, inclusive as avaliações.
+        conexao.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
         contas = conexao.execute(_CONTAS, parametros).fetchone()
         ativos = conexao.execute(_ATIVOS, parametros).fetchone()["ativos"]
         por_dia = conexao.execute(_POR_DIA, parametros).fetchall()
@@ -185,6 +190,7 @@ def buscar_visao_geral(dias, hoje):
         catalogo = conexao.execute(_CATALOGO).fetchall()
         seguranca = conexao.execute(_SEGURANCA).fetchall()
         ultimos = conexao.execute(_ULTIMOS_EVENTOS).fetchall()
+        avaliacoes = listar_resumo_avaliacoes(conexao=conexao) if incluir_avaliacoes else None
 
     serie = _serie_por_dia(por_dia, inicio, hoje)
     totais_por_tipo = {tipo: sum(valores) for tipo, valores in serie["series"].items()}
@@ -193,6 +199,8 @@ def buscar_visao_geral(dias, hoje):
     return {
         "dias": dias,
         "inicio": inicio,
+        "atualizado_em": contas.get('atualizado_em'),
+        "avaliacoes": avaliacoes,
         "contas": {
             "total": contas["total"],
             "novas": contas["novas"],

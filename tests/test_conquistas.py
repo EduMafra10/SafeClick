@@ -43,10 +43,14 @@ class ConsultaConquistasTeste(unittest.TestCase):
     def setUp(self):
         self.conexao = MagicMock()
         contexto = MagicMock()
+        self.contexto = contexto
         contexto.__enter__.return_value = self.conexao
         abrir = patch("safeclick.conquistas_db.conectar_banco", return_value=contexto)
         abrir.start()
         self.addCleanup(abrir.stop)
+        registrar = patch('safeclick.conquistas_db.registrar_evento')
+        self.registrar = registrar.start()
+        self.addCleanup(registrar.stop)
 
     def test_liberar_grava_sem_duplicar_e_filtra_pelo_usuario(self):
         self.conexao.execute.return_value.fetchall.return_value = [NOVA]
@@ -60,6 +64,22 @@ class ConsultaConquistasTeste(unittest.TestCase):
         self.assertIn("m.valor >= c.meta", consulta)
         # todas as contagens são do próprio usuário
         self.assertEqual(consulta.count("usuario_id = %(usuario_id)s"), 7)
+        self.registrar.assert_called_once_with(
+            7, 'conquista.concedida', 'sucesso', recurso_tipo='conquista',
+            recurso_id='primeiro-quiz', conexao=self.conexao,
+        )
+
+    def test_conquistas_ja_concedidas_nao_geram_novos_logs(self):
+        self.conexao.execute.return_value.fetchall.return_value = []
+        self.assertEqual(liberar_conquistas(7), [])
+        self.registrar.assert_not_called()
+
+    def test_falha_na_auditoria_da_conquista_reverte_a_transacao(self):
+        self.conexao.execute.return_value.fetchall.return_value = [NOVA]
+        self.registrar.side_effect = Error('Falha de auditoria')
+        with self.assertRaises(Error):
+            liberar_conquistas(7)
+        self.assertIs(self.contexto.__exit__.call_args.args[0], Error)
 
     def test_lista_limita_o_progresso_a_meta(self):
         primeira, segunda = MagicMock(), MagicMock()

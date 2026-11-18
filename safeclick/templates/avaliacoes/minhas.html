@@ -1,22 +1,70 @@
 {% extends 'quizzes/base.html' %}
+{% from 'componentes/tipo_atividade.html' import tipo_atividade %}
 {% block titulo %}Minhas avaliações | SafeClick{% endblock %}
+{% block recursos %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+{% endblock %}
 {% block conteudo %}
-<header class="quizzes-introducao"><p class="quizzes-etiqueta">Controle dos seus dados</p><h1>Minhas avaliações</h1>
-<p>Consulte o que você enviou. A exclusão retira a nota e o comentário das consultas, inclusive se a atividade já foi despublicada.</p></header>
-{% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}<p class="quizzes-faixa" role="status">{{ mensagem }}</p>{% endfor %}
-<ul class="quizzes-lista">
-{% for item in itens %}<li class="quizzes-cartao participacao-item">
-    <h2>{{ item.titulo }}</h2><p>{{ item.nota }} de 5 · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
-    {% if item.comentario %}<p class="participacao-texto">{{ item.comentario }}</p>{% endif %}
-    <p>Comentário: {{ {'pendente':'aguardando moderação','aprovada':'publicado sem identificação','rejeitada':'não publicado pela moderação','nao_solicitada':'privado'}[item.moderacao] }}.</p>
-    <div class="participacao-acoes">
-    {% if item.publicada and (item.tipo == 'conteudo' or item.ultimo_resultado) %}<a class="quizzes-botao" href="{{ url_for('avaliacoes.conteudo',slug=item.slug) if item.tipo == 'conteudo' else url_for('avaliacoes.quiz',tentativa_id=item.ultimo_resultado) }}">Editar nota e comentário</a>{% endif %}
-    {% if item.publicar_nota or item.publicar_comentario %}<form method="post" action="{{ url_for('avaliacoes.retirar',tipo=item.tipo,item_id=item.item_id) }}">{{ formulario.hidden_tag() }}<button class="quizzes-botao quizzes-botao-secundario">Retirar divulgação e manter privada</button></form>{% endif %}
-    <form method="post" action="{{ url_for('avaliacoes.excluir', tipo=item.tipo, item_id=item.item_id) }}" data-confirmar="Excluir esta avaliação? Ela sairá também da consulta pública.">
-        {{ formulario.hidden_tag() }}<button class="quizzes-botao quizzes-botao-secundario">Excluir avaliação</button>
-    </form>
+    <header class="conteudos-introducao">
+        <div>
+            <p class="visual-etiqueta">Controle dos seus dados</p>
+            <h1>Minhas avaliações</h1>
+            <p class="conteudos-descricao">Consulte o que você enviou. A exclusão retira a nota e o comentário das consultas, inclusive se a atividade já foi despublicada.</p>
+        </div>
+        <div class="conteudos-progresso">
+            <p class="conteudos-progresso-texto"><strong>{{ itens|length }}</strong>
+                {{ 'avaliação enviada' if itens|length == 1 else 'avaliações enviadas' }}</p>
+        </div>
+    </header>
+    {% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}<p class="visual-aviso" role="status">{{ mensagem }}</p>{% endfor %}
+
+    <div class="conteudos-organizacao">
+        {% if itens %}
+            <ol class="conteudos-lista participacao-minhas-lista" aria-label="Minhas avaliações enviadas" role="list">
+                {% for item in itens %}
+                    <li class="conteudos-item">
+                        <span class="conteudos-numero" aria-hidden="true">{{ "%02d"|format(loop.index) }}</span>
+                        <div>
+                            <p class="quizzes-etiqueta">{{ tipo_atividade(item.tipo, item.formato) }}</p>
+                            <h2>{{ item.titulo }}</h2>
+                            <p class="participacao-nota"><strong>{{ item.nota }} de 5</strong> · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
+                            {% if item.comentario %}<p class="participacao-texto">{{ item.comentario }}</p>{% endif %}
+                            <p class="participacao-nota">Comentário: {{ {'pendente':'aguardando moderação','aprovada':'publicado sem identificação','rejeitada':'não publicado pela moderação','nao_solicitada':'privado'}[item.moderacao] }}.</p>
+                            <div class="participacao-acoes">
+                                {% if item.publicada and (item.tipo == 'conteudo' or item.ultimo_resultado) %}
+                                    <a class="quizzes-botao" href="{{ url_for('avaliacoes.conteudo', slug=item.slug) if item.tipo == 'conteudo' else url_for('avaliacoes.quiz', tentativa_id=item.ultimo_resultado) }}">Editar nota e comentário</a>
+                                {% endif %}
+                                {% if item.publicar_nota or item.publicar_comentario %}
+                                    <form method="post" action="{{ url_for('avaliacoes.retirar', tipo=item.tipo, item_id=item.item_id) }}">
+                                        {{ formulario.hidden_tag() }}<button class="quizzes-botao quizzes-botao-secundario">Retirar divulgação e manter privada</button>
+                                    </form>
+                                {% endif %}
+                                <form method="post" action="{{ url_for('avaliacoes.excluir', tipo=item.tipo, item_id=item.item_id) }}" data-confirmar="Excluir esta avaliação? Ela sairá também da consulta pública.">
+                                    {{ formulario.hidden_tag() }}<button class="quizzes-botao quizzes-botao-secundario">Excluir avaliação</button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <div>
+                <p class="conteudos-vazio">Você ainda não enviou avaliações.</p>
+                <nav class="quizzes-acoes" aria-label="Atividades para avaliar">
+                    <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('conteudos.listar') }}">Ver conteúdos <span aria-hidden="true">→</span></a>
+                    <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.listar_quizzes') }}">Ver quizzes <span aria-hidden="true">→</span></a>
+                </nav>
+            </div>
+        {% endif %}
+
+        <aside class="conteudos-orientacao" aria-labelledby="titulo-orientacao">
+            <h2 id="titulo-orientacao">Você controla o que compartilha.</h2>
+            <ol class="conteudos-passos" role="list">
+                <li><strong>Revise</strong><p>Confira sua nota e seu comentário. Você pode editá-los enquanto a atividade estiver disponível.</p></li>
+                <li><strong>Escolha</strong><p>Retire a divulgação para manter a avaliação privada. Comentários autorizados só aparecem após moderação, sem identificar você.</p></li>
+                <li><strong>Gerencie</strong><p>Exclua uma avaliação quando quiser, inclusive se a atividade já foi despublicada.</p></li>
+            </ol>
+            <p><a class="conteudos-card-link" href="{{ url_for('avaliacoes.privacidade') }}">Como seus dados são utilizados →</a></p>
+        </aside>
     </div>
-</li>{% else %}<li class="quizzes-cartao">Você ainda não enviou avaliações.</li>{% endfor %}
-</ul>
-<p><a href="{{ url_for('avaliacoes.privacidade') }}">Como seus dados são utilizados</a></p>
 {% endblock %}

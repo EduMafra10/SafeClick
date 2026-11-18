@@ -38,17 +38,23 @@ def verificar_acesso_quizzes():
 
 @quizzes.get("/")
 def listar_quizzes():
-    # Lista os quizzes cadastrados no banco.
+    # A conclusão usa as mesmas tentativas válidas do painel de progresso.
     with conectar_banco() as conexao:
         registros = conexao.execute(
             """
             SELECT c.id, q.titulo, q.formato,
-                   (SELECT COUNT(*) FROM public.questoes WHERE quiz_id = q.id) AS total_questoes
+                   (SELECT COUNT(*) FROM public.questoes WHERE quiz_id = q.id) AS total_questoes,
+                   EXISTS (
+                       SELECT 1 FROM public.resultados_validos_atividades AS resultado
+                       WHERE resultado.usuario_id = %s AND resultado.tipo = 'quiz'
+                         AND resultado.item_id = c.id
+                   ) AS concluido
             FROM public.catalogo_quizzes AS c
             JOIN public.quizzes AS q ON q.id = c.versao_publicada_id
-            WHERE c.estado = 'publicada'
+            WHERE c.estado = 'publicada' AND c.removido_em IS NULL
             ORDER BY c.id
-            """
+            """,
+            (int(current_user.id),),
         ).fetchall()
 
     return render_template(

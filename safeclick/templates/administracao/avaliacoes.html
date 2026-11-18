@@ -1,13 +1,14 @@
 {% extends "administracao/base.html" %}
+{% from 'avaliacoes/_componentes.html' import distribuicao_notas %}
 {% block titulo %}Avaliações{% endblock %}
-{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
+{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}"><link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
 {% block classe_principal %}admin-avaliacoes{% endblock %}
 {% block conteudo %}
     <header class="admin-introducao">
         <div>
             <p class="visual-etiqueta">Administração</p>
-            <h1>Avaliações de conteúdos e quizzes</h1>
-            <p>Veja como os participantes avaliam a utilidade dos conteúdos e quizzes, desde a primeira resposta.</p>
+            <h1>Avaliações de conteúdos, quizzes e oficinas</h1>
+            <p>Veja como os participantes avaliam a utilidade das atividades, desde a primeira resposta.</p>
         </div>
     </header>
     {% include 'administracao/_avaliacoes_navegacao.html' %}
@@ -21,7 +22,7 @@
     <p class="avaliacoes-admin-total">O resumo administrativo inclui notas privadas. Na consulta pública aparecem somente as notas autorizadas pelos autores.</p>
     <ul class="avaliacoes-admin-lista">
         {% for item in itens %}
-            <li class="avaliacoes-admin-cartao avaliacoes-admin-cartao-cabecalho">
+            <li class="avaliacoes-admin-cartao avaliacoes-admin-cartao-cabecalho avaliacoes-admin-estatistica">
                 <div>
                     <p class="avaliacoes-admin-tipo">{{ item.tipo }}</p>
                     <h2>{{ item.titulo }}</h2>
@@ -32,6 +33,7 @@
                 {% else %}
                     <span class="avaliacoes-admin-sem-nota">Sem avaliações</span>
                 {% endif %}
+                {{ distribuicao_notas(item) }}
             </li>
         {% else %}
             <li class="avaliacoes-admin-vazio"><h2>Ainda não há atividades publicadas.</h2><p>As médias aparecerão aqui quando os participantes avaliarem os conteúdos e quizzes.</p></li>

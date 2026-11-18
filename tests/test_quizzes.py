@@ -73,7 +73,7 @@ class QuizzesTeste(unittest.TestCase):
 
     def test_visitante_precisa_entrar_para_acessar_quiz_e_resultado(self):
         visitante = self.app.test_client()
-        for rota in (self.rota, "/quizzes/resultado/31", "/quizzes/guia"):
+        for rota in ("/quizzes/", self.rota, "/quizzes/resultado/31", "/quizzes/guia"):
             with self.subTest(rota=rota):
                 self.assertEqual(visitante.get(rota).status_code, 302)
         self.conexao.execute.assert_not_called()
@@ -90,6 +90,45 @@ class QuizzesTeste(unittest.TestCase):
         self.assertIn('aria-label="Abrir oficina: Revisão de golpes"', resposta.text)
         for destino in ("/quizzes/4", "/quizzes/5", "/quizzes/guia"):
             self.assertIn(f'href="{destino}"', resposta.text)
+
+    def test_catalogo_marca_conclusoes_salvas_sem_impedir_novas_tentativas(self):
+        self.conexao.execute.return_value.fetchall.return_value = [
+            {"id": 4, "titulo": "Proteção de contas", "formato": "perguntas", "total_questoes": 2, "concluido": True},
+            {"id": 5, "titulo": "Revisão de golpes", "formato": "oficina", "total_questoes": 3, "concluido": True},
+            {"id": 6, "titulo": "Privacidade", "formato": "perguntas", "total_questoes": 1, "concluido": False},
+        ]
+        html = self.cliente.get("/quizzes/").text
+
+        self.assertEqual(html.count("✓ Concluído"), 2)
+        self.assertRegex(html, r'<progress[^>]+max="3" value="2"')
+        self.assertIn('aria-label="Refazer quiz: Proteção de contas"', html)
+        self.assertIn('aria-label="Refazer oficina: Revisão de golpes"', html)
+        self.assertIn('aria-label="Começar quiz: Privacidade"', html)
+        for destino in (4, 5, 6):
+            self.assertIn(f'href="/quizzes/{destino}"', html)
+        self.assertEqual(self.conexao.execute.call_args.args[1], (7,))
+        self.auditar.assert_not_called()
+
+    def test_catalogo_vazio_nao_exibe_progresso_invalido(self):
+        self.conexao.execute.return_value.fetchall.return_value = []
+        resposta = self.cliente.get("/quizzes/")
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn("Nenhum quiz disponível no momento.", resposta.text)
+        self.assertNotIn("<progress", resposta.text)
+
+    def test_catalogo_somente_oficina_preserva_guia_e_conclusao_com_avaliacoes_desligadas(self):
+        self.app.config['AVALIACOES_ATIVAS'] = False
+        self.conexao.execute.return_value.fetchall.return_value = [
+            {"id": 5, "titulo": "Revisão de golpes", "formato": "oficina", "total_questoes": 3, "concluido": True},
+        ]
+        html = self.cliente.get("/quizzes/").text
+
+        self.assertIn('href="/quizzes/guia"', html)
+        self.assertIn('aria-label="Refazer oficina: Revisão de golpes"', html)
+        self.assertRegex(html, r'<progress[^>]+max="1" value="1"')
+        self.assertNotIn("Nenhum quiz disponível", html)
+        self.assertNotIn("Ver avaliações", html)
 
     def test_envio_corrige_grava_e_audita_quiz_e_oficina(self):
         for formato, rotulo, ultima_escolha, pontos in (

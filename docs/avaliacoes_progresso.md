@@ -29,9 +29,63 @@ Em um banco novo, siga toda a ordem de scripts do README. Migrações antigas s�
 
 Em **Administração → Avaliações**, o resumo apresenta atividades publicadas, atividades avaliadas, quantidade de respostas e médias desde a primeira avaliação. Inclui notas privadas; a consulta pública considera apenas as notas autorizadas.
 
+As barras de distribuição mostram a quantidade de notas de 1 a 5 no resumo
+administrativo e no detalhe público da atividade. Cada consulta usa a mesma
+seleção de avaliações de sua média; notas privadas não entram nas barras públicas.
+As barras têm rótulos acessíveis e não alteram o cálculo da média.
+
+Quando há comentários autorizados aguardando aprovação, um ícone de comentário com relógio aparece
+ao lado de **Avaliações** no menu e o botão **Comentários e moderação** recebe
+destaque. A verificação ocorre ao abrir a página, ao retornar a ela e a cada
+30 segundos enquanto estiver visível. O ícone leva à lista de pendentes. O
+endpoint `/administracao/avaliacoes/pendentes` exige administrador, retorna apenas
+a quantidade e não mantém cache. Não há envio de e-mail ou notificação externa.
+
 **Comentários e moderação** permite filtrar avaliações por situação. Cartões identificam a atividade, a conta pelo número interno, a nota, o comentário e o estado: aguardando moderação, publicado, publicação bloqueada ou privado. Os botões seguem a identidade visual da área administrativa, com destaque para revisão e ação secundária para bloqueio.
 
 Somente comentários cuja publicação foi autorizada podem ser moderados. Revisão e bloqueio abrem uma página de confirmação com o texto completo, checkbox obrigatório, CSRF e número da revisão. Uma alteração concorrente impede confirmar uma versão antiga. Editar o texto público exige outra revisão. Bloquear retira somente o comentário da consulta pública, preservando a nota e o registro da avaliação.
+
+A confirmação inclui uma prévia que reutiliza o componente do cartão público,
+com nota, data e comentário, sem dados do perfil no cabeçalho. A conta autora
+é identificada separadamente apenas na área administrativa. Abrir essa revisão
+e confirmar sua decisão são eventos distintos na auditoria. O atalho **Auditoria
+de avaliações** reúne também os registros de criação, edição, retirada e exclusão.
+Não é necessária migração adicional de banco para as barras, a prévia ou os avisos.
+
+Avaliações anteriores sem autorização de divulgação, aviso vigente e declaração
+de idade continuam privadas. O administrador pode moderar comentários já
+autorizados, mas a moderação não preenche essas escolhas pelo participante.
+O próprio autor pode renovar suas escolhas em **Minha conta → Minhas avaliações**,
+editando a avaliação de uma atividade que continue publicada.
+
+## Atualização da Visão geral
+
+Os indicadores da administração são consultados ao abrir a página e novamente a
+cada 10 segundos enquanto a aba estiver visível. Há botão **Atualizar agora** e
+horário da última consulta bem-sucedida em Brasília. Ao voltar à aba ou recuperar
+a conexão, a página solicita dados novamente. Falhas mantêm o último painel e
+exibem um aviso; o horário anterior não é apresentado como atualizado.
+
+`GET /administracao/visao-geral/dados` exige perfil administrador, valida o período
+e retorna somente o fragmento do painel e o horário, sem cache. Uma transação
+PostgreSQL `REPEATABLE READ, READ ONLY` mantém os indicadores e as médias de
+avaliações no mesmo snapshot. O gráfico é atualizado junto com os cartões e
+tabelas, preservando o filtro e o foco dos links. Sem JavaScript, é necessário
+recarregar a página. Trata-se de atualização periódica, não de transmissão
+instantânea de cada evento. Dados ainda não confirmados no banco só entram numa
+consulta posterior à confirmação.
+
+As consultas automáticas de indicadores e de pendências validam a sessão sem
+renovar o prazo de inatividade. O clique em **Atualizar agora** sinaliza uma
+interação manual e renova somente uma sessão que ainda esteja válida. Permanecem
+as verificações de autenticador, conta ativa, inatividade e expiração máxima.
+
+A contagem de usuários ativos exclui contas excluídas ou com exclusão solicitada,
+assim como o total de usuários cadastrados. O indicador de atividades com nota
+abaixo de 3 considera todas as atividades avaliadas; a tabela de menores médias
+continua limitada às cinco primeiras. A exportação Excel consulta os mesmos
+indicadores em um snapshot novo. Consultas automáticas não criam eventos de
+auditoria repetitivos; a exportação permanece auditada.
 
 O CSS `avaliacoes_admin.css` é carregado apenas nas páginas de avaliações da administração. Reutiliza cores e botões existentes, com navegação consistente, indicadores, estados vazios, paginação e adaptação para telas menores. A autorização permanece validada no servidor.
 

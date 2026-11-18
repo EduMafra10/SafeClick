@@ -9,7 +9,7 @@ from wtforms.validators import DataRequired, Length
 
 from safeclick import auditoria_textos, contas_db
 from safeclick.auditoria_db import registrar_evento
-from safeclick.avaliacoes_db import listar_resumo_avaliacoes
+from safeclick.avaliacoes_db import contar_pendentes, listar_resumo_avaliacoes
 from safeclick.emails import enviar_email
 from safeclick.modelo_email import montar_email
 from safeclick.formularios import limpar_texto
@@ -57,23 +57,32 @@ def _ler_periodo():
     return int(texto)
 
 
-def _avaliacoes_mais_baixas():
-    if not current_app.config["AVALIACOES_ATIVAS"]:
-        return None
-    avaliadas = [item for item in listar_resumo_avaliacoes() if item["total"]]
-    return sorted(avaliadas, key=lambda item: (item["media"], item["titulo"]))[:5]
+def _consultar_visao_geral(dias):
+    agora = datetime.now(FUSO_BRASILIA)
+    dados = buscar_visao_geral(dias, agora.date(), incluir_avaliacoes=current_app.config['AVALIACOES_ATIVAS'])
+    avaliadas = [item for item in dados.get('avaliacoes') or [] if item['total']]
+    avaliacoes = (
+        sorted(avaliadas, key=lambda item: (item['media'], item['titulo']))[:5]
+        if current_app.config['AVALIACOES_ATIVAS'] else None
+    )
+    atualizado_em = dados.get('atualizado_em') or agora
+    return dados, avaliacoes, sum(item['media'] < 3 for item in avaliadas), atualizado_em.astimezone(FUSO_BRASILIA)
 
 
 @administracao.get("/")
 def inicio():
     dias = _ler_periodo()
     try:
-        dados = buscar_visao_geral(dias, datetime.now(FUSO_BRASILIA).date())
-        avaliacoes = _avaliacoes_mais_baixas()
+        dados, avaliacoes, notas_baixas, atualizado_em = _consultar_visao_geral(dias)
     except (Error, RuntimeError):
         current_app.logger.exception("Falha ao carregar a visão geral")
         abort(503, description="Não foi possível carregar os indicadores agora. Tente novamente em instantes.")
 
+    contexto = _contexto_visao_geral(dados, avaliacoes, notas_baixas)
+    return render_template('administracao/visao_geral.html', atualizado_em=atualizado_em, **contexto)
+
+
+def _contexto_visao_geral(dados, avaliacoes, notas_baixas):
     eventos = [
         {
             "hora": evento["criado_em"].astimezone(FUSO_BRASILIA),
@@ -89,17 +98,22 @@ def inicio():
             for tipo, valores in dados["atividades"]["por_dia"]["series"].items()
         ],
     }
-    return render_template(
-        "administracao/visao_geral.html",
-        dados=dados,
-        periodos=PERIODOS,
-        eventos=eventos,
-        grafico=grafico,
-        avaliacoes=avaliacoes,
-        notas_baixas=sum(1 for item in avaliacoes or [] if item["media"] < 3),
-        rotulos_atividade=ROTULOS_ATIVIDADE,
-        minimo_respostas=MINIMO_RESPOSTAS_QUESTAO,
-    )
+    return dict(dados=dados, periodos=PERIODOS, eventos=eventos, grafico=grafico, avaliacoes=avaliacoes,
+                notas_baixas=notas_baixas, rotulos_atividade=ROTULOS_ATIVIDADE, minimo_respostas=MINIMO_RESPOSTAS_QUESTAO)
+
+
+@administracao.get('/visao-geral/dados')
+def atualizar_visao_geral():
+    dias = _ler_periodo()
+    try:
+        dados, avaliacoes, notas_baixas, atualizado_em = _consultar_visao_geral(dias)
+    except (Error, RuntimeError):
+        current_app.logger.exception('Falha ao atualizar a visão geral')
+        return {'erro': 'Não foi possível atualizar os indicadores.'}, 503, {'Cache-Control': 'no-store'}
+    html = render_template('administracao/_visao_geral_painel.html',
+                           **_contexto_visao_geral(dados, avaliacoes, notas_baixas))
+    return {'html': html, 'atualizado_em': atualizado_em.isoformat(),
+            'horario': atualizado_em.strftime('%d/%m/%Y às %H:%M:%S')}, 200, {'Cache-Control': 'no-store'}
 
 
 @administracao.get("/visao-geral.xlsx")
@@ -107,8 +121,7 @@ def exportar_visao_geral():
     dias = _ler_periodo()
     agora = datetime.now(FUSO_BRASILIA)
     try:
-        dados = buscar_visao_geral(dias, agora.date())
-        avaliacoes = _avaliacoes_mais_baixas()
+        dados, avaliacoes, _, _ = _consultar_visao_geral(dias)
         registrar_evento(
             usuario_id=int(current_user.id),
             evento="visao_geral.exportada",
@@ -137,6 +150,17 @@ def listar_avaliacoes():
     except (Error, RuntimeError):
         abort(503, description="Não foi possível consultar as avaliações agora. Tente novamente em instantes.")
     return render_template("administracao/avaliacoes.html", secoes=SECOES, secao="avaliacoes", itens=itens)
+
+
+@administracao.get("/avaliacoes/pendentes")
+def notificacoes_avaliacoes():
+    if not current_app.config["AVALIACOES_ATIVAS"]:
+        abort(404)
+    try:
+        total = contar_pendentes()
+    except (Error, RuntimeError):
+        return {"erro": "Não foi possível consultar as avaliações pendentes."}, 503, {"Cache-Control": "no-store"}
+    return {"total": total}, 200, {"Cache-Control": "no-store"}
 
 
 # As telas antigas de simulações foram unificadas na gestão de conteúdo.

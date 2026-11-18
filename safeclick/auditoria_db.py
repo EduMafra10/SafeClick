@@ -27,6 +27,8 @@ EVENTOS_PERMITIDOS = {
     "avaliacao.excluida",
     "avaliacao.publicacao_retirada",
     "avaliacao.moderada",
+    "avaliacao.previa_consultada",
+    "conquista.concedida",
     "ranking.preferencia_atualizada",
     "api.consultada",
     "desafio_senha.concluido",

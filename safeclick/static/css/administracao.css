@@ -1,4 +1,23 @@
 /* ---------- Estrutura da área administrativa ---------- */
+.admin-vg-atualizacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin: 0 0 24px;
+    padding: 14px 18px;
+    border: 1px solid var(--visual-borda);
+    border-radius: 10px;
+    background: #f6f9f7;
+    color: var(--visual-secundario);
+    font-size: 13px;
+}
+.admin-vg-atualizacao[hidden], .admin-vg-atualizacao-erro[hidden] { display: none; }
+.admin-vg-atualizacao p { margin: 0 0 4px; }
+.admin-vg-atualizacao .admin-vg-atualizacao-erro { margin-top: 8px; color: #93483e; }
+.admin-vg-atualizacao button { min-height: 44px; padding: 9px 16px; border-radius: 8px; font: inherit; }
+.admin-vg-atualizacao button:disabled { opacity: .65; cursor: wait; }
 .admin-corpo {
     --admin-lateral: #f4f8f6;
     --admin-lateral-borda: #d3e0da;
@@ -83,6 +102,43 @@
 
 .admin-menu-links a[aria-current="page"] .admin-icone {
     color: var(--visual-verde);
+}
+
+.admin-menu-avaliacoes {
+    position: relative;
+}
+
+.admin-menu-avaliacoes > a:first-child {
+    padding-right: 52px;
+}
+
+.admin-menu-links .admin-menu-pendencias {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid #c9dcd2;
+    border-radius: 10px;
+    background: var(--visual-verde-suave);
+    color: var(--visual-verde);
+}
+
+.admin-menu-links .admin-menu-pendencias .admin-icone {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+}
+
+.admin-menu-links .admin-menu-pendencias:hover {
+    border-color: #aec9b9;
+    background: #dfece5;
+}
+
+.admin-menu-pendencias[hidden] {
+    display: none;
 }
 
 .admin-menu-grupo {

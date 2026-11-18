@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/quizzes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">
+    {% block recursos %}{% endblock %}
     <script src="{{ url_for('static', filename='js/participacao.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>

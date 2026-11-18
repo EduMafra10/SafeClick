@@ -1,0 +1,22 @@
+{% macro distribuicao_notas(resumo) -%}
+{% if resumo.total and resumo.distribuicao %}
+<figure class="avaliacoes-distribuicao" aria-label="Distribuição das notas">
+    <figcaption>Distribuição das notas</figcaption>
+    {% for nota in range(5, 0, -1) %}
+    {% set quantidade = resumo.distribuicao[nota - 1] %}
+    <div class="avaliacoes-distribuicao-linha">
+        <span>{{ nota }} <span class="avaliacoes-somente-leitor">de 5</span></span>
+        <meter min="0" max="{{ resumo.total }}" value="{{ quantidade }}" aria-label="Nota {{ nota }} de 5, {{ quantidade }} de {{ resumo.total }} avaliações">{{ quantidade }}</meter>
+        <span>{{ quantidade }}</span>
+    </div>
+    {% endfor %}
+</figure>
+{% endif %}
+{%- endmacro %}
+
+{% macro comentario_publico(item) -%}
+<article class="participacao-comentario-publico">
+    <p><strong>Participante sem identificação</strong> · {{ item.nota }} de 5 · <time>{{ item.data }}</time></p>
+    <p class="participacao-texto">{{ item.comentario }}</p>
+</article>
+{%- endmacro %}

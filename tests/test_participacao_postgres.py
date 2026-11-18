@@ -4,7 +4,9 @@ import os
 import unittest
 from contextlib import ExitStack, nullcontext
 from decimal import Decimal
+from importlib import import_module
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import psycopg
@@ -99,6 +101,101 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         avaliacoes_db.salvar_avaliacao(self.c, tipo, 1, 11 if tipo == 'conteudo' else 21, 4, comentario,
                                        aviso_versao=VERSAO_AVISO, **opcoes)
 
+    def consultar_catalogo(self, usuario=1):
+        modulo = import_module('safeclick.quizzes')
+        with patch.object(modulo, 'conectar_banco', return_value=nullcontext(self.c)), \
+                patch.object(modulo, 'current_user', SimpleNamespace(id=usuario)), \
+                patch.object(modulo, 'render_template', side_effect=lambda _, **dados: dados):
+            return modulo.listar_quizzes()['quizzes']
+
+    def test_conclusao_no_catalogo_exige_tentativa_completa_valida_da_propria_conta(self):
+        self.tentativa(2)
+        self.tentativa(1, completa=False)
+        self.tentativa(1, pontuacao=0)  # Pontuação incompatível com as respostas.
+        self.assertFalse(self.consultar_catalogo()[0]['concluido'])
+        self.assertTrue(self.consultar_catalogo(2)[0]['concluido'])
+        self.tentativa(1, acertos=0)
+        self.assertTrue(self.consultar_catalogo()[0]['concluido'])
+        self.assertFalse(self.consultar_catalogo(4)[0]['concluido'])
+        self.tentativa(1)
+        self.assertEqual(sum(item['concluido'] for item in self.consultar_catalogo()), 1)
+
+    def test_oficina_invalida_nao_marca_conclusao_e_oficina_valida_permanece_concluida(self):
+        self.c.execute("UPDATE quizzes SET formato='oficina' WHERE id=201")
+        self.c.execute("UPDATE alternativas SET texto='Mesmo cartão' WHERE id IN (401,403)")
+        self.tentativa(1)
+        self.assertFalse(self.consultar_catalogo()[0]['concluido'])
+        self.tentativa(1, acertos=1)
+        self.assertTrue(self.consultar_catalogo()[0]['concluido'])
+
+    def test_catalogo_preserva_conclusao_na_nova_edicao_e_oculta_itens_removidos(self):
+        self.tentativa(1)
+        self.c.execute("INSERT INTO quizzes(id,catalogo_id,titulo) VALUES(202,21,'Quiz revisado')")
+        self.c.execute("""INSERT INTO questoes SELECT id+10,202,ordem,enunciado,explicacao
+            FROM questoes WHERE quiz_id=201""")
+        self.c.execute("""INSERT INTO alternativas SELECT a.id+10,a.questao_id+10,a.ordem,a.texto,a.correta
+            FROM alternativas a JOIN questoes q ON q.id=a.questao_id WHERE q.quiz_id=201""")
+        self.c.execute('UPDATE catalogo_quizzes SET versao_publicada_id=202 WHERE id=21')
+        self.assertEqual([(i['titulo'], i['concluido']) for i in self.consultar_catalogo()], [('Quiz revisado', True)])
+        self.c.execute("UPDATE catalogo_quizzes SET estado='arquivada' WHERE id=21")
+        self.assertEqual(self.consultar_catalogo(), [])
+        self.c.execute("UPDATE catalogo_quizzes SET estado='publicada',removido_em=now() WHERE id=21")
+        self.assertEqual(self.consultar_catalogo(), [])
+
+    def test_auditoria_identifica_criacao_edicao_moderacao_retirada_e_exclusao_nos_tres_formatos(self):
+        from safeclick.auditoria_db import listar_eventos
+        from safeclick.auditoria_textos import eventos_da_categoria
+        self.c.execute('INSERT INTO catalogo_quizzes(id,versao_publicada_id) VALUES(22,202)')
+        self.c.execute("INSERT INTO quizzes(id,catalogo_id,titulo,formato) VALUES(202,22,'Oficina de senhas','oficina')")
+        for tipo, item_id, formato in (('conteudo', 11, 'conteudo'), ('quiz', 21, 'quiz'), ('quiz', 22, 'oficina')):
+            with self.subTest(formato=formato):
+                for nota in (4, 5):
+                    avaliacoes_db.salvar_avaliacao(self.c, tipo, 1, item_id, nota, 'Texto privado de teste',
+                                                   publicar_nota=True, publicar_comentario=True, maior_de_idade=True,
+                                                   aviso_versao=VERSAO_AVISO)
+                avaliacoes_db.moderar_comentario(3, tipo, item_id, 1, 2, 'aprovar')
+                self.assertTrue(avaliacoes_db.retirar_publicacao(1, tipo, item_id))
+                self.assertTrue(avaliacoes_db.excluir_avaliacao(1, tipo, item_id))
+                logs = self.c.execute('SELECT * FROM logs_auditoria WHERE recurso_tipo=%s ORDER BY id',
+                                      ('avaliacao_' + formato,)).fetchall()
+                self.assertEqual([registro['evento'] for registro in logs], ['avaliacao.salva', 'avaliacao.salva',
+                                 'avaliacao.moderada', 'avaliacao.publicacao_retirada', 'avaliacao.excluida'])
+                self.assertEqual([registro['usuario_id'] for registro in logs], [1, 1, 3, 1, 1])
+                self.assertTrue(all(registro['recurso_id'] == str(item_id) for registro in logs))
+                self.assertEqual(logs[0]['detalhes']['operacao'], 'criada')
+                self.assertEqual(logs[1]['detalhes']['operacao'], 'atualizada')
+                self.assertEqual(logs[2]['detalhes']['autor_id'], 1)
+                self.assertNotIn('Texto privado', str(logs))
+        registros, resumo = listar_eventos(
+            self.c, pagina=1, por_pagina=50, eventos=eventos_da_categoria('avaliacoes'),
+        )
+        self.assertEqual((len(registros), resumo['total']), (15, 15))
+
+    def test_distribuicao_publica_exclui_notas_privadas_e_admin_inclui_todas(self):
+        self.avaliar(publicar_nota=True, maior_de_idade=True)
+        avaliacoes_db.salvar_avaliacao(self.c, 'conteudo', 2, 11, 1, None, aviso_versao=VERSAO_AVISO)
+        avaliacoes_db.salvar_avaliacao(self.c, 'conteudo', 4, 11, 5, None,
+                                       publicar_nota=True, maior_de_idade=True, aviso_versao=VERSAO_AVISO)
+        publico = avaliacoes_db.detalhar_publicas('conteudo', 11)[1]
+        admin = next(i for i in avaliacoes_db.listar_resumo_avaliacoes() if i['titulo'] == 'Senhas')
+        self.assertEqual((publico['total'], publico['distribuicao']), (2, [0, 0, 0, 1, 1]))
+        self.assertEqual((admin['total'], admin['distribuicao']), (3, [1, 0, 0, 1, 1]))
+        self.avaliar(publicar_nota=True, maior_de_idade=True)
+        self.assertEqual(avaliacoes_db.detalhar_publicas('conteudo', 11)[1]['total'], 2)
+        self.assertTrue(avaliacoes_db.retirar_publicacao(1, 'conteudo', 11))
+        self.assertEqual(avaliacoes_db.detalhar_publicas('conteudo', 11)[1]['distribuicao'], [0, 0, 0, 0, 1])
+
+    def test_falha_real_na_auditoria_nao_persiste_avaliacao(self):
+        self.c.execute("""CREATE FUNCTION pg_temp.impedir_log() RETURNS trigger LANGUAGE plpgsql AS $$
+            BEGIN RAISE EXCEPTION 'Auditoria indisponível no teste'; END $$;
+            CREATE TRIGGER impedir_log BEFORE INSERT ON logs_auditoria
+            FOR EACH ROW EXECUTE FUNCTION pg_temp.impedir_log()""")
+        self.c.execute('SAVEPOINT envio')
+        with self.assertRaises(psycopg.Error):
+            self.avaliar()
+        self.c.execute('ROLLBACK TO SAVEPOINT envio')
+        self.assertEqual(self.c.execute('SELECT count(*) AS total FROM avaliacoes_conteudo').fetchone()['total'], 0)
+
     def test_avaliacoes_anteriores_continuam_privadas_apos_reexecutar_migracao(self):
         self.c.execute("INSERT INTO avaliacoes_conteudo(usuario_id,conteudo_id,nota,comentario) VALUES(1,11,5,'Antigo privado')")
         # Os comandos de controle de transação são retirados só para o teste com rollback.
@@ -163,6 +260,75 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         avaliacoes_db.moderar_comentario(3, 'conteudo', 11, 1, 1, 'aprovar')
         for item in avaliacoes_db.detalhar_publicas('conteudo', 11)[2]:
             self.assertEqual(set(item), {'nota', 'comentario', 'data'})
+
+    def test_ordem_publica_ignora_notas_privadas_e_deixa_atividades_sem_notas_no_fim(self):
+        self.c.execute("INSERT INTO conteudos(id,slug,titulo,texto) VALUES(12,'mensagens','Mensagens','Ensino'),(13,'privacidade','Privacidade','Ensino')")
+        self.c.execute('INSERT INTO conclusoes_conteudo(usuario_id,conteudo_id) VALUES(1,12)')
+        self.avaliar(publicar_nota=True, maior_de_idade=True)
+        avaliacoes_db.salvar_avaliacao(self.c, 'conteudo', 1, 12, 5, None,
+                                       publicar_nota=True, maior_de_idade=True, aviso_versao=VERSAO_AVISO)
+        avaliacoes_db.salvar_avaliacao(self.c, 'conteudo', 2, 11, 1, 'Privada', aviso_versao=VERSAO_AVISO)
+        self.c.execute("UPDATE avaliacoes_conteudo SET atualizada_em=TIMESTAMPTZ '2026-11-01 12:00Z' WHERE usuario_id=1 AND conteudo_id=11")
+        self.c.execute("UPDATE avaliacoes_conteudo SET atualizada_em=TIMESTAMPTZ '2026-11-02 12:00Z' WHERE conteudo_id=12")
+        recentes, total = avaliacoes_db.listar_publicas()
+        antigas, _ = avaliacoes_db.listar_publicas(ordem='antigas')
+        self.assertEqual(total, 4)
+        self.assertEqual([i['id'] for i in recentes[:2]], [12, 11])
+        self.assertEqual([i['id'] for i in antigas[:2]], [11, 12])
+        for itens in (recentes, antigas):
+            self.assertTrue(all(i['total'] == 0 for i in itens[2:]))
+            senha = next(i for i in itens if i['tipo'] == 'conteudo' and i['id'] == 11)
+            self.assertEqual((senha['total'], senha['media']), (1, Decimal('4.0')))
+
+    def test_ordem_dos_comentarios_e_contador_acompanham_a_moderacao(self):
+        self.avaliar(publicar_nota=True, publicar_comentario=True, maior_de_idade=True)
+        avaliacoes_db.salvar_avaliacao(self.c, 'conteudo', 2, 11, 5, 'Outro comentário',
+                                       publicar_nota=True, publicar_comentario=True, maior_de_idade=True,
+                                       aviso_versao=VERSAO_AVISO)
+        self.c.execute("UPDATE avaliacoes_conteudo SET atualizada_em=TIMESTAMPTZ '2026-11-01 12:00Z' WHERE usuario_id=1")
+        self.c.execute("UPDATE avaliacoes_conteudo SET atualizada_em=TIMESTAMPTZ '2026-11-02 12:00Z' WHERE usuario_id=2")
+        self.assertEqual(avaliacoes_db.contar_pendentes(), 2)
+        recentes, _ = avaliacoes_db.listar_gestao(estado='pendente')
+        antigas, _ = avaliacoes_db.listar_gestao(estado='pendente', ordem='antigas')
+        self.assertEqual([i['usuario_id'] for i in recentes], [2, 1])
+        self.assertEqual([i['usuario_id'] for i in antigas], [1, 2])
+        for usuario in (1, 2):
+            avaliacoes_db.moderar_comentario(3, 'conteudo', 11, usuario, 1, 'aprovar')
+        self.assertEqual(avaliacoes_db.contar_pendentes(), 0)
+        recentes = avaliacoes_db.detalhar_publicas('conteudo', 11)[2]
+        antigas = avaliacoes_db.detalhar_publicas('conteudo', 11, ordem='antigas')[2]
+        self.assertEqual([c['comentario'] for c in recentes], ['Outro comentário', 'Ajuda a entender o tema.'])
+        self.assertEqual([c['comentario'] for c in antigas], ['Ajuda a entender o tema.', 'Outro comentário'])
+
+    def test_pendencias_excluem_publicacao_sem_autorizacao_atividade_arquivada_e_conta_inativa(self):
+        self.avaliar(publicar_nota=True, publicar_comentario=True, maior_de_idade=True)
+        self.assertEqual(avaliacoes_db.contar_pendentes(), 1)
+        for cenario, alteracao in (
+            ('comentario privado', 'publicar_comentario=FALSE'),
+            ('sem autorização', 'publicar_nota=FALSE,publicar_comentario=FALSE,maior_de_idade=FALSE'),
+            ('aviso anterior', "aviso_versao='aviso-antigo'"),
+        ):
+            with self.subTest(cenario=cenario):
+                self.c.execute('SAVEPOINT verificacao')
+                self.c.execute('UPDATE avaliacoes_conteudo SET ' + alteracao)
+                self.assertEqual(avaliacoes_db.contar_pendentes(), 0)
+                self.c.execute('ROLLBACK TO SAVEPOINT verificacao')
+        self.c.execute("UPDATE conteudos SET estado='arquivada' WHERE id=11")
+        self.assertEqual(avaliacoes_db.contar_pendentes(), 0)
+        self.c.execute("UPDATE conteudos SET estado='publicada' WHERE id=11")
+        self.c.execute('UPDATE usuarios SET exclusao_solicitada_em=now() WHERE id=1')
+        self.assertEqual(avaliacoes_db.contar_pendentes(), 0)
+
+    def test_consultas_distinguem_oficina_de_quiz(self):
+        self.c.execute("UPDATE quizzes SET formato='oficina' WHERE id=201")
+        self.tentativa(1)
+        self.avaliar(tipo='quiz', publicar_nota=True, publicar_comentario=True, maior_de_idade=True)
+        oficinas, total = avaliacoes_db.listar_publicas(tipo='oficina')
+        self.assertEqual((total, oficinas[0]['formato']), (1, 'oficina'))
+        self.assertEqual(avaliacoes_db.listar_publicas(tipo='quiz'), ([], 0))
+        self.assertEqual(avaliacoes_db.listar_gestao()[0][0]['formato'], 'oficina')
+        self.assertEqual(avaliacoes_db.listar_minhas(1)[0]['formato'], 'oficina')
+        self.assertEqual(avaliacoes_db.detalhar_publicas('quiz', 21)[0]['formato'], 'oficina')
 
     def test_tentativas_incompletas_inconsistentes_nao_entram_no_historico_validado(self):
         self.tentativa(1, completa=False)

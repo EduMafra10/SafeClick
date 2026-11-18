@@ -2,6 +2,7 @@
 CATEGORIAS = {
     "acesso": "Acesso e conta",
     "aprendizado": "Aprendizado",
+    "avaliacoes": "Avaliações e moderação",
     "administracao": "Administração",
     "integracoes": "Serviços externos",
 }
@@ -22,10 +23,12 @@ EVENTOS = {
     "acesso.negado": ("Acesso negado", "acesso"),
     "conteudo.visualizado": ("Conteúdo aberto", "aprendizado"),
     "conteudo.concluido": ("Conteúdo concluído", "aprendizado"),
-    "avaliacao.salva": ("Avaliação salva", "aprendizado"),
-    "avaliacao.excluida": ("Avaliação excluída pelo titular", "aprendizado"),
-    "avaliacao.publicacao_retirada": ("Publicação da avaliação retirada pelo titular", "aprendizado"),
-    "avaliacao.moderada": ("Comentário de avaliação moderado", "administracao"),
+    "avaliacao.salva": ("Avaliação salva", "avaliacoes"),
+    "avaliacao.excluida": ("Avaliação excluída pelo titular", "avaliacoes"),
+    "avaliacao.publicacao_retirada": ("Publicação da avaliação retirada pelo titular", "avaliacoes"),
+    "avaliacao.moderada": ("Comentário de avaliação moderado", "avaliacoes"),
+    "avaliacao.previa_consultada": ("Prévia de comentário consultada", "avaliacoes"),
+    "conquista.concedida": ("Conquista concedida", "aprendizado"),
     "ranking.preferencia_atualizada": ("Participação no ranking atualizada", "aprendizado"),
     "quiz.concluido": ("Quiz respondido", "aprendizado"),
     "simulacao.concluida": ("Simulação respondida", "aprendizado"),
@@ -110,6 +113,8 @@ RECURSOS = {
     "conteudo": "Conteúdo",
     "avaliacao_conteudo": "Avaliação de conteúdo",
     "avaliacao_quiz": "Avaliação de quiz",
+    "avaliacao_oficina": "Avaliação de oficina",
+    "conquista": "Conquista",
     "desafio_senha": "Partida do desafio",
     "usuario": "Conta",
     "aceite_termos": "Aceite",
@@ -175,6 +180,32 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
         codigo = detalhes.pop("codigo_twilio", None)
         if codigo:
             frases.append(f"Código Twilio: {codigo}")
+
+    elif evento.startswith("avaliacao."):
+        operacao = detalhes.pop("operacao", None)
+        if operacao in {"criada", "atualizada"}:
+            frases.append("Avaliação criada" if operacao == "criada" else "Avaliação atualizada")
+        formato = detalhes.pop("formato", None)
+        if formato in {"conteudo", "quiz", "oficina"}:
+            frases.append("Atividade: " + {"conteudo": "conteúdo", "quiz": "quiz", "oficina": "oficina"}[formato])
+        acao = detalhes.pop("acao", None)
+        if acao in {"aprovar", "ocultar"}:
+            if evento == 'avaliacao.moderada':
+                frases.append("Publicação aprovada" if acao == "aprovar" else "Publicação bloqueada")
+            else:
+                frases.append("Revisão para publicar" if acao == "aprovar" else "Revisão para bloquear")
+        autor = detalhes.pop("autor_id", None)
+        if autor is not None:
+            frases.append(f"Conta autora nº {autor}")
+        revisao = detalhes.pop("revisao", None)
+        if revisao is not None:
+            frases.append(f"Revisão {revisao}")
+        for campo, rotulo in (("nota_publica", "Nota pública"), ("comentario_publico", "Comentário para publicação")):
+            if campo in detalhes:
+                frases.append(f"{rotulo}: {'sim' if detalhes.pop(campo) else 'não'}")
+        aviso = detalhes.pop("aviso", None)
+        if aviso:
+            frases.append(f"Versão do aviso: {aviso}")
 
     elif evento in ("quiz.concluido", "desafio_senha.concluido"):
         acertos = detalhes.pop("pontuacao", detalhes.pop("acertos", None))

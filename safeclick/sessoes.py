@@ -118,12 +118,16 @@ def carregar_usuario(usuario_id):
     if token_hash is None or not 1 <= usuario_id <= 2147483647:
         return None
 
+    consulta_automatica = request.endpoint in {
+        'administracao.atualizar_visao_geral', 'administracao.notificacoes_avaliacoes',
+    } and request.headers.get('X-SafeClick-Interacao') != '1'
+
     try:
         with conectar_banco() as conexao:
             dados = conexao.execute(
                 """
                 UPDATE public.sessoes_autenticadas AS sessao
-                SET ultima_atividade = clock_timestamp()
+                SET ultima_atividade = CASE WHEN %s THEN sessao.ultima_atividade ELSE clock_timestamp() END
                 FROM public.usuarios AS usuario
                 WHERE sessao.token_hash = %s
                   AND sessao.usuario_id = %s
@@ -136,7 +140,7 @@ def carregar_usuario(usuario_id):
                       clock_timestamp() - INTERVAL '30 minutes'
                 RETURNING usuario.id, usuario.nome, usuario.email, usuario.perfil, usuario.icone
                 """,
-                (token_hash, usuario_id),
+                (consulta_automatica, token_hash, usuario_id),
             ).fetchone()
 
     except (Error, RuntimeError):
