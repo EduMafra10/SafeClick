@@ -62,7 +62,7 @@
             {% if quiz.pode_repetir %}
                 <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_quiz', quiz_id=quiz.id) }}">Tentar novamente</a>
                 {% if config.AVALIACOES_ATIVAS %}
-                    <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.quiz', tentativa_id=tentativa_id) }}">Avaliar quiz</a>
+                    <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.quiz', tentativa_id=tentativa_id) }}">{{ 'Avaliar oficina' if quiz.formato == 'oficina' else 'Avaliar quiz' }}</a>
                 {% endif %}
             {% endif %}
             {{ links_atividades('quiz', quiz.proxima_referencia) }}

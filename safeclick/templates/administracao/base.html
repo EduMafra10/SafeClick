@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/administracao.css') }}">
     <script src="{{ url_for('static', filename='js/administracao_menu.js') }}" defer></script>
+    {% if config.AVALIACOES_ATIVAS %}<script src="{{ url_for('static', filename='js/avaliacoes_notificacoes.js') }}" defer></script>{% endif %}
     {% block recursos %}{% endblock %}
 </head>
 <body class="site-visual admin-corpo">
@@ -40,8 +41,15 @@
                 <a href="{{ url_for('administracao.listar_contas') }}"
                   {% if rota in ('administracao.listar_contas', 'administracao.redefinir_autenticador', 'administracao.alterar_perfil') %}aria-current="page"{% endif %}>{{ icone('contas') }}Contas</a>
                 {% if config.AVALIACOES_ATIVAS %}
+                    <div class="admin-menu-avaliacoes">
                     <a href="{{ url_for('administracao.listar_avaliacoes') }}"
                        {% if rota == 'administracao.listar_avaliacoes' or request.blueprint == 'moderacao_avaliacoes' %}aria-current="page"{% endif %}>{{ icone('avaliacoes') }}Avaliações</a>
+                    <a class="admin-menu-pendencias" href="{{ url_for('moderacao_avaliacoes.listar', estado='pendente') }}"
+                       data-avaliacoes-pendentes-url="{{ url_for('administracao.notificacoes_avaliacoes') }}"
+                       aria-label="Comentários aguardando aprovação" hidden>
+                        {{ icone('notificacao') }}
+                    </a>
+                    </div>
                 {% endif %}
 
                 <p class="admin-menu-grupo">Segurança</p>

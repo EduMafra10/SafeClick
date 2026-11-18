@@ -1,4 +1,5 @@
 from safeclick.db import conectar_banco
+from safeclick.auditoria_db import registrar_evento
 
 _METRICAS = """
     SELECT criterio, valor
@@ -92,7 +93,15 @@ def _formatar(linha):
 def liberar_conquistas(usuario_id):
     """Concede as conquistas atingidas e devolve as que foram liberadas agora."""
     with conectar_banco() as conexao:
-        return conexao.execute(_LIBERAR, {"usuario_id": usuario_id}).fetchall()
+        novas = conexao.execute(_LIBERAR, {"usuario_id": usuario_id}).fetchall()
+        _registrar_conquistas(conexao, usuario_id, novas)
+    return novas
+
+
+def _registrar_conquistas(conexao, usuario_id, novas):
+    for conquista in novas:
+        registrar_evento(usuario_id, 'conquista.concedida', 'sucesso', recurso_tipo='conquista',
+                         recurso_id=conquista['codigo'], conexao=conexao)
 
 
 def liberar_e_listar_conquistas(usuario_id):
@@ -101,6 +110,7 @@ def liberar_e_listar_conquistas(usuario_id):
 
     with conectar_banco() as conexao:
         novas = conexao.execute(_LIBERAR, parametros).fetchall()
+        _registrar_conquistas(conexao, usuario_id, novas)
         todas = conexao.execute(_LISTAR, parametros).fetchall()
 
     return novas, [_formatar(linha) for linha in todas]

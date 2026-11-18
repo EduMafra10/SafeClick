@@ -1,4 +1,5 @@
 {% extends 'administracao/base.html' %}
+{% from 'componentes/tipo_atividade.html' import tipo_atividade %}
 {% block titulo %}Comentários de avaliações{% endblock %}
 {% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
 {% block classe_principal %}admin-avaliacoes{% endblock %}
@@ -15,8 +16,14 @@
         {% endfor %}
         </select>
     </label>
-    <button class="admin-botao" type="submit">Aplicar filtro</button>
-    {% if estado %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar') }}">Limpar filtro</a>{% endif %}
+    <label>Ordenar por atualização
+        <select name="ordem">
+            <option value="recentes" {{ 'selected' if ordem == 'recentes' }}>Mais recentes</option>
+            <option value="antigas" {{ 'selected' if ordem == 'antigas' }}>Mais antigas</option>
+        </select>
+    </label>
+    <button class="admin-botao" type="submit">Aplicar filtros</button>
+    {% if estado or ordem == 'antigas' %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar') }}">Limpar filtros</a>{% endif %}
 </form>
 <p class="avaliacoes-admin-total" role="status"><strong>{{ total }}</strong> {{ 'avaliação encontrada' if total == 1 else 'avaliações encontradas' }}</p>
 <ul class="avaliacoes-admin-lista">
@@ -24,9 +31,10 @@
     <li class="avaliacoes-admin-cartao">
         <div class="avaliacoes-admin-cartao-cabecalho">
             <div>
-                <p class="avaliacoes-admin-tipo">{{ 'Conteúdo educativo' if item.tipo == 'conteudo' else 'Quiz ou oficina' }}</p>
+                <p class="avaliacoes-admin-tipo">{{ tipo_atividade(item.tipo, item.formato) }}</p>
                 <h2>{{ item.titulo }}</h2>
                 <p class="avaliacoes-admin-meta">Conta #{{ item.usuario_id }} · <strong>{{ item.nota }} de 5</strong> · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
+                {% if item.data_avaliacao %}<p class="avaliacoes-admin-meta">Atualizada em {{ item.data_avaliacao }}</p>{% endif %}
             </div>
             <span class="avaliacoes-admin-estado avaliacoes-admin-estado--{{ item.moderacao }}">{{ {'pendente':'Aguardando moderação','aprovada':'Publicado','rejeitada':'Publicação bloqueada','nao_solicitada':'Privado'}[item.moderacao] }}</span>
         </div>
@@ -45,8 +53,8 @@
 </ul>
 <p class="avaliacoes-admin-ajuda">Somente comentários autorizados pelo autor podem ser publicados. Revise o texto antes de confirmar qualquer decisão.</p>
 <nav class="avaliacoes-admin-paginacao" aria-label="Páginas de avaliações">
-    {% if pagina > 1 %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina-1,estado=estado) }}">← Anterior</a>{% endif %}
+    {% if pagina > 1 %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina-1,estado=estado,ordem=ordem) }}">← Anterior</a>{% endif %}
     <span>Página {{ pagina }}</span>
-    {% if pagina * 20 < total %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina+1,estado=estado) }}">Próxima →</a>{% endif %}
+    {% if pagina * 20 < total %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina+1,estado=estado,ordem=ordem) }}">Próxima →</a>{% endif %}
 </nav>
 {% endblock %}

@@ -56,7 +56,14 @@ def atualizar_icone(usuario_id, icone):
     if icone is not None and icone not in ICONES:
         raise ValueError("Ícone inválido.")
     with conectar_banco() as conexao:
-        conexao.execute("UPDATE public.usuarios SET icone = %s WHERE id = %s", (icone, usuario_id))
+        alterada = conexao.execute("""UPDATE public.usuarios SET icone = %s
+            WHERE id = %s AND icone IS DISTINCT FROM %s""", (icone, usuario_id, icone)).rowcount
+        if alterada:
+            registrar_evento(
+                usuario_id=usuario_id, evento="usuario.perfil_atualizado", resultado="sucesso",
+                recurso_tipo="usuario", recurso_id=usuario_id, detalhes={"campos": ["icone"]},
+                conexao=conexao,
+            )
 
 
 def trocar_senha(usuario_id, senha_atual, nova_senha, sessao_atual):

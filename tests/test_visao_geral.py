@@ -17,6 +17,11 @@ def dados_visao_geral(**alteracoes):
     dados = {
         "dias": 30,
         "inicio": date(2026, 10, 14),
+        "atualizado_em": datetime(2026, 11, 12, 16, 30, tzinfo=timezone.utc),
+        "avaliacoes": [
+            {"tipo": "Quiz", "titulo": "Proteção de senhas", "total": 20, "media": 2.0},
+            {"tipo": "Conteúdo", "titulo": "Phishing", "total": 5, "media": 4.5},
+        ],
         "contas": {
             "total": 40, "novas": 13, "ativas": 25, "percentual_ativas": 62,
             "autenticador_ativo": 32, "percentual_autenticador": 80, "autenticador_pendente": 6,
@@ -62,16 +67,26 @@ class VisaoGeralBancoTeste(unittest.TestCase):
 
     def test_indicadores_ignoram_administradores_e_usam_parametros(self):
         visao_geral_db.buscar_visao_geral(7, date(2026, 11, 12))
-        consultas = self.consultas()
+        consultas = self.consultas()[1:]
         for sql in consultas[:5]:
             with self.subTest(sql=sql[:40]):
                 self.assertIn("perfil = 'usuario'", sql)
         self.assertIn("interval '24 hours'", consultas[-1])
         self.assertIn("LIMIT 6", consultas[-1])
         self.assertNotIn("conteudo.", consultas[-1])
-        parametros = self.conexao.execute.call_args_list[0].args[1]
+        parametros = self.conexao.execute.call_args_list[1].args[1]
         self.assertEqual(parametros, {"inicio": "2026-11-06"})
         self.assertNotIn("2026-11-06", " ".join(consultas))
+
+    def test_indicadores_e_avaliacoes_compartilham_snapshot_de_somente_leitura(self):
+        with patch('safeclick.visao_geral_db.listar_resumo_avaliacoes', return_value=[]) as avaliar:
+            visao_geral_db.buscar_visao_geral(7, date(2026, 11, 12), incluir_avaliacoes=True)
+        self.assertEqual(self.consultas()[0], 'SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
+        self.abrir.assert_called_once_with()
+        avaliar.assert_called_once_with(conexao=self.conexao)
+        for sql in self.consultas()[2:6]:
+            self.assertIn('u.excluida_em IS NULL', sql)
+            self.assertIn('u.exclusao_solicitada_em IS NULL', sql)
 
     def test_percentuais_e_dias_sem_atividade(self):
         dados = visao_geral_db.buscar_visao_geral(7, date(2026, 11, 12))
@@ -266,6 +281,59 @@ class VisaoGeralRotasTeste(unittest.TestCase):
         self.buscar.return_value = dados_visao_geral(dias=90)
         html = self.client.get("/administracao/?periodo=90").get_data(as_text=True)
         self.assertIn('href="/administracao/visao-geral.xlsx?periodo=90"', html)
+
+    def test_endpoint_de_atualizacao_entrega_somente_painel_e_horario_sem_cache(self):
+        resposta = self.client.get('/administracao/visao-geral/dados?periodo=7')
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.headers['Cache-Control'], 'no-store')
+        self.assertEqual(resposta.json['atualizado_em'], '2026-11-12T13:30:00-03:00')
+        self.assertEqual(resposta.json['horario'], '12/11/2026 às 13:30:00')
+        html = resposta.json['html']
+        self.assertIn('admin-vg-numeros', html)
+        self.assertIn('Proteção de senhas', html)
+        self.assertNotIn('Ana Admin', html)
+        self.assertNotIn('ana@example.test', html)
+        self.assertNotIn('<aside class="admin-lateral">', html)
+        self.buscar.assert_called_once_with(7, self.buscar.call_args.args[1], incluir_avaliacoes=True)
+
+    def test_atualizacao_valida_periodo_autorizacao_e_login(self):
+        rota = '/administracao/visao-geral/dados'
+        for argumentos in ('?periodo=15', '?periodo=7&periodo=30', '?outro=1'):
+            self.assertEqual(self.client.get(rota + argumentos).status_code, 400)
+        self.buscar.assert_not_called()
+        self.usuario.perfil = 'usuario'
+        self.assertEqual(self.client.get(rota).status_code, 403)
+        with self.client.session_transaction() as sessao:
+            sessao.clear()
+        self.assertEqual(self.client.get(rota).status_code, 302)
+
+    def test_atualizacao_reconsulta_dados_e_mantem_erro_sem_detalhes_internos(self):
+        primeiro = dados_visao_geral()
+        segundo = dados_visao_geral()
+        segundo['contas']['total'] = 41
+        self.buscar.side_effect = [primeiro, segundo, Error('detalhe privado')]
+        rota = '/administracao/visao-geral/dados'
+        self.assertIn('<strong>40</strong>', self.client.get(rota).json['html'])
+        self.assertIn('<strong>41</strong>', self.client.get(rota).json['html'])
+        falha = self.client.get(rota)
+        self.assertEqual((falha.status_code, falha.headers['Cache-Control']), (503, 'no-store'))
+        self.assertNotIn('detalhe privado', str(falha.json))
+
+    def test_contagem_de_notas_baixas_nao_fica_limitada_a_cinco(self):
+        dados = dados_visao_geral(avaliacoes=[
+            {'tipo': 'Quiz', 'titulo': f'Atividade {n}', 'total': 1, 'media': 2.0} for n in range(7)
+        ])
+        self.buscar.return_value = dados
+        html = self.client.get('/administracao/visao-geral/dados').json['html']
+        self.assertRegex(html, r'Atividades com nota abaixo de 3</span>\s*<span><b[^>]*>7</b>')
+        self.assertNotIn('Atividade 6', html)
+
+    def test_interface_mostra_frequencia_e_botao_de_atualizacao_manual(self):
+        self.buscar.return_value = dados_visao_geral(dias=90)
+        html = self.client.get('/administracao/?periodo=90').text
+        self.assertIn('data-visao-geral-url="/administracao/visao-geral/dados?periodo=90"', html)
+        self.assertIn('Atualizar agora', html)
+        self.assertIn('a cada 10 segundos', html)
 
 
 class VisaoGeralPlanilhaTeste(unittest.TestCase):

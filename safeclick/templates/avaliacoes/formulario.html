@@ -1,6 +1,7 @@
 {% extends "quizzes/base.html" %}
 {% from "componentes/links_atividades.html" import links_atividades %}
-{% block titulo %}Avaliar {{ 'quiz' if tipo == 'quiz' else 'conteúdo' }} | SafeClick{% endblock %}
+{% set modelo = 'oficina' if atividade.formato == 'oficina' else 'quiz' if tipo == 'quiz' else 'conteúdo' %}
+{% block titulo %}Avaliar {{ modelo }} | SafeClick{% endblock %}
 
 {% block conteudo %}
     <div class="quizzes-revisao">
@@ -9,7 +10,7 @@
         </nav>
         <header class="quizzes-introducao">
             <p class="quizzes-etiqueta">Avaliação opcional</p>
-            <h1>{{ 'Avaliar quiz' if tipo == 'quiz' else 'Avaliar conteúdo' }}</h1>
+            <h1>Avaliar {{ modelo }}</h1>
             <p>{{ atividade.titulo }}</p>
         </header>
 

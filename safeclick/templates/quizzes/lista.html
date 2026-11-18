@@ -7,7 +7,7 @@
         <p class="quizzes-etiqueta">Aprenda na prática</p>
         <h1>Quizzes do SafeClick</h1>
         <p>Escolha um tema e teste seus conhecimentos sobre segurança digital.</p>
-        {% if config.AVALIACOES_ATIVAS %}<p><a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', tipo='quiz') }}">Ver avaliações dos quizzes e oficinas <span aria-hidden="true">→</span></a></p>{% endif %}
+        {% if config.AVALIACOES_ATIVAS %}<p class="quizzes-acoes"><a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', tipo='quiz') }}">Ver avaliações dos quizzes <span aria-hidden="true">→</span></a></p>{% endif %}
     </div>
 
     {% if tradicionais or not oficinas %}
@@ -30,7 +30,10 @@
         <section aria-labelledby="titulo-oficina">
             <h2 class="quizzes-titulo-secao" id="titulo-oficina">Oficina SafeClick</h2>
             <p>Associe conceitos e cuidados aos trechos do guia e confira o que vale revisar.</p>
-            <p><a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.exibir_guia') }}">Meu guia de revisão <span aria-hidden="true">→</span></a></p>
+            <div class="quizzes-acoes quizzes-acoes-secao">
+                <a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('quizzes.exibir_guia') }}">Meu guia de revisão <span aria-hidden="true">→</span></a>
+                {% if config.AVALIACOES_ATIVAS %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', tipo='oficina') }}">Ver avaliações das oficinas <span aria-hidden="true">→</span></a>{% endif %}
+            </div>
             <ul class="quizzes-grade quizzes-lista">
                 {% for oficina in oficinas %}
                     <li class="quizzes-cartao quizzes-tema">

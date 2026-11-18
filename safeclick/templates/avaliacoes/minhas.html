@@ -1,4 +1,5 @@
 {% extends 'quizzes/base.html' %}
+{% from 'componentes/tipo_atividade.html' import tipo_atividade %}
 {% block titulo %}Minhas avaliações | SafeClick{% endblock %}
 {% block conteudo %}
 <header class="quizzes-introducao"><p class="quizzes-etiqueta">Controle dos seus dados</p><h1>Minhas avaliações</h1>
@@ -6,6 +7,7 @@
 {% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}<p class="quizzes-faixa" role="status">{{ mensagem }}</p>{% endfor %}
 <ul class="quizzes-lista">
 {% for item in itens %}<li class="quizzes-cartao participacao-item">
+    <p class="quizzes-etiqueta">{{ tipo_atividade(item.tipo, item.formato) }}</p>
     <h2>{{ item.titulo }}</h2><p>{{ item.nota }} de 5 · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
     {% if item.comentario %}<p class="participacao-texto">{{ item.comentario }}</p>{% endif %}
     <p>Comentário: {{ {'pendente':'aguardando moderação','aprovada':'publicado sem identificação','rejeitada':'não publicado pela moderação','nao_solicitada':'privado'}[item.moderacao] }}.</p>

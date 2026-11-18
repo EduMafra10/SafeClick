@@ -1,12 +1,23 @@
 {% extends 'quizzes/base.html' %}
+{% from 'componentes/tipo_atividade.html' import tipo_atividade %}
 {% block titulo %}Avaliações de {{ atividade.titulo }} | SafeClick{% endblock %}
 {% block conteudo %}
 <nav class="quizzes-navegacao"><a href="{{ url_for('avaliacoes.publicas') }}">← Todas as avaliações</a></nav>
-<header class="quizzes-introducao"><p class="quizzes-etiqueta">Avaliações públicas</p><h1>{{ atividade.titulo }}</h1></header>
+<header class="quizzes-introducao"><p class="quizzes-etiqueta">{{ tipo_atividade(tipo, atividade.formato) }} · Avaliações públicas</p><h1>{{ atividade.titulo }}</h1></header>
+<form class="participacao-filtros participacao-filtros-comentarios" method="get" data-espera>
+    <label>Ordenar comentários
+        <select name="ordem">
+            <option value="recentes" {{ 'selected' if ordem == 'recentes' }}>Mais recentes</option>
+            <option value="antigas" {{ 'selected' if ordem == 'antigas' }}>Mais antigos</option>
+        </select>
+    </label>
+    <button class="quizzes-botao" type="submit">Aplicar ordem</button>
+</form>
+<p role="status" data-carregando hidden>Carregando avaliações…</p>
 <section class="quizzes-cartao" aria-label="Notas e comentários">{% include 'avaliacoes/_resumo.html' %}</section>
 <nav class="quizzes-acoes" aria-label="Páginas de comentários">
-{% if pagina > 1 %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina-1) }}">Comentários anteriores</a>{% endif %}
-{% if pagina * 10 < resumo.comentarios %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina+1) }}">Próximos comentários</a>{% endif %}
+{% if pagina > 1 %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina-1, ordem=ordem) }}">Página anterior</a>{% endif %}
+{% if pagina * 10 < resumo.comentarios %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina+1, ordem=ordem) }}">Próxima página</a>{% endif %}
 <a class="quizzes-botao" href="{{ url_for('conteudos.detalhe', slug=atividade.slug) if tipo == 'conteudo' else url_for('quizzes.exibir_quiz', quiz_id=atividade.id) }}">Abrir atividade</a>
 </nav>
 {% endblock %}

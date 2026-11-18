@@ -1,0 +1,3 @@
+{% macro tipo_atividade(tipo, formato=none) -%}
+    {{ 'Conteúdo educativo' if tipo == 'conteudo' else 'Oficina' if formato == 'oficina' else 'Quiz' }}
+{%- endmacro %}

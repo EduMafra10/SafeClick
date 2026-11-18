@@ -1,3 +1,5 @@
+from contextlib import nullcontext
+
 from safeclick.auditoria_db import registrar_evento
 from safeclick.db import conectar_banco
 from safeclick.navegacao_atividades import PROXIMO_CONTEUDO, PROXIMO_QUIZ
@@ -24,7 +26,7 @@ _ALVOS = {
     ),
     "quiz": (
         f"""
-        SELECT item.id, versao.titulo, avaliacao.nota, avaliacao.comentario,
+        SELECT item.id, versao.titulo, versao.formato, avaliacao.nota, avaliacao.comentario,
             avaliacao.publicar_nota, avaliacao.publicar_comentario, avaliacao.maior_de_idade,
             avaliacao.moderacao,
             {PROXIMO_QUIZ}
@@ -47,6 +49,20 @@ _ALVOS = {
         "catalogo_id",
     ),
 }
+
+
+def _formato_sql(tipo, coluna):
+    if tipo == 'conteudo':
+        return "'conteudo'::text"
+    return f"""(SELECT CASE WHEN q.formato='oficina' THEN 'oficina' ELSE 'quiz' END
+        FROM public.catalogo_quizzes c JOIN public.quizzes q ON q.id=c.versao_publicada_id
+        WHERE c.id={coluna})"""
+
+
+def _registrar_avaliacao(conexao, usuario_id, evento, tipo, item_id, registro, **detalhes):
+    formato = registro.get('formato') or tipo
+    registrar_evento(usuario_id, evento, 'sucesso', recurso_tipo='avaliacao_' + formato,
+                     recurso_id=item_id, detalhes={'formato': formato, **detalhes}, conexao=conexao)
 
 
 def buscar_atividade(conexao, tipo, usuario_id, referencia, *, bloquear=False):
@@ -76,7 +92,7 @@ def salvar_avaliacao(conexao, tipo, usuario_id, item_id, nota, comentario, *,
     ''', (usuario_id,)).fetchone()
     if titular is None:
         raise PermissionError('A conta não está disponível para enviar avaliações.')
-    conexao.execute(
+    registro = conexao.execute(
         f"""
         INSERT INTO public.{tabela} AS atual
             (usuario_id, {coluna}, nota, comentario, publicar_nota, publicar_comentario,
@@ -96,39 +112,45 @@ def salvar_avaliacao(conexao, tipo, usuario_id, item_id, nota, comentario, *,
                 AND atual.comentario IS NOT DISTINCT FROM EXCLUDED.comentario THEN atual.moderado_por END,
             moderado_em = CASE WHEN EXCLUDED.publicar_comentario AND atual.publicar_comentario
                 AND atual.comentario IS NOT DISTINCT FROM EXCLUDED.comentario THEN atual.moderado_em END
+        RETURNING revisao, {_formato_sql(tipo, 'atual.' + coluna)} AS formato
         """,
         (usuario_id, item_id, nota, comentario, publicar_nota, publicar_comentario,
          maior_de_idade, aviso_versao, publicar_nota, 'pendente' if publicar_comentario else 'nao_solicitada'),
-    )
-    registrar_evento(
-        usuario_id=usuario_id,
-        evento="avaliacao.salva",
-        resultado="sucesso",
-        recurso_tipo=f"avaliacao_{tipo}",
-        conexao=conexao,
-        detalhes=({'nota_publica': publicar_nota, 'comentario_publico': publicar_comentario,
-                   'aviso': aviso_versao} if aviso_versao else None),
+    ).fetchone()
+    revisao = registro['revisao']
+    _registrar_avaliacao(
+        conexao, usuario_id, 'avaliacao.salva', tipo, item_id, registro,
+        operacao='criada' if revisao == 1 else 'atualizada', revisao=revisao,
+        nota_publica=publicar_nota, comentario_publico=publicar_comentario,
+        **({'aviso': aviso_versao} if aviso_versao else {}),
     )
 
 
-def listar_resumo_avaliacoes():
-    with conectar_banco() as conexao:
+def listar_resumo_avaliacoes(conexao=None):
+    with nullcontext(conexao) if conexao is not None else conectar_banco() as conexao:
         return conexao.execute(
             """
-            SELECT 'Conteúdo' AS tipo, item.titulo, resumo.total, resumo.media
+            SELECT 'Conteúdo' AS tipo, item.titulo, resumo.total, resumo.media, resumo.distribuicao
             FROM public.conteudos AS item
             LEFT JOIN (
-                SELECT conteudo_id, count(*) AS total, round(avg(nota), 1) AS media
+                SELECT conteudo_id, count(*) AS total, round(avg(nota), 1) AS media,
+                    ARRAY[count(*) FILTER (WHERE nota=1), count(*) FILTER (WHERE nota=2),
+                          count(*) FILTER (WHERE nota=3), count(*) FILTER (WHERE nota=4),
+                          count(*) FILTER (WHERE nota=5)] AS distribuicao
                 FROM public.avaliacoes_conteudo
                 GROUP BY conteudo_id
             ) AS resumo ON resumo.conteudo_id = item.id
             WHERE item.secao = 'conteudos' AND item.estado = 'publicada'
             UNION ALL
-            SELECT 'Quiz', versao.titulo, resumo.total, resumo.media
+            SELECT CASE WHEN versao.formato = 'oficina' THEN 'Oficina' ELSE 'Quiz' END,
+                versao.titulo, resumo.total, resumo.media, resumo.distribuicao
             FROM public.catalogo_quizzes AS item
             JOIN public.quizzes AS versao ON versao.id = item.versao_publicada_id
             LEFT JOIN (
-                SELECT catalogo_id, count(*) AS total, round(avg(nota), 1) AS media
+                SELECT catalogo_id, count(*) AS total, round(avg(nota), 1) AS media,
+                    ARRAY[count(*) FILTER (WHERE nota=1), count(*) FILTER (WHERE nota=2),
+                          count(*) FILTER (WHERE nota=3), count(*) FILTER (WHERE nota=4),
+                          count(*) FILTER (WHERE nota=5)] AS distribuicao
                 FROM public.avaliacoes_quiz
                 GROUP BY catalogo_id
             ) AS resumo ON resumo.catalogo_id = item.id
@@ -139,7 +161,7 @@ def listar_resumo_avaliacoes():
 
 
 BASE_AVALIACOES = """
-    SELECT 'conteudo'::text AS tipo, c.id AS item_id, c.titulo, c.slug,
+    SELECT 'conteudo'::text AS tipo, NULL::text AS formato, c.id AS item_id, c.titulo, c.slug,
            a.usuario_id, a.nota, a.comentario, a.publicar_nota, a.publicar_comentario,
            a.maior_de_idade, a.aviso_versao, a.moderacao, a.atualizada_em, a.revisao,
            c.estado = 'publicada' AND c.removido_em IS NULL AS publicada,
@@ -148,7 +170,7 @@ BASE_AVALIACOES = """
     JOIN public.usuarios u ON u.id = a.usuario_id
     WHERE c.secao = 'conteudos'
     UNION ALL
-    SELECT 'quiz', c.id, q.titulo, NULL::text, a.usuario_id, a.nota, a.comentario,
+    SELECT 'quiz', q.formato, c.id, q.titulo, NULL::text, a.usuario_id, a.nota, a.comentario,
            a.publicar_nota, a.publicar_comentario, a.maior_de_idade, a.aviso_versao,
            a.moderacao, a.atualizada_em, a.revisao,
            c.estado = 'publicada' AND c.removido_em IS NULL,
@@ -158,39 +180,52 @@ BASE_AVALIACOES = """
     JOIN public.usuarios u ON u.id = a.usuario_id
 """
 FILTRO_PUBLICO = 'publicada AND conta_ativa AND publicar_nota AND maior_de_idade AND aviso_versao = %(aviso)s'
+ORDENACOES = {'recentes': 'DESC', 'antigas': 'ASC'}
 
 
-def listar_publicas(*, tipo='', busca='', pagina=1):
+def listar_publicas(*, tipo='', busca='', pagina=1, ordem='recentes'):
+    direcao = ORDENACOES[ordem]
     origem = """
         WITH itens AS (
-            SELECT 'conteudo'::text AS tipo, id, titulo FROM public.conteudos
+            SELECT 'conteudo'::text AS tipo, NULL::text AS formato, id, titulo FROM public.conteudos
             WHERE secao = 'conteudos' AND estado = 'publicada' AND removido_em IS NULL
             UNION ALL
-            SELECT 'quiz', c.id, q.titulo FROM public.catalogo_quizzes c
+            SELECT 'quiz', q.formato, c.id, q.titulo FROM public.catalogo_quizzes c
             JOIN public.quizzes q ON q.id = c.versao_publicada_id
             WHERE c.estado = 'publicada' AND c.removido_em IS NULL
         ), avaliacoes AS (""" + BASE_AVALIACOES + """), medias AS (
-            SELECT tipo, item_id, COUNT(*) AS total, round(avg(nota), 1) AS media
+            SELECT tipo, item_id, COUNT(*) AS total, round(avg(nota), 1) AS media,
+                MAX(atualizada_em) AS ultima_avaliacao
             FROM avaliacoes WHERE """ + FILTRO_PUBLICO + """ GROUP BY tipo, item_id
         )
     """
-    filtro = "WHERE (%(tipo)s = '' OR i.tipo = %(tipo)s) AND strpos(lower(i.titulo), lower(%(busca)s)) > 0"
+    filtro = """
+        WHERE (%(tipo)s = '' OR (%(tipo)s = 'conteudo' AND i.tipo = 'conteudo')
+            OR (%(tipo)s = 'quiz' AND i.tipo = 'quiz' AND i.formato <> 'oficina')
+            OR (%(tipo)s = 'oficina' AND i.formato = 'oficina'))
+          AND strpos(lower(i.titulo), lower(%(busca)s)) > 0
+    """
     parametros = {'tipo': tipo, 'busca': busca, 'aviso': VERSAO_AVISO, 'inicio': (pagina - 1) * 20}
     with conectar_banco() as conexao:
         total = conexao.execute(origem + 'SELECT COUNT(*) AS total FROM itens i ' + filtro, parametros).fetchone()['total']
         itens = conexao.execute(origem + """
-            SELECT i.*, COALESCE(m.total, 0) AS total, m.media FROM itens i
+            SELECT i.*, COALESCE(m.total, 0) AS total, m.media,
+                to_char(m.ultima_avaliacao AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY') AS data_avaliacao
+            FROM itens i
             LEFT JOIN medias m ON m.tipo = i.tipo AND m.item_id = i.id
-        """ + filtro + ' ORDER BY i.tipo, i.titulo, i.id LIMIT 20 OFFSET %(inicio)s', parametros).fetchall()
+        """ + filtro + f' ORDER BY m.ultima_avaliacao {direcao} NULLS LAST, i.tipo, i.titulo, i.id LIMIT 20 OFFSET %(inicio)s',
+                                parametros).fetchall()
     return itens, total
 
 
-def detalhar_publicas(tipo, item_id, pagina=1):
+def detalhar_publicas(tipo, item_id, pagina=1, ordem='recentes'):
+    direcao = ORDENACOES[ordem]
     with conectar_banco() as conexao:
         if tipo == 'conteudo':
-            consulta = "SELECT id,titulo,slug FROM public.conteudos WHERE id=%s AND secao='conteudos' AND estado='publicada' AND removido_em IS NULL"
+            consulta = """SELECT id,titulo,slug,NULL::text AS formato FROM public.conteudos
+                          WHERE id=%s AND secao='conteudos' AND estado='publicada' AND removido_em IS NULL"""
         elif tipo == 'quiz':
-            consulta = """SELECT c.id,q.titulo,NULL::text AS slug FROM public.catalogo_quizzes c
+            consulta = """SELECT c.id,q.titulo,q.formato,NULL::text AS slug FROM public.catalogo_quizzes c
                           JOIN public.quizzes q ON q.id=c.versao_publicada_id
                           WHERE c.id=%s AND c.estado='publicada' AND c.removido_em IS NULL"""
         else:
@@ -203,12 +238,15 @@ def detalhar_publicas(tipo, item_id, pagina=1):
         filtro = ' FROM avaliacoes WHERE tipo=%(tipo)s AND item_id=%(item)s AND ' + FILTRO_PUBLICO
         resumo = conexao.execute(origem + """
             SELECT COUNT(*) AS total, round(avg(nota),1) AS media,
-                   COUNT(*) FILTER (WHERE publicar_comentario AND moderacao='aprovada') AS comentarios
+                   COUNT(*) FILTER (WHERE publicar_comentario AND moderacao='aprovada') AS comentarios,
+                   ARRAY[count(*) FILTER (WHERE nota=1), count(*) FILTER (WHERE nota=2),
+                         count(*) FILTER (WHERE nota=3), count(*) FILTER (WHERE nota=4),
+                         count(*) FILTER (WHERE nota=5)] AS distribuicao
         """ + filtro, parametros).fetchone()
         comentarios = conexao.execute(origem + """
             SELECT nota,comentario,to_char(atualizada_em AT TIME ZONE 'America/Sao_Paulo','DD/MM/YYYY') AS data
-        """ + filtro + """ AND publicar_comentario AND moderacao='aprovada'
-            ORDER BY atualizada_em DESC, usuario_id LIMIT 10 OFFSET %(inicio)s
+        """ + filtro + f""" AND publicar_comentario AND moderacao='aprovada'
+            ORDER BY atualizada_em {direcao}, usuario_id LIMIT 10 OFFSET %(inicio)s
         """, parametros).fetchall()
     return atividade, resumo, comentarios
 
@@ -216,7 +254,7 @@ def detalhar_publicas(tipo, item_id, pagina=1):
 def listar_minhas(usuario_id):
     with conectar_banco() as conexao:
         return conexao.execute('WITH avaliacoes AS (' + BASE_AVALIACOES + """ )
-            SELECT tipo,item_id,titulo,slug,nota,comentario,publicar_nota,publicar_comentario,moderacao,publicada,
+            SELECT tipo,formato,item_id,titulo,slug,nota,comentario,publicar_nota,publicar_comentario,moderacao,publicada,
                 (SELECT MAX(r.tentativa_id) FROM public.resultados_validos_atividades r
                  WHERE r.usuario_id=avaliacoes.usuario_id AND r.tipo='quiz' AND r.item_id=avaliacoes.item_id) AS ultimo_resultado
             FROM avaliacoes WHERE usuario_id=%s ORDER BY atualizada_em DESC NULLS LAST,titulo
@@ -226,10 +264,11 @@ def listar_minhas(usuario_id):
 def excluir_avaliacao(usuario_id, tipo, item_id):
     _, _, tabela, coluna = _ALVOS[tipo]
     with conectar_banco() as conexao:
-        excluida = conexao.execute(f'DELETE FROM public.{tabela} WHERE usuario_id=%s AND {coluna}=%s RETURNING usuario_id',
+        excluida = conexao.execute(f'''DELETE FROM public.{tabela} WHERE usuario_id=%s AND {coluna}=%s
+            RETURNING usuario_id, {_formato_sql(tipo, tabela + '.' + coluna)} AS formato''',
                                    (usuario_id, item_id)).fetchone()
         if excluida:
-            registrar_evento(usuario_id, 'avaliacao.excluida', 'sucesso', recurso_tipo='avaliacao_' + tipo, conexao=conexao)
+            _registrar_avaliacao(conexao, usuario_id, 'avaliacao.excluida', tipo, item_id, excluida)
     return excluida is not None
 
 
@@ -239,24 +278,34 @@ def retirar_publicacao(usuario_id, tipo, item_id):
         item = conexao.execute(f"""
             UPDATE public.{tabela} SET publicar_nota=FALSE,publicar_comentario=FALSE,
                 autorizado_em=NULL,moderacao='nao_solicitada',moderado_por=NULL,moderado_em=NULL,revisao=revisao+1
-            WHERE usuario_id=%s AND {coluna}=%s RETURNING usuario_id
+            WHERE usuario_id=%s AND {coluna}=%s RETURNING usuario_id, {_formato_sql(tipo, tabela + '.' + coluna)} AS formato
         """, (usuario_id, item_id)).fetchone()
         if item:
-            registrar_evento(usuario_id, 'avaliacao.publicacao_retirada', 'sucesso',
-                             recurso_tipo='avaliacao_' + tipo, conexao=conexao)
+            _registrar_avaliacao(conexao, usuario_id, 'avaliacao.publicacao_retirada', tipo, item_id, item)
     return item is not None
 
 
-def listar_gestao(pagina=1, estado=''):
+def listar_gestao(pagina=1, estado='', ordem='recentes'):
+    direcao = ORDENACOES[ordem]
     parametros = {'aviso': VERSAO_AVISO, 'estado': estado, 'inicio': (pagina - 1) * 20}
     origem = 'WITH avaliacoes AS (' + BASE_AVALIACOES + ') '
     filtro = ' FROM avaliacoes WHERE conta_ativa AND aviso_versao=%(aviso)s AND (%(estado)s=\'\' OR moderacao=%(estado)s)'
     with conectar_banco() as conexao:
         total = conexao.execute(origem + 'SELECT COUNT(*) AS total' + filtro, parametros).fetchone()['total']
-        itens = conexao.execute(origem + """SELECT tipo,item_id,titulo,usuario_id,nota,comentario,publicar_nota,
-            publicar_comentario,moderacao,revisao,publicada""" + filtro
-                                + ' ORDER BY atualizada_em DESC,usuario_id,item_id LIMIT 20 OFFSET %(inicio)s', parametros).fetchall()
+        itens = conexao.execute(origem + """SELECT tipo,formato,item_id,titulo,usuario_id,nota,comentario,publicar_nota,
+            publicar_comentario,moderacao,revisao,publicada,
+            to_char(atualizada_em AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY HH24:MI') AS data_avaliacao""" + filtro
+                                + f' ORDER BY atualizada_em {direcao},usuario_id,tipo,item_id LIMIT 20 OFFSET %(inicio)s',
+                                parametros).fetchall()
     return itens, total
+
+
+def contar_pendentes():
+    with conectar_banco() as conexao:
+        return conexao.execute('WITH avaliacoes AS (' + BASE_AVALIACOES + """
+            ) SELECT COUNT(*) AS total FROM avaliacoes
+            WHERE """ + FILTRO_PUBLICO + """ AND publicar_comentario AND moderacao='pendente'
+        """, {'aviso': VERSAO_AVISO}).fetchone()['total']
 
 
 def moderar_comentario(administrador_id, tipo, item_id, autor_id, revisao, acao):
@@ -267,7 +316,7 @@ def moderar_comentario(administrador_id, tipo, item_id, autor_id, revisao, acao)
         from safeclick.catalogo_admin_db import _exigir_administrador
         _exigir_administrador(conexao, administrador_id)
         item = conexao.execute('WITH avaliacoes AS (' + BASE_AVALIACOES + """ )
-            SELECT comentario,publicada,conta_ativa,publicar_nota,publicar_comentario,maior_de_idade,aviso_versao
+            SELECT formato,comentario,publicada,conta_ativa,publicar_nota,publicar_comentario,maior_de_idade,aviso_versao
             FROM avaliacoes WHERE tipo=%s AND item_id=%s AND usuario_id=%s
         """, (tipo, item_id, autor_id)).fetchone()
         exigidos = ('publicada', 'conta_ativa', 'publicar_nota', 'publicar_comentario', 'maior_de_idade')
@@ -280,5 +329,8 @@ def moderar_comentario(administrador_id, tipo, item_id, autor_id, revisao, acao)
         """, ('aprovada' if acao == 'aprovar' else 'rejeitada', administrador_id, autor_id, item_id, revisao)).fetchone()
         if not alterada:
             raise ValueError('A avaliação mudou. Reabra a lista antes de moderar.')
-        registrar_evento(administrador_id, 'avaliacao.moderada', 'sucesso', recurso_tipo='avaliacao_' + tipo,
-                         detalhes={'acao': acao}, conexao=conexao)
+        registro = {'formato': 'oficina' if item['formato'] == 'oficina' else tipo}
+        _registrar_avaliacao(
+            conexao, administrador_id, 'avaliacao.moderada', tipo, item_id, registro,
+            acao=acao, autor_id=autor_id, revisao=alterada['revisao'],
+        )

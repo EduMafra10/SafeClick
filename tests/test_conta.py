@@ -64,11 +64,18 @@ class ContaBancoTeste(unittest.TestCase):
 
     def test_icone_so_aceita_os_personagens(self):
         conta_db.atualizar_icone(7, "raposa")
-        self.assertEqual(self.conexao.execute.call_args.args[1], ("raposa", 7))
+        self.assertEqual(self.conexao.execute.call_args.args[1], ("raposa", 7, "raposa"))
+        self.assertEqual(self.registrar.call_args.kwargs['detalhes'], {'campos': ['icone']})
+        self.assertIs(self.registrar.call_args.kwargs['conexao'], self.conexao)
         conta_db.atualizar_icone(7, None)
-        self.assertEqual(self.conexao.execute.call_args.args[1], (None, 7))
+        self.assertEqual(self.conexao.execute.call_args.args[1], (None, 7, None))
         with self.assertRaises(ValueError):
             conta_db.atualizar_icone(7, "<script>")
+
+    def test_reenviar_o_mesmo_icone_nao_gera_log(self):
+        self.conexao.execute.return_value.rowcount = 0
+        conta_db.atualizar_icone(7, 'raposa')
+        self.registrar.assert_not_called()
 
     def test_nome_so_registra_quando_muda(self):
         self.conexao.execute.return_value.rowcount = 0

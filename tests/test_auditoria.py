@@ -113,6 +113,27 @@ class AuditoriaAcessoTeste(unittest.TestCase):
         self.assertIn("Avaliação salva", html)
         self.assertIn("Avaliação de quiz", html)
 
+    def test_categoria_de_avaliacoes_reune_envios_e_moderacao(self):
+        _, _, _, listar = self.consultar('/auditoria/?evento=cat:avaliacoes')
+        self.assertEqual(listar.call_args.kwargs['eventos'], {
+            'avaliacao.salva', 'avaliacao.excluida', 'avaliacao.publicacao_retirada',
+            'avaliacao.moderada', 'avaliacao.previa_consultada',
+        })
+
+    def test_identifica_oficina_autoria_e_revisao_sem_publicar_o_comentario(self):
+        registros = [self.registro(evento='avaliacao.salva', recurso_tipo='avaliacao_oficina', recurso_id='21',
+                                   detalhes={'formato': 'oficina', 'operacao': 'criada', 'revisao': 1,
+                                             'nota_publica': False, 'comentario_publico': False})]
+        _, html, _, _ = self.consultar('/auditoria/', registros)
+        for texto in ('Avaliação criada', 'Atividade: oficina', 'Revisão 1', 'Avaliação de oficina nº 21',
+                      'Nota pública: não', 'Comentário para publicação: não'):
+            self.assertIn(texto, html)
+
+    def test_previa_nao_e_descrita_como_aprovacao(self):
+        detalhes = textos.descrever_detalhes('avaliacao.previa_consultada', {'acao': 'aprovar', 'autor_id': 7})
+        self.assertIn('Revisão para publicar', detalhes)
+        self.assertNotIn('Publicação aprovada', detalhes)
+
     def test_explica_registro_sem_usuario(self):
         registros = [
             self.registro(usuario_id=None, usuario_nome=None, usuario_email=None, usuario_perfil=None,

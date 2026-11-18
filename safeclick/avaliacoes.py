@@ -72,6 +72,13 @@ def pagina_atual():
     return pagina
 
 
+def ordem_atual():
+    valores = request.args.getlist('ordem')
+    if len(valores) > 1 or valores and valores[0] not in db.ORDENACOES:
+        abort(400, description='Ordenação inválida.')
+    return valores[0] if valores else 'recentes'
+
+
 @avaliacoes.get('/privacidade')
 def privacidade():
     return render_template('avaliacoes/privacidade.html', versao=VERSAO_AVISO)
@@ -80,30 +87,35 @@ def privacidade():
 @avaliacoes.get('/publicas')
 def publicas():
     pagina = pagina_atual()
+    ordem = ordem_atual()
     tipo = request.args.get('tipo', '')
     busca = request.args.get('busca', '').strip()
-    if tipo not in {'', 'quiz', 'conteudo'} or len(busca) > 100 or '\x00' in busca:
+    if tipo not in {'', 'quiz', 'oficina', 'conteudo'} or len(busca) > 100 or '\x00' in busca:
         abort(400)
     try:
-        itens, total = db.listar_publicas(tipo=tipo, busca=busca, pagina=pagina)
+        itens, total = db.listar_publicas(tipo=tipo, busca=busca, pagina=pagina, ordem=ordem)
     except (Error, RuntimeError):
-        return render_template('avaliacoes/publicas.html', erro=True, itens=[], total=0, pagina=pagina, tipo=tipo, busca=busca), 503
-    return render_template('avaliacoes/publicas.html', itens=itens, total=total, pagina=pagina, tipo=tipo, busca=busca)
+        return render_template('avaliacoes/publicas.html', erro=True, itens=[], total=0, pagina=pagina,
+                               tipo=tipo, busca=busca, ordem=ordem), 503
+    return render_template('avaliacoes/publicas.html', itens=itens, total=total, pagina=pagina,
+                           tipo=tipo, busca=busca, ordem=ordem)
 
 
 @avaliacoes.get('/publicas/<any(conteudo,quiz):tipo>/<int:item_id>')
 @avaliacoes.get('/publicas/<any(conteudo,quiz):tipo>/<int:item_id>/resumo', endpoint='resumo_publico')
 def detalhe_publico(tipo, item_id):
     pagina = pagina_atual()
+    ordem = ordem_atual()
     try:
-        dados = db.detalhar_publicas(tipo, item_id, pagina)
+        dados = db.detalhar_publicas(tipo, item_id, pagina, ordem=ordem)
     except (Error, RuntimeError):
         return render_template('avaliacoes/indisponivel.html'), 503
     if dados is None:
         abort(404)
     atividade, resumo, comentarios = dados
     modelo = 'avaliacoes/_resumo.html' if request.endpoint == 'avaliacoes.resumo_publico' else 'avaliacoes/publica.html'
-    return render_template(modelo, atividade=atividade, resumo=resumo, comentarios=comentarios, tipo=tipo, pagina=pagina)
+    return render_template(modelo, atividade=atividade, resumo=resumo, comentarios=comentarios,
+                           tipo=tipo, pagina=pagina, ordem=ordem)
 
 
 @avaliacoes.route('/minhas', methods=['GET'])

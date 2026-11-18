@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from psycopg import Error
 
 from safeclick import avaliacoes_db as db
-from safeclick.avaliacoes import pagina_atual
+from safeclick.avaliacoes import ordem_atual, pagina_atual
 from safeclick.sessoes import exigir_perfis
 
 moderacao_avaliacoes = Blueprint('moderacao_avaliacoes', __name__, url_prefix='/administracao/avaliacoes/comentarios')
@@ -19,15 +19,16 @@ def verificar_acesso():
 @moderacao_avaliacoes.get('')
 def listar():
     pagina = pagina_atual()
+    ordem = ordem_atual()
     estado = request.args.get('estado', '')
     if estado not in {'', 'pendente', 'aprovada', 'rejeitada', 'nao_solicitada'}:
         abort(400)
     try:
-        itens, total = db.listar_gestao(pagina, estado)
+        itens, total = db.listar_gestao(pagina, estado, ordem)
     except (Error, RuntimeError):
         return render_template('avaliacoes/indisponivel.html'), 503
     return render_template('administracao/comentarios_avaliacoes.html', itens=itens, total=total, pagina=pagina,
-                           estado=estado, formulario=FlaskForm(), secoes={}, secao='avaliacoes')
+                           estado=estado, ordem=ordem, formulario=FlaskForm(), secoes={}, secao='avaliacoes')
 
 
 @moderacao_avaliacoes.route('/<any(conteudo,quiz):tipo>/<int:item_id>/<int:autor_id>/<any(aprovar,ocultar):acao>', methods=['GET', 'POST'])
@@ -37,11 +38,19 @@ def confirmar(tipo, item_id, autor_id, acao):
     try:
         with db.conectar_banco() as conexao:
             item = conexao.execute('WITH avaliacoes AS (' + db.BASE_AVALIACOES + """ )
-                SELECT tipo,item_id,titulo,usuario_id,comentario,revisao,publicar_comentario,aviso_versao
+                SELECT tipo,formato,item_id,titulo,usuario_id,nota,comentario,revisao,publicar_comentario,aviso_versao,
+                    to_char(atualizada_em AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY') AS data
                 FROM avaliacoes WHERE tipo=%s AND item_id=%s AND usuario_id=%s AND conta_ativa
+                    AND publicada AND publicar_nota AND maior_de_idade
             """, (tipo, item_id, autor_id)).fetchone()
-        if not item or item['aviso_versao'] != db.VERSAO_AVISO or not item['publicar_comentario']:
-            abort(404)
+            if not item or item['aviso_versao'] != db.VERSAO_AVISO or not item['publicar_comentario']:
+                abort(404)
+            if request.method == 'GET':
+                db._registrar_avaliacao(
+                    conexao, int(current_user.id), 'avaliacao.previa_consultada', tipo, item_id,
+                    {'formato': 'oficina' if item.get('formato') == 'oficina' else tipo},
+                    acao=acao, autor_id=autor_id, revisao=item['revisao'],
+                )
         if request.method == 'POST':
             if (set(request.form) != {'csrf_token', 'revisao', 'confirmar'}
                     or request.files
