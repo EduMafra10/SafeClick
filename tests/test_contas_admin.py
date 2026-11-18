@@ -50,6 +50,20 @@ class ContasBancoTeste(unittest.TestCase):
         with self.assertRaises(ValueError):
             contas_db.listar_contas(autenticador="qualquer")
 
+    def test_lista_comeca_pelas_contas_mais_recentes(self):
+        self.conexao.execute.return_value.fetchone.return_value = {"total": 0}
+        contas_db.listar_contas()
+        self.assertIn("ORDER BY id DESC", self.conexao.execute.call_args_list[1].args[0])
+
+    def test_outras_ordens_e_ordem_invalida(self):
+        self.conexao.execute.return_value.fetchone.return_value = {"total": 0}
+        contas_db.listar_contas(ordem="antigas")
+        contas_db.listar_contas(ordem="nome")
+        self.assertIn("ORDER BY id\n", self.conexao.execute.call_args_list[1].args[0])
+        self.assertIn("ORDER BY lower(nome), id", self.conexao.execute.call_args_list[3].args[0])
+        with self.assertRaises(ValueError):
+            contas_db.listar_contas(ordem="id; DROP TABLE usuarios")
+
     def test_busca_por_numero_da_conta(self):
         self.conexao.execute.return_value.fetchone.return_value = {"total": 1}
         contas_db.listar_contas(busca="12")
@@ -185,7 +199,9 @@ class ContasRotasTeste(unittest.TestCase):
         self.assertIn("joao@example.test", html)
         self.assertIn('href="/administracao/contas/12/redefinir-autenticador"', html)
         self.assertNotIn('href="/administracao/contas/7/redefinir-autenticador"', html)
-        self.listar.assert_called_once_with(busca="jo", autenticador=None, situacao="ativas", pagina=1, por_pagina=20)
+        self.listar.assert_called_once_with(
+            busca="jo", autenticador=None, situacao="ativas", ordem="recentes", pagina=1, por_pagina=20,
+        )
         self.assertIn("Último acesso em 10/11/2026 às 19:15", html)
 
     def test_situacoes_do_autenticador(self):
@@ -199,13 +215,31 @@ class ContasRotasTeste(unittest.TestCase):
     def test_filtra_pela_situacao_do_autenticador(self):
         self.listar.return_value = ([conta(id=13, ultimo_acesso=None)], 1)
         html = self.client.get("/administracao/contas?autenticador=pendente").get_data(as_text=True)
-        self.listar.assert_called_once_with(busca="", autenticador="pendente", situacao="ativas", pagina=1, por_pagina=20)
+        self.listar.assert_called_once_with(
+            busca="", autenticador="pendente", situacao="ativas", ordem="recentes", pagina=1, por_pagina=20,
+        )
         self.assertIn('<option value="pendente" selected>', html)
         self.assertIn("Nenhum acesso registrado", html)
 
+    def test_ordena_pelo_filtro_e_mantem_a_ordem_na_paginacao(self):
+        self.listar.return_value = ([conta()], 45)
+        html = self.client.get("/administracao/contas?ordem=nome").get_data(as_text=True)
+        self.listar.assert_called_once_with(
+            busca="", autenticador=None, situacao="ativas", ordem="nome", pagina=1, por_pagina=20,
+        )
+        self.assertIn('<option value="nome" selected>', html)
+        self.assertIn("ordem=nome", re.search(r'href="([^"]+)">Próxima', html).group(1))
+        self.assertIn("Limpar filtros", html)
+
+    def test_ordem_padrao_e_mais_recentes(self):
+        html = self.client.get("/administracao/contas").get_data(as_text=True)
+        self.assertIn('<option value="recentes" selected>Mais recentes</option>', html)
+        self.assertNotIn("Limpar filtros", html)
+
     def test_filtros_invalidos(self):
         for url in ("/administracao/contas?pagina=0", "/administracao/contas?pagina=abc",
-                    "/administracao/contas?outro=1", "/administracao/contas?autenticador=bloqueado"):
+                    "/administracao/contas?outro=1", "/administracao/contas?autenticador=bloqueado",
+                    "/administracao/contas?ordem=id"):
             with self.subTest(url=url):
                 self.assertEqual(self.client.get(url).status_code, 400)
 

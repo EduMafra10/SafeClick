@@ -197,6 +197,12 @@ FILTROS_SITUACAO = {
     "excluidas": "Excluídas",
 }
 
+FILTROS_ORDEM = {
+    "recentes": "Mais recentes",
+    "antigas": "Mais antigas",
+    "nome": "Nome (A a Z)",
+}
+
 
 def _no_fuso(momento):
     return momento.astimezone(FUSO_BRASILIA) if momento else None
@@ -221,7 +227,7 @@ def _preparar_conta(conta):
 @administracao.get("/contas")
 def listar_contas():
     if (
-        set(request.args) - {"busca", "autenticador", "situacao", "pagina"}
+        set(request.args) - {"busca", "autenticador", "situacao", "ordem", "pagina"}
         or any(len(request.args.getlist(campo)) != 1 for campo in request.args)
     ):
         abort(400, description="Filtros inválidos.")
@@ -233,6 +239,9 @@ def listar_contas():
     situacao = request.args.get("situacao") or "ativas"
     if situacao not in FILTROS_SITUACAO:
         abort(400, description="Filtros inválidos.")
+    ordem = request.args.get("ordem") or "recentes"
+    if ordem not in FILTROS_ORDEM:
+        abort(400, description="Filtros inválidos.")
     pagina_texto = request.args.get("pagina", "1")
     if not (1 <= len(pagina_texto) <= 7 and pagina_texto.isascii() and pagina_texto.isdecimal()):
         abort(400, description="Página inválida.")
@@ -242,7 +251,7 @@ def listar_contas():
 
     try:
         contas, total = contas_db.listar_contas(
-            busca=busca, autenticador=autenticador, situacao=situacao,
+            busca=busca, autenticador=autenticador, situacao=situacao, ordem=ordem,
             pagina=pagina, por_pagina=POR_PAGINA_CONTAS,
         )
     except (Error, RuntimeError):
@@ -263,6 +272,8 @@ def listar_contas():
         filtros_autenticador=FILTROS_AUTENTICADOR,
         situacao=situacao,
         filtros_situacao=FILTROS_SITUACAO,
+        ordem=ordem,
+        filtros_ordem=FILTROS_ORDEM,
         pagina=pagina,
         ultima_pagina=ultima_pagina,
     )
