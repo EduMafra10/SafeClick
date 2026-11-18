@@ -148,7 +148,7 @@
 .participacao-metadados {
     display: grid;
     gap: 6px;
-    margin: 12px 0 24px;
+    margin: 8px 0;
     color: var(--visual-secundario);
 }
 
@@ -156,7 +156,13 @@
     margin: 0;
 }
 
-.participacao-grade .quizzes-botao {
+.participacao-publicas-lista .conteudos-item > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.participacao-publicas-lista .conteudos-card-link {
     margin-top: auto;
 }
 
