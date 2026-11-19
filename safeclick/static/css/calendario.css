@@ -1,0 +1,205 @@
+/* calendário usado nos campos de data da administração */
+.calendario {
+    position: relative;
+    display: block;
+}
+
+.calendario > input[type="text"] {
+    padding-right: 38px;
+    font-variant-numeric: tabular-nums;
+}
+
+.calendario-abrir {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--visual-texto, #173b45);
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.calendario-abrir:hover,
+.calendario-abrir[aria-expanded="true"] {
+    background: #eef4f1;
+}
+
+.calendario-painel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 30;
+    width: 296px;
+    padding: 12px;
+    border: 1px solid var(--visual-borda, #dce5e3);
+    border-radius: 14px;
+    background: var(--visual-superficie, #fff);
+    box-shadow: 0 14px 32px rgba(23, 59, 69, .16);
+    color: var(--visual-texto, #173b45);
+}
+
+.calendario-painel[hidden] {
+    display: none;
+}
+
+.calendario-painel--direita {
+    right: 0;
+    left: auto;
+}
+
+.calendario-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.calendario-topo strong {
+    font-size: 15px;
+}
+
+.calendario-mes {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--visual-borda, #dce5e3);
+    border-radius: 9px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.calendario-mes:hover:not(:disabled) {
+    background: #eef4f1;
+}
+
+.calendario-mes:disabled {
+    opacity: .35;
+    cursor: default;
+}
+
+.calendario-semana,
+.calendario-grade {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px 0;
+}
+
+.calendario-semana abbr {
+    padding: 6px 0;
+    color: var(--visual-secundario, #586d72);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+.calendario-dia {
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+}
+
+.calendario-dia:hover:not(:disabled) {
+    background: #eef4f1;
+}
+
+.calendario-dia--hoje {
+    box-shadow: inset 0 0 0 1.5px var(--visual-verde, #27684f);
+    color: var(--visual-verde, #27684f);
+    font-weight: 700;
+}
+
+.calendario-dia--periodo {
+    border-radius: 0;
+    background: var(--visual-verde-suave, #eaf3ed);
+}
+
+.calendario-dia--inicio {
+    border-radius: 9px 0 0 9px;
+}
+
+.calendario-dia--fim {
+    border-radius: 0 9px 9px 0;
+}
+
+.calendario-dia--inicio.calendario-dia--fim {
+    border-radius: 9px;
+}
+
+.calendario-dia[aria-pressed="true"] {
+    background: var(--visual-texto, #173b45);
+    box-shadow: none;
+    color: #fff;
+    font-weight: 700;
+}
+
+.calendario-dia[aria-pressed="true"]:hover {
+    background: #24515b;
+}
+
+.calendario-dia:disabled {
+    color: #b3c0bd;
+    cursor: default;
+}
+
+.calendario-rodape {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--visual-borda, #dce5e3);
+}
+
+.calendario-rodape button {
+    padding: 7px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--visual-verde, #27684f);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.calendario-rodape button:hover:not(:disabled) {
+    background: #eef4f1;
+}
+
+.calendario-rodape button:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.calendario-painel button:focus-visible,
+.calendario-abrir:focus-visible {
+    outline: 3px solid var(--visual-foco, #28638d);
+    outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .calendario-painel:not([hidden]) {
+        animation: calendario-surgir .12s ease-out;
+    }
+}
+
+@keyframes calendario-surgir {
+    from { opacity: 0; transform: translateY(-4px); }
+}

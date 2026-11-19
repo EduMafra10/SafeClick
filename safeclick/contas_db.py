@@ -118,6 +118,35 @@ def obter_conta(usuario_id):
         ).fetchone()
 
 
+def revelar_email(administrador_id, usuario_id, tela):
+    """Devolve o e-mail completo e registra na auditoria quem viu o e-mail de quem.
+
+    Vale também para contas excluídas enquanto o e-mail ainda está guardado.
+    Sem registro, sem e-mail: os dois acontecem na mesma transação.
+    """
+    with conectar_banco() as conexao:
+        conta = conexao.execute(
+            f"""
+            SELECT COALESCE(usuarios.email, guardado.email_guardado) AS email
+            FROM public.usuarios {_GUARDADO}
+            WHERE usuarios.id = %s
+            """,
+            (usuario_id,),
+        ).fetchone()
+        if conta is None or not conta["email"]:
+            return None
+        registrar_evento(
+            usuario_id=administrador_id,
+            evento="dados.email_visualizado",
+            resultado="sucesso",
+            recurso_tipo="usuario",
+            recurso_id=usuario_id,
+            detalhes={"tela": tela},
+            conexao=conexao,
+        )
+        return conta["email"]
+
+
 def redefinir_autenticador(administrador_id, usuario_id):
     """Desvincula o autenticador, encerra as sessões e registra quem fez.
 

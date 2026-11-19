@@ -1,11 +1,12 @@
 {% extends "administracao/base.html" %}
+{% from "administracao/_email_protegido.html" import email_protegido %}
 {% block titulo %}Excluir conta de administrador{% endblock %}
 {% block conteudo %}
     <header class="admin-introducao">
         <div>
             <p class="visual-etiqueta">Contas</p>
             <h1>Excluir conta de administrador</h1>
-            <p>{{ conta.nome }} · nº {{ conta.id }} · {{ conta.email }}</p>
+            <p>{{ conta.nome }} · nº {{ conta.id }} · {{ email_protegido(conta.id, conta.email, 'exclusao', conta.propria) }}</p>
         </div>
     </header>
     <form method="post" class="admin-formulario">

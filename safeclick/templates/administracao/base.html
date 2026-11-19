@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/administracao.css') }}">
     <script src="{{ url_for('static', filename='js/administracao_menu.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/email_protegido.js') }}" defer></script>
     {% if config.AVALIACOES_ATIVAS %}<script src="{{ url_for('static', filename='js/avaliacoes_notificacoes.js') }}" defer></script>{% endif %}
     {% block recursos %}{% endblock %}
 </head>

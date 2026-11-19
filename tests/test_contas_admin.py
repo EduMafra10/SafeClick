@@ -155,6 +155,20 @@ class ContasBancoTeste(unittest.TestCase):
         with self.assertRaises(contas_db.ContaNaoEncontrada):
             contas_db.alterar_perfil(7, 99, "administrador")
 
+    def test_revelar_email_registra_na_mesma_transacao(self):
+        self.conexao.execute.return_value.fetchone.return_value = {"email": "joao@example.test"}
+        self.assertEqual(contas_db.revelar_email(7, 12, "auditoria"), "joao@example.test")
+        self.registrar.assert_called_once_with(
+            usuario_id=7, evento="dados.email_visualizado", resultado="sucesso", recurso_tipo="usuario",
+            recurso_id=12, detalhes={"tela": "auditoria"}, conexao=self.conexao)
+
+    def test_revelar_email_sem_email_nao_registra(self):
+        for linha in (None, {"email": None}):
+            with self.subTest(linha=linha):
+                self.conexao.execute.return_value.fetchone.return_value = linha
+                self.assertIsNone(contas_db.revelar_email(7, 12, "contas"))
+        self.registrar.assert_not_called()
+
 
 class ContasRotasTeste(unittest.TestCase):
     def substituir(self, alvo, **argumentos):
@@ -179,7 +193,7 @@ class ContasRotasTeste(unittest.TestCase):
             sessao["_user_id"] = "7"
             sessao["_fresh"] = True
         self.listar = self.substituir("safeclick.administracao.contas_db.listar_contas",
-                                      return_value=([conta(), conta(id=7, nome="Admin", perfil="administrador")], 2))
+                                      return_value=([conta(), conta(id=7, nome="Admin", email="admin@example.test", perfil="administrador")], 2))
         self.obter = self.substituir("safeclick.administracao.contas_db.obter_conta", return_value=conta())
         self.redefinir = self.substituir("safeclick.administracao.contas_db.redefinir_autenticador",
                                          return_value={"identidade": "identidade", "fator_sid": "YF123"})
@@ -196,7 +210,10 @@ class ContasRotasTeste(unittest.TestCase):
         html = resposta.get_data(as_text=True)
         self.assertEqual(resposta.status_code, 200)
         self.assertIn("Autenticador: Ativo", html)
-        self.assertIn("joao@example.test", html)
+        self.assertIn("j***@example.test", html)
+        self.assertNotIn("joao@example.test", html)
+        self.assertIn('action="/administracao/contas/12/email"', html)
+        self.assertNotIn('action="/administracao/contas/7/email"', html)
         self.assertIn('href="/administracao/contas/12/redefinir-autenticador"', html)
         self.assertNotIn('href="/administracao/contas/7/redefinir-autenticador"', html)
         self.listar.assert_called_once_with(
@@ -260,7 +277,7 @@ class ContasRotasTeste(unittest.TestCase):
     def test_redefinir_remove_na_twilio_e_volta_para_a_lista(self):
         resposta = self.postar("/administracao/contas/12/redefinir-autenticador")
         self.assertEqual(resposta.status_code, 303)
-        self.assertIn("/administracao/contas?busca=joao@example.test", resposta.location)
+        self.assertIn("/administracao/contas?busca=12", resposta.location)
         self.redefinir.assert_called_once_with(7, 12)
         self.remover.assert_called_once_with("identidade", "YF123", usuario_id=12)
         html = self.client.get(resposta.location).get_data(as_text=True)
@@ -318,7 +335,7 @@ class ContasRotasTeste(unittest.TestCase):
     def test_promover_volta_para_a_lista(self):
         resposta = self.postar("/administracao/contas/12/perfil")
         self.assertEqual(resposta.status_code, 303)
-        self.assertIn("/administracao/contas?busca=joao@example.test", resposta.location)
+        self.assertIn("/administracao/contas?busca=12", resposta.location)
         self.alterar.assert_called_once_with(7, 12, "administrador")
         html = self.client.get(resposta.location).get_data(as_text=True)
         self.assertIn("João Teste agora é administrador(a).", html)
@@ -359,6 +376,52 @@ class ContasRotasTeste(unittest.TestCase):
         self.usuario.perfil = "usuario"
         self.assertEqual(self.client.post("/administracao/contas/12/perfil").status_code, 403)
         self.alterar.assert_not_called()
+
+    def revelar(self, dados=None, **cabecalhos):
+        pagina = self.client.get("/administracao/contas").get_data(as_text=True)
+        token = re.search(r'name="csrf_token" type="hidden" value="([^"]+)"', pagina).group(1)
+        dados = {"csrf_token": token, "tela": "contas"} if dados is None else dados
+        return self.client.post("/administracao/contas/12/email", data=dados, headers=cabecalhos)
+
+    def test_revelar_email_devolve_o_email_e_registra(self):
+        revelar = self.substituir("safeclick.administracao.contas_db.revelar_email", return_value="joao@example.test")
+        resposta = self.revelar(Accept="application/json")
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.get_json(), {"email": "joao@example.test"})
+        self.assertEqual(resposta.headers["Cache-Control"], "no-store")
+        revelar.assert_called_once_with(7, 12, "contas")
+
+    def test_revelar_email_sem_javascript_abre_pagina(self):
+        self.substituir("safeclick.administracao.contas_db.revelar_email", return_value="joao@example.test")
+        resposta = self.revelar()
+        html = resposta.get_data(as_text=True)
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn("joao@example.test", html)
+        self.assertIn("registrada na auditoria", html)
+
+    def test_revelar_email_recusa_formulario_invalido(self):
+        revelar = self.substituir("safeclick.administracao.contas_db.revelar_email", return_value="x@example.test")
+        pagina = self.client.get("/administracao/contas").get_data(as_text=True)
+        token = re.search(r'name="csrf_token" type="hidden" value="([^"]+)"', pagina).group(1)
+        for dados in ({"tela": "contas"}, {"csrf_token": token, "tela": "outra"},
+                      {"csrf_token": token}, {"csrf_token": token, "tela": "contas", "extra": "1"}):
+            with self.subTest(dados=dados):
+                self.assertEqual(self.revelar(dados).status_code, 400)
+        self.assertEqual(self.client.get("/administracao/contas/12/email").status_code, 405)
+        revelar.assert_not_called()
+
+    def test_revelar_email_conta_inexistente_ou_falha(self):
+        revelar = self.substituir("safeclick.administracao.contas_db.revelar_email", return_value=None)
+        self.assertEqual(self.revelar().status_code, 404)
+        revelar.side_effect = RuntimeError("banco")
+        self.assertEqual(self.revelar().status_code, 503)
+
+    def test_revelar_email_exige_administrador(self):
+        revelar = self.substituir("safeclick.administracao.contas_db.revelar_email", return_value="x@example.test")
+        self.usuario.perfil = "usuario"
+        resposta = self.client.post("/administracao/contas/12/email", data={"tela": "contas"})
+        self.assertEqual(resposta.status_code, 403)
+        revelar.assert_not_called()
 
 
 class AjudaAutenticadorTeste(unittest.TestCase):

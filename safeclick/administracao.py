@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, Response, abort, current_app, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, abort, current_app, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from psycopg import Error
@@ -14,6 +14,7 @@ from safeclick.emails import enviar_email
 from safeclick.modelo_email import montar_email
 from safeclick.formularios import limpar_texto
 from safeclick.limites import permitir_tentativa
+from safeclick.mascara import TELAS_EMAIL
 from safeclick.painel import FUSO_BRASILIA
 from safeclick.recuperacao import _agendar
 from safeclick.sessoes import exigir_perfis
@@ -279,6 +280,34 @@ def listar_contas():
     )
 
 
+@administracao.post("/contas/<int:usuario_id>/email")
+def revelar_email(usuario_id):
+    request.max_content_length = 4096
+    tela = request.form.get("tela", "")
+    if set(request.form) != {"csrf_token", "tela"} or tela not in TELAS_EMAIL or not FlaskForm().validate_on_submit():
+        abort(400, description="O formulário expirou. Recarregue a página e tente novamente.")
+
+    try:
+        email = contas_db.revelar_email(int(current_user.id), usuario_id, tela)
+    except (Error, RuntimeError):
+        current_app.logger.exception("Falha ao revelar o e-mail")
+        abort(503, description="Não foi possível mostrar o e-mail agora.")
+    if email is None:
+        abort(404, description="Conta não encontrada ou e-mail já descartado.")
+
+    cabecalhos = {"Cache-Control": "no-store"}
+    if request.accept_mimetypes.best == "application/json":
+        return jsonify(email=email), 200, cabecalhos
+    return render_template(
+        "administracao/email_revelado.html",
+        secoes=SECOES,
+        secao="contas",
+        usuario_id=usuario_id,
+        email=email,
+        voltar=request.referrer if (request.referrer or "").startswith(request.host_url) else None,
+    ), 200, cabecalhos
+
+
 @administracao.route("/contas/<int:usuario_id>/redefinir-autenticador", methods=["GET", "POST"])
 def redefinir_autenticador(usuario_id):
     request.max_content_length = 4096
@@ -325,7 +354,7 @@ def redefinir_autenticador(usuario_id):
                     "a pessoa vai configurar um novo aplicativo.",
                     "administracao_sucesso",
                 )
-                return redirect(url_for("administracao.listar_contas", busca=conta["email"]), code=303)
+                return redirect(url_for("administracao.listar_contas", busca=conta["id"]), code=303)
 
     return render_template(
         "administracao/redefinir_autenticador.html",
@@ -377,7 +406,7 @@ def alterar_perfil(usuario_id):
             else:
                 acao = "agora é administrador(a)" if novo_perfil == "administrador" else "voltou a ser usuário(a) comum"
                 flash(f"{conta['nome']} {acao}.", "administracao_sucesso")
-                return redirect(url_for("administracao.listar_contas", busca=conta["email"]), code=303)
+                return redirect(url_for("administracao.listar_contas", busca=conta["id"]), code=303)
 
     return render_template(
         "administracao/alterar_perfil.html",
