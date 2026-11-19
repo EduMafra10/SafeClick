@@ -713,11 +713,13 @@ class AdministracaoExclusaoTeste(unittest.TestCase):
         ], 2)
         html = self.client.get("/administracao/contas?situacao=excluidas").get_data(as_text=True)
         self.assertEqual(self.listar.call_args.kwargs["situacao"], "excluidas")
-        for trecho in ("Conta excluída", "Era admin", "ex@example.test (guardado até 14/05/2027)",
+        for trecho in ("Conta excluída", "Era admin", "e***@example.test", "(guardado até 14/05/2027)",
                        "e-mail já descartado", "Excluída em 14/11/2026 às 12:00",
                        '<option value="excluidas" selected>'):
             with self.subTest(trecho=trecho):
                 self.assertIn(trecho, html)
+        self.assertNotIn("ex@example.test", html)
+        self.assertIn('action="/administracao/contas/20/email"', html)
         self.assertNotIn("/excluir", html.split("Conta excluída", 1)[1])
 
     def test_filtro_de_agendadas_mostra_a_data_da_exclusao(self):

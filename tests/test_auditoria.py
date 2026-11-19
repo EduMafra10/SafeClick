@@ -98,6 +98,28 @@ class AuditoriaAcessoTeste(unittest.TestCase):
             with self.subTest(trecho=trecho):
                 self.assertIn(trecho, html)
 
+    def test_email_de_outra_pessoa_aparece_mascarado(self):
+        registro = self.registro(usuario_id=12, usuario_nome="Maria", usuario_email="maria@example.com",
+                                 usuario_perfil="usuario")
+        _, html, _, _ = self.consultar("/auditoria/", [registro])
+        self.assertIn("m***@example.com", html)
+        self.assertNotIn("maria@example.com", html)
+        self.assertIn('action="/administracao/contas/12/email"', html)
+        self.assertIn('name="tela" type="hidden" value="auditoria"', html)
+
+    def test_descreve_email_visualizado(self):
+        self.assertIn("dados.email_visualizado", EVENTOS_PERMITIDOS)
+        self.assertEqual(textos.descrever_detalhes("dados.email_visualizado", {"tela": "auditoria"}),
+                         ["Tela: Auditoria"])
+
+    def test_mascara_do_email(self):
+        from safeclick.mascara import mascarar_email
+        for entrada, saida in (("maria@example.com", "m***@example.com"), ("a@b.co", "a***@b.co"),
+                               ("x@y@dominio.com", "x***@dominio.com"), ("semarroba", "***"),
+                               ("", ""), (None, "")):
+            with self.subTest(entrada=entrada):
+                self.assertEqual(mascarar_email(entrada), saida)
+
     def test_mostra_horario_de_brasilia(self):
         _, html, _, _ = self.consultar("/auditoria/")
         self.assertIn("27/09/2026", html)

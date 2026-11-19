@@ -44,6 +44,7 @@ EVENTOS_PERMITIDOS = {
     "mfa.reconfiguracao_administrativa",
     "usuario.perfil_alterado",
     "visao_geral.exportada",
+    "dados.email_visualizado",
 }
 
 RESULTADOS_PERMITIDOS = {

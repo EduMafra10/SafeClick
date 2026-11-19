@@ -28,6 +28,8 @@ from safeclick.conquistas import conquistas
 from safeclick.avaliacoes import avaliacoes
 from safeclick.exclusao_conta import exclusao_conta, reativacao_conta
 from safeclick.moderacao_avaliacoes import moderacao_avaliacoes
+from safeclick.mascara import mascarar_email
+from flask_wtf.csrf import generate_csrf
 
 
 REPOSITORIO = "https://github.com/EduMafra10/SafeClick"
@@ -43,6 +45,9 @@ def create_app():
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     login_manager.init_app(app)
+
+    app.add_template_filter(mascarar_email, "mascarar_email")
+    app.jinja_env.globals["gerar_csrf"] = generate_csrf
 
     app.register_blueprint(autenticacao)
     app.register_blueprint(recuperacao)

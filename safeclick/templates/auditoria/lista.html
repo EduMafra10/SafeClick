@@ -1,7 +1,10 @@
 {% extends "administracao/base.html" %}
+{% from "administracao/_email_protegido.html" import email_protegido %}
 {% block titulo %}Auditoria{% endblock %}
 {% block recursos %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auditoria.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/calendario.css') }}">
+    <script src="{{ url_for('static', filename='js/calendario.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/auditoria.js') }}" defer></script>
 {% endblock %}
 {% block classe_principal %}auditoria-conteudo{% endblock %}
@@ -78,12 +81,12 @@
 
                 <label>
                     De
-                    <input type="date" name="inicio" value="{{ filtros.inicio }}" min="2020-01-01" max="{{ hoje }}">
+                    <input type="date" name="inicio" value="{{ filtros.inicio }}" min="2020-01-01" max="{{ hoje }}" data-calendario data-calendario-antes="fim">
                 </label>
 
                 <label>
                     Até
-                    <input type="date" name="fim" value="{{ filtros.fim }}" min="2020-01-01" max="{{ hoje }}">
+                    <input type="date" name="fim" value="{{ filtros.fim }}" min="2020-01-01" max="{{ hoje }}" data-calendario data-calendario-apos="inicio">
                 </label>
 
                 <div class="auditoria-filtros-acoes">
@@ -137,7 +140,7 @@
                                                 {% if registro.administrador %}<span class="auditoria-selo">Admin</span>{% endif %}
                                             </a>
                                             <span class="auditoria-secundario">
-                                                nº {{ registro.usuario_id }}{% if registro.usuario_email %} · {{ registro.usuario_email }}{% endif %}
+                                                nº {{ registro.usuario_id }}{% if registro.usuario_email %} · {{ email_protegido(registro.usuario_id, registro.usuario_email, 'auditoria', registro.usuario_id == current_user.id|int) }}{% endif %}
                                             </span>
                                         {% else %}
                                             <span class="auditoria-sem-usuario">{{ registro.sem_usuario }}</span>

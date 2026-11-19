@@ -308,26 +308,48 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    gap: 16px;
-    margin-block: 28px 24px;
+    gap: 14px;
+    margin-block: 28px 20px;
+    padding: 18px 20px;
+    border: 1px solid var(--visual-borda);
+    border-radius: 14px;
+    background: var(--visual-superficie);
+}
+
+.admin-filtros > div {
+    flex: 1 1 190px;
+    min-width: 0;
+}
+
+.admin-filtros > .admin-busca {
+    flex: 1.6 1 260px;
 }
 
 .admin-filtros label {
     display: block;
     margin-bottom: 6px;
+    color: var(--visual-secundario);
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .admin-filtros select {
-    min-height: 46px;
-    min-width: 220px;
-    padding: 10px 36px 10px 12px;
-    border: 1px solid #899e9a;
-    border-radius: 6px;
+    width: 100%;
+    min-height: 44px;
+    padding: 9px 38px 9px 12px;
+    border: 1px solid #c4d1ce;
+    border-radius: 10px;
     color: var(--visual-texto);
     background: var(--visual-superficie);
     font: inherit;
+    font-size: 15px;
+}
+
+.admin-filtros .admin-botao {
+    min-height: 44px;
+    height: 44px;
+    padding-block: 0;
+    border-radius: 10px;
 }
 
 .admin-botao {
@@ -359,8 +381,7 @@
     background: var(--visual-superficie);
 }
 
-.admin-tabela-rolagem:focus-visible,
-.admin-filtros select:focus-visible {
+.admin-tabela-rolagem:focus-visible {
     outline: 3px solid var(--visual-foco);
     outline-offset: 4px;
 }
@@ -649,14 +670,27 @@ a.admin-botao {
 }
 
 .admin-busca input {
-    min-height: 46px;
+    min-height: 44px;
     width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #899e9a;
-    border-radius: 6px;
+    padding: 9px 12px 9px 40px;
+    border: 1px solid #c4d1ce;
+    border-radius: 10px;
     font: inherit;
+    font-size: 15px;
     color: var(--visual-texto);
-    background: var(--visual-superficie);
+    background: var(--visual-superficie) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%235b6f6c' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") no-repeat 13px center;
+}
+
+.admin-filtros select:hover,
+.admin-busca input:hover {
+    border-color: #899e9a;
+}
+
+.admin-filtros select:focus-visible,
+.admin-busca input:focus-visible {
+    border-color: var(--visual-foco);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(40, 99, 141, .18);
 }
 
 .admin-publicacao,
@@ -776,13 +810,14 @@ a.admin-botao {
         padding: 14px;
     }
 
-    .admin-busca {
-        width: 100%;
+    .admin-filtros {
+        padding: 16px;
     }
 
-    .admin-filtros select {
-        min-width: 0;
-        max-width: 100%;
+    .admin-filtros > div,
+    .admin-filtros > .admin-busca,
+    .admin-filtros .admin-botao {
+        flex: 1 1 100%;
     }
 }
 
@@ -2065,5 +2100,192 @@ a.admin-botao {
 
     .admin-previa-resultados {
         grid-template-columns: 1fr;
+    }
+}
+
+/* e-mail mascarado com botão para ver o completo */
+.admin-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
+}
+
+.admin-email-form {
+    display: inline;
+    margin: 0;
+}
+
+.admin-email-botao {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    margin: -6px 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--visual-secundario);
+    cursor: pointer;
+}
+
+.admin-email-botao:hover {
+    border-color: var(--visual-borda);
+    background: var(--visual-azul-suave);
+    color: var(--visual-texto);
+}
+
+.admin-email-botao:focus-visible {
+    outline: 3px solid var(--visual-foco);
+    outline-offset: 2px;
+}
+
+.admin-email-botao--erro {
+    color: #a33a1f;
+}
+
+.admin-email-ocultar,
+[data-revelado] .admin-email-mostrar {
+    display: none;
+}
+
+[data-revelado] .admin-email-ocultar {
+    display: block;
+}
+
+/* ações de cada conta como botões */
+.admin-acoes .admin-acao {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 7px 14px;
+    border: 1px solid #c3d0cc;
+    border-radius: 7px;
+    background: var(--visual-superficie);
+    color: var(--visual-texto);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.admin-acoes .admin-acao:hover {
+    border-color: var(--visual-texto);
+    background: #f1f5f3;
+}
+
+.admin-acoes .admin-acao--principal {
+    border-color: var(--visual-verde);
+    color: var(--visual-verde);
+}
+
+.admin-acoes .admin-acao--principal:hover {
+    border-color: var(--visual-verde);
+    background: var(--visual-verde);
+    color: #fff;
+}
+
+.admin-acoes .admin-acao--perigo {
+    border-color: #e2b9b2;
+    color: #8b362d;
+}
+
+.admin-acoes .admin-acao--perigo:hover {
+    border-color: #8b362d;
+    background: #8b362d;
+    color: #fff;
+}
+
+.admin-acoes .admin-acao:focus-visible {
+    outline: 3px solid var(--visual-foco);
+    outline-offset: 2px;
+}
+
+.admin-acoes:has(.admin-acao) {
+    gap: 8px;
+}
+
+/* listas suspensas dos filtros (contas, catálogo, auditoria, avaliações) */
+.admin-corpo .auditoria-filtros input:not([type="checkbox"]),
+.admin-corpo .auditoria-filtros select,
+.admin-corpo .auditoria-filtros-acoes .auditoria-botao {
+    height: 44px;
+}
+
+.admin-corpo .auditoria-filtros-acoes .auditoria-botao {
+    padding-block: 0;
+    border-radius: 10px;
+}
+
+.admin-corpo .admin-filtros select,
+.admin-corpo .auditoria-filtros select,
+.admin-corpo .avaliacoes-admin-filtros select {
+    padding-right: 38px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23173b45' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    cursor: pointer;
+}
+
+@supports (appearance: base-select) {
+    .admin-corpo .admin-filtros select,
+    .admin-corpo .auditoria-filtros select,
+    .admin-corpo .avaliacoes-admin-filtros select {
+        appearance: base-select;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-right: 13px;
+        background-image: none;
+    }
+
+    .admin-corpo select::picker-icon {
+        margin-left: auto;
+        width: 16px;
+        height: 16px;
+        content: "";
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23173b45' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat center;
+        transition: rotate .15s;
+    }
+
+    .admin-corpo select:open::picker-icon {
+        rotate: 180deg;
+    }
+
+    .admin-corpo select::picker(select) {
+        appearance: base-select;
+        margin-top: 6px;
+        padding: 6px;
+        border: 1px solid var(--visual-borda);
+        border-radius: 12px;
+        background: var(--visual-superficie);
+        box-shadow: 0 12px 28px rgba(23, 59, 69, .14);
+    }
+
+    .admin-corpo select option {
+        padding: 9px 12px;
+        border-radius: 8px;
+        color: var(--visual-texto);
+        font-size: 15px;
+    }
+
+    .admin-corpo select option:hover,
+    .admin-corpo select option:focus-visible {
+        outline: none;
+        background: #eef4f1;
+    }
+
+    .admin-corpo select option:checked {
+        background: var(--visual-verde-suave);
+        color: var(--visual-verde);
+        font-weight: 600;
+    }
+
+    .admin-corpo select option::checkmark {
+        order: 1;
+        margin-left: auto;
+        color: var(--visual-verde);
     }
 }

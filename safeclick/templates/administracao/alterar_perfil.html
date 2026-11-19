@@ -1,4 +1,5 @@
 {% extends "administracao/base.html" %}
+{% from "administracao/_email_protegido.html" import email_protegido %}
 {% set promover = novo_perfil == 'administrador' %}
 {% block titulo %}{{ 'Tornar administrador' if promover else 'Remover acesso de administrador' }}{% endblock %}
 {% block conteudo %}
@@ -6,7 +7,7 @@
         <div>
             <p class="visual-etiqueta">Contas</p>
             <h1>{{ 'Tornar administrador' if promover else 'Remover acesso de administrador' }}</h1>
-            <p>{{ conta.nome }} · nº {{ conta.id }} · {{ conta.email }}</p>
+            <p>{{ conta.nome }} · nº {{ conta.id }} · {{ email_protegido(conta.id, conta.email, 'perfil', conta.propria) }}</p>
         </div>
     </header>
     <form method="post" class="admin-formulario">

@@ -1,0 +1,26 @@
+{# E-mail mascarado; o botão mostra o completo e registra na auditoria quem viu. #}
+{% macro email_protegido(usuario_id, email, tela, propria=false) %}
+    {%- if propria or not email -%}
+        {{ email }}
+    {%- else -%}
+        <span class="admin-email" data-email-usuario="{{ usuario_id }}">
+            <span class="admin-email-texto">{{ email|mascarar_email }}</span>
+            <form class="admin-email-form" method="post" action="{{ url_for('administracao.revelar_email', usuario_id=usuario_id) }}">
+                <input name="csrf_token" type="hidden" value="{{ gerar_csrf() }}">
+                <input name="tela" type="hidden" value="{{ tela }}">
+                <button class="admin-email-botao" type="submit"
+                        aria-label="Mostrar o e-mail completo. A visualização fica registrada na auditoria."
+                        title="Mostrar e-mail completo (fica registrado na auditoria)">
+                    <svg class="admin-email-mostrar" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <svg class="admin-email-ocultar" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                        <path d="M3 3l18 18M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>
+                    </svg>
+                </button>
+            </form>
+        </span>
+    {%- endif -%}
+{% endmacro %}

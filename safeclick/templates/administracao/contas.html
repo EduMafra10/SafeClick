@@ -1,4 +1,5 @@
 {% extends "administracao/base.html" %}
+{% from "administracao/_email_protegido.html" import email_protegido %}
 {% block titulo %}Contas{% endblock %}
 {% block conteudo %}
     <header class="admin-introducao">
@@ -56,7 +57,7 @@
                         </strong>
                         <span class="admin-metadados">
                             nº {{ conta.id }} ·
-                            {% if conta.email_guardado %}{{ conta.email_guardado }} (guardado até {{ conta.descartar_em.strftime('%d/%m/%Y') }})
+                            {% if conta.email_guardado %}{{ email_protegido(conta.id, conta.email_guardado, 'contas') }} (guardado até {{ conta.descartar_em.strftime('%d/%m/%Y') }})
                             {% else %}e-mail já descartado{% endif %}
                         </span>
                         <p class="admin-info-item">
@@ -65,7 +66,7 @@
                         </p>
                     </div>
                     <div class="admin-acoes">
-                        <a class="admin-link" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
+                        <a class="admin-acao" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
                     </div>
                 </li>
                 {% elif conta.exclusao_marcada_para %}
@@ -75,14 +76,14 @@
                             {{ conta.nome }}
                             {% if conta.perfil == 'administrador' %}<span class="admin-selo">Admin</span>{% endif %}
                         </strong>
-                        <span class="admin-metadados">nº {{ conta.id }} · {{ conta.email }}</span>
+                        <span class="admin-metadados">nº {{ conta.id }} · {{ email_protegido(conta.id, conta.email, 'contas', conta.propria) }}</span>
                         <p class="admin-info-item">
                             <span>Desativada pela própria pessoa</span>
                             <span>Exclusão definitiva em {{ conta.exclusao_marcada_para.strftime('%d/%m/%Y') }}, se ela não reativar</span>
                         </p>
                     </div>
                     <div class="admin-acoes">
-                        <a class="admin-link" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
+                        <a class="admin-acao" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
                     </div>
                 </li>
                 {% else %}
@@ -93,7 +94,7 @@
                             {% if conta.perfil == 'administrador' %}<span class="admin-selo">Admin</span>{% endif %}
                             {% if conta.propria %}<span class="admin-selo admin-selo--voce">Você</span>{% endif %}
                         </strong>
-                        <span class="admin-metadados">nº {{ conta.id }} · {{ conta.email }}</span>
+                        <span class="admin-metadados">nº {{ conta.id }} · {{ email_protegido(conta.id, conta.email, 'contas', conta.propria) }}</span>
                         <p class="admin-info-item">
                             <span class="admin-estado admin-estado--autenticador-{{ conta.situacao }}">
                                 Autenticador: {{ conta.situacao_rotulo }}
@@ -106,19 +107,19 @@
                         </p>
                     </div>
                     <div class="admin-acoes">
-                        <a class="admin-link" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
+                        <a class="admin-acao" href="{{ url_for('auditoria.listar', usuario=conta.id) }}">Ver na auditoria</a>
                         {% if conta.situacao != 'sem' and not conta.propria %}
-                            <a class="admin-link admin-botao-perigo"
+                            <a class="admin-acao admin-acao--perigo"
                                href="{{ url_for('administracao.redefinir_autenticador', usuario_id=conta.id) }}">Redefinir autenticador</a>
                         {% endif %}
                         {% if not conta.propria %}
                             {% if conta.perfil == 'administrador' %}
-                                <a class="admin-link" href="{{ url_for('administracao.alterar_perfil', usuario_id=conta.id) }}">Remover acesso de administrador</a>
+                                <a class="admin-acao admin-acao--perigo" href="{{ url_for('administracao.alterar_perfil', usuario_id=conta.id) }}">Remover acesso de administrador</a>
                             {% elif conta.situacao == 'ativo' %}
-                                <a class="admin-link" href="{{ url_for('administracao.alterar_perfil', usuario_id=conta.id) }}">Tornar administrador</a>
+                                <a class="admin-acao admin-acao--principal" href="{{ url_for('administracao.alterar_perfil', usuario_id=conta.id) }}">Tornar administrador</a>
                             {% endif %}
                             {% if conta.perfil == 'administrador' %}
-                                <a class="admin-link admin-botao-perigo" href="{{ url_for('administracao.excluir_conta', usuario_id=conta.id) }}">Excluir conta</a>
+                                <a class="admin-acao admin-acao--perigo" href="{{ url_for('administracao.excluir_conta', usuario_id=conta.id) }}">Excluir conta</a>
                             {% endif %}
                         {% endif %}
                     </div>

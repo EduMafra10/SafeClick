@@ -1,3 +1,5 @@
+from safeclick.mascara import TELAS_EMAIL
+
 
 CATEGORIAS = {
     "acesso": "Acesso e conta",
@@ -44,6 +46,7 @@ EVENTOS = {
     "mfa.reconfiguracao_administrativa": ("Autenticador redefinido pelo administrador", "administracao"),
     "usuario.perfil_alterado": ("Perfil de acesso alterado", "administracao"),
     "visao_geral.exportada": ("Indicadores exportados para o Excel", "administracao"),
+    "dados.email_visualizado": ("E-mail de usuário visualizado", "administracao"),
     "auditoria.consultada": ("Auditoria consultada", "administracao"),
     "api.consultada": ("Consulta a serviço externo", "integracoes"),
 }
@@ -267,6 +270,11 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
         dias = detalhes.pop("periodo_dias", None)
         if dias:
             frases.append(f"Período: últimos {dias} dias")
+
+    elif evento == "dados.email_visualizado":
+        tela = detalhes.pop("tela", None)
+        if tela:
+            frases.append(f"Tela: {TELAS_EMAIL.get(tela, _legivel(tela))}")
 
     elif evento == "termo.aceito":
         versao = detalhes.pop("versao", None)
