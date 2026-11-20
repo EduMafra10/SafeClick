@@ -1,29 +1,50 @@
-<section class="quizzes-cartao quizzes-banco-cartoes" aria-labelledby="titulo-cartoes">
-    <h2 id="titulo-cartoes">Cartões do guia</h2>
-    <ul>
-        {% for cartao in questoes[0].alternativas %}
-            <li data-oficina-cartao="{{ cartao.texto }}">{{ cartao.texto }} <span hidden>· Usado</span></li>
-        {% endfor %}
-    </ul>
-</section>
-
-<div class="quizzes-perguntas">
-    {% for questao in questoes %}
-        <div class="quizzes-cartao">
-            <label class="quizzes-enunciado" for="trecho-{{ questao.id }}">
-                <span class="quizzes-etiqueta">Trecho {{ questao.ordem }} de {{ questoes|length }}</span>
-                {{ questao.enunciado }}
-            </label>
-            <select class="quizzes-encaixe" id="trecho-{{ questao.id }}" name="questao_{{ questao.id }}"
-                    data-oficina-encaixe required>
-                <option value="">Escolha um cartão</option>
-                {% for alternativa in questao.alternativas %}
-                    <option value="{{ alternativa.id }}" data-cartao="{{ alternativa.texto }}"
-                            {% if respostas.get(questao.id) == alternativa.id %}selected{% endif %}>{{ alternativa.texto }}</option>
-                {% endfor %}
-            </select>
+{% from "componentes/_icones.html" import icone %}
+<section class="qz-mesa" aria-labelledby="titulo-mesa" data-oficina>
+    <div class="qz-mesa-cabecalho">
+        <div>
+            <h1 id="titulo-mesa">{{ quiz.titulo }}</h1>
+            <p id="orientacao-quiz">Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez. Pode haver cartões que ficam sem uso.</p>
         </div>
-    {% endfor %}
-</div>
-<p class="quizzes-oficina-status" role="status" data-oficina-status></p>
+        <span class="qz-mesa-contagem" data-oficina-contagem>{{ questoes|length }} trechos</span>
+    </div>
+
+    <ol class="qz-vagas" role="list">
+        {% for questao in questoes %}
+            <li class="qz-vaga">
+                <label class="qz-vaga-trecho" id="rotulo-trecho-{{ questao.id }}" for="trecho-{{ questao.id }}">
+                    <small>Trecho {{ questao.ordem }} de {{ questoes|length }}</small>
+                    {{ questao.enunciado }}
+                </label>
+                <select class="qz-encaixe" id="trecho-{{ questao.id }}" name="questao_{{ questao.id }}"
+                        data-oficina-encaixe required>
+                    <option value="">Escolha um cartão</option>
+                    {% for alternativa in questao.alternativas %}
+                        <option value="{{ alternativa.id }}" data-cartao="{{ alternativa.texto }}"
+                                {% if respostas.get(questao.id) == alternativa.id %}selected{% endif %}>{{ alternativa.texto }}</option>
+                    {% endfor %}
+                </select>
+                <button class="qz-espaco" type="button" data-oficina-espaco hidden></button>
+            </li>
+        {% endfor %}
+    </ol>
+
+    <div class="qz-banco" data-oficina-banco>
+        <h2 id="titulo-cartoes">Cartões do guia</h2>
+        <ul role="list">
+            {% for cartao in questoes[0].alternativas %}
+                <li data-oficina-cartao="{{ cartao.texto }}">{{ cartao.texto }} <span hidden>· Usado</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="qz-mao-area" data-oficina-mao-area hidden>
+        <p class="qz-mao-titulo" id="titulo-mao">Sua mão <span data-oficina-livres></span></p>
+        <ul class="qz-mao" role="list" aria-labelledby="titulo-mao" data-oficina-mao></ul>
+    </div>
+
+    <div class="qz-mesa-rodape">
+        <p class="qz-mesa-status" role="status" data-oficina-status></p>
+        <button class="qz-botao qz-botao--menta" type="submit">Conferir guia{{ icone("seta", 17) }}</button>
+    </div>
+</section>
 <script src="{{ url_for('static', filename='js/oficina_quiz.js') }}" defer></script>

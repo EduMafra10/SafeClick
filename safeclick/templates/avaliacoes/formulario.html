@@ -1,60 +1,104 @@
 {% extends "quizzes/base.html" %}
 {% from "componentes/links_atividades.html" import links_atividades %}
+{% from "componentes/_icones.html" import icone %}
 {% set modelo = 'oficina' if atividade.formato == 'oficina' else 'quiz' if tipo == 'quiz' else 'conteúdo' %}
 {% block titulo %}Avaliar {{ modelo }} | SafeClick{% endblock %}
+{% block recursos %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_publicas.css') }}">
+{% endblock %}
 
 {% block conteudo %}
-    <div class="quizzes-revisao">
-        <nav class="quizzes-navegacao" aria-label="Voltar à atividade">
-            <a href="{{ voltar }}">← Voltar à atividade</a>
+    {% set rotulos = dict(formulario.nota.choices) %}
+    <div class="qz-pagina">
+        <nav class="qz-migalha" aria-label="Voltar à atividade">
+            <a class="av-voltar" href="{{ voltar }}">{{ icone("voltar", 14) }}Voltar à atividade</a>
         </nav>
-        <header class="quizzes-introducao">
-            <p class="quizzes-etiqueta">Avaliação opcional</p>
-            <h1>Avaliar {{ modelo }}</h1>
-            <p>{{ atividade.titulo }}</p>
-        </header>
 
         {% for mensagem in get_flashed_messages(category_filter=['avaliacao']) %}
-            <p class="quizzes-faixa" role="status">{{ mensagem }}</p>
+            <p class="qz-aviso" role="status">{{ mensagem }}</p>
         {% endfor %}
         {% if envio_invalido %}
-            <p class="quizzes-erro" role="alert">
+            <p class="qz-aviso qz-aviso--erro" role="alert">
                 {% if formulario.csrf_token.errors %}O formulário expirou ou é inválido. Recarregue a página e tente novamente.
                 {% else %}Confira a nota, o comentário e as opções de publicação. Compartilhar um comentário exige autorizar a nota, preencher o texto e declarar ter 18 anos ou mais.{% endif %}
             </p>
         {% endif %}
-        <form class="quizzes-cartao" method="post" aria-describedby="aviso-avaliacao">
-            {{ formulario.hidden_tag() }}
-            <fieldset class="quizzes-pergunta">
-                <legend>{{ formulario.nota.label.text }}</legend>
-                <div class="quizzes-opcoes">
-                    {% for opcao in formulario.nota %}
-                        <label class="quizzes-opcao">
-                            {{ opcao(required=true) }} <span>{{ opcao.label.text }}</span>
-                        </label>
-                    {% endfor %}
-                </div>
-                {% if formulario.nota.errors %}<p class="quizzes-erro">Escolha uma nota inteira de 1 a 5.</p>{% endif %}
-            </fieldset>
-            <div class="avaliacao-comentario">
-                {{ formulario.comentario.label }}
-                <p id="ajuda-comentario">Até {{ limite_comentario }} caracteres. Evite incluir dados pessoais seus ou de terceiros, como nomes, contatos e senhas.</p>
-                {{ formulario.comentario(rows=4, maxlength=limite_comentario, aria_describedby="ajuda-comentario") }}
-                {% for erro in formulario.comentario.errors %}<p class="quizzes-erro">{{ erro }}</p>{% endfor %}
+
+        <section class="qz-cartao av-metades" aria-labelledby="titulo-avaliar">
+            <div class="av-metades-texto">
+                <h1 id="titulo-avaliar"><span>Avaliar {{ modelo }}</span>{{ atividade.titulo }}</h1>
+                <p>Opcional. Conte quanto esta atividade ajudou você a entender o tema. Sua nota não muda seu progresso.</p>
+                {% set nota_previa = (formulario.nota.data or '0')|int(0) %}
+                {% set estado = 'privada' if not formulario.publicar_nota.data else 'idade' if not formulario.maior_de_idade.data else 'comentario' if formulario.publicar_comentario.data else 'nota' %}
+                <figure class="av-previa" data-previa data-estado="{{ estado }}">
+                    <figcaption>Como outras pessoas vão ver</figcaption>
+                    <div class="av-previa-cartao">
+                        <div class="av-previa-quem">
+                            <span class="av-previa-avatar" aria-hidden="true">{{ icone("usuario", 18) }}</span>
+                            <p><strong>Participante anônimo</strong><small>Sem nome nem e-mail</small></p>
+                        </div>
+                        <p class="av-previa-estrelas" data-previa-estrelas aria-hidden="true">
+                            {%- for i in range(5) %}<span class="{{ 'av-estrela--on' if i < nota_previa else '' }}">{{ icone("estrela", 17) }}</span>{% endfor -%}
+                        </p>
+                        <p class="av-previa-texto" data-previa-texto data-vazio="Seu comentário aparece aqui.">{{ formulario.comentario.data or 'Seu comentário aparece aqui.' }}</p>
+                    </div>
+                    <p class="av-previa-estado" data-previa-estado="privada"{{ ' hidden' if estado != 'privada' }}>{{ icone("cadeado", 15) }}Privada: só você vê esta avaliação.</p>
+                    <p class="av-previa-estado" data-previa-estado="nota"{{ ' hidden' if estado != 'nota' }}>{{ icone("olho", 15) }}Só a nota entra na média pública. O comentário fica privado.</p>
+                    <p class="av-previa-estado av-previa-estado--moderacao" data-previa-estado="idade"{{ ' hidden' if estado != 'idade' }}>{{ icone("alerta", 15) }}Para compartilhar, marque a declaração de 18 anos ou mais.</p>
+                    <p class="av-previa-estado av-previa-estado--moderacao" data-previa-estado="comentario"{{ ' hidden' if estado != 'comentario' }}>{{ icone("relogio", 15) }}Nota na média e comentário publicado depois da moderação.</p>
+                </figure>
+                <ul class="av-garantias" role="list">
+                    <li><span aria-hidden="true">{{ icone("usuario", 18) }}</span>Publicação sem seu nome, e-mail ou número da conta</li>
+                    <li><span aria-hidden="true">{{ icone("relogio", 18) }}</span>Comentários passam por moderação antes de aparecer</li>
+                    <li><span aria-hidden="true">{{ icone("lapis", 18) }}</span>Edite ou exclua quando quiser em Minhas avaliações</li>
+                </ul>
             </div>
-            <fieldset class="participacao-widget"><legend>Compartilhamento opcional</legend>
-                <p>Sem marcar estas opções, sua avaliação fica privada. A equipe administrativa pode consultar novas notas e comentários enviados com este aviso para melhorar as atividades.</p>
-                <label class="participacao-opcao">{{ formulario.publicar_nota(value='1') }} <span>{{ formulario.publicar_nota.label.text }}</span></label>
-                <label class="participacao-opcao">{{ formulario.publicar_comentario(value='1') }} <span>{{ formulario.publicar_comentario.label.text }}</span></label>
-                <label class="participacao-opcao">{{ formulario.maior_de_idade(value='1') }} <span>{{ formulario.maior_de_idade.label.text }}</span></label>
-                <p class="participacao-nota">Menores de 18 anos podem avaliar de forma privada. A publicação não inclui nome, e-mail ou número da sua conta. Alterar o texto público exige nova moderação.</p>
-                {% if atividade.moderacao %}<p>Comentário: {{ {'pendente':'aguardando moderação','aprovada':'publicado','rejeitada':'não publicado pela moderação','nao_solicitada':'privado'}.get(atividade.moderacao,'privado') }}.</p>{% endif %}
-            </fieldset>
-            <p id="aviso-avaliacao">A avaliação fica vinculada à sua conta para edição e exclusão. Você pode retirar a autorização desmarcando as opções e salvando, ou excluir em <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>. Leia o <a href="{{ url_for('avaliacoes.privacidade') }}">aviso de participação</a> e a <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
-            <button class="quizzes-botao" type="submit">{{ 'Atualizar avaliação' if atividade.nota is not none else 'Enviar avaliação' }}</button>
-        </form>
-        <nav class="quizzes-acoes" aria-label="Próximas atividades">
-            {{ links_atividades(tipo, atividade.proxima_referencia) }}
-        </nav>
+
+            <form class="av-metades-form" method="post" aria-describedby="aviso-avaliacao">
+                {{ formulario.hidden_tag() }}
+                <fieldset class="av-campo" data-nota>
+                    <legend>{{ formulario.nota.label.text }}</legend>
+                    <div class="av-estrelas-campo">
+                        {% for opcao in formulario.nota %}
+                            <label class="av-estrela-opcao" title="{{ opcao.label.text }}">
+                                {{ opcao(required=true, class_='avaliacoes-somente-leitor') }}{{ icone("estrela", 26) }}<span class="avaliacoes-somente-leitor">{{ opcao.label.text }}</span>
+                            </label>
+                        {% endfor %}
+                        <span class="av-nota-rotulo" data-nota-saida aria-hidden="true">{{ rotulos.get(formulario.nota.data, 'Escolha de 1 a 5') }}</span>
+                    </div>
+                    {% if formulario.nota.errors %}<p class="av-erro">Escolha uma nota inteira de 1 a 5.</p>{% endif %}
+                </fieldset>
+
+                <div class="av-campo">
+                    {{ formulario.comentario.label(class_='av-rotulo') }}
+                    {{ formulario.comentario(rows=5, maxlength=limite_comentario, aria_describedby="ajuda-comentario", placeholder="O que ajudou ou o que poderia melhorar?") }}
+                    <p class="av-dica"><span id="ajuda-comentario">Até {{ limite_comentario }} caracteres. Evite incluir dados pessoais seus ou de terceiros, como nomes, contatos e senhas.</span>
+                        <span data-contador aria-hidden="true">{{ (formulario.comentario.data or '')|length }} de {{ limite_comentario }}</span></p>
+                    {% for erro in formulario.comentario.errors %}<p class="av-erro">{{ erro }}</p>{% endfor %}
+                </div>
+
+                <fieldset class="av-campo" id="compartilhamento">
+                    <legend>Quem pode ver</legend>
+                    <p class="av-dica">Sem marcar estas opções, sua avaliação fica privada.</p>
+                    <div class="av-opcoes">
+                        <label class="av-opcao">{{ formulario.publicar_nota(value='1') }}
+                            <span><strong>{{ formulario.publicar_nota.label.text }}</strong><small>Sua nota entra na média que outras pessoas veem.</small></span></label>
+                        <label class="av-opcao">{{ formulario.publicar_comentario(value='1') }}
+                            <span><strong>{{ formulario.publicar_comentario.label.text }}</strong><small>Exige mostrar a nota. Alterar o texto público exige nova moderação.</small></span></label>
+                        <label class="av-opcao">{{ formulario.maior_de_idade(value='1') }}
+                            <span><strong>{{ formulario.maior_de_idade.label.text }}</strong><small>Menores de 18 anos podem avaliar de forma privada.</small></span></label>
+                    </div>
+                    {% if atividade.moderacao %}<p class="av-dica">Comentário: {{ {'pendente':'aguardando moderação','aprovada':'publicado','rejeitada':'não publicado pela moderação','nao_solicitada':'privado'}.get(atividade.moderacao,'privado') }}.</p>{% endif %}
+                </fieldset>
+
+                <div class="av-envio">
+                    <p id="aviso-avaliacao">A avaliação fica vinculada à sua conta para edição e exclusão. A equipe administrativa pode consultar novas notas e comentários enviados com este aviso para melhorar as atividades. Você pode retirar a autorização desmarcando as opções e salvando, ou excluir em <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a>. Leia o <a href="{{ url_for('avaliacoes.privacidade') }}">aviso de participação</a> e a <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
+                    <button class="qz-botao qz-botao--escuro" type="submit">{{ 'Atualizar avaliação' if atividade.nota is not none else 'Enviar avaliação' }}{{ icone("seta", 16) }}</button>
+                </div>
+            </form>
+            <nav class="qz-acoes av-metades-proximas" aria-label="Próximas atividades">
+                {{ links_atividades(tipo, atividade.proxima_referencia, 'qz-botao qz-botao--claro qz-botao--pequeno') }}
+            </nav>
+        </section>
     </div>
 {% endblock %}

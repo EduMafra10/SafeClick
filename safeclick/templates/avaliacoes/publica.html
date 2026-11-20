@@ -1,23 +1,79 @@
 {% extends 'quizzes/base.html' %}
 {% from 'componentes/tipo_atividade.html' import tipo_atividade %}
+{% from 'componentes/_icones.html' import icone %}
+{% from 'avaliacoes/_componentes.html' import barras_publicas, comentario_anonimo, estrelas_publicas %}
 {% block titulo %}Avaliações de {{ atividade.titulo }} | SafeClick{% endblock %}
+{% block recursos %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_minhas.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_publicas.css') }}">
+{% endblock %}
 {% block conteudo %}
-<nav class="quizzes-navegacao"><a href="{{ url_for('avaliacoes.publicas') }}">← Todas as avaliações</a></nav>
-<header class="quizzes-introducao"><p class="quizzes-etiqueta">{{ tipo_atividade(tipo, atividade.formato) }} · Avaliações públicas</p><h1>{{ atividade.titulo }}</h1></header>
-<form class="participacao-filtros participacao-filtros-comentarios" method="get" data-espera>
-    <label>Ordenar comentários
-        <select name="ordem">
-            <option value="recentes" {{ 'selected' if ordem == 'recentes' }}>Mais recentes</option>
-            <option value="antigas" {{ 'selected' if ordem == 'antigas' }}>Mais antigos</option>
-        </select>
-    </label>
-    <button class="quizzes-botao" type="submit">Aplicar ordem</button>
-</form>
-<p role="status" data-carregando hidden>Carregando avaliações…</p>
-<section class="quizzes-cartao" aria-label="Notas e comentários">{% include 'avaliacoes/_resumo.html' %}</section>
-<nav class="quizzes-acoes" aria-label="Páginas de comentários">
-{% if pagina > 1 %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina-1, ordem=ordem) }}">Página anterior</a>{% endif %}
-{% if pagina * 10 < resumo.comentarios %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina+1, ordem=ordem) }}">Próxima página</a>{% endif %}
-<a class="quizzes-botao" href="{{ url_for('conteudos.detalhe', slug=atividade.slug) if tipo == 'conteudo' else url_for('quizzes.exibir_quiz', quiz_id=atividade.id) }}">Abrir atividade</a>
-</nav>
+    {% set oficina = atividade.formato == 'oficina' %}
+    <div class="qz-pagina">
+        <nav class="qz-migalha" aria-label="Navegação das avaliações">
+            <a href="{{ url_for('avaliacoes.publicas') }}">Avaliações públicas</a>
+            <span aria-hidden="true">/</span><span>{{ atividade.titulo }}</span>
+        </nav>
+
+        <header class="qz-topo">
+            <div>
+                <p class="av-tipo">{{ tipo_atividade(tipo, atividade.formato) }}</p>
+                <h1>{{ atividade.titulo }}</h1>
+            </div>
+            <a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('conteudos.detalhe', slug=atividade.slug) if tipo == 'conteudo' else url_for('quizzes.exibir_quiz', quiz_id=atividade.id) }}">
+                {{- icone('livro' if tipo == 'conteudo' else 'cartas' if oficina else 'lista', 16) }}Abrir {{ 'o conteúdo' if tipo == 'conteudo' else 'a oficina' if oficina else 'o quiz' }}</a>
+        </header>
+
+        {% if resumo.total %}
+            {% set media = ('%.1f'|format(resumo.media)).replace('.', ',') %}
+            <section class="qz-cartao av-numeros{{ '' if resumo.distribuicao else ' av-numeros--dois' }}" aria-label="Resumo das notas">
+                <div>
+                    <h2>Notas compartilhadas</h2>
+                    <p class="av-numero">{{ resumo.total }}</p>
+                    <p class="qz-nota">{{ resumo.comentarios }} {{ 'com comentário aprovado' if resumo.comentarios == 1 else 'com comentários aprovados' }}</p>
+                </div>
+                <div>
+                    <h2>Média</h2>
+                    <p class="av-numero">{{ media }} {{ estrelas_publicas(resumo.media|round|int, 18, media ~ ' de 5') }}</p>
+                    <p class="qz-nota">De 1 a 5, quanto a atividade ajudou</p>
+                </div>
+                {{ barras_publicas(resumo) }}
+            </section>
+        {% else %}
+            <section class="qz-cartao av-vazio">
+                <span class="av-miniatura av-miniatura--verde">{{ icone("estrela", 24) }}</span>
+                <h2>Esta atividade ainda não tem avaliações compartilhadas publicamente.</h2>
+                <p>Quem termina a atividade pode dar uma nota e escolher se ela aparece aqui, sem nome ou e-mail.</p>
+            </section>
+        {% endif %}
+
+        <div class="av-secao-topo">
+            <h2>Comentários</h2>
+            {% if resumo.comentarios > 1 %}
+                <nav class="av-segmento" aria-label="Ordenar comentários">
+                    <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, ordem='recentes') }}" {{ 'aria-current="true"'|safe if ordem == 'recentes' }}>Mais recentes</a>
+                    <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, ordem='antigas') }}" {{ 'aria-current="true"'|safe if ordem == 'antigas' }}>Mais antigos</a>
+                </nav>
+            {% endif %}
+        </div>
+
+        {% if comentarios %}
+            <section class="qz-cartao av-lista av-comentarios" aria-label="Comentários aprovados">
+                <ol role="list">
+                    {% for item in comentarios %}<li>{{ comentario_anonimo(item) }}</li>{% endfor %}
+                </ol>
+            </section>
+        {% else %}
+            <p class="qz-cartao av-sem-comentarios">Ainda não há comentários públicos aprovados para esta atividade.</p>
+        {% endif %}
+
+        {% if pagina > 1 or pagina * 10 < resumo.comentarios %}
+            <nav class="qz-acoes" aria-label="Páginas de comentários">
+                {% if pagina > 1 %}<a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina-1, ordem=ordem) }}">{{ icone("voltar", 15) }}Página anterior</a>{% endif %}
+                {% if pagina * 10 < resumo.comentarios %}<a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id, pagina=pagina+1, ordem=ordem) }}">Próxima página{{ icone("seta", 15) }}</a>{% endif %}
+            </nav>
+        {% endif %}
+
+        <p class="qz-nota av-rodape-nota">Comentários aparecem só depois da moderação e nunca mostram nome ou e-mail. Os ícones são sorteados e não representam quem escreveu. Avaliação de utilidade não é nota de desempenho.</p>
+    </div>
 {% endblock %}

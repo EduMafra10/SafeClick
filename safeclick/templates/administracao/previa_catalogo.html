@@ -64,7 +64,7 @@
                             <p class="simulacao-instrucao">Escolha uma alternativa para ver a consequência.</p>
                             <div class="simulacao-opcoes">
                                 {% for opcao in opcoes %}
-                                    <label class="simulacao-opcao"><input type="radio"><span>{{ opcao.texto or 'Alternativa sem texto' }}</span></label>
+                                    <label class="simulacao-opcao"><input type="radio"><span class="simulacao-letra" aria-hidden="true">{{ "ABCDEFGH"[loop.index0] }}</span><span>{{ opcao.texto or 'Alternativa sem texto' }}</span></label>
                                 {% endfor %}
                             </div>
                         </fieldset>
@@ -80,21 +80,16 @@
                         {% for opcao in opcoes %}
                             {% set tipo = 'segura' if opcao.segura else 'risco' %}
                             <li class="simulacao-opcao simulacao-escolhida simulacao-escolhida--{{ tipo }}">
-                                <div class="simulacao-escolhida-texto">
-                                    <span class="simulacao-marcador" aria-hidden="true"></span>
-                                    <span>{{ opcao.texto or 'Alternativa sem texto' }}</span>
-                                </div>
-                                <div class="simulacao-retorno">
-                                    <p class="simulacao-veredito">{{ 'Escolha segura' if opcao.segura else 'Escolha de risco' }}</p>
-                                    <p>{{ opcao.consequencia }}</p>
-                                    <p class="simulacao-porque">{{ opcao.explicacao }}</p>
-                                </div>
+                                <p class="simulacao-veredito">{{ 'Escolha segura' if opcao.segura else 'Escolha de risco' }}</p>
+                                <p class="simulacao-escolhida-texto">{{ "ABCDEFGH"[loop.index0] }} · {{ opcao.texto or 'Alternativa sem texto' }}</p>
+                                <p>{{ opcao.consequencia }}</p>
+                                <p class="simulacao-porque">{{ opcao.explicacao }}</p>
                             </li>
                         {% endfor %}
                     </ul>
                     <div>
                         {% if marcas %}{{ mensagem_simulacao(dados, marcas) }}{% endif %}
-                        <aside class="simulacao-sinais">
+                        <aside class="simulacao-cartao simulacao-sinais">
                             <h2>Sinais de risco nesta mensagem</h2>
                             <ol>
                                 {% for sinal in pistas %}<li>{{ sinal }}</li>{% else %}<li>Nenhum sinal informado.</li>{% endfor %}

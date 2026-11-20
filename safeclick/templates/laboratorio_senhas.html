@@ -1,3 +1,4 @@
+{% from "componentes/_icones.html" import icone %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,111 +9,126 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lateral.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/laboratorio.css') }}">
 
-    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/lateral.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/laboratorio.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/palavras_senha.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/gerador_senhas.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/desafio_senhas.js') }}" defer></script>
 </head>
-<body class="site-visual">
+<body class="site-visual pagina-lateral">
     <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
 
-    {% include "componentes/cabecalho.html" %}
+    {% include "componentes/_lateral.html" %}
 
-    <main id="conteudo" class="visual-container lab-conteudo" tabindex="-1">
-        <header class="lab-introducao">
-            <p class="visual-etiqueta">Laboratório de senhas</p>
-            <h1>Aprenda a criar senhas que resistem a ataques.</h1>
-            <p class="lab-descricao">
-                Teste ideias de senha, gere combinações fortes e descubra quais
-                senhas aparecem mais em vazamentos reais.
-            </p>
-        </header>
+    <div class="pagina-coluna">
+    {% include "componentes/_avisos_topo.html" %}
 
-        <div class="lab-abas" role="tablist" aria-label="Ferramentas do laboratório" hidden>
-            <button class="lab-aba" type="button" role="tab" id="aba-analisador"
-                    aria-controls="painel-analisador" aria-selected="true">
-                <span class="lab-aba-numero" aria-hidden="true">01</span>
-                Analisador
-            </button>
-            <button class="lab-aba" type="button" role="tab" id="aba-gerador"
-                    aria-controls="painel-gerador" aria-selected="false" tabindex="-1">
-                <span class="lab-aba-numero" aria-hidden="true">02</span>
-                Gerador
-            </button>
-            <button class="lab-aba" type="button" role="tab" id="aba-desafio"
-                    aria-controls="painel-desafio" aria-selected="false" tabindex="-1">
-                <span class="lab-aba-numero" aria-hidden="true">03</span>
-                Qual vazou mais?
-            </button>
-        </div>
-
-        {# ---------- 01 · Analisador ---------- #}
-        <section class="lab-painel" id="painel-analisador" role="tabpanel"
-                 aria-labelledby="aba-analisador" tabindex="0">
-            <div class="lab-painel-cabecalho">
-                <h2>Analise uma ideia de senha</h2>
-                <p>Veja quanto ela resiste a tentativas de adivinhação e o que pode melhorar.</p>
+    <main id="conteudo" class="lab-conteudo" tabindex="-1">
+        <header class="lab-topo">
+            <div>
+                <h1>Laboratório de senhas</h1>
+                <p class="lab-descricao">
+                    Teste ideias de senha, gere combinações fortes e descubra quais
+                    senhas aparecem mais em vazamentos reais.
+                </p>
             </div>
 
-            <div class="lab-analisador" data-worker-url="{{ url_for('static', filename='js/forca_senha_worker.js') }}">
-                <div class="lab-analisador-entrada">
-                    <p class="lab-alerta" role="note">
-                        <strong>Nunca digite aqui uma senha que você já usa.</strong>
-                        Teste uma ideia nova ou uma variação parecida com a sua.
-                    </p>
+            <div class="lab-abas" role="tablist" aria-label="Ferramentas do laboratório" hidden>
+                <button class="lab-aba" type="button" role="tab" id="aba-analisador"
+                        aria-controls="painel-analisador" aria-selected="true">
+                    {{ icone("escudo", 16) }}Analisar uma ideia
+                </button>
+                <button class="lab-aba" type="button" role="tab" id="aba-gerador"
+                        aria-controls="painel-gerador" aria-selected="false" tabindex="-1">
+                    {{ icone("chave", 16) }}Gerar senha
+                </button>
+                <button class="lab-aba" type="button" role="tab" id="aba-desafio"
+                        aria-controls="painel-desafio" aria-selected="false" tabindex="-1">
+                    {{ icone("alvo", 16) }}Qual vazou mais?
+                </button>
+            </div>
+        </header>
 
-                    <label class="lab-rotulo" for="senha-analise">Ideia de senha</label>
-                    <div class="lab-campo-senha">
-                        <input id="senha-analise" type="password" maxlength="128"
-                               autocomplete="off" spellcheck="false" autocapitalize="none"
-                               aria-describedby="privacidade-analise" disabled>
-                        <button id="mostrar-senha" class="lab-botao-discreto" type="button"
-                                aria-pressed="false" aria-controls="senha-analise" disabled>
-                            Mostrar
-                        </button>
+        {# ---------- Analisador ---------- #}
+        <section class="lab-painel" id="painel-analisador" role="tabpanel"
+                 aria-labelledby="aba-analisador" tabindex="0">
+            <div class="lab-palco lab-analisador" data-worker-url="{{ url_for('static', filename='js/forca_senha_worker.js') }}">
+                <div class="lab-palco-cabecalho">
+                    <div>
+                        <h2>Digite uma ideia de senha</h2>
+                        <p class="lab-alerta" role="note">
+                            <strong>Nunca digite aqui uma senha que você já usa.</strong>
+                            Teste uma ideia nova ou uma variação parecida com a sua.
+                        </p>
                     </div>
-
-                    <p id="privacidade-analise" class="lab-privacidade">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <rect x="5" y="11" width="14" height="10" rx="2" />
-                            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-                        </svg>
-                        A análise acontece neste navegador. Nada do que você digita é enviado ou guardado.
-                    </p>
+                    <span class="lab-selo">{{ icone("cadeado", 14) }}Fica só no seu navegador</span>
                 </div>
 
+                <label class="lab-oculto" for="senha-analise">Ideia de senha</label>
+                <div class="lab-campo-senha">
+                    <span class="lab-campo-icone" aria-hidden="true">{{ icone("cadeado", 20) }}</span>
+                    <input id="senha-analise" type="password" maxlength="128"
+                           autocomplete="off" spellcheck="false" autocapitalize="none"
+                           aria-describedby="privacidade-analise" disabled>
+                    <button id="mostrar-senha" class="lab-botao-discreto" type="button"
+                            aria-pressed="false" aria-controls="senha-analise" disabled>
+                        Mostrar
+                    </button>
+                </div>
+
+                <p id="privacidade-analise" class="lab-privacidade">
+                    {{ icone("olho", 15) }}
+                    A análise acontece neste navegador. Nada do que você digita é enviado ou guardado.
+                </p>
+
                 <div id="resultado-analise" class="lab-forca" data-estado="vazio">
-                    <div class="lab-forca-cabecalho">
-                        <span class="lab-forca-titulo">Força estimada</span>
-                        <strong id="rotulo-forca" class="lab-forca-nivel" aria-live="polite">Aguardando</strong>
+                    <div>
+                        <h3>Força estimada</h3>
+                        <p class="lab-forca-leitura">
+                            <strong id="rotulo-forca" class="lab-forca-nivel" aria-live="polite">Aguardando</strong>
+                        </p>
+                        <div class="lab-forca-barra" aria-hidden="true">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
                     </div>
 
-                    <div class="lab-forca-barra" aria-hidden="true">
-                        <span></span><span></span><span></span><span></span><span></span>
+                    <div>
+                        <h3>Tamanho</h3>
+                        <div class="lab-casas" aria-hidden="true">
+                            {% for _ in range(15) %}<i></i>{% endfor %}
+                        </div>
+                        <p class="lab-casas-legenda">
+                            <span><b id="tamanho-atual">0</b> caracteres</span>
+                            <span>Meta: 15</span>
+                        </p>
                     </div>
+                </div>
+            </div>
 
-                    <p class="lab-forca-vazia">Digite uma ideia de senha para ver a análise.</p>
-
+            <div class="lab-duas">
+                <section class="lab-cartao" aria-labelledby="titulo-criterios">
+                    <h3 id="titulo-criterios">Critérios</h3>
                     <ul class="lab-checklist">
                         <li id="item-comprimento">
-                            <span class="lab-check" aria-hidden="true"></span>
+                            <span class="lab-check" aria-hidden="true"><span class="lab-icone-sim">{{ icone("check", 14) }}</span><span class="lab-icone-nao">{{ icone("x", 13) }}</span></span>
                             <span>15 caracteres ou mais <small id="contagem-caracteres"></small></span>
                         </li>
                         <li id="item-padroes">
-                            <span class="lab-check" aria-hidden="true"></span>
+                            <span class="lab-check" aria-hidden="true"><span class="lab-icone-sim">{{ icone("check", 14) }}</span><span class="lab-icone-nao">{{ icone("x", 13) }}</span></span>
                             <span>Sem palavras, nomes, datas ou sequências fáceis de adivinhar</span>
                         </li>
                     </ul>
+                </section>
 
-                    <div class="lab-forca-dicas">
-                        <p id="aviso-forca" class="lab-aviso" hidden></p>
-                        <ul id="sugestoes-forca" class="lab-sugestoes" hidden></ul>
-                    </div>
-                </div>
+                <section class="lab-cartao lab-forca-dicas" aria-labelledby="titulo-dicas">
+                    <h3 id="titulo-dicas">O que pode melhorar</h3>
+                    <p class="lab-forca-vazia">Digite uma ideia de senha para ver as sugestões.</p>
+                    <p id="aviso-forca" class="lab-aviso" hidden></p>
+                    <ul id="sugestoes-forca" class="lab-sugestoes" hidden></ul>
+                </section>
             </div>
 
             <p class="lab-nota">
@@ -121,22 +137,25 @@
             </p>
         </section>
 
-       {# ---------- 02 · Gerador ---------- #}
+        {# ---------- Gerador ---------- #}
         <section class="lab-painel" id="painel-gerador" role="tabpanel"
                  aria-labelledby="aba-gerador" tabindex="0">
-            <div class="lab-painel-cabecalho">
-                <h2>Gere uma senha forte</h2>
-                <p>Escolha o tipo que combina com você. Tudo é gerado neste navegador.</p>
-            </div>
+            <div class="lab-palco lab-gerador">
+                <div class="lab-palco-cabecalho">
+                    <div>
+                        <h2>Sua nova senha</h2>
+                        <p>Gerada neste navegador. Copie e guarde em um gerenciador de senhas.</p>
+                    </div>
+                </div>
 
-            <div class="lab-gerador">
                 <div class="lab-senha-gerada">
                     <output id="senha-gerada" aria-live="polite">—</output>
                     <div class="lab-acoes">
-                        <button id="gerar-senha" class="lab-botao" type="button" disabled>Gerar outra</button>
-                        <button id="copiar-senha" class="lab-botao lab-botao--secundario" type="button" disabled>Copiar</button>
+                        <button id="copiar-senha" class="lab-botao lab-botao--menta" type="button" disabled>{{ icone("copiar", 17) }}Copiar</button>
+                        <button id="gerar-senha" class="lab-botao lab-botao--vidro" type="button" disabled>{{ icone("repetir", 17) }}Gerar outra</button>
                     </div>
                 </div>
+                <p id="aviso-copia" class="lab-aviso-copia" role="status"></p>
 
                 <div id="forca-gerada" class="lab-forca-gerada">
                     <div class="lab-forca-barra" aria-hidden="true">
@@ -144,103 +163,143 @@
                     </div>
                     <strong id="rotulo-gerada" class="lab-forca-nivel"></strong>
                 </div>
-                <p id="aviso-copia" class="lab-nota" role="status"></p>
+                <p id="entropia-senha" class="lab-entropia"></p>
+            </div>
 
-                <div class="lab-configuracao">
-                    <fieldset class="lab-opcoes-tipo">
-                        <legend>Tipo de senha</legend>
-                        <label class="lab-opcao">
-                            <input type="radio" name="tipo-senha" value="frase" checked disabled>
-                            <span>
-                                <strong>Frase-senha</strong>
-                                <small>Palavras sorteadas: fácil de lembrar e de digitar.</small>
-                            </span>
-                        </label>
-                        <label class="lab-opcao">
-                            <input type="radio" name="tipo-senha" value="aleatoria" disabled>
-                            <span>
-                                <strong>Senha aleatória</strong>
-                                <small>Caracteres misturados: ideal para um gerenciador de senhas.</small>
-                            </span>
-                        </label>
-                    </fieldset>
+            <div class="lab-configuracao">
+                <fieldset class="lab-cartao lab-opcoes-tipo">
+                    <legend>Tipo de senha</legend>
+                    <label class="lab-opcao">
+                        <input type="radio" name="tipo-senha" value="frase" checked disabled>
+                        <span>
+                            <strong>Frase-senha</strong>
+                            <small>Palavras sorteadas: fácil de lembrar e de digitar.</small>
+                        </span>
+                    </label>
+                    <label class="lab-opcao">
+                        <input type="radio" name="tipo-senha" value="aleatoria" disabled>
+                        <span>
+                            <strong>Senha aleatória</strong>
+                            <small>Caracteres misturados: ideal para um gerenciador de senhas.</small>
+                        </span>
+                    </label>
+                    <p class="lab-tipo-dica">{{ icone("cadeado", 16) }}<span>Gere uma senha nova para cada conta e guarde no gerenciador de senhas do navegador ou de um app confiável.</span></p>
+                </fieldset>
 
-                    <div class="lab-ajustes">
-                        <label id="ajuste-palavras">
-                            Quantidade de palavras
+                <div class="lab-cartao lab-ajustes">
+                    <label id="ajuste-palavras">
+                        <span class="lab-ajuste-titulo">Quantidade de palavras</span>
+                        <span class="lab-ajuste-linha">
                             <input id="quantidade-palavras" type="range" min="4" max="10" value="6" disabled>
                             <output id="valor-palavras" for="quantidade-palavras">6</output>
-                        </label>
-                        <label id="ajuste-caracteres" hidden>
-                            Quantidade de caracteres
+                        </span>
+                        <span class="lab-ajuste-escala" aria-hidden="true"><span>4</span><span>mais palavras, mais difícil de adivinhar</span><span>10</span></span>
+                    </label>
+                    <label id="ajuste-caracteres" hidden>
+                        <span class="lab-ajuste-titulo">Quantidade de caracteres</span>
+                        <span class="lab-ajuste-linha">
                             <input id="quantidade-caracteres" type="range" min="12" max="32" value="20" disabled>
                             <output id="valor-caracteres" for="quantidade-caracteres">20</output>
-                        </label>
+                        </span>
+                        <span class="lab-ajuste-escala" aria-hidden="true"><span>12</span><span>mais caracteres, mais difícil de adivinhar</span><span>32</span></span>
+                    </label>
+
+                <fieldset class="lab-caracteres">
+                    <legend>Caracteres utilizados</legend>
+                    <div class="lab-caracteres-lista">
+                        <label><input type="checkbox" id="incluir-maiusculas" checked disabled><span>{{ icone("check", 12) }}</span>Maiúsculas</label>
+                        <label><input type="checkbox" id="incluir-minusculas" checked disabled><span>{{ icone("check", 12) }}</span>Minúsculas</label>
+                        <label><input type="checkbox" id="incluir-numeros" checked disabled><span>{{ icone("check", 12) }}</span>Números</label>
+                        <label><input type="checkbox" id="incluir-simbolos" checked disabled><span>{{ icone("check", 12) }}</span>Símbolos</label>
                     </div>
-
-                    <fieldset class="lab-caracteres">
-                        <legend>Caracteres utilizados</legend>
-                        <div class="lab-caracteres-lista">
-                            <label><input type="checkbox" id="incluir-maiusculas" checked disabled> Letras maiúsculas</label>
-                            <label><input type="checkbox" id="incluir-minusculas" checked disabled> Letras minúsculas</label>
-                            <label><input type="checkbox" id="incluir-numeros" checked disabled> Números</label>
-                            <label><input type="checkbox" id="incluir-simbolos" checked disabled> Símbolos</label>
-                        </div>
-                        <p id="dica-caracteres" class="lab-nota"></p>
-                    </fieldset>
+                    <p id="dica-caracteres" class="lab-nota"></p>
+                </fieldset>
                 </div>
-
-                <p id="entropia-senha" class="lab-entropia"></p>
             </div>
         </section>
 
-        {# ---------- 03 · Desafio ---------- #}
+        {# ---------- Desafio ---------- #}
         <section class="lab-painel" id="painel-desafio" role="tabpanel"
                  aria-labelledby="aba-desafio" tabindex="0"
                  data-iniciar-url="{{ url_for('senhas.iniciar_desafio') }}"
                  data-responder-url="{{ url_for('senhas.responder_desafio') }}">
-            <div class="lab-painel-cabecalho">
-                <h2>Qual vazou mais?</h2>
-                <p>
-                    Duas senhas famosas, uma escolha: qual delas apareceu em mais vazamentos?
-                    Os números vêm da base real do Have I Been Pwned.
-                </p>
-            </div>
-
             {{ formulario.csrf_token(id='csrf-desafio') }}
 
-            <div id="desafio-inicio" class="lab-desafio-inicio">
-                <p>5 rodadas. As senhas do jogo são exemplos públicos: nada seu é consultado.</p>
-                <button id="iniciar-desafio" class="lab-botao" type="button" disabled>Começar desafio</button>
-            </div>
-
-            <p id="desafio-progresso" class="lab-desafio-progresso" hidden>
-                Rodada <strong id="numero-rodada">1</strong> de <span id="total-rodadas">5</span>
-                · <span id="placar-desafio">0 acertos</span>
-            </p>
-
-            <div id="desafio-rodada" class="lab-desafio-rodada" hidden>
-                <p class="lab-desafio-pergunta">Qual destas senhas apareceu em mais vazamentos?</p>
-                <div class="lab-desafio-opcoes">
-                    <button class="lab-desafio-opcao" type="button" data-escolha="0"></button>
-                    <span class="lab-desafio-versus" aria-hidden="true">ou</span>
-                    <button class="lab-desafio-opcao" type="button" data-escolha="1"></button>
+            <div class="lab-palco lab-desafio">
+                <div class="lab-palco-cabecalho">
+                    <div>
+                        <h2>Qual vazou mais?</h2>
+                        <p>Duas senhas famosas, uma escolha: qual delas apareceu em mais vazamentos?</p>
+                    </div>
+                    <p id="desafio-progresso" class="lab-selo lab-desafio-progresso" hidden>
+                        Rodada <strong id="numero-rodada">1</strong>&nbsp;de&nbsp;<span id="total-rodadas">5</span>
+                        <span aria-hidden="true">|</span> <span id="placar-desafio">0 acertos</span>
+                    </p>
                 </div>
+
+                <div id="desafio-inicio" class="lab-desafio-inicio">
+                    <p>5 rodadas. As senhas do jogo são exemplos públicos: nada seu é consultado.</p>
+                    <button id="iniciar-desafio" class="lab-botao lab-botao--menta" type="button" disabled>Começar desafio</button>
+                </div>
+
+                <div id="desafio-rodada" class="lab-desafio-rodada" hidden>
+                    <p class="lab-desafio-pergunta">Toque na senha que você acha que apareceu em mais vazamentos.</p>
+                    <div class="lab-desafio-opcoes">
+                        <button class="lab-desafio-opcao" type="button" data-escolha="0"></button>
+                        <span class="lab-desafio-versus" aria-hidden="true">ou</span>
+                        <button class="lab-desafio-opcao" type="button" data-escolha="1"></button>
+                    </div>
+                </div>
+
+                <div id="desafio-resultado" class="lab-desafio-resultado" aria-live="polite" hidden>
+                    <ul id="comparacao-desafio" class="lab-comparacao"></ul>
+                    <div class="lab-desafio-rodape">
+                        <p id="veredito-desafio" class="lab-veredito"></p>
+                        <button id="proxima-rodada" class="lab-botao lab-botao--menta" type="button">Próxima rodada</button>
+                    </div>
+                </div>
+
+                <div id="desafio-final" class="lab-desafio-final" aria-live="polite" hidden>
+                    <p class="lab-placar-final"><strong id="acertos-final">0</strong> de <span id="total-final">5</span></p>
+                    <p id="mensagem-final"></p>
+                    <button id="jogar-novamente" class="lab-botao lab-botao--menta" type="button">Jogar de novo</button>
+                </div>
+
+                <p id="erro-desafio" class="lab-erro" role="alert" hidden></p>
             </div>
 
-            <div id="desafio-resultado" class="lab-desafio-resultado" aria-live="polite" hidden>
-                <p id="veredito-desafio" class="lab-veredito"></p>
-                <ul id="comparacao-desafio" class="lab-comparacao"></ul>
-                <button id="proxima-rodada" class="lab-botao" type="button">Próxima rodada</button>
-            </div>
+            <div class="lab-duas lab-desafio-extra">
+                <section class="lab-cartao" aria-labelledby="titulo-rodadas">
+                    <h3 id="titulo-rodadas">Suas rodadas</h3>
+                    <ol id="historico-desafio" class="lab-rodadas" role="list">
+                        {% for numero in range(1, 6) %}
+                            <li><span class="lab-rodada-numero">{{ numero }}</span><span class="lab-rodada-texto">Aguardando</span></li>
+                        {% endfor %}
+                    </ol>
+                </section>
 
-            <div id="desafio-final" class="lab-desafio-final" aria-live="polite" hidden>
-                <p class="lab-placar-final"><strong id="acertos-final">0</strong> de <span id="total-final">5</span></p>
-                <p id="mensagem-final"></p>
-                <button id="jogar-novamente" class="lab-botao" type="button">Jogar de novo</button>
+                <section class="lab-cartao lab-importa" aria-labelledby="titulo-importa">
+                    <h3 id="titulo-importa">Por que isso importa</h3>
+                    <p>
+                        Quem tenta invadir contas começa pelas senhas que mais aparecem em vazamentos.
+                        Uma senha popular cai em segundos, por mais criativa que pareça.
+                    </p>
+                    <ul class="lab-importa-lista">
+                        <li class="lab-importa--evite">
+                            <span class="lab-importa-icone">{{ icone("x", 16) }}</span>
+                            <span><strong>Evite o óbvio</strong>Nomes de times, datas e sequências como 123456 estão no topo dessas listas.</span>
+                        </li>
+                        <li>
+                            <span class="lab-importa-icone">{{ icone("check", 16) }}</span>
+                            <span><strong>Prefira frases</strong>Palavras sorteadas formam senhas longas que não aparecem em lista nenhuma.</span>
+                        </li>
+                        <li>
+                            <span class="lab-importa-icone">{{ icone("cadeado", 16) }}</span>
+                            <span><strong>Uma senha por conta</strong>Se uma vazar, as outras continuam protegidas.</span>
+                        </li>
+                    </ul>
+                </section>
             </div>
-
-            <p id="erro-desafio" class="lab-erro" role="alert" hidden></p>
         </section>
 
         <p id="aviso-javascript" class="lab-nota">
@@ -251,5 +310,6 @@
     {% with rodape_fonte = "Dados do desafio: Pwned Passwords, do Have I Been Pwned." %}
         {% include "componentes/_rodape.html" %}
     {% endwith %}
+    </div>
 </body>
 </html>

@@ -1,168 +1,306 @@
-/* Usa a mesma base visual do catálogo de simulações. */
 .simulacao-pagina {
-    --simulacao-bege: #f3eee7;
-    --simulacao-alerta: #986032;
-    --simulacao-acao: #183e49;
+    --sim-texto: #173b45;
+    --sim-secundario: #586d72;
+    --sim-borda: #e3e9e6;
+    --sim-verde: #27684f;
+    --sim-menta: #e7f3ec;
+    --sim-laranja: #c8733a;
+    --sim-laranja-suave: #fbeee3;
+    --sim-cinza: #eef2f1;
 }
 
 .simulacao-conteudo {
-    flex: 1;
-    padding-block: 36px 48px;
+    display: grid;
+    align-content: start;
+    gap: 20px;
+    width: 100%;
+    padding: 28px 32px 48px;
 }
 
-.simulacao-voltar {
-    display: inline-flex;
+.simulacao-conteudo:focus {
+    outline: none;
+}
+
+.simulacao-pagina h1,
+.simulacao-pagina h2,
+.simulacao-pagina p {
+    margin: 0;
+}
+
+.simulacao-pagina :is(a, button):focus-visible {
+    outline: 3px solid #28638d;
+    outline-offset: 2px;
+}
+
+/* topo */
+.simulacao-topo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px 24px;
+}
+
+.simulacao-migalha {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    min-height: 44px;
-    margin-bottom: 16px;
-    color: var(--visual-verde);
-    font-size: 14px;
+    gap: 8px;
+    color: var(--sim-secundario);
+    font-size: 13px;
+}
+
+.simulacao-migalha a {
     font-weight: 600;
     text-decoration: none;
 }
 
-.simulacao-voltar:hover {
+.simulacao-migalha a:hover {
     text-decoration: underline;
-    text-underline-offset: 4px;
 }
 
+.simulacao-topo h1,
 .simulacao-introducao h1 {
-    margin: 8px 0 12px;
-    font-size: clamp(28px, 3vw, 36px);
-    font-weight: 650;
-    letter-spacing: -0.8px;
+    margin-top: 10px;
+    font-size: 30px;
     line-height: 1.2;
+    letter-spacing: -0.01em;
 }
 
-.simulacao-instrucao {
+.simulacao-pagina .simulacao-instrucao {
+    margin-top: 6px;
+    color: var(--sim-secundario);
+    font-size: 15px;
+}
+
+.simulacao-etapas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
     margin: 0;
-    color: var(--visual-secundario);
+    padding: 0;
+    list-style: none;
 }
 
-/* Mensagem e alternativas ficam lado a lado no computador. */
-.simulacao-exercicio {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 32px;
-    align-items: start;
-    margin-top: 30px;
-}
-
-.simulacao-mensagem {
-    min-width: 0;
-    overflow: hidden;
-    border: 1px solid var(--visual-borda);
-    border-radius: 12px;
-    background: var(--visual-superficie);
-}
-
-.mensagem-barra {
-    padding: 15px 24px;
-    border-bottom: 1px solid var(--visual-borda);
-    background: var(--visual-superficie);
-    font-size: 14px;
+.simulacao-etapas li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 6px;
+    border: 1px solid var(--sim-borda);
+    border-radius: 99px;
+    background: #ffffff;
+    color: var(--sim-secundario);
+    font-size: 13px;
     font-weight: 600;
 }
 
+.simulacao-etapas span {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--sim-cinza);
+    font-size: 12px;
+}
+
+.simulacao-etapas .simulacao-etapa--atual {
+    border-color: var(--sim-texto);
+    color: var(--sim-texto);
+}
+
+.simulacao-etapas .simulacao-etapa--atual span {
+    background: var(--sim-texto);
+    color: #ffffff;
+}
+
+.simulacao-etapas .simulacao-etapa--feita {
+    color: var(--sim-verde);
+}
+
+.simulacao-etapas .simulacao-etapa--feita span {
+    background: var(--sim-menta);
+}
+
+/* colunas */
+.simulacao-exercicio {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: stretch;
+}
+
+.simulacao-decisao {
+    display: flex;
+    flex-direction: column;
+}
+
+.simulacao-resposta {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.simulacao-coluna {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.simulacao-coluna > :last-child {
+    flex: 1;
+}
+
+.simulacao-cartao {
+    min-width: 0;
+    padding: 22px 24px;
+    border: 1px solid var(--sim-borda);
+    border-radius: 16px;
+    background: #ffffff;
+}
+
+/* mensagem */
+.simulacao-mensagem {
+    min-width: 0;
+    border: 1px solid var(--sim-borda);
+    border-radius: 16px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.mensagem-barra {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--sim-borda);
+    background: #f6f8f7;
+    color: var(--sim-secundario);
+    font-size: 12.5px;
+}
+
+.mensagem-pontos {
+    display: flex;
+    gap: 6px;
+}
+
+.mensagem-pontos i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #dfe6e3;
+}
+
 .mensagem-cabecalho {
-    padding: 24px 24px 0;
+    padding: 22px 26px 0;
 }
 
 .mensagem-cabecalho h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 650;
+    font-size: 21px;
+    font-weight: 700;
     line-height: 1.35;
 }
 
+.mensagem-de {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 -26px;
+    padding: 16px 26px;
+    border-bottom: 1px solid var(--sim-borda);
+}
+
+.mensagem-avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #fde7d3;
+    color: #a85a24;
+    font-size: 13px;
+    font-weight: 700;
+}
+
 .mensagem-origem {
-    margin: 14px 0 0;
-    color: var(--visual-secundario);
+    color: var(--sim-secundario);
     font-size: 13px;
     overflow-wrap: anywhere;
 }
 
 .mensagem-corpo {
-    padding: 24px;
+    display: grid;
+    gap: 12px;
+    padding: 20px 26px 26px;
+    font-size: 15px;
     overflow-wrap: anywhere;
-}
-
-.mensagem-paragrafo {
-    margin: 0 0 16px;
-}
-
-.mensagem-paragrafo:last-child {
-    margin-bottom: 0;
 }
 
 /* A chamada fictícia é texto, sem clique ou envio de dados. */
 .mensagem-chamada {
-    display: inline-block;
-    margin: 8px 0 0;
-    padding: 11px 16px;
-    border: 1px solid var(--visual-borda);
-    border-radius: 5px;
-    background: var(--visual-azul-suave);
+    justify-self: start;
+    margin-top: 6px;
+    padding: 11px 18px;
+    border-radius: 8px;
+    background: #b4432f;
+    color: #ffffff;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
-/* SMS: fundo verde suave e mensagem em um único balão. */
-.mensagem--entrega-sms {
-    background: var(--visual-verde-suave);
-}
-
-.mensagem--entrega-sms .mensagem-corpo {
-    margin: 24px;
-    padding: 20px;
-    border-radius: 18px 18px 18px 3px;
-    background: var(--visual-superficie);
-}
-
-/* Conversa: fundo bege e um balão para cada mensagem recebida. */
-.mensagem--falso-conhecido {
-    background: var(--simulacao-bege);
-}
-
-.mensagem--falso-conhecido .mensagem-cabecalho {
-    padding-bottom: 20px;
-    background: var(--visual-superficie);
-}
-
+/* SMS e conversa: balões em vez de corpo de e-mail */
+.mensagem--entrega-sms .mensagem-corpo,
 .mensagem--falso-conhecido .mensagem-corpo {
-    display: grid;
-    gap: 12px;
+    gap: 10px;
+    background: #fbfcfb;
+}
+
+.mensagem--entrega-sms .mensagem-paragrafo,
+.mensagem--falso-conhecido .mensagem-paragrafo {
+    justify-self: start;
+    max-width: 88%;
+    padding: 12px 15px;
+    border-radius: 18px 18px 18px 6px;
+    background: var(--sim-cinza);
+    font-size: 14.5px;
 }
 
 .mensagem--falso-conhecido .mensagem-paragrafo {
-    max-width: 94%;
-    margin: 0;
-    padding: 14px 16px;
-    border-radius: 10px 10px 10px 2px;
-    background: var(--visual-superficie);
+    background: #d9efe3;
 }
 
-/* Loja: apresentação do produto com preço anterior e preço anunciado. */
+.mensagem--entrega-sms .mensagem-avatar,
+.mensagem--falso-conhecido .mensagem-avatar {
+    background: var(--sim-cinza);
+    color: var(--sim-secundario);
+}
+
+.mensagem--entrega-sms .mensagem-chamada {
+    background: #a85a24;
+}
+
+/* Loja: vitrine do produto com preço anterior e preço anunciado */
 .mensagem-produto {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 28px;
-    padding: 30px 24px;
-    background: var(--visual-azul-suave);
-}
-
-.mensagem-produto p {
-    margin: 0;
+    padding: 28px 24px;
+    background: #f0ebf7;
 }
 
 .produto-celular {
+    flex-shrink: 0;
     width: 64px;
     height: 116px;
-    flex-shrink: 0;
-    border: 4px solid var(--visual-texto);
+    border: 4px solid var(--sim-texto);
     border-radius: 14px;
-    background: var(--visual-verde-suave);
+    background: linear-gradient(160deg, #ddd3ec, #c9bbe0);
 }
 
 .produto-celular::before {
@@ -172,261 +310,36 @@
     height: 4px;
     margin: 8px auto;
     border-radius: 3px;
-    background: var(--visual-texto);
+    background: var(--sim-texto);
 }
 
 .produto-nome,
 .produto-preco-anterior {
-    color: var(--visual-secundario);
+    color: var(--sim-secundario);
     font-size: 14px;
 }
 
 .produto-preco {
     font-size: 34px;
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.3;
     letter-spacing: -1px;
 }
 
-/* O formulário continua usando POST e a proteção CSRF do Flask. */
-.simulacao-decisao,
-.simulacao-alternativas {
-    min-width: 0;
+.mensagem--loja-falsa .mensagem-avatar {
+    background: #f0ebf7;
+    color: #6a4c93;
 }
 
-.simulacao-alternativas {
-    margin: 0;
-    padding: 0;
-    border: 0;
+.mensagem--loja-falsa .mensagem-chamada {
+    background: #6a4c93;
 }
 
-.simulacao-alternativas legend {
-    padding: 0;
-    margin-bottom: 8px;
-    font-size: 24px;
-    font-weight: 650;
-    line-height: 1.3;
-}
-
-.simulacao-opcoes {
-    display: grid;
-    gap: 12px;
-    margin-top: 22px;
-}
-
-.simulacao-opcao {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
-    border: 1px solid var(--visual-borda);
-    border-radius: 8px;
-    background: var(--visual-superficie);
-    font-size: 15px;
-    cursor: pointer;
-}
-
-.simulacao-opcao input {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    margin: 3px 0 0;
-    accent-color: var(--visual-foco);
-}
-
-.simulacao-opcao:has(input:enabled):hover,
-.simulacao-opcao:has(input:checked) {
-    border-color: var(--visual-foco);
-    background: var(--visual-azul-suave);
-}
-
-.simulacao-opcao:focus-within {
-    outline: 3px solid var(--visual-foco);
-    outline-offset: 3px;
-}
-
-.simulacao-opcao:has(input:disabled) {
-    cursor: default;
-}
-.simulacao-botao {
-    width: 100%;
-    margin-top: 20px;
-    padding: 14px 20px;
-    border: 0;
-    border-radius: 8px;
-    background: var(--simulacao-acao);
-    color: #ffffff;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.simulacao-botao:hover {
-    background: #245168;
-}
-
-/* Resposta: a alternativa escolhida mostra o resultado; as outras ganham uma etiqueta. */
-.simulacao-pagina {
-    --simulacao-risco: #b3412f;
-}
-
-.simulacao-resposta h2 {
-    margin: 0 0 8px;
-    font-size: 24px;
-    font-weight: 650;
-    line-height: 1.3;
-}
-
-.simulacao-resposta .simulacao-opcoes {
-    margin: 22px 0 0;
-    padding: 0;
-    list-style: none;
-}
-
-.simulacao-resposta .simulacao-opcao {
-    cursor: default;
-}
-
-.simulacao-marcador {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    margin-top: 3px;
-    border: 1.5px solid #b9c6c3;
-    border-radius: 50%;
-    background: #ffffff;
-}
-
-.simulacao-outra {
-    color: var(--visual-secundario);
-}
-
-.simulacao-outra-texto {
-    flex: 1;
-}
-
-
-.simulacao-escolhida {
-    --cor-resultado: var(--visual-verde);
-    --fundo-resultado: #f6faf7;
-
-    display: block;
-    padding: 0;
-    overflow: hidden;
-    border-color: var(--cor-resultado);
-}
-
-.simulacao-escolhida--risco {
-    --cor-resultado: var(--simulacao-risco);
-    --fundo-resultado: #fdf7f6;
-}
-
-.simulacao-escolhida-texto {
-    display: flex;
-    gap: 12px;
-    padding: 16px;
-}
-
-.simulacao-escolhida .simulacao-marcador {
-    border: 5px solid var(--cor-resultado);
-}
-
-.simulacao-retorno {
-    padding: 14px 16px 16px 46px;
-    border-top: 1px solid var(--visual-borda);
-    background: var(--fundo-resultado);
-}
-
-.simulacao-retorno p {
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.55;
-}
-
-.simulacao-retorno .simulacao-veredito {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    color: var(--cor-resultado);
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    /* no computador, o salto para o resultado mantém a mensagem visível */
-    scroll-margin-top: 45vh;
-}
-
-.simulacao-veredito::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: currentColor;
-}
-
-.simulacao-retorno .simulacao-porque {
-    margin-top: 8px;
-    color: var(--visual-secundario);
-    font-size: 14.5px;
-}
-
-/* Sinais de risco: lista numerada logo abaixo da mensagem. */
-.simulacao-sinais {
-    margin-top: 26px;
-}
-
-.simulacao-sinais h2 {
-    margin: 0 0 12px;
-    color: var(--visual-secundario);
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.simulacao-sinais ol {
-    display: grid;
-    gap: 10px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    counter-reset: sinal;
-}
-
-.simulacao-sinais li {
-    display: flex;
-    gap: 12px;
-    align-items: baseline;
-    font-size: 15px;
-    counter-increment: sinal;
-}
-
-.simulacao-sinais li::before {
-    content: counter(sinal);
-    display: grid;
-    flex-shrink: 0;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-    border: 1.5px solid #c9a24e;
-    border-radius: 50%;
-    color: #8a6414;
-    font-size: 12px;
-    font-weight: 700;
-    transform: translateY(1px);
-}
-
-.simulacao-sinais-dica {
-    margin: -4px 0 12px;
-    color: var(--visual-secundario);
-    font-size: 14px;
-}
-
-.mensagem-marcada {
-    background: #fbf1d9;
-    box-shadow: 0 0 0 2px #fbf1d9;
-    border-radius: 3px;
+/* marcações do resultado */
+.mensagem-marcada:not(.mensagem-chamada) {
+    border-radius: 4px;
+    background: #fde7d3;
+    box-shadow: 0 0 0 2px #fde7d3;
 }
 
 .simulacao-pista {
@@ -436,36 +349,275 @@
     height: 20px;
     margin-left: 6px;
     border-radius: 50%;
-    background: #c9a24e;
+    background: var(--sim-laranja);
     color: #ffffff;
     font-size: 11px;
     font-weight: 700;
     line-height: 1;
-    vertical-align: middle;
+    vertical-align: 2px;
+}
+
+.mensagem-chamada.mensagem-marcada {
+    box-shadow: 0 0 0 3px #f6c9a3;
+}
+
+/* decisão */
+.simulacao-decisao h2,
+.simulacao-alternativas legend {
+    padding: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.simulacao-alternativas {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.simulacao-decisao .simulacao-instrucao {
+    font-size: 13px;
+}
+
+.simulacao-opcoes {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.simulacao-opcao {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 1px solid var(--sim-borda);
+    border-radius: 14px;
+    background: #ffffff;
+    font-size: 14.5px;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.simulacao-opcao input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.simulacao-letra {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--sim-cinza);
+    color: var(--sim-secundario);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.simulacao-opcao:has(input:enabled):hover {
+    border-color: #b9c9c5;
+}
+
+.simulacao-opcao:has(input:checked) {
+    border-color: var(--sim-texto);
+    box-shadow: 0 0 0 1px var(--sim-texto);
+}
+
+.simulacao-opcao:has(input:checked) .simulacao-letra {
+    background: var(--sim-texto);
+    color: #ffffff;
+}
+
+.simulacao-opcao:has(input:focus-visible) {
+    outline: 3px solid #28638d;
+    outline-offset: 2px;
+}
+
+.simulacao-opcao:has(input:disabled) {
+    cursor: default;
+}
+
+.simulacao-botao,
+.simulacao-continuar,
+.simulacao-repetir {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 20px;
+    border: 1px solid var(--sim-texto);
+    border-radius: 10px;
+    background: var(--sim-texto);
+    color: #ffffff;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.simulacao-botao {
+    margin-top: 16px;
+}
+
+.simulacao-botao:hover,
+.simulacao-continuar:hover {
+    background: #0f2a31;
+}
+
+.simulacao-botao:disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+:where(.site-visual) .simulacao-continuar {
+    color: #ffffff;
+}
+
+.simulacao-repetir,
+:where(.site-visual) .simulacao-repetir {
+    border-color: var(--sim-borda);
+    background: #ffffff;
+    color: var(--sim-texto);
+}
+
+.simulacao-repetir:hover {
+    background: #edf3f5;
+}
+
+/* resultado */
+.simulacao-escolhida {
+    display: grid;
+    gap: 8px;
+    padding: 18px;
+    cursor: default;
+}
+
+.simulacao-escolhida--risco {
+    border-color: #f0d3bb;
+    background: #fdf4ec;
+}
+
+.simulacao-escolhida--segura {
+    border-color: #cfe6da;
+    background: var(--sim-menta);
+}
+
+.simulacao-veredito {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    scroll-margin-top: 24px;
+}
+
+.simulacao-escolhida--risco .simulacao-veredito {
+    color: #9a4f1c;
+}
+
+.simulacao-escolhida--segura .simulacao-veredito {
+    color: var(--sim-verde);
+}
+
+.simulacao-veredito-icone {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ffffff;
+}
+
+.simulacao-escolhida-texto {
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.simulacao-porque {
+    color: var(--sim-secundario);
+}
+
+.simulacao-outra {
+    cursor: default;
+    opacity: 0.65;
+}
+
+.simulacao-proximos {
+    display: grid;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 18px;
 }
 
 .simulacao-proximos p {
-    margin: 0;
-    color: var(--visual-secundario);
+    color: var(--sim-secundario);
     font-size: 14px;
 }
 
-@media (max-width: 800px) {
-    /* no celular, a resposta vem logo depois da mensagem e os sinais ficam por último */
-    .simulacao-coluna {
-        display: contents;
-    }
-
-    .simulacao-sinais {
-        order: 1;
-        margin-top: 0;
-    }
+.simulacao-sinais h2 {
+    font-size: 17px;
+    font-weight: 650;
 }
 
-@media (max-width: 480px) {
-    .simulacao-retorno {
-        padding-left: 16px;
-    }
+.simulacao-sinais-dica {
+    margin-top: 2px;
+    color: var(--sim-secundario);
+    font-size: 13px;
+}
+
+.simulacao-sinais ol {
+    display: grid;
+    gap: 10px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: sinal;
+}
+
+.simulacao-sinais li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    counter-increment: sinal;
+}
+
+.simulacao-sinais li::before {
+    content: counter(sinal);
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--sim-laranja);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.simulacao-erro {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #fdf1ec;
+    color: #833d28;
+    font-size: 14px;
+}
+
+.simulacao-aviso {
+    color: var(--sim-secundario);
+    font-size: 12.5px;
 }
 
 .simulacao-oculto {
@@ -477,46 +629,59 @@
     white-space: nowrap;
 }
 
-.simulacao-aviso {
-    margin: 28px 0 0;
-    color: var(--visual-secundario);
-    font-size: 13px;
+/* prévia do administrador */
+.simulacao-introducao {
+    margin-bottom: 20px;
 }
 
-.simulacao-erro {
-    margin: 0 0 20px;
-    padding: 16px;
-    border-left: 3px solid #a64f30;
-    background: #fff6f1;
-    color: #833d28;
+.simulacao-pagina .simulacao-decisao:not(.simulacao-cartao) {
+    padding: 22px 24px;
+    border: 1px solid var(--sim-borda);
+    border-radius: 16px;
+    background: #ffffff;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1100px) {
     .simulacao-exercicio {
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .simulacao-retorno .simulacao-veredito {
-        scroll-margin-top: 24px;
+    /* no celular, a resposta vem logo depois da mensagem e os sinais ficam por último */
+    .simulacao-coluna {
+        display: contents;
+    }
+
+    .simulacao-sinais {
+        order: 1;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 900px) {
     .simulacao-conteudo {
-        padding-block: 24px 32px;
+        padding: 22px 16px 40px;
+    }
+}
+
+@media (max-width: 560px) {
+    .simulacao-topo h1 {
+        font-size: 25px;
     }
 
-    .mensagem-barra,
-    .mensagem-corpo {
-        padding: 20px;
+    .simulacao-cartao {
+        padding: 18px;
     }
 
     .mensagem-cabecalho {
-        padding: 20px 20px 0;
+        padding: 18px 18px 0;
     }
 
-    .mensagem--entrega-sms .mensagem-corpo {
-        margin: 20px;
+    .mensagem-de {
+        margin: 0 -18px;
+        padding: 14px 18px;
+    }
+
+    .mensagem-corpo {
+        padding: 18px;
     }
 
     .mensagem-produto {
@@ -525,56 +690,5 @@
 
     .produto-preco {
         font-size: 30px;
-    }
-}
-
-
-.simulacao-proximos {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px 24px;
-    margin-top: 24px;
-}
-
-.simulacao-continuar {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 48px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    background: var(--simulacao-acao);
-    color: #ffffff;
-    font-weight: 600;
-    text-align: center;
-    text-decoration: none;
-}
-
-.simulacao-continuar:hover {
-    background: #245168;
-}
-
-.simulacao-repetir {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    color: var(--visual-verde);
-    font-weight: 600;
-    text-underline-offset: 4px;
-}
-
-.simulacao-repetir:hover {
-    text-decoration-thickness: 2px;
-}
-
-@media (max-width: 480px) {
-    .simulacao-proximos {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .simulacao-repetir {
-        justify-content: center;
     }
 }

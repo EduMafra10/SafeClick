@@ -1,0 +1,57 @@
+{% from "componentes/_icone_perfil.html" import icone_perfil %}
+{% from "componentes/_icones.html" import icone %}
+<aside class="lateral" data-lateral>
+    <div class="lateral-topo">
+        <a class="lateral-marca" href="{{ url_for('simulacoes.listar') }}">
+            <strong>Safe<span>Click</span></strong>
+            <small>Aprenda antes de clicar.</small>
+        </a>
+        <button class="lateral-abrir" type="button" aria-expanded="false" aria-controls="lateral-menu">
+            {{ icone("menu", 20) }}<span>Menu</span>
+        </button>
+    </div>
+
+    <div class="lateral-menu" id="lateral-menu">
+        <nav class="lateral-nav" aria-label="Navegação principal">
+            <p class="lateral-grupo">Aprender</p>
+            {% for grupo, destino, titulo, simbolo in [
+                ('painel', 'painel.exibir', 'Meu progresso', 'grade'),
+                ('simulacoes', 'simulacoes.listar', 'Simulações', 'mensagem'),
+                ('conteudos', 'conteudos.listar', 'Conteúdos', 'livro'),
+                ('quizzes', 'quizzes.listar_quizzes', 'Quizzes', 'lista'),
+                ('senhas', 'senhas.pagina', 'Laboratório de senhas', 'frasco')
+            ] %}
+                <a href="{{ url_for(destino) }}" {% if request.blueprint == grupo %}aria-current="page"{% endif %}>
+                    {{ icone(simbolo) }}{{ titulo }}
+                </a>
+            {% endfor %}
+        </nav>
+
+        {% if current_user.is_authenticated %}
+            {% set nome = (current_user.nome|default('', true)|trim) or 'Usuário' %}
+            <nav class="lateral-nav" aria-label="Sua conta">
+                <p class="lateral-grupo">Sua conta</p>
+                <a href="{{ url_for('avaliacoes.minhas') }}" {% if request.endpoint == 'avaliacoes.minhas' %}aria-current="page"{% endif %}>
+                    {{ icone("estrela") }}Minhas avaliações
+                </a>
+                <a href="{{ url_for('conta.exibir') }}" {% if request.blueprint == 'conta' %}aria-current="page"{% endif %}>
+                    {{ icone("usuario") }}Minha conta
+                </a>
+                {% if current_user.perfil == 'administrador' %}
+                    <a href="{{ url_for('administracao.inicio') }}">{{ icone("escudo") }}Área administrativa</a>
+                {% endif %}
+            </nav>
+
+            <div class="lateral-pessoa">
+                {{ icone_perfil(current_user.icone, nome, 38, 'lateral-avatar') }}
+                <span class="lateral-nome">{{ nome.split()[0] }}<small>Minha conta</small></span>
+                <form method="post" action="{{ url_for('autenticacao.sair') }}">
+                    {{ formulario_saida.csrf_token(id='csrf-saida') }}
+                    <button class="lateral-sair" type="submit" aria-label="Sair da conta" title="Sair da conta">
+                        {{ icone("sair", 18) }}
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</aside>

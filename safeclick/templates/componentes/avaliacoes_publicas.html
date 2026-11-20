@@ -1,7 +1,15 @@
+{% from 'componentes/_icones.html' import icone %}
 {% macro avaliacoes_publicas(tipo, item_id) %}
-<details class="participacao-widget" data-avaliacoes-url="{{ url_for('avaliacoes.resumo_publico', tipo=tipo, item_id=item_id) }}">
-    <summary>Avaliações desta atividade</summary>
-    <div data-avaliacoes-dados><p><a class="visual-botao visual-botao--secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=item_id) }}">Ver notas e comentários compartilhados <span aria-hidden="true">→</span></a></p></div>
-    <p data-avaliacoes-status role="status" hidden></p><button type="button" class="visual-botao visual-botao--secundario" data-avaliacoes-repetir hidden>Tentar novamente</button>
-</details>
+<section class="av-bloco-secao" aria-labelledby="avaliacoes-{{ tipo }}-{{ item_id }}" data-avaliacoes-url="{{ url_for('avaliacoes.resumo_publico', tipo=tipo, item_id=item_id) }}">
+    <h2 id="avaliacoes-{{ tipo }}-{{ item_id }}">Avaliações desta atividade</h2>
+    <div data-avaliacoes-dados>
+        <div class="av-bloco av-bloco--vazio">
+            <span class="av-bloco-icone" aria-hidden="true">{{ icone("estrela", 22) }}</span>
+            <p class="av-bloco-texto">Notas e comentários que outros participantes escolheram compartilhar, sem nome ou e-mail.</p>
+            <a class="av-bloco-botao" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=item_id) }}">Ver avaliações{{ icone("seta", 15) }}</a>
+        </div>
+    </div>
+    <p class="av-bloco-status" data-avaliacoes-status role="status" hidden></p>
+    <button type="button" class="av-bloco-botao" data-avaliacoes-repetir hidden>Tentar novamente</button>
+</section>
 {% endmacro %}

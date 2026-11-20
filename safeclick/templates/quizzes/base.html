@@ -8,21 +8,27 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lateral.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/quizzes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quizzes_visual.css') }}">
     {% block recursos %}{% endblock %}
+    <script src="{{ url_for('static', filename='js/lateral.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/participacao.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
 </head>
-<body class="site-visual">
+<body class="site-visual pagina-lateral">
     <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
 
-    {% include "componentes/cabecalho.html" %}
+    {% include "componentes/_lateral.html" %}
 
-    <main id="conteudo" class="visual-container quizzes-conteudo" tabindex="-1">
+    <div class="pagina-coluna">
+    {% include "componentes/_avisos_topo.html" %}
+
+    <main id="conteudo" class="quizzes-conteudo" tabindex="-1">
         {% block conteudo %}{% endblock %}
     </main>
 
     {% include "componentes/_rodape.html" %}
+    </div>
 </body>
 </html>

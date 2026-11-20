@@ -3,6 +3,14 @@
 
 {% macro _marcada(marcas, alvo) %}{{ ' mensagem-marcada' if alvo in marcas }}{% endmacro %}
 
+{% macro iniciais(origem) %}
+    {%- set ns = namespace(letras='') -%}
+    {%- for palavra in ((origem or '').split('·')[0]).split() if palavra|length > 2 -%}
+        {%- set ns.letras = ns.letras ~ palavra[0]|upper -%}
+    {%- endfor -%}
+    {{- ns.letras[:2] or '?' -}}
+{% endmacro %}
+
 {% macro mensagem_simulacao(cenario, marcas={}) %}
     {% set modelos_visuais = {
         'email': 'conta-bloqueada',
@@ -16,7 +24,10 @@
         class="simulacao-mensagem mensagem--{{ modelos_visuais.get(cenario.get('tipo'), 'conta-bloqueada') }}"
         aria-labelledby="titulo-mensagem"
     >
-        <div class="mensagem-barra">{{ cenario.get('canal', '') }}</div>
+        <div class="mensagem-barra">
+            <span class="mensagem-pontos" aria-hidden="true"><i></i><i></i><i></i></span>
+            {{ 'Caixa de entrada · ' if cenario.get('tipo', 'email') == 'email' }}{{ cenario.get('canal', '') }}
+        </div>
 
         {% if cenario.get('tipo') == "loja" and cenario.get("produto") %}
             <div class="mensagem-produto{{ _marcada(marcas, 'produto') }}">
@@ -32,7 +43,10 @@
 
         <div class="mensagem-cabecalho">
             <h2 id="titulo-mensagem"><span class="{{ _marcada(marcas, 'assunto') }}">{{ cenario.get("assunto", "") }}</span>{{ _pista(marcas, 'assunto') }}</h2>
-            <p class="mensagem-origem"><span class="{{ _marcada(marcas, 'origem') }}">{{ cenario.get("origem", "") }}</span>{{ _pista(marcas, 'origem') }}</p>
+            <div class="mensagem-de">
+                <span class="mensagem-avatar" aria-hidden="true">{{ iniciais(cenario.get("origem")) }}</span>
+                <p class="mensagem-origem"><span class="{{ _marcada(marcas, 'origem') }}">{{ cenario.get("origem", "") }}</span>{{ _pista(marcas, 'origem') }}</p>
+            </div>
         </div>
 
         <div class="mensagem-corpo">

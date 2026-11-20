@@ -100,7 +100,9 @@ class QuizzesTeste(unittest.TestCase):
         html = self.cliente.get("/quizzes/").text
 
         self.assertEqual(html.count("✓ Concluído"), 2)
-        self.assertRegex(html, r'<progress[^>]+max="3" value="2"')
+        self.assertRegex(html, r'<progress max="2" value="1" aria-label="Quizzes concluídos"')
+        self.assertRegex(html, r'<progress max="1" value="1" aria-label="Oficinas concluídas"')
+        self.assertIn('aria-label="Começar quiz: Privacidade"', html.split("Próximo quiz sugerido")[1])
         self.assertIn('aria-label="Refazer quiz: Proteção de contas"', html)
         self.assertIn('aria-label="Refazer oficina: Revisão de golpes"', html)
         self.assertIn('aria-label="Começar quiz: Privacidade"', html)

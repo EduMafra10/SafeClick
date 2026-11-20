@@ -1,3 +1,5 @@
+{% from "componentes/_icones.html" import icone %}
+{% from "componentes/_mini_mensagem.html" import mini_mensagem, cor_canal, icone_canal %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,90 +10,98 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lateral.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mini_mensagem.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lista_simulacoes.css') }}">
 
-    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/lateral.js') }}" defer></script>
 </head>
-<body class="site-visual">
+<body class="site-visual pagina-lateral">
     <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
 
-    {% include "componentes/cabecalho.html" %}
+    {% include "componentes/_lateral.html" %}
 
-    <main id="conteudo" class="visual-container catalogo-conteudo" tabindex="-1">
-        <header class="catalogo-introducao">
+    <div class="pagina-coluna">
+    {% include "componentes/_avisos_topo.html" %}
+
+    <main id="conteudo" class="catalogo-conteudo" tabindex="-1">
+        <header class="catalogo-topo">
             <div>
-                <p class="visual-etiqueta">Simulações</p>
-
-                <h1>Pratique com situações<br>do dia a dia.</h1>
-
+                <h1>Simulações</h1>
                 <p class="catalogo-descricao">
-                    Leia a mensagem, escolha o que faria e descubra os sinais
-                    que ajudam a reconhecer um golpe.
+                    Leia a mensagem, escolha o que faria e descubra os sinais que ajudam a reconhecer um golpe.
                 </p>
             </div>
-
             <p class="catalogo-quantidade">
-                {{ cenarios|length }} cenários para explorar
+                <strong>{{ cenarios|length }}</strong>
+                {{ "cenário para explorar" if cenarios|length == 1 else "cenários para explorar" }}
             </p>
         </header>
 
-        <div class="catalogo-organizacao">
+        {% set lista = cenarios.values()|list %}
 
-            <!-- Os cenários continuam vindo do catálogo definido no Python. -->
-            <ol class="catalogo-lista" aria-label="Cenários disponíveis" role="list">
-                {% for identificador, cenario in cenarios.items() %}
-                    <li class="catalogo-item">
-                        <span class="catalogo-numero" aria-hidden="true">
-                            {{ "%02d"|format(loop.index) }}
-                        </span>
+        {% if not lista %}
+            <section class="catalogo-vazio">
+                <h2>Nenhuma simulação disponível no momento.</h2>
+                <p>Enquanto isso, você pode ler um conteúdo ou responder um quiz.</p>
+            </section>
+        {% else %}
+            {% set primeiro = lista[0] %}
+            <section class="catalogo-destaque" aria-labelledby="titulo-destaque">
+                <div class="catalogo-destaque-texto">
+                    <p class="catalogo-rotulo">{{ icone_canal(primeiro.get('tipo'), 14) }}Comece por aqui · {{ primeiro["canal"] }}</p>
+                    <h2 id="titulo-destaque">{{ primeiro["titulo"] }}</h2>
+                    <p class="catalogo-resumo">{{ primeiro["resumo"] }}</p>
 
-                        <div>
-                            <p class="catalogo-canal">{{ cenario["canal"] }}</p>
+                    <div class="catalogo-destaque-acoes">
+                        <a class="catalogo-botao" href="{{ url_for('simulacoes.executar', slug=primeiro['slug']) }}"
+                           aria-label="Iniciar simulação: {{ primeiro['titulo'] }}">
+                            Explorar cenário {{ icone("seta", 16) }}
+                        </a>
+                        <span>{{ primeiro["opcoes"]|length }} alternativas</span>
+                    </div>
 
-                            <h2>{{ cenario["titulo"] }}</h2>
+                    <ol class="catalogo-passos" aria-label="Como funciona" role="list">
+                        <li><span aria-hidden="true">1</span>Observe</li>
+                        <li><span aria-hidden="true">2</span>Escolha</li>
+                        <li><span aria-hidden="true">3</span>Entenda</li>
+                    </ol>
+                </div>
+                <div class="catalogo-destaque-ilustracao">{{ mini_mensagem(primeiro) }}</div>
+            </section>
 
-                            <p class="catalogo-resumo">{{ cenario["resumo"] }}</p>
+            {% if lista|length > 1 %}
+                <section aria-labelledby="titulo-outros">
+                    <div class="catalogo-secao">
+                        <h2 id="titulo-outros">Outros cenários</h2>
+                        <p>Escolha por onde continuar.</p>
+                    </div>
 
-                            <a
-                                class="simulacao-acessar"
-                                href="{{ url_for('simulacoes.executar', slug=cenario['slug']) }}"
-                                aria-label="Iniciar simulação: {{ cenario['titulo'] }}"
-                            >
-                                Explorar cenário
-                                <span aria-hidden="true">→</span>
-                            </a>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ol>
+                    <ul class="catalogo-lista" role="list">
+                        {% for cenario in lista[1:] %}
+                            {% set tipo = cenario.get('tipo', 'email') %}
+                            <li class="catalogo-item">
+                                <div class="catalogo-item-ilustracao">{{ mini_mensagem(cenario) }}</div>
+                                <div class="catalogo-item-texto">
+                                    <p class="catalogo-canal catalogo-canal--{{ cor_canal(tipo) }}">{{ icone_canal(tipo, 14) }}{{ cenario["canal"] }}</p>
+                                    <h3>{{ cenario["titulo"] }}</h3>
+                                    <p class="catalogo-resumo">{{ cenario["resumo"] }}</p>
+                                    <a class="simulacao-acessar" href="{{ url_for('simulacoes.executar', slug=cenario['slug']) }}"
+                                       aria-label="Iniciar simulação: {{ cenario['titulo'] }}">
+                                        Explorar cenário {{ icone("seta", 16) }}
+                                    </a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+        {% endif %}
 
-            <aside class="catalogo-orientacao" aria-labelledby="titulo-orientacao">
-                <h2 id="titulo-orientacao">Uma pausa antes de agir.</h2>
-
-                <ol class="catalogo-passos" role="list">
-                    <li>
-                        <strong>Observe</strong>
-                        <p>Leia a mensagem e repare nos detalhes.</p>
-                    </li>
-
-                    <li>
-                        <strong>Escolha</strong>
-                        <p>Decida como você reagiria.</p>
-                    </li>
-
-                    <li>
-                        <strong>Entenda</strong>
-                        <p>Veja a consequência e os sinais do golpe.</p>
-                    </li>
-                </ol>
-            </aside>
-        </div>
-
-        <p class="catalogo-aviso">
-            São situações fictícias. Você não envia dados nem faz pagamentos.
-        </p>
+        <p class="catalogo-aviso">São situações fictícias. Você não envia dados nem faz pagamentos.</p>
     </main>
 
     {% include "componentes/_rodape.html" %}
+    </div>
 </body>
 </html>

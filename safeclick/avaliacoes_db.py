@@ -255,6 +255,7 @@ def listar_minhas(usuario_id):
     with conectar_banco() as conexao:
         return conexao.execute('WITH avaliacoes AS (' + BASE_AVALIACOES + """ )
             SELECT tipo,formato,item_id,titulo,slug,nota,comentario,publicar_nota,publicar_comentario,moderacao,publicada,
+                to_char(atualizada_em AT TIME ZONE 'America/Sao_Paulo','DD/MM/YYYY') AS data,
                 (SELECT MAX(r.tentativa_id) FROM public.resultados_validos_atividades r
                  WHERE r.usuario_id=avaliacoes.usuario_id AND r.tipo='quiz' AND r.item_id=avaliacoes.item_id) AS ultimo_resultado
             FROM avaliacoes WHERE usuario_id=%s ORDER BY atualizada_em DESC NULLS LAST,titulo

@@ -23,6 +23,7 @@
     const mensagemFinal = document.getElementById("mensagem-final");
     const jogarNovamente = document.getElementById("jogar-novamente");
     const erro = document.getElementById("erro-desafio");
+    const historico = document.getElementById("historico-desafio");
 
     const numero = new Intl.NumberFormat("pt-BR");
     let rodadaAtual = null;   // dados da rodada exibida
@@ -34,6 +35,54 @@
         }
         // O número da rodada e o placar ficam visíveis durante a partida.
         progresso.hidden = etapa !== rodada && etapa !== resultado;
+    }
+
+    // Lista "Suas rodadas": uma linha por rodada, preenchida conforme a partida avança.
+    function linhaDaRodada(numeroDaRodada) {
+        return historico?.children[numeroDaRodada - 1] ?? null;
+    }
+
+    function prepararHistorico(total) {
+        if (!historico) return;
+        historico.replaceChildren(...Array.from({ length: total }, (_, indice) => {
+            const linha = document.createElement("li");
+            const marcador = document.createElement("span");
+            marcador.className = "lab-rodada-numero";
+            marcador.textContent = indice + 1;
+            const texto = document.createElement("span");
+            texto.className = "lab-rodada-texto";
+            texto.textContent = "Aguardando";
+            linha.append(marcador, texto);
+            return linha;
+        }));
+    }
+
+    function marcarRodada(numeroDaRodada, dados) {
+        const linha = linhaDaRodada(numeroDaRodada);
+        if (!linha) return;
+        const texto = linha.querySelector(".lab-rodada-texto");
+        if (!dados) {
+            linha.dataset.estado = "atual";
+            texto.textContent = "Em andamento";
+            return;
+        }
+        const vencedora = dados.resultado.reduce((maior, item) => (item.vazamentos > maior.vazamentos ? item : maior));
+        linha.dataset.estado = dados.correta ? "acerto" : "erro";
+        const par = document.createElement("span");
+        par.className = "lab-rodada-par";
+        dados.resultado.forEach((item, indice) => {
+            if (indice) par.append(" × ");
+            const senha = document.createElement("code");
+            senha.textContent = item.senha;
+            par.append(senha);
+        });
+        const detalhe = document.createElement("small");
+        detalhe.textContent = `${vencedora.senha} vazou mais`;
+        const situacao = document.createElement("strong");
+        situacao.className = "lab-rodada-situacao";
+        situacao.textContent = dados.correta ? "Acertou" : "Errou";
+        texto.replaceChildren(par, detalhe);
+        linha.append(situacao);
     }
 
     function mostrarErro(mensagem) {
@@ -69,6 +118,7 @@
         rodadaAtual = dados;
         numeroRodada.textContent = dados.rodada;
         totalRodadas.textContent = dados.total;
+        marcarRodada(dados.rodada, null);
         dados.opcoes.forEach((senha, indice) => {
             opcoes[indice].textContent = senha;
             opcoes[indice].disabled = false;
@@ -84,6 +134,7 @@
     function exibirResultado(dados) {
         ultimaResposta = dados;
         atualizarPlacar(dados.acertos);
+        marcarRodada(rodadaAtual.rodada, dados);
 
         veredito.dataset.correta = String(dados.correta);
         veredito.textContent = dados.correta
@@ -153,6 +204,7 @@
         try {
             const dados = await enviar(painel.dataset.iniciarUrl, {});
             atualizarPlacar(0);
+            prepararHistorico(dados.total);
             exibirRodada(dados);
         } catch (falha) {
             mostrarErro(falha.message);

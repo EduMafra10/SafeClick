@@ -225,8 +225,8 @@ class RotaPainelTeste(unittest.TestCase):
 
         self.assertEqual(resposta.status_code, 200)
         self.buscar.assert_called_once_with(7, inicio=None, fim=None)
-        for trecho in ("01 · Conteúdos", "02 · Quizzes", "03 · Acertos",
-                       "04 · Simulações", "05 · Decisões", "40%",
+        for trecho in ("Conteúdos concluídos", "50% de 2", "1 diferente", "Média de acertos",
+                       "Simulações realizadas", "Escolhas seguras", "40%",
                        "grafico-evolucao", "grafico-cenarios", "chart.umd.js",
                        "23 simulações feitas antes da atualização"):
             with self.subTest(trecho=trecho):
@@ -293,10 +293,20 @@ class RotaPainelTeste(unittest.TestCase):
         self.assertNotIn('participacao-tabela', html)
         self.assertIn('Evolução nos quizzes', html)
         self.assertIn('Desempenho por atividade', html)
-        self.assertIn('40% na última tentativa', html)
+        self.assertIn('<span class="painel-passo-valor">40%</span>', html)
+        self.assertIn('faltam 30 para a meta', html)
         self.assertIn('href="/quizzes/resultado/42"', html)
         self.assertIn('href="/conteudos/privacidade"', html)
         self.assertIn('Minhas avaliações', html)
+
+    def test_menu_lateral_marca_a_pagina_atual(self):
+        self.entrar()
+        html = " ".join(self.client.get("/painel/").get_data(as_text=True).split())
+        self.assertIn('<a href="/painel/" aria-current="page">', html)
+        for trecho in ("Laboratório de senhas", 'href="/avaliacoes/minhas"', 'action="/sair"', "lateral.js"):
+            with self.subTest(trecho=trecho):
+                self.assertIn(trecho, html)
+        self.assertNotIn("Área administrativa", html)
 
     def test_administrador_pode_ver_seu_progresso_privado(self):
         self.entrar(perfil="administrador")

@@ -1,42 +1,140 @@
-<section class="painel-cartao progresso-detalhes" aria-labelledby="titulo-pratica">
-    <h2 id="titulo-pratica">Seu próximo passo</h2>
+{% from "componentes/_icones.html" import icone %}
+{% set tipos = {
+    'quiz': {'nome': 'Quiz', 'grupo': 'Quizzes e oficinas', 'icone': 'lista'},
+    'simulacao': {'nome': 'Simulação', 'grupo': 'Simulações', 'icone': 'mensagem'},
+    'laboratorio': {'nome': 'Desafio de senhas', 'grupo': 'Desafio de senhas', 'icone': 'chave'},
+} %}
+{% set padrao = {'nome': 'Atividade', 'grupo': 'Atividades', 'icone': 'lista'} %}
+{% set meta = 70 %}
+{% macro pct(valor, casas=0) %}{{ ('%.*f'|format(casas, valor)).replace('.', ',') }}%{% endmacro %}
+
+<div class="painel-linha{% if not detalhes %} painel-linha--unica{% endif %}">
+<section class="painel-cartao painel-passo" aria-labelledby="titulo-pratica">
+    <div class="painel-cartao-cabecalho">
+        <div>
+            <h2 id="titulo-pratica">Seu próximo passo</h2>
+            <p>Atividades abaixo de {{ meta }}% na última tentativa válida. São só sugestões: você navega como quiser.</p>
+        </div>
+        <a class="painel-link" href="{{ url_for('avaliacoes.minhas') }}">{{ icone("estrela", 15) }}Minhas avaliações</a>
+    </div>
+
     {% if erro_detalhes %}
-        <p role="alert">Não foi possível carregar alguns indicadores adicionais.</p>
-        <div class="progresso-acoes"><a class="painel-botao painel-botao--secundario" href="{{ url_for('painel.exibir') }}">Tentar novamente</a></div>
+        <p class="painel-filtro-erro" role="alert">Não foi possível carregar alguns indicadores adicionais.</p>
+        <p><a class="painel-botao painel-botao--secundario" href="{{ url_for('painel.exibir') }}">Tentar novamente</a></p>
     {% endif %}
-    <p>Acompanhe seu aprendizado no seu ritmo. Seu histórico e seus resultados permanecem privados.</p>
-    <div class="progresso-acoes"><a class="painel-botao painel-botao--secundario" href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a></div>
+
     {% if detalhes %}
-    <h3>Oportunidades de revisão</h3>
-    <p>A última tentativa válida de cada atividade abaixo de 70% aparece aqui como sugestão, sem impedir sua navegação.</p>
-    <ul class="progresso-revisar">
-        {% for item in detalhes.revisar %}
-            <li>
-                <div>
-                    <strong>{{ item.titulo }}</strong>
-                    <p class="progresso-resultado">{{ ('%.0f'|format(item.pontos)) }}% na última tentativa</p>
-                </div>
-                <a class="painel-botao painel-botao--secundario" href="{{ url_for('quizzes.exibir_resultado',tentativa_id=item.tentativa_id) if item.tipo == 'quiz' else url_for('simulacoes.listar') if item.tipo == 'simulacao' else url_for('senhas.pagina') }}">{{ 'Rever respostas e explicações' if item.tipo == 'quiz' else 'Praticar novamente' }}</a>
-            </li>
+        {% if detalhes.revisar %}
+            <ol class="painel-passos" role="list">
+                {% for item in detalhes.revisar %}
+                    {% set tipo = tipos.get(item.tipo, padrao) %}
+                    {% set pontos = [[item.pontos, 0]|max, 100]|min %}
+                    <li class="painel-passo-item painel-cor--{{ item.tipo }}">
+                        <span class="painel-passo-icone">{{ icone(tipo.icone, 18) }}</span>
+                        <p class="painel-passo-titulo">
+                            <strong>{{ item.titulo }}</strong>
+                            {% if tipo.nome != item.titulo %}<small>{{ tipo.nome }}</small>{% endif %}
+                        </p>
+                        <div class="painel-passo-medida">
+                            <p>
+                                <span class="painel-passo-valor">{{ pct(pontos) }}</span>
+                                <span class="painel-passo-falta">faltam {{ (meta - pontos)|round|int }} para a meta</span>
+                            </p>
+                            <span class="painel-medidor" aria-hidden="true">
+                                <i style="width: {{ '%.1f'|format(pontos) }}%"></i>
+                                <b style="left: {{ meta }}%"></b>
+                            </span>
+                        </div>
+                        <a class="painel-acao" href="{{ url_for('quizzes.exibir_resultado',tentativa_id=item.tentativa_id) if item.tipo == 'quiz' else url_for('simulacoes.listar') if item.tipo == 'simulacao' else url_for('senhas.pagina') }}">
+                            {{ 'Rever respostas' if item.tipo == 'quiz' else 'Praticar novamente' }}{{ icone("seta", 14) }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ol>
         {% else %}
-            <li>Nenhuma sugestão de revisão nesse período. Continue explorando as atividades.</li>
-        {% endfor %}
-    </ul>
-    {% if detalhes.proximos %}
-        <h3>Leituras ainda não concluídas</h3>
-        <ul class="progresso-leituras">
-            {% for item in detalhes.proximos %}
-                <li><a class="painel-botao painel-botao--secundario" href="{{ url_for('conteudos.detalhe',slug=item.slug) }}">{{ item.titulo }} <span aria-hidden="true">→</span></a></li>
+            <p class="painel-sem-dados painel-passo-vazio">{{ icone("check", 18) }}Nenhuma sugestão de revisão nesse período. Continue explorando as atividades.</p>
+        {% endif %}
+
+        {% if detalhes.proximos %}
+            <div class="painel-leituras">
+                <h3>Leituras ainda não concluídas</h3>
+                <ul class="painel-leituras-lista" role="list">
+                    {% for item in detalhes.proximos %}
+                        <li>
+                            <a href="{{ url_for('conteudos.detalhe',slug=item.slug) }}">
+                                <span class="painel-leituras-icone">{{ icone("livro", 16) }}</span>
+                                <span>{{ item.titulo }}</span>
+                                {{ icone("seta", 14) }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <p class="painel-nota">Essas sugestões consideram todo o seu histórico de leitura.</p>
+            </div>
+        {% endif %}
+    {% endif %}
+    <p class="painel-nota painel-privado">{{ icone("cadeado", 14) }}Acompanhe seu aprendizado no seu ritmo. Seu histórico e seus resultados permanecem privados.</p>
+</section>
+
+{% if detalhes %}
+<section class="painel-cartao painel-aneis-cartao" aria-labelledby="titulo-tipos">
+    <h2 id="titulo-tipos">Desempenho por atividade</h2>
+    <p class="painel-cartao-sub">Acertos ou decisões seguras em resultados completos{{ " do período" if filtro.ativo }}</p>
+
+    {% if detalhes.categorias %}
+        {% set total_tentativas = detalhes.categorias|sum(attribute="tentativas") %}
+        {% set total_atividades = detalhes.categorias|sum(attribute="atividades") %}
+
+        <figure class="painel-aneis">
+            <svg viewBox="-26 -10 252 220" role="img"
+                 aria-label="Desempenho por atividade: {% for item in detalhes.categorias %}{{ tipos.get(item.tipo, padrao).grupo }} {{ pct(item.media, 1) }}{{ '; ' if not loop.last }}{% endfor %}. Meta de {{ meta }}%.">
+                {% for item in detalhes.categorias %}
+                    {% set raio = 86 - 19 * loop.index0 %}
+                    {% set media = [[item.media, 0]|max, 100]|min %}
+                    <circle class="painel-anel-trilha" cx="100" cy="100" r="{{ raio }}"/>
+                    {% if media > 0 %}
+                        <circle class="painel-anel painel-cor--{{ item.tipo }}" cx="100" cy="100" r="{{ raio }}" pathLength="100"
+                                stroke-dasharray="{{ '%.1f'|format(media) }} 100" style="--valor: {{ '%.1f'|format(media) }}"
+                                transform="rotate(-90 100 100)"/>
+                    {% endif %}
+                {% endfor %}
+                {# marca da meta: 70% da volta, contando do topo no sentido horário #}
+                <line class="painel-anel-meta" x1="62" y1="112.4" x2="8.7" y2="129.6"/>
+                <text class="painel-anel-meta-texto" x="4" y="144" text-anchor="end">meta</text>
+                <text class="painel-anel-meta-texto" x="4" y="156" text-anchor="end">{{ meta }}%</text>
+                <text class="painel-anel-total" x="100" y="104" text-anchor="middle">{{ total_tentativas }}</text>
+                <text class="painel-anel-rotulo" x="100" y="121" text-anchor="middle">{{ 'tentativa' if total_tentativas == 1 else 'tentativas' }}</text>
+            </svg>
+        </figure>
+
+        <ul class="painel-legenda" role="list">
+            {% for item in detalhes.categorias %}
+                {% set acima = item.media >= meta %}
+                <li class="painel-cor--{{ item.tipo }}">
+                    <span class="painel-legenda-ponto" aria-hidden="true"></span>
+                    <p class="painel-legenda-nome">
+                        <strong>{{ tipos.get(item.tipo, padrao).grupo }}</strong>
+                        <small>
+                            {{ item.tentativas }} {{ 'tentativa' if item.tentativas == 1 else 'tentativas' }} ·
+                            {{ item.atividades }} {{ 'atividade' if item.atividades == 1 else 'atividades' }}
+                        </small>
+                    </p>
+                    <p class="painel-legenda-valor">
+                        <strong>{{ pct(item.media, 1) }}</strong>
+                        <small class="{{ 'painel-legenda--ok' if acima else 'painel-legenda--abaixo' }}">{{ 'na meta' if acima else 'abaixo da meta' }}</small>
+                    </p>
+                </li>
             {% endfor %}
         </ul>
-        <p class="participacao-nota">Essas sugestões consideram todo o seu histórico de leitura.</p>
-    {% endif %}
+
+        <p class="painel-aneis-rodape">
+            <span>{{ total_atividades }} {{ 'atividade diferente' if total_atividades == 1 else 'atividades diferentes' }} no total</span>
+            <span>Notas de utilidade não entram nesses percentuais.</span>
+        </p>
+    {% else %}
+        <p class="painel-sem-dados">Ainda não há resultados completos neste período.</p>
+        <p class="painel-nota">Notas de utilidade não entram nesses percentuais.</p>
     {% endif %}
 </section>
-{% if detalhes %}
-<section class="painel-cartao progresso-detalhes" aria-labelledby="titulo-tipos"><h2 id="titulo-tipos">Desempenho por atividade</h2>
-<p>Resultados completos e consistentes no período escolhido. Notas de utilidade não entram nesses percentuais.</p>
-<div class="progresso-categorias">{% for item in detalhes.categorias %}<article><h3>{{ {'quiz':'Quizzes e oficinas','simulacao':'Simulações','laboratorio':'Desafio de senhas'}[item.tipo] }}</h3>
-<p><strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }}%</strong> de acertos ou decisões seguras</p><p>{{ item.tentativas }} tentativas · {{ item.atividades }} atividades diferentes</p></article>
-{% else %}<p>Ainda não há resultados completos neste período.</p>{% endfor %}</div></section>
 {% endif %}
+</div>
