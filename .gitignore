@@ -4,3 +4,5 @@ __pycache__/
 .env
 .pytest_cache/
 desktop.ini
+.coverage
+htmlcov/

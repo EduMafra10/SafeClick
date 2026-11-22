@@ -2,7 +2,11 @@ import click
 import psycopg
 from flask import current_app
 from flask.cli import with_appcontext
+from psycopg.conninfo import conninfo_to_dict
 from psycopg.rows import dict_row
+
+# modos que aceitariam uma conexão sem criptografia
+SEM_TLS = {None, "disable", "allow", "prefer"}
 
 
 # serve para obter a conexao configurada na nossa aplicaçao, sem escrever credenciais no codigo
@@ -15,11 +19,17 @@ def conectar_banco():
             "DATABASE_URL nao está configurado, verifique o arquivo .env"
         )
 
+    # no site publicado, a conexao com o banco sempre exige TLS (RNF02)
+    opcoes = {}
+    if current_app.config.get("APP_ENV") == "producao" and conninfo_to_dict(database_url).get("sslmode") in SEM_TLS:
+        opcoes["sslmode"] = "require"
+
     # abre a conexao com o Postgre e permite acessar os resultados pelo nome da coluna
     return psycopg.connect(
         database_url,
         connect_timeout=10,
         row_factory=dict_row,
+        **opcoes,
     )
 
 
