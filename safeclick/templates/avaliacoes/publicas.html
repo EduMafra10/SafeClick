@@ -47,6 +47,7 @@
         {% endif %}
 
         <form class="qz-cartao av-filtros" method="get" data-espera>
+            <label class="av-filtros-busca">Buscar atividade <input name="busca" type="search" maxlength="100" value="{{ busca }}" placeholder="Ex.: senhas"></label>
             <label><span id="avaliacoes-tipo-rotulo">Tipo</span>
                 <select name="tipo" aria-labelledby="avaliacoes-tipo-rotulo">
                     <option value="">Todos</option>
@@ -55,7 +56,6 @@
                     <option value="oficina" {{ 'selected' if tipo == 'oficina' }}>Oficinas</option>
                 </select>
             </label>
-            <label>Buscar atividade <input name="busca" type="search" maxlength="100" value="{{ busca }}" placeholder="Ex.: senhas"></label>
             <label><span id="avaliacoes-ordem-rotulo">Última avaliação pública</span>
                 <select name="ordem" aria-labelledby="avaliacoes-ordem-rotulo">
                     <option value="recentes" {{ 'selected' if ordem == 'recentes' }}>Mais recentes</option>
