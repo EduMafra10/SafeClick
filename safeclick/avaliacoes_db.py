@@ -194,7 +194,7 @@ def listar_publicas(*, tipo='', busca='', pagina=1, ordem='recentes'):
             JOIN public.quizzes q ON q.id = c.versao_publicada_id
             WHERE c.estado = 'publicada' AND c.removido_em IS NULL
         ), avaliacoes AS (""" + BASE_AVALIACOES + """), medias AS (
-            SELECT tipo, item_id, COUNT(*) AS total, round(avg(nota), 1) AS media,
+            SELECT tipo, item_id, COUNT(*) AS total, SUM(nota) AS soma_notas, round(avg(nota), 1) AS media,
                 MAX(atualizada_em) AS ultima_avaliacao
             FROM avaliacoes WHERE """ + FILTRO_PUBLICO + """ GROUP BY tipo, item_id
         )
@@ -210,6 +210,9 @@ def listar_publicas(*, tipo='', busca='', pagina=1, ordem='recentes'):
         total = conexao.execute(origem + 'SELECT COUNT(*) AS total FROM itens i ' + filtro, parametros).fetchone()['total']
         itens = conexao.execute(origem + """
             SELECT i.*, COALESCE(m.total, 0) AS total, m.media,
+                COUNT(m.total) OVER () AS atividades_avaliadas,
+                SUM(m.total) OVER () AS notas_filtradas,
+                round(SUM(m.soma_notas) OVER () / NULLIF(SUM(m.total) OVER (), 0), 1) AS media_geral,
                 to_char(m.ultima_avaliacao AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY') AS data_avaliacao
             FROM itens i
             LEFT JOIN medias m ON m.tipo = i.tipo AND m.item_id = i.id
@@ -255,6 +258,7 @@ def listar_minhas(usuario_id):
     with conectar_banco() as conexao:
         return conexao.execute('WITH avaliacoes AS (' + BASE_AVALIACOES + """ )
             SELECT tipo,formato,item_id,titulo,slug,nota,comentario,publicar_nota,publicar_comentario,moderacao,publicada,
+                to_char(atualizada_em AT TIME ZONE 'America/Sao_Paulo','DD/MM/YYYY') AS data,
                 (SELECT MAX(r.tentativa_id) FROM public.resultados_validos_atividades r
                  WHERE r.usuario_id=avaliacoes.usuario_id AND r.tipo='quiz' AND r.item_id=avaliacoes.item_id) AS ultimo_resultado
             FROM avaliacoes WHERE usuario_id=%s ORDER BY atualizada_em DESC NULLS LAST,titulo

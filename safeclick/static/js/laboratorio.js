@@ -41,6 +41,17 @@
         });
     });
 
+    // Preenche a trilha dos controles deslizantes até o valor escolhido.
+    document.querySelectorAll('.lab-ajuste-linha input[type="range"]').forEach((controle) => {
+        const pintar = () => {
+            const minimo = Number(controle.min);
+            const pct = ((Number(controle.value) - minimo) / (Number(controle.max) - minimo)) * 100;
+            controle.style.setProperty("--pct", `${pct}%`);
+        };
+        controle.addEventListener("input", pintar);
+        pintar();
+    });
+
     const inicial = abas.find((aba) => `#${nomeDaAba(aba)}` === location.hash) ?? abas[0];
     listaAbas.hidden = false;
     document.getElementById("aviso-javascript")?.remove();
@@ -57,6 +68,13 @@
     const itemComprimento = document.getElementById("item-comprimento");
     const itemPadroes = document.getElementById("item-padroes");
     const contagem = document.getElementById("contagem-caracteres");
+    const casas = [...document.querySelectorAll(".lab-casas i")];
+    const tamanhoAtual = document.getElementById("tamanho-atual");
+
+    function preencherCasas(tamanho) {
+        casas.forEach((casa, indice) => casa.classList.toggle("lab-casa--cheia", indice < tamanho));
+        if (tamanhoAtual) tamanhoAtual.textContent = String(tamanho);
+    }
 
     const NIVEIS = ["Muito fraca", "Fraca", "Moderada", "Boa", "Forte"];
     const MINIMO_RECOMENDADO = 15;
@@ -77,6 +95,7 @@
 
     
     function limpar() {
+        preencherCasas(0);
         resultado.dataset.estado = "vazio";
         delete resultado.dataset.nivel;
         rotulo.textContent = "Aguardando";
@@ -163,6 +182,7 @@
 
     campo.addEventListener("input", () => {
         clearTimeout(pausa);
+        preencherCasas([...campo.value].length);
         sequencia += 1; 
 
         if (!campo.value) {

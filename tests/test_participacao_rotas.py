@@ -299,11 +299,22 @@ def test_filtros_e_ordem_continuam_ativos_na_paginacao_da_moderacao(site, monkey
     assert resposta.text.count('estado=pendente') >= 2
 
 
+def test_media_geral_continua_visivel_em_pagina_com_atividades_sem_notas(site, monkeypatch):
+    item = {'tipo': 'conteudo', 'id': 42, 'titulo': 'Outra leitura', 'total': 0,
+            'atividades_avaliadas': 3, 'media_geral': 4.5, 'notas_filtradas': 6}
+    monkeypatch.setattr(avaliacoes_db, 'listar_publicas', Mock(return_value=([item], 21)))
+    resposta = site[1].get('/avaliacoes/publicas?pagina=2')
+    assert resposta.status_code == 200
+    assert '6 notas compartilhadas' in resposta.text and '4,5' in resposta.text
+    assert 'Nenhuma atividade avaliada nesta página.' in resposta.text
+
+
 @pytest.mark.parametrize('formato,rotulo', [('perguntas', 'Quiz'), ('oficina', 'Oficina')])
 def test_avaliacoes_identificam_o_formato_da_atividade(site, monkeypatch, formato, rotulo):
     entrar(site, 'administrador')
     item = {'tipo': 'quiz', 'formato': formato, 'id': 21, 'item_id': 21, 'titulo': 'Atividade de senhas',
             'usuario_id': 7, 'nota': 5, 'total': 1, 'media': 5, 'comentario': 'Explicações úteis.',
+            'atividades_avaliadas': 1, 'notas_filtradas': 1, 'media_geral': 5,
             'moderacao': 'pendente', 'publicar_comentario': True, 'publicar_nota': True,
             'publicada': True, 'ultimo_resultado': 31}
     monkeypatch.setattr(avaliacoes_db, 'listar_publicas', Mock(return_value=([item], 1)))

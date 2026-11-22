@@ -1,4 +1,5 @@
 {% from "componentes/_mensagem_simulacao.html" import mensagem_simulacao %}
+{% from "componentes/_icones.html" import icone %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,29 +10,44 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lateral.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/simulacao.css') }}">
 
-    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/lateral.js') }}" defer></script>
 </head>
-<body class="site-visual simulacao-pagina">
+<body class="site-visual pagina-lateral simulacao-pagina">
     <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
 
-    {% include "componentes/cabecalho.html" %}
+    {% include "componentes/_lateral.html" %}
 
-    <main id="conteudo" class="visual-container simulacao-conteudo" tabindex="-1">
-        <a class="simulacao-voltar" href="{{ url_for('simulacoes.listar') }}">
-            ← Todas as simulações
-        </a>
+    <div class="pagina-coluna">
+    {% include "componentes/_avisos_topo.html" %}
 
-        <header class="simulacao-introducao">
-            <p class="visual-etiqueta">{{ cenario["canal"] }} · Simulação</p>
-            <h1>{{ cenario["titulo"] }}</h1>
-            <p class="simulacao-instrucao">
-                Observe a mensagem. O que você faria se recebesse algo assim?
-            </p>
+    {% set mostrando_resultado = resultado and not erro %}
+    {% set etapa_atual = 2 if mostrando_resultado else 1 %}
+
+    <main id="conteudo" class="simulacao-conteudo" tabindex="-1">
+        <header class="simulacao-topo">
+            <div>
+                <nav class="simulacao-migalha" aria-label="Você está em">
+                    <a href="{{ url_for('simulacoes.listar') }}">Simulações</a>
+                    <span aria-hidden="true">/</span>
+                    <span>{{ cenario["titulo"] }}</span>
+                </nav>
+                <h1>{{ cenario["titulo"] }}</h1>
+                <p class="simulacao-instrucao">Observe a mensagem. O que você faria se recebesse algo assim?</p>
+            </div>
+
+            <ol class="simulacao-etapas" aria-label="Etapas da simulação">
+                {% for nome in ["Observe", "Escolha", "Entenda"] %}
+                    <li class="{{ 'simulacao-etapa--atual' if loop.index0 == etapa_atual else 'simulacao-etapa--feita' if loop.index0 < etapa_atual }}"
+                        {% if loop.index0 == etapa_atual %}aria-current="step"{% endif %}>
+                        <span aria-hidden="true">{% if loop.index0 < etapa_atual %}{{ icone("check", 13) }}{% else %}{{ loop.index }}{% endif %}</span>
+                        {{ nome }}
+                    </li>
+                {% endfor %}
+            </ol>
         </header>
-
-        {% set mostrando_resultado = resultado and not erro %}
 
         <div class="simulacao-exercicio">
             <div class="simulacao-coluna">
@@ -39,7 +55,7 @@
                 {{ mensagem_simulacao(cenario, marcas if mostrando_resultado else {}) }}
 
                 {% if mostrando_resultado %}
-                    <aside class="simulacao-sinais" aria-labelledby="titulo-sinais">
+                    <aside class="simulacao-cartao simulacao-sinais" aria-labelledby="titulo-sinais">
                         <h2 id="titulo-sinais">Sinais de risco nesta mensagem</h2>
                         {% if marcas %}
                             <p class="simulacao-sinais-dica">Os números na mensagem mostram onde cada sinal aparece.</p>
@@ -53,13 +69,13 @@
                 {% endif %}
             </div>
 
-            <div class="simulacao-decisao">
+            <div class="simulacao-cartao simulacao-decisao">
                 {% if erro %}
                     <p class="simulacao-erro" role="alert">{{ erro }}</p>
                 {% endif %}
 
                 {% if mostrando_resultado %}
-                    {# Depois da resposta, a escolha mostra o resultado e as outras opções ganham uma etiqueta. #}
+                    {# Depois da resposta, a escolha mostra o resultado e as outras opções aparecem em segundo plano. #}
                     <section class="simulacao-resposta" aria-labelledby="titulo-resposta">
                         <h2 id="titulo-resposta">Sua resposta</h2>
                         <p class="simulacao-instrucao">
@@ -72,28 +88,25 @@
 
                         <ul class="simulacao-opcoes" role="list">
                             {% for identificador, opcao in opcoes.items() %}
+                                {% set letra = "ABCDEFGH"[loop.index0] %}
                                 {% set tipo = "segura" if opcao["segura"] else "risco" %}
 
                                 {% if opcao == resultado %}
                                     <li class="simulacao-opcao simulacao-escolhida simulacao-escolhida--{{ tipo }}">
-                                        <div class="simulacao-escolhida-texto">
-                                            <span class="simulacao-marcador" aria-hidden="true"></span>
-                                            <span>
-                                                <span class="simulacao-oculto">Sua escolha: </span>{{ opcao["texto"] }}
-                                            </span>
-                                        </div>
-
-                                        <div class="simulacao-retorno">
-                                            <p id="titulo-resultado" class="simulacao-veredito">
-                                                {{ "Escolha segura" if opcao["segura"] else "Escolha de risco" }}
-                                            </p>
-                                            <p>{{ opcao["consequencia"] }}</p>
-                                            <p class="simulacao-porque">{{ opcao["explicacao"] }}</p>
-                                        </div>
+                                        <p id="titulo-resultado" class="simulacao-veredito">
+                                            <span class="simulacao-veredito-icone" aria-hidden="true">{{ icone("check" if opcao["segura"] else "alerta", 17) }}</span>
+                                            {{ "Escolha segura" if opcao["segura"] else "Escolha de risco" }}
+                                        </p>
+                                        <p class="simulacao-escolhida-texto">
+                                            <span class="simulacao-oculto">Sua escolha: </span>
+                                            <span aria-hidden="true">{{ letra }} · </span>{{ opcao["texto"] }}
+                                        </p>
+                                        <p>{{ opcao["consequencia"] }}</p>
+                                        <p class="simulacao-porque">{{ opcao["explicacao"] }}</p>
                                     </li>
                                 {% else %}
-                                     <li class="simulacao-opcao simulacao-outra">
-                                        <span class="simulacao-marcador" aria-hidden="true"></span>
+                                    <li class="simulacao-opcao simulacao-outra">
+                                        <span class="simulacao-letra" aria-hidden="true">{{ letra }}</span>
                                         <span class="simulacao-outra-texto">{{ opcao["texto"] }}</span>
                                     </li>
                                 {% endif %}
@@ -101,15 +114,18 @@
                         </ul>
 
                         <nav class="simulacao-proximos" aria-label="Continuar praticando">
-                            <a class="simulacao-continuar" href="{{ url_for('simulacoes.listar') }}">
-                                Explorar outro cenário →
+                            {% set repetir_primeiro = pode_repetir and not resultado["segura"] %}
+                            {% if repetir_primeiro %}
+                                <a class="simulacao-continuar" href="{{ url_simulacao }}">{{ icone("repetir", 16) }}Tentar novamente</a>
+                            {% endif %}
+
+                            <a class="{{ 'simulacao-repetir' if repetir_primeiro else 'simulacao-continuar' }}" href="{{ url_for('simulacoes.listar') }}">
+                                Explorar outro cenário {{ icone("seta", 16) }}
                             </a>
 
-                            {% if pode_repetir %}
-                                <a class="simulacao-repetir" href="{{ url_simulacao }}">
-                                    Tentar novamente
-                                </a>
-                            {% else %}
+                            {% if pode_repetir and not repetir_primeiro %}
+                                <a class="simulacao-repetir" href="{{ url_simulacao }}">{{ icone("repetir", 16) }}Tentar novamente</a>
+                            {% elif not pode_repetir %}
                                 <p>
                                     Este cenário foi arquivado.
                                     O resultado da sua tentativa continua disponível.
@@ -143,6 +159,7 @@
                                             value="{{ identificador }}"
                                             required
                                         >
+                                        <span class="simulacao-letra" aria-hidden="true">{{ "ABCDEFGH"[loop.index0] }}</span>
                                         <span>{{ opcao["texto"] }}</span>
                                     </label>
                                 {% endfor %}
@@ -150,7 +167,7 @@
                         </fieldset>
 
                         <button class="simulacao-botao" type="submit">
-                            Ver consequência
+                            Ver consequência {{ icone("seta", 16) }}
                         </button>
                     </form>
                 {% endif %}
@@ -164,5 +181,6 @@
     </main>
 
     {% include "componentes/_rodape.html" %}
+    </div>
 </body>
 </html>

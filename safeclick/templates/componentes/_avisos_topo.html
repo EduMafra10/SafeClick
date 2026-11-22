@@ -1,0 +1,9 @@
+{% if current_user.is_authenticated and current_user.perfil == 'administrador' %}
+    <div class="site-aviso-admin" role="note">
+        <p>
+            Você está vendo a plataforma como usuário. As suas atividades ficam no seu progresso privado e não entram nos indicadores gerais.
+            <a href="{{ url_for('administracao.inicio') }}">Voltar à área administrativa</a>
+        </p>
+    </div>
+{% endif %}
+{% include "componentes/_aviso_conquistas.html" %}

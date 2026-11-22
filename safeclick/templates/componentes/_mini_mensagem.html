@@ -1,0 +1,46 @@
+{# Miniatura decorativa da mensagem de cada cenário, usada na lista de simulações. #}
+{% from "componentes/_icones.html" import icone %}
+
+{% macro cor_canal(tipo) %}{{ {'email': 'azul', 'sms': 'ambar', 'conversa': 'verde', 'loja': 'roxo'}.get(tipo, 'azul') }}{% endmacro %}
+{% macro icone_canal(tipo, tamanho=14) %}{{ icone({'email': 'envelope', 'sms': 'celular', 'conversa': 'conversa', 'loja': 'sacola'}.get(tipo, 'envelope'), tamanho) }}{% endmacro %}
+
+{% macro mini_mensagem(cenario) %}
+    {% set tipo = cenario.get('tipo', 'email') %}
+    {% set paragrafos = cenario.get('mensagem') or [] %}
+    {% if paragrafos is string %}{% set paragrafos = paragrafos.splitlines() %}{% endif %}
+    {% set remetente = ((cenario.get('origem') or '').split('·')[0])|trim %}
+    <div class="mini mini--{{ cor_canal(tipo) }}" aria-hidden="true">
+        {% if tipo in ('sms', 'conversa') %}
+            <div class="mini-fone">
+                <div class="mini-tela">
+                    <div class="mini-status"><span></span>{{ icone("bateria", 13) }}</div>
+                    <p class="mini-contato">{{ 'Número novo' if tipo == 'conversa' else remetente }}</p>
+                    {% for paragrafo in paragrafos[:2] %}
+                        <p class="mini-balao{{ ' mini-balao--verde' if tipo == 'conversa' }}">{{ paragrafo|truncate(70, true, '…', 0) }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        {% elif tipo == 'loja' and cenario.get('produto') %}
+            <div class="mini-loja">
+                <span class="mini-produto">{{ icone("celular", 30) }}</span>
+                <div>
+                    <span>{{ cenario.produto.nome }}</span>
+                    <s>De {{ cenario.produto.preco_anterior }}</s>
+                    <b>{{ cenario.produto.preco_atual }}</b>
+                    {% if cenario.get('chamada') %}<span class="mini-cta mini-cta--roxo">{{ cenario.chamada }}</span>{% endif %}
+                </div>
+                <p class="mini-loja-rodape">{{ remetente }}</p>
+            </div>
+        {% else %}
+            <div class="mini-email">
+                <div class="mini-email-barra"><i></i><i></i><i></i></div>
+                <div class="mini-email-corpo">
+                    <b>{{ cenario.get('assunto', '') }}</b>
+                    <span class="mini-de">{{ remetente }}</span>
+                    {% if paragrafos %}<span class="mini-texto">{{ paragrafos[1 if paragrafos|length > 1 else 0]|truncate(95, true, '…', 0) }}</span>{% endif %}
+                    {% if cenario.get('chamada') %}<span class="mini-cta">{{ cenario.chamada }}</span>{% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}

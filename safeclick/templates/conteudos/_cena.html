@@ -1,0 +1,56 @@
+{% from 'componentes/_icones.html' import icone %}
+{% set CORES = {
+    'verde': ('#e3f1e9', '#27684f', '#bfe0cd'),
+    'azul': ('#e4eef5', '#28638d', '#c3d9e8'),
+    'ambar': ('#fbeadb', '#a85a24', '#f2cfb0'),
+    'roxo': ('#eee8f6', '#6a4c93', '#d6cae9'),
+} %}
+
+{# Figurinha da lista: o ícone do tema num cartão inclinado #}
+{% macro figurinha(tema, cor, classe='') -%}
+{% set c = CORES.get(cor, CORES.verde) %}
+<span class="ct-fig {{ classe }}" style="--ct-c1: {{ c[0] }}; --ct-c2: {{ c[1] }}; --ct-c3: {{ c[2] }}" aria-hidden="true"><i>{{ icone(tema, 26) }}</i></span>
+{%- endmacro %}
+
+{# Ilustração do tema: uma janela com o ícone, desenhada em SVG #}
+{% macro cena(tema, cor, w=640, h=360, extra='check') -%}
+{% set c = CORES.get(cor, CORES.verde) %}
+{% set jx, jy, jw, jh = w * 0.24, h * 0.2, w * 0.52, h * 0.62 %}
+{% set selo = jw * 0.24 %}
+{% set canto = h * 0.2 %}
+<svg class="ct-cena" viewBox="0 0 {{ w }} {{ h }}" aria-hidden="true" focusable="false">
+    <rect width="{{ w }}" height="{{ h }}" fill="{{ c[0] }}"/>
+    <circle cx="{{ '%.0f'|format(w * 0.86) }}" cy="{{ '%.0f'|format(h * 0.08) }}" r="{{ '%.0f'|format(h * 0.5) }}" fill="{{ c[2] }}" opacity=".7"/>
+    <circle cx="{{ '%.0f'|format(w * 0.06) }}" cy="{{ '%.0f'|format(h * 0.98) }}" r="{{ '%.0f'|format(h * 0.32) }}" fill="{{ c[2] }}" opacity=".7"/>
+    <circle cx="{{ '%.0f'|format(w * 0.16) }}" cy="{{ '%.0f'|format(h * 0.24) }}" r="{{ '%.0f'|format(h * 0.03) }}" fill="none" stroke="{{ c[1] }}" stroke-width="3" opacity=".5"/>
+    <g transform="rotate(-4 {{ '%.0f'|format(w / 2) }} {{ '%.0f'|format(h / 2) }})">
+        <rect x="{{ '%.0f'|format(jx) }}" y="{{ '%.0f'|format(jy + 10) }}" width="{{ '%.0f'|format(jw) }}" height="{{ '%.0f'|format(jh) }}" rx="18" fill="{{ c[2] }}"/>
+        <rect x="{{ '%.0f'|format(jx) }}" y="{{ '%.0f'|format(jy) }}" width="{{ '%.0f'|format(jw) }}" height="{{ '%.0f'|format(jh) }}" rx="18" fill="#fff"/>
+        {% for i in range(3) %}<circle cx="{{ '%.0f'|format(jx + 20 + i * 14) }}" cy="{{ '%.0f'|format(jy + 18) }}" r="4" fill="{{ c[2] }}"/>{% endfor %}
+        <rect x="{{ '%.0f'|format(jx + jw * 0.08) }}" y="{{ '%.0f'|format(jy + jh * 0.3) }}" width="{{ '%.0f'|format(selo) }}" height="{{ '%.0f'|format(selo) }}" rx="16" fill="{{ c[0] }}"/>
+        <g transform="translate({{ '%.1f'|format(jx + jw * 0.08 + selo * 0.2) }} {{ '%.1f'|format(jy + jh * 0.3 + selo * 0.2) }})" style="color: {{ c[1] }}">{{ icone(tema, '%.0f'|format(selo * 0.6)) }}</g>
+        {% for i in range(3) %}<rect x="{{ '%.0f'|format(jx + jw * 0.38) }}" y="{{ '%.0f'|format(jy + jh * (0.34 + i * 0.14)) }}" width="{{ '%.0f'|format(jw * (0.5 - i * 0.08)) }}" height="{{ '%.0f'|format(h * 0.035) }}" rx="{{ '%.0f'|format(h * 0.017) }}" fill="#e6ece9"/>{% endfor %}
+    </g>
+    <g transform="rotate(8 {{ '%.0f'|format(jx + jw) }} {{ '%.0f'|format(jy) }})">
+        <rect x="{{ '%.0f'|format(jx + jw - h * 0.08) }}" y="{{ '%.0f'|format(jy - h * 0.1) }}" width="{{ '%.0f'|format(canto) }}" height="{{ '%.0f'|format(canto) }}" rx="14" fill="{{ c[1] }}"/>
+        <g transform="translate({{ '%.1f'|format(jx + jw - h * 0.08 + canto * 0.2) }} {{ '%.1f'|format(jy - h * 0.1 + canto * 0.2) }})" style="color: #fff">{{ icone(extra, '%.0f'|format(canto * 0.6)) }}</g>
+    </g>
+</svg>
+{%- endmacro %}
+
+{# Fundo da capa da leitura: o ícone do tema repetido como estampa #}
+{% macro capa(tema, cor) -%}
+{% set c = CORES.get(cor, CORES.verde) %}
+<svg class="ct-capa-fundo" viewBox="0 0 1100 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <defs>
+        <pattern id="ct-estampa" width="96" height="144" patternUnits="userSpaceOnUse">
+            <g transform="translate(18 20) rotate(8 14 14)" style="color: {{ c[1] }}" opacity=".22">{{ icone(tema, 29) }}</g>
+            <g transform="translate(66 92) rotate(-8 14 14)" style="color: {{ c[1] }}" opacity=".22">{{ icone(tema, 29) }}</g>
+        </pattern>
+    </defs>
+    <rect width="1100" height="300" fill="{{ c[0] }}"/>
+    <circle cx="968" cy="15" r="165" fill="{{ c[2] }}" opacity=".7"/>
+    <circle cx="88" cy="300" r="120" fill="{{ c[2] }}" opacity=".7"/>
+    <rect width="1100" height="300" fill="url(#ct-estampa)"/>
+</svg>
+{%- endmacro %}

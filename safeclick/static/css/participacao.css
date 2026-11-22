@@ -195,3 +195,218 @@
         width: 100%;
     }
 }
+
+/* confirmação no lugar das ações (participacao.js) */
+.confirmar-linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    padding: 6px 6px 6px 14px;
+    border-radius: 12px;
+    background: #fdf3f1;
+}
+
+.confirmar-linha p {
+    flex: 1 1 220px;
+    margin: 0;
+    color: #8b362d;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.confirmar-linha button {
+    min-height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.confirmar-cancelar {
+    background: transparent;
+    color: #173b45;
+}
+
+.confirmar-cancelar:hover {
+    background: rgba(23, 59, 69, 0.06);
+}
+
+.confirmar-ok {
+    background: #a33a2c;
+    color: #fff;
+    box-shadow: 0 3px 0 #6e2219;
+}
+
+.confirmar-ok:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #6e2219;
+}
+
+.confirmar-linha button:focus-visible {
+    outline: 3px solid #28638d;
+    outline-offset: 2px;
+}
+
+/* Bloco "Avaliações desta atividade" (preenchido pelo participacao.js) */
+.av-bloco-secao {
+    display: grid;
+    gap: 12px;
+    margin: 28px 0 8px;
+}
+
+.av-bloco-secao h2 {
+    margin: 0;
+    color: var(--visual-texto, #173b45);
+    font-size: 17px;
+}
+
+.av-bloco {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 28px;
+    padding: 22px 26px;
+    border: 1px solid #e3e9e6;
+    border-radius: 20px;
+    background: #fff;
+    color: var(--visual-texto, #173b45);
+}
+
+.av-bloco p {
+    margin: 0;
+}
+
+.av-bloco--vazio {
+    gap: 18px;
+}
+
+.av-bloco-media b {
+    display: block;
+    font-size: 34px;
+    line-height: 1.1;
+}
+
+.av-bloco-media small {
+    display: block;
+    margin-top: 4px;
+    color: var(--visual-secundario, #536e7c);
+    font-size: 12.5px;
+}
+
+.av-bloco .av-estrelas {
+    display: inline-flex;
+    gap: 2px;
+    color: #d6dfdc;
+}
+
+.av-bloco .av-estrelas svg {
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+.av-bloco .av-estrela--on {
+    color: #d9952f;
+}
+
+.av-bloco-ultimo {
+    padding-left: 28px;
+    border-left: 1px solid #e3e9e6;
+}
+
+.av-bloco .av-bloco-rotulo {
+    margin-bottom: 4px;
+    color: var(--visual-secundario, #536e7c);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.av-bloco-titulo {
+    font-size: 15.5px;
+    font-weight: 700;
+}
+
+.av-bloco-texto {
+    color: var(--visual-secundario, #536e7c);
+    font-size: 14px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.av-bloco-ultimo .av-bloco-texto {
+    color: var(--visual-texto, #173b45);
+    font-size: 14.5px;
+}
+
+.av-bloco-icone {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: #eef2f1;
+    color: #5f7375;
+}
+
+.av-bloco-botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1.5px solid #dce5e3;
+    border-radius: 11px;
+    background: #fff;
+    box-shadow: 0 4px 0 #dce5e3;
+    color: var(--visual-texto, #173b45);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.av-bloco-botao:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #dce5e3;
+}
+
+.av-bloco-botao:focus-visible {
+    outline: 3px solid var(--visual-foco, #2a718a);
+    outline-offset: 3px;
+}
+
+.av-bloco-secao > .av-bloco-botao {
+    justify-self: start;
+}
+
+.av-bloco-status {
+    margin: 0;
+    color: var(--visual-secundario, #536e7c);
+    font-size: 13px;
+}
+
+@media (max-width: 760px) {
+    .av-bloco,
+    .av-bloco--vazio {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 20px;
+    }
+
+    .av-bloco-ultimo {
+        padding: 16px 0 0;
+        border-top: 1px solid #e3e9e6;
+        border-left: 0;
+    }
+
+    .av-bloco-botao {
+        width: 100%;
+    }
+}

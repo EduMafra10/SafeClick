@@ -1,72 +1,106 @@
+{% extends 'quizzes/base.html' %}
 {% from "componentes/links_atividades.html" import links_atividades -%}
 {% from "componentes/avaliacoes_publicas.html" import avaliacoes_publicas -%}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% include "componentes/_favicon.html" %}
-    <title>{{ conteudo.titulo }} | SafeClick</title>
+{% from 'componentes/_icones.html' import icone %}
+{% from 'conteudos/_cena.html' import capa, figurinha, CORES %}
+{% block titulo %}{{ conteudo.titulo }} | SafeClick{% endblock %}
+{% block recursos %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos_visual.css') }}">
+{% endblock %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">
-    <script src="{{ url_for('static', filename='js/participacao.js') }}" defer></script>
+{% macro item_lateral(c) -%}
+    <a class="ct-lateral-item" href="{{ url_for('conteudos.detalhe', slug=c.slug) }}">
+        {{ figurinha(c.icone, c.cor, 'ct-fig--mini') }}
+        <span>
+            <strong>{{ c.titulo }}</strong>
+            <small>{{ c.minutos }} min de leitura{% if c.concluido %} · lido{% endif %}</small>
+        </span>
+    </a>
+{%- endmacro %}
 
-    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
-</head>
-<body class="site-visual">
-    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
+{% block conteudo %}
+    {% set topicos = leitura.topicos %}
+    {% set cor = CORES.get(tema.cor, CORES.verde) %}
+    <div class="qz-pagina" style="--ct-c1: {{ cor[0] }}; --ct-c2: {{ cor[1] }}">
+        <div class="ct-artigo-grade{{ ' ct-artigo-grade--unica' if pagina_editorial }}">
+            <div class="ct-heroi">
+                {{ capa(tema.icone, tema.cor) }}
+                {{ figurinha(tema.icone, tema.cor, 'ct-fig--heroi') }}
+            </div>
 
-    {% include "componentes/cabecalho.html" %}
-
-    <main id="conteudo" class="visual-container conteudos-conteudo" tabindex="-1">
-        <div class="conteudos-leitura">
-            <a class="conteudos-voltar" href="{{ url_for('paginas.listar_paginas' if pagina_editorial else 'conteudos.listar') }}">
-                <span aria-hidden="true">←</span> {{ 'Voltar para páginas' if pagina_editorial else 'Voltar para conteúdos' }}
-            </a>
-
-            <article class="conteudos-artigo">
-                <header class="conteudos-artigo-cabecalho">
-                    <p class="visual-etiqueta">{{ 'Página do SafeClick' if pagina_editorial else 'Conteúdo educativo' }}</p>
-                    <h1>{{ conteudo.titulo }}</h1>
-                </header>
-
-                <div class="conteudos-corpo">
-                    {{ conteudo.texto | safe }}
-                </div>
-
-                {% if not pagina_editorial %}
-                <div class="conteudos-conclusao">
-                    {% if conteudo.concluido_em %}
-                        <p class="conteudos-concluido" role="status">
-                            <span aria-hidden="true">✓</span>
-                            Você concluiu este conteúdo em {{ conteudo.concluido_em }}.
+            <div class="ct-artigo-coluna">
+                <article class="ct-artigo">
+                    <div class="ct-artigo-miolo">
+                        <nav class="ct-trilha" aria-label="Navegação">
+                            {% if pagina_editorial %}
+                                <a href="{{ url_for('paginas.listar_paginas') }}">Páginas do SafeClick</a>
+                            {% else %}
+                                <a href="{{ url_for('conteudos.listar') }}">Conteúdos</a>
+                            {% endif %}
+                            <span aria-hidden="true">›</span><span>{{ conteudo.titulo }}</span>
+                        </nav>
+                        <p class="ct-artigo-meta">
+                            <span class="ct-artigo-tipo">{{ 'Página do SafeClick' if pagina_editorial else 'Conteúdo educativo' }}</span>
+                            <span>{{ icone("relogio", 14) }}{{ minutos }} min de leitura</span>
+                            {% if topicos %}<span>{{ icone("topicos", 14) }}{{ topicos|length }} {{ 'tópico' if topicos|length == 1 else 'tópicos' }}</span>{% endif %}
                         </p>
-                        {% if config.AVALIACOES_ATIVAS %}
-                            <a class="conteudos-botao" href="{{ url_for('avaliacoes.conteudo', slug=conteudo.slug) }}">Avaliar conteúdo</a>
-                        {% endif %}
-                    {% else %}
-                        <p>Terminou a leitura? Registre para acompanhar no seu progresso.</p>
+                        <h1>{{ conteudo.titulo }}</h1>
 
-                        <form method="post" action="{{ url_for('conteudos.concluir', slug=conteudo.slug) }}">
-                            {{ formulario.csrf_token }}
-                            <button class="conteudos-botao" type="submit">Marcar como concluído</button>
-                        </form>
-                    {% endif %}
-                </div>
-                {% endif %}
-            </article>
+                        <div class="ct-corpo">
+                            {{ leitura.introducao }}
+                            {% for t in topicos %}
+                                <h2 id="topico-{{ loop.index }}">{{ t.titulo }}</h2>
+                                {{ t.html }}
+                            {% else %}
+                                {% if not leitura.introducao %}<p>Este conteúdo ainda não tem texto.</p>{% endif %}
+                            {% endfor %}
+                        </div>
+
+                        {% for fonte in leitura.fontes %}
+                            <p class="ct-fonte">{{ icone("livro", 15) }}<span>{{ fonte }}</span></p>
+                        {% endfor %}
+
+                        {% if not pagina_editorial %}
+                            <section class="ct-concluir" aria-label="Conclusão da leitura">
+                                {% if conteudo.concluido_em %}
+                                    <p role="status">{{ icone("check", 16) }}Você concluiu este conteúdo em {{ conteudo.concluido_em }}.</p>
+                                    {% if config.AVALIACOES_ATIVAS %}
+                                        <a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('avaliacoes.conteudo', slug=conteudo.slug) }}">{{ icone("estrela", 15) }}Avaliar conteúdo</a>
+                                    {% endif %}
+                                {% else %}
+                                    <p><strong>Terminou a leitura?</strong> Registre para acompanhar no seu progresso.</p>
+                                    <form method="post" action="{{ url_for('conteudos.concluir', slug=conteudo.slug) }}">
+                                        {{ formulario.csrf_token }}
+                                        <button class="qz-botao qz-botao--menta qz-botao--pequeno" type="submit">{{ icone("check", 15) }}Marcar como concluído</button>
+                                    </form>
+                                {% endif %}
+                            </section>
+                        {% endif %}
+                    </div>
+                </article>
+
+            </div>
+
             {% if not pagina_editorial %}
-                {% if config.AVALIACOES_ATIVAS %}{{ avaliacoes_publicas('conteudo', conteudo.id) }}{% endif %}
-                <nav class="conteudos-acoes" aria-label="Próximas atividades">
-                    {{ links_atividades('conteudo', conteudo.proxima_referencia, 'conteudos-botao') }}
-                </nav>
+                <aside class="ct-lateral" aria-label="Continue lendo">
+                    {% if proximo %}
+                        <section class="qz-cartao ct-lateral-cartao">
+                            <h2>A seguir</h2>
+                            {{ item_lateral(proximo) }}
+                        </section>
+                    {% endif %}
+                    {% if outros %}
+                        <section class="qz-cartao ct-lateral-cartao">
+                            <h2>Mais conteúdos</h2>
+                            {% for c in outros %}{{ item_lateral(c) }}{% endfor %}
+                        </section>
+                    {% endif %}
+                    {% if config.AVALIACOES_ATIVAS %}{{ avaliacoes_publicas('conteudo', conteudo.id) }}{% endif %}
+                    <nav class="ct-lateral-links" aria-label="Próximas atividades">
+                        {{ links_atividades('conteudo', conteudo.proxima_referencia, 'qz-botao qz-botao--claro qz-botao--pequeno') }}
+                    </nav>
+                </aside>
             {% endif %}
         </div>
-    </main>
-
-    {% include "conteudos/_rodape.html" %}
-</body>
-</html>
+    </div>
+{% endblock %}

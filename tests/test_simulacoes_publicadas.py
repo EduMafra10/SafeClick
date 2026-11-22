@@ -203,6 +203,22 @@ class RotasSimulacoesPublicadasTeste(unittest.TestCase):
             self.assertIn(cenario['titulo'], resposta.get_data(as_text=True))
         self.listar.assert_called_once_with()
 
+    def test_catalogo_destaca_o_primeiro_e_lista_os_outros(self):
+        html = ' '.join(self.client.get('/simulacoes/').get_data(as_text=True).split())
+        primeiro, *outros = self.catalogo.values()
+        self.assertIn('Comece por aqui', html)
+        self.assertLess(html.index(primeiro['titulo']), html.index('Outros cenários'))
+        for cenario in outros:
+            with self.subTest(titulo=cenario['titulo']):
+                self.assertIn('aria-label="Iniciar simulação: ' + cenario['titulo'] + '"', html)
+        self.assertIn('<a href="/simulacoes/" aria-current="page">', html)
+
+    def test_cenario_mostra_etapas_e_letras(self):
+        html = ' '.join(self.client.get('/simulacoes/conta-bloqueada').get_data(as_text=True).split())
+        self.assertIn('aria-current="step"', html)
+        self.assertIn('<span class="simulacao-letra" aria-hidden="true">A</span>', html)
+        self.assertIn('Caixa de entrada · E-mail fictício', html)
+
     def test_quatro_modelos_preservam_visual_e_ordem(self):
         estilos = ['conta-bloqueada', 'entrega-sms', 'falso-conhecido', 'loja-falsa']
         for (chave, cenario), estilo in zip(self.catalogo.items(), estilos):

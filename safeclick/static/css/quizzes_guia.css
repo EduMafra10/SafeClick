@@ -1,0 +1,158 @@
+/* Meu guia de revisão */
+.gr-numeros {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 0;
+}
+
+.gr-numeros > div {
+    padding: 20px 24px;
+    border-left: 1px solid var(--qz-borda);
+}
+
+.gr-numeros > div:first-child {
+    border-left: 0;
+}
+
+.qz-pagina .gr-numeros h2 {
+    color: var(--visual-secundario);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.qz-pagina .gr-numero {
+    margin: 6px 0 8px;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.gr-numero span {
+    color: var(--visual-secundario);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.gr-numeros progress {
+    width: 100%;
+    height: 8px;
+    border: 0;
+    border-radius: 99px;
+    background: var(--qz-trilha);
+    appearance: none;
+}
+
+.gr-numeros progress::-webkit-progress-bar {
+    border-radius: 99px;
+    background: var(--qz-trilha);
+}
+
+.gr-numeros progress::-webkit-progress-value {
+    border-radius: 99px;
+    background: var(--visual-verde);
+}
+
+.gr-numeros progress::-moz-progress-bar {
+    border-radius: 99px;
+    background: var(--visual-verde);
+}
+
+.gr-lista {
+    padding: 4px 24px;
+}
+
+.gr-lista ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gr-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 0;
+    border-top: 1px solid var(--qz-borda);
+}
+
+.gr-item:first-child {
+    border-top: 0;
+}
+
+.qz-pagina .gr-texto h2 {
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.qz-pagina .gr-texto p {
+    margin: 2px 0 8px;
+    color: var(--visual-secundario);
+    font-size: 13.5px;
+}
+
+.gr-trechos {
+    display: flex;
+    gap: 4px;
+    max-width: 260px;
+}
+
+.gr-trechos i {
+    flex: 1;
+    height: 6px;
+    border-radius: 99px;
+    background: #f2cfb0;
+}
+
+.gr-trechos i.gr-certo {
+    background: var(--visual-verde);
+}
+
+.gr-item .qz-selo:not(.qz-selo--ok) {
+    background: #fbeadb;
+    color: #9a4f1c;
+}
+
+.gr-item .qz-botao {
+    white-space: nowrap;
+}
+
+.gr-vazio {
+    display: grid;
+    justify-items: start;
+    gap: 10px;
+    padding: 26px;
+}
+
+.qz-pagina .gr-vazio h2 {
+    font-size: 18px;
+}
+
+.gr-vazio p {
+    color: var(--visual-secundario);
+}
+
+@media (max-width: 760px) {
+    .gr-numeros {
+        grid-template-columns: 1fr;
+    }
+
+    .gr-numeros > div {
+        border-top: 1px solid var(--qz-borda);
+        border-left: 0;
+    }
+
+    .gr-numeros > div:first-child {
+        border-top: 0;
+    }
+
+    .gr-item {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .gr-item .qz-selo,
+    .gr-item .qz-botao {
+        grid-column: 2;
+        justify-self: start;
+    }
+}

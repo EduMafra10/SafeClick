@@ -1,8 +1,12 @@
 <nav class="avaliacoes-admin-atalhos" aria-label="Gestão de avaliações">
-    <a class="admin-botao-secundario" href="{{ url_for('administracao.listar_avaliacoes') }}"
-       {% if request.endpoint == 'administracao.listar_avaliacoes' %}aria-current="page"{% endif %}>Médias e quantidades</a>
-    <a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar') }}" data-avaliacoes-moderacao
-       {% if request.blueprint == 'moderacao_avaliacoes' %}aria-current="page"{% endif %}><span class="avaliacoes-admin-sinal" data-avaliacoes-sinal hidden>{{ icone('notificacao') }}</span>Comentários e moderação</a>
-    <a class="admin-botao-secundario" href="{{ url_for('avaliacoes.publicas') }}">Ver avaliações públicas <span aria-hidden="true">↗</span></a>
-    <a class="admin-botao-secundario" href="{{ url_for('auditoria.listar', evento='cat:avaliacoes') }}">Auditoria de avaliações</a>
+    <div class="avaliacoes-admin-abas">
+        <a class="avaliacoes-admin-aba" href="{{ url_for('administracao.listar_avaliacoes') }}"
+           {% if request.endpoint == 'administracao.listar_avaliacoes' %}aria-current="page"{% endif %}>{{ icone('avaliacoes') }}Médias e quantidades</a>
+        <a class="avaliacoes-admin-aba" href="{{ url_for('moderacao_avaliacoes.listar') }}" data-avaliacoes-moderacao
+           {% if request.blueprint == 'moderacao_avaliacoes' %}aria-current="page"{% endif %}><span class="avaliacoes-admin-sinal" data-avaliacoes-sinal hidden>{{ icone('notificacao') }}</span>Comentários e moderação</a>
+    </div>
+    <div class="avaliacoes-admin-links">
+        <a class="admin-botao-secundario" href="{{ url_for('avaliacoes.publicas') }}">{{ icone('plataforma') }}Ver avaliações públicas</a>
+        <a class="admin-botao-secundario" href="{{ url_for('auditoria.listar', evento='cat:avaliacoes') }}">{{ icone('auditoria') }}Auditoria de avaliações</a>
+    </div>
 </nav>

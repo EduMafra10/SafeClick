@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/privacidade.css') }}">
+    <script src="{{ url_for('static', filename='js/privacidade.js') }}" defer></script>
 </head>
 <body class="site-visual privacidade-pagina">
     <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
@@ -19,19 +20,34 @@
                 <strong>Safe<span>Click</span></strong>
                 <small>Aprenda antes de clicar.</small>
             </a>
-            <nav class="site-navegacao" aria-label="Documentos">
-                <a href="{{ url_for('privacidade.politica') }}"
-                   {% if request.endpoint == 'privacidade.politica' %}aria-current="page"{% endif %}>Política de Privacidade</a>
-                <a href="{{ url_for('privacidade.termos') }}"
-                   {% if request.endpoint == 'privacidade.termos' %}aria-current="page"{% endif %}>Termos de Uso</a>
-            </nav>
+            <a class="privacidade-voltar" href="{{ url_for('simulacoes.listar') }}">← Voltar ao SafeClick</a>
         </div>
     </header>
 
     <main id="conteudo" class="visual-container privacidade-conteudo" tabindex="-1">
-        <article class="privacidade-documento">
+        <nav class="privacidade-trilha" aria-label="Você está em">
+            <a href="{{ url_for('simulacoes.listar') }}">SafeClick</a>
+            <span aria-hidden="true">›</span>
+            <span>{{ 'Termos de Uso' if request.endpoint == 'privacidade.termos' else 'Política de Privacidade' }}</span>
+        </nav>
+        <div class="privacidade-grade">
+            <article class="privacidade-documento">
 {% block conteudo %}{% endblock %}
-        </article>
+            </article>
+            <aside class="privacidade-lateral" data-privacidade-lateral>
+                <nav class="privacidade-documentos" aria-label="Documentos">
+                    <p>Documentos</p>
+                    <a href="{{ url_for('privacidade.politica') }}"
+                       {% if request.endpoint == 'privacidade.politica' %}aria-current="page"{% endif %}>
+                        <strong>Política de Privacidade</strong><small>Como tratamos seus dados</small>
+                    </a>
+                    <a href="{{ url_for('privacidade.termos') }}"
+                       {% if request.endpoint == 'privacidade.termos' %}aria-current="page"{% endif %}>
+                        <strong>Termos de Uso</strong><small>Regras para usar o SafeClick</small>
+                    </a>
+                </nav>
+            </aside>
+        </div>
     </main>
 
     <footer class="visual-rodape">

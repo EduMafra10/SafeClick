@@ -189,6 +189,12 @@
 
 .visual-rodape a {
     color: var(--visual-verde);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.visual-rodape a:hover {
+    text-decoration: underline;
 }
 
 .visual-aviso {

@@ -4,7 +4,7 @@ O RF17 registra uma nota de utilidade de 1 a 5 e um comentário opcional de até
 
 ## Ativação em teste
 
-1. Confirme que a conexão aponta para um PostgreSQL de teste. Siga a ordem de migrações do README, incluindo as tabelas de avaliações, `sql/remover_ranking.sql` e a política 1.4. Em um banco já atualizado até a política 1.3, aplique apenas a remoção do recurso descontinuado e `sql/registrar_politica_1_4_avaliacoes.sql`.
+1. Confirme que a conexão aponta para um PostgreSQL de teste. Siga a ordem de migrações do README. Para um banco preparado até a política 1.3, os itens 30 a 32 incluem a retirada do ranking e o registro da política 1.5 e dos termos 1.1 usados pelo site.
 2. Defina `AVALIACOES_ATIVAS=true` no ambiente de teste e reinicie a aplicação. O padrão é `false`.
 3. Com uma conta fictícia, marque um conteúdo como concluído e abra **Avaliar conteúdo**. Envie a nota e depois altere-a. Termine um quiz e repita pelo botão **Avaliar quiz**.
 4. Abra **Gestão de conteúdo → Avaliações** com um administrador. Confira se a média e a quantidade aparecem para as atividades avaliadas.
@@ -12,7 +12,7 @@ O RF17 registra uma nota de utilidade de 1 a 5 e um comentário opcional de até
 ## Dados e regras
 
 - A identidade vem da sessão. A aplicação exige a conclusão pela própria conta e o estado publicado antes de aceitar a avaliação.
-- Cada envio válido grava a avaliação e o evento `avaliacao.salva` na mesma transação. O evento registra a conta, o tipo de atividade, o resultado e a data. A nota, o comentário e o vínculo com o item ficam na tabela de avaliações. O administrador pode localizar o evento **Avaliação salva** em **Logs de auditoria**, na categoria **Aprendizado**.
+- Cada envio válido grava a avaliação e o evento `avaliacao.salva` na mesma transação. O evento registra a conta, o tipo de atividade, o resultado e a data. A nota, o comentário e o vínculo com o item ficam na tabela de avaliações. O administrador pode localizar o evento **Avaliação salva** em **Logs de auditoria**, na categoria **Avaliações e moderação**.
 - Quizzes tradicionais e atividades da Oficina usam a mesma regra. A avaliação pertence ao item estável do catálogo. Uma tentativa completa em versão anterior habilita avaliar o mesmo item quando publicado, sem criar uma avaliação adicional.
 - O painel administrativo apresenta média e quantidade por atividade publicada a partir da primeira avaliação. Com uma única avaliação, a média corresponde à nota enviada. Os demais itens aparecem como **Sem avaliações**.
 - O comentário fica disponível para edição pela própria conta e pode ser limpo deixando o campo vazio. A pessoa pode excluir sua avaliação ou retirar somente a divulgação em **Minhas avaliações**, inclusive se a atividade for despublicada ou a configuração de novas avaliações for desligada.

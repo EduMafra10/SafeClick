@@ -1,7 +1,8 @@
 {% extends "administracao/base.html" %}
-{% from 'avaliacoes/_componentes.html' import distribuicao_notas %}
+{% from 'avaliacoes/_componentes.html' import estrelas_publicas, barras_publicas %}
+{% from 'componentes/_icones.html' import icone as icone_site %}
 {% block titulo %}Avaliações{% endblock %}
-{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}"><link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
+{% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
 {% block classe_principal %}admin-avaliacoes{% endblock %}
 {% block conteudo %}
     <header class="admin-introducao">
@@ -15,25 +16,31 @@
     {% set resumo = namespace(avaliadas=0, respostas=0) %}
     {% for item in itens %}{% if item.total %}{% set resumo.avaliadas = resumo.avaliadas + 1 %}{% set resumo.respostas = resumo.respostas + item.total %}{% endif %}{% endfor %}
     <section class="avaliacoes-admin-indicadores" aria-label="Resumo das avaliações">
-        <div><strong>{{ itens|length }}</strong><span>Atividades publicadas</span></div>
-        <div><strong>{{ resumo.avaliadas }}</strong><span>Atividades avaliadas</span></div>
-        <div><strong>{{ resumo.respostas }}</strong><span>Avaliações recebidas</span></div>
+        <div><span class="avaliacoes-admin-indicador-icone" aria-hidden="true">{{ icone_site('livro', 20) }}</span><p><strong>{{ itens|length }}</strong><span>Atividades publicadas</span></p></div>
+        <div><span class="avaliacoes-admin-indicador-icone" aria-hidden="true">{{ icone_site('check', 20) }}</span><p><strong>{{ resumo.avaliadas }}</strong><span>Atividades avaliadas</span></p></div>
+        <div><span class="avaliacoes-admin-indicador-icone" aria-hidden="true">{{ icone_site('estrela', 20) }}</span><p><strong>{{ resumo.respostas }}</strong><span>Avaliações recebidas</span></p></div>
     </section>
-    <p class="avaliacoes-admin-total">O resumo administrativo inclui notas privadas. Na consulta pública aparecem somente as notas autorizadas pelos autores.</p>
+    <p class="avaliacoes-admin-total avaliacoes-admin-total--icone">{{ icone_site('cadeado', 15) }}O resumo administrativo inclui notas privadas. Na consulta pública aparecem somente as notas autorizadas pelos autores.</p>
+    {% set cores = {'Conteúdo': 'verde', 'Quiz': 'azul', 'Oficina': 'roxo'} %}
     <ul class="avaliacoes-admin-lista">
         {% for item in itens %}
-            <li class="avaliacoes-admin-cartao avaliacoes-admin-cartao-cabecalho avaliacoes-admin-estatistica">
-                <div>
-                    <p class="avaliacoes-admin-tipo">{{ item.tipo }}</p>
+            <li class="avaliacoes-admin-cartao avaliacoes-admin-estatistica{{ ' avaliacoes-admin-estatistica--vazia' if item.total is none }}">
+                <div class="avaliacoes-admin-atividade">
+                    <span class="avaliacoes-admin-tipo avaliacoes-admin-tipo--{{ cores.get(item.tipo, 'verde') }}">{{ item.tipo }}</span>
                     <h2>{{ item.titulo }}</h2>
                     <p class="avaliacoes-admin-meta">{{ item.total or 0 }} {{ 'avaliação recebida' if item.total == 1 else 'avaliações recebidas' }}</p>
                 </div>
                 {% if item.total is not none %}
-                    <aside class="avaliacoes-admin-nota" aria-label="Média {{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5"><strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }}</strong><span>de 5</span></aside>
+                    {% set media = ('%.1f'|format(item.media)).replace('.', ',') %}
+                    <aside class="avaliacoes-admin-nota" aria-label="Média {{ media }} de 5">
+                        <strong>{{ media }}</strong>
+                        <span aria-hidden="true">{{ estrelas_publicas(item.media|round|int, 15) }}</span>
+                        <small>de 5</small>
+                    </aside>
+                    {{ barras_publicas(item) }}
                 {% else %}
                     <span class="avaliacoes-admin-sem-nota">Sem avaliações</span>
                 {% endif %}
-                {{ distribuicao_notas(item) }}
             </li>
         {% else %}
             <li class="avaliacoes-admin-vazio"><h2>Ainda não há atividades publicadas.</h2><p>As médias aparecerão aqui quando os participantes avaliarem os conteúdos e quizzes.</p></li>

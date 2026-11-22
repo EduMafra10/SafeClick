@@ -1,4 +1,5 @@
 {% from "administracao/_icones.html" import icone %}
+{% from "componentes/_icone_perfil.html" import icone_perfil %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -60,16 +61,18 @@
         </details>
 
         <div class="admin-lateral-rodape">
-            <p class="admin-quem">
-                <strong>{{ nome }}</strong>
-                <span>{{ current_user.email }}</span>
-            </p>
-            <a class="admin-rodape-acao" href="{{ url_for('conta.exibir') }}">{{ icone('contas') }}Minha conta</a>
-            <a class="admin-rodape-acao" href="{{ url_for('simulacoes.listar') }}">{{ icone('plataforma') }}Ver a plataforma</a>
-            <form method="post" action="{{ url_for('autenticacao.sair') }}">
-                {{ formulario_saida.csrf_token(id='csrf-saida') }}
-                <button class="admin-rodape-acao" type="submit">{{ icone('sair') }}Sair</button>
-            </form>
+            <nav class="admin-menu-links admin-menu-conta" aria-label="Sua conta">
+                <a href="{{ url_for('conta.exibir') }}">{{ icone('contas') }}Minha conta</a>
+                <a href="{{ url_for('simulacoes.listar') }}">{{ icone('plataforma') }}Ver a plataforma</a>
+            </nav>
+            <div class="admin-quem">
+                {{ icone_perfil(current_user.icone, nome, 38, 'admin-avatar') }}
+                <p><strong>{{ nome.split()[0] }}</strong><span>Administrador</span></p>
+                <form method="post" action="{{ url_for('autenticacao.sair') }}">
+                    {{ formulario_saida.csrf_token(id='csrf-saida') }}
+                    <button class="admin-sair" type="submit" aria-label="Sair da conta" title="Sair da conta">{{ icone('sair') }}</button>
+                </form>
+            </div>
             <p class="admin-legal">
                 <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a> ·
                 <a href="{{ url_for('privacidade.termos') }}">Termos de Uso</a>

@@ -1,86 +1,113 @@
 {% extends 'quizzes/base.html' %}
 {% from 'componentes/tipo_atividade.html' import tipo_atividade %}
+{% from 'componentes/_icones.html' import icone %}
+{% from 'avaliacoes/_componentes.html' import estrelas_publicas %}
 {% block titulo %}Avaliações públicas | SafeClick{% endblock %}
 {% block recursos %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_minhas.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_publicas.css') }}">
 {% endblock %}
 {% block conteudo %}
-    <header class="conteudos-introducao">
-        <div>
-            <p class="visual-etiqueta">Aprender com outras experiências</p>
-            <h1>Avaliações de conteúdos, quizzes e oficinas</h1>
-            <p class="conteudos-descricao">Notas compartilhadas por escolha dos participantes. Os comentários aparecem após moderação, sem nome ou e-mail do autor.</p>
-        </div>
-        {% if not erro %}
-            <div class="conteudos-progresso">
-                <p class="conteudos-progresso-texto"><strong>{{ total }}</strong>
-                    {{ 'atividade encontrada' if total == 1 else 'atividades encontradas' }}</p>
+    <div class="qz-pagina">
+        <header class="qz-topo">
+            <div>
+                <h1>Avaliações públicas</h1>
+                <p>Notas compartilhadas por escolha dos participantes. Os comentários aparecem após moderação, sem nome ou e-mail do autor.</p>
             </div>
+        </header>
+
+        {% if not erro and itens and itens[0].notas_filtradas %}
+            {% set notas = itens[0].notas_filtradas %}
+            {% set media = itens[0].media_geral %}
+            {% set avaliadas = itens|selectattr('total')|list %}
+            {% set destaque = (avaliadas|sort(attribute='total', reverse=true)|sort(attribute='media', reverse=true))|first %}
+            {% set desta_pagina = ' nesta página' if total > 20 else '' %}
+            <section class="qz-cartao av-numeros" aria-label="Resumo das avaliações públicas">
+                <div>
+                    <h2>Atividades com avaliações</h2>
+                    <p class="av-numero">{{ itens[0].atividades_avaliadas }} <span class="av-de">de {{ total }}</span></p>
+                    <p class="qz-nota">Atividades nos filtros atuais</p>
+                </div>
+                <div>
+                    <h2>Média geral</h2>
+                    {% set media_texto = ('%.1f'|format(media)).replace('.', ',') %}
+                    <p class="av-numero">{{ media_texto }} {{ estrelas_publicas(media|round|int, 18, media_texto ~ ' de 5') }}</p>
+                    <p class="qz-nota">{{ notas }} {{ 'nota compartilhada' if notas == 1 else 'notas compartilhadas' }}</p>
+                </div>
+                <div class="av-destaque">
+                    <h2>Mais bem avaliada{{ desta_pagina }}</h2>
+                    {% if destaque %}
+                        <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=destaque.tipo, item_id=destaque.id) }}">{{ destaque.titulo }}</a>
+                        <p class="qz-nota">{{ tipo_atividade(destaque.tipo, destaque.formato) }} · {{ ('%.1f'|format(destaque.media)).replace('.', ',') }} de 5</p>
+                    {% else %}
+                        <p class="qz-nota">Nenhuma atividade avaliada nesta página.</p>
+                    {% endif %}
+                </div>
+            </section>
         {% endif %}
-    </header>
 
-    <form class="participacao-filtros" method="get" data-espera>
-        <label><span id="avaliacoes-tipo-rotulo">Tipo</span>
-            <select name="tipo" aria-labelledby="avaliacoes-tipo-rotulo">
-                <option value="">Todos</option>
-                <option value="conteudo" {{ 'selected' if tipo == 'conteudo' }}>Conteúdos</option>
-                <option value="quiz" {{ 'selected' if tipo == 'quiz' }}>Quizzes</option>
-                <option value="oficina" {{ 'selected' if tipo == 'oficina' }}>Oficinas</option>
-            </select>
-        </label>
-        <label>Buscar atividade <input name="busca" type="search" maxlength="100" value="{{ busca }}"></label>
-        <label><span id="avaliacoes-ordem-rotulo">Última avaliação pública</span>
-            <select name="ordem" aria-labelledby="avaliacoes-ordem-rotulo">
-                <option value="recentes" {{ 'selected' if ordem == 'recentes' }}>Mais recentes</option>
-                <option value="antigas" {{ 'selected' if ordem == 'antigas' }}>Mais antigas</option>
-            </select>
-        </label>
-        <button class="quizzes-botao" type="submit">Filtrar</button>
-    </form>
-    <p role="status" data-carregando hidden>Carregando avaliações…</p>
+        <form class="qz-cartao av-filtros" method="get" data-espera>
+            <label><span id="avaliacoes-tipo-rotulo">Tipo</span>
+                <select name="tipo" aria-labelledby="avaliacoes-tipo-rotulo">
+                    <option value="">Todos</option>
+                    <option value="conteudo" {{ 'selected' if tipo == 'conteudo' }}>Conteúdos</option>
+                    <option value="quiz" {{ 'selected' if tipo == 'quiz' }}>Quizzes</option>
+                    <option value="oficina" {{ 'selected' if tipo == 'oficina' }}>Oficinas</option>
+                </select>
+            </label>
+            <label>Buscar atividade <input name="busca" type="search" maxlength="100" value="{{ busca }}" placeholder="Ex.: senhas"></label>
+            <label><span id="avaliacoes-ordem-rotulo">Última avaliação pública</span>
+                <select name="ordem" aria-labelledby="avaliacoes-ordem-rotulo">
+                    <option value="recentes" {{ 'selected' if ordem == 'recentes' }}>Mais recentes</option>
+                    <option value="antigas" {{ 'selected' if ordem == 'antigas' }}>Mais antigas</option>
+                </select>
+            </label>
+            <button class="qz-botao qz-botao--escuro" type="submit">Filtrar</button>
+        </form>
+        <p class="qz-nota" role="status" data-carregando hidden>Carregando avaliações…</p>
 
-    <div class="conteudos-organizacao">
-        <div>
-            {% if erro %}
-                <p class="quizzes-erro" role="alert">Não foi possível carregar as avaliações. <a href="{{ url_for('avaliacoes.publicas') }}">Tentar novamente</a></p>
-            {% else %}
-                {% if itens %}
-                    <ol class="conteudos-lista participacao-publicas-lista" start="{{ (pagina - 1) * 20 + 1 }}" aria-label="Atividades com avaliações públicas" role="list">
+        {% if erro %}
+            <p class="qz-aviso qz-aviso--erro" role="alert">Não foi possível carregar as avaliações. <a href="{{ url_for('avaliacoes.publicas') }}">Tentar novamente</a></p>
+        {% else %}
+            {% if itens %}
+                <section class="qz-cartao av-lista av-publicas">
+                    <p class="av-contagem">{{ total }} {{ 'atividade encontrada' if total == 1 else 'atividades encontradas' }}</p>
+                    <ol role="list" aria-label="Atividades com avaliações públicas">
                         {% for item in itens %}
-                            <li class="conteudos-item">
-                                <span class="conteudos-numero" aria-hidden="true">{{ "%02d"|format((pagina - 1) * 20 + loop.index) }}</span>
-                                <div>
-                                    <p class="quizzes-etiqueta">{{ tipo_atividade(item.tipo, item.formato) }}</p>
+                            {% set oficina = item.formato == 'oficina' %}
+                            {% set cor, simbolo = ('verde', 'livro') if item.tipo == 'conteudo' else (('roxo', 'cartas') if oficina else ('azul', 'lista')) %}
+                            <li class="av-publica">
+                                <span class="av-miniatura av-miniatura--{{ cor }}">{{ icone(simbolo, 20) }}</span>
+                                <div class="av-publica-titulo">
                                     <h2>{{ item.titulo }}</h2>
-                                    <div class="participacao-metadados">
-                                        <p>{% if item.total %}<strong>{{ ('%.1f'|format(item.media)).replace('.', ',') }} de 5</strong> · {{ item.total }} {{ 'avaliação pública' if item.total == 1 else 'avaliações públicas' }}{% else %}Sem avaliações públicas{% endif %}</p>
-                                        {% if item.data_avaliacao %}<p class="participacao-nota">Última avaliação: {{ item.data_avaliacao }}</p>{% endif %}
-                                    </div>
-                                    <a class="conteudos-card-link" href="{{ url_for('avaliacoes.detalhe_publico', tipo=item.tipo, item_id=item.id) }}"
-                                       aria-label="Ver avaliações e comentários: {{ item.titulo }}">Ver avaliações e comentários →</a>
+                                    <p>{{ tipo_atividade(item.tipo, item.formato) }}</p>
                                 </div>
+                                {% if item.total %}
+                                    {% set media_item = ('%.1f'|format(item.media)).replace('.', ',') %}
+                                    <p class="av-publica-media"><b>{{ media_item }}</b>{{ estrelas_publicas(item.media|round|int, 15, media_item ~ ' de 5') }}</p>
+                                    <p class="av-publica-total">{{ item.total }} {{ 'avaliação pública' if item.total == 1 else 'avaliações públicas' }}{% if item.data_avaliacao %}<br>última em {{ item.data_avaliacao }}{% endif %}</p>
+                                {% else %}
+                                    <p class="av-publica-media av-publica-media--vazia">Sem avaliações públicas</p>
+                                    <p class="av-publica-total"></p>
+                                {% endif %}
+                                <a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('avaliacoes.detalhe_publico', tipo=item.tipo, item_id=item.id) }}"
+                                   aria-label="Ver avaliações e comentários: {{ item.titulo }}">Ver avaliações</a>
                             </li>
                         {% endfor %}
                     </ol>
-                {% else %}
-                    <p class="conteudos-vazio">Nenhuma atividade encontrada para esses filtros.</p>
-                {% endif %}
-                <nav class="quizzes-acoes" aria-label="Páginas de avaliações">
-                    {% if pagina > 1 %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', pagina=pagina-1, tipo=tipo, busca=busca, ordem=ordem) }}">Anterior</a>{% endif %}
-                    <span>Página {{ pagina }}</span>
-                    {% if pagina * 20 < total %}<a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas', pagina=pagina+1, tipo=tipo, busca=busca, ordem=ordem) }}">Próxima</a>{% endif %}
+                </section>
+            {% else %}
+                <p class="qz-cartao av-sem-comentarios">Nenhuma atividade encontrada para esses filtros.</p>
+            {% endif %}
+            {% if pagina > 1 or pagina * 20 < total %}
+                <nav class="qz-acoes" aria-label="Páginas de avaliações">
+                    {% if pagina > 1 %}<a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('avaliacoes.publicas', pagina=pagina-1, tipo=tipo, busca=busca, ordem=ordem) }}">{{ icone("voltar", 15) }}Anterior</a>{% endif %}
+                    <span class="qz-nota">Página {{ pagina }}</span>
+                    {% if pagina * 20 < total %}<a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('avaliacoes.publicas', pagina=pagina+1, tipo=tipo, busca=busca, ordem=ordem) }}">Próxima{{ icone("seta", 15) }}</a>{% endif %}
                 </nav>
             {% endif %}
-        </div>
+        {% endif %}
 
-        <aside class="conteudos-orientacao" aria-labelledby="titulo-orientacao">
-            <h2 id="titulo-orientacao">Entenda as avaliações.</h2>
-            <ol class="conteudos-passos" role="list">
-                <li><strong>Escolha</strong><p>Filtre os conteúdos, quizzes ou oficinas que você quer consultar.</p></li>
-                <li><strong>Compare</strong><p>Confira a média e quantas notas foram compartilhadas pelos participantes.</p></li>
-                <li><strong>Leia</strong><p>Veja os comentários aprovados pela moderação, sem nome ou e-mail dos autores.</p></li>
-            </ol>
-        </aside>
+        <p class="qz-nota av-rodape-nota">Uma avaliação privada não compõe estes indicadores. <a href="{{ url_for('avaliacoes.privacidade') }}">Entenda a publicação e seus controles de privacidade</a>.</p>
     </div>
-    <p class="participacao-nota">Uma avaliação privada não compõe estes indicadores. <a href="{{ url_for('avaliacoes.privacidade') }}">Entenda a publicação e seus controles de privacidade</a>.</p>
 {% endblock %}

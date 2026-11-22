@@ -1,5 +1,6 @@
 import os
 import unittest
+from io import BytesIO
 from unittest.mock import patch
 
 
@@ -48,13 +49,10 @@ class AdministracaoAcessoTeste(unittest.TestCase):
     def test_conta_comum_nao_abre_previa_nem_grava_catalogo(self):
         self.usuario.perfil = "usuario"
         with patch("safeclick.catalogo_admin.db.obter_item") as obter, \
-             patch("safeclick.catalogo_admin.db.salvar_rascunho") as salvar, \
-             patch("safeclick.catalogo_admin.db.importar_rascunhos_quiz") as importar:
+             patch("safeclick.catalogo_admin.db.salvar_rascunho") as salvar:
             for caminho, metodo in (
                 ("/administracao/catalogo/quizzes/2/previa", "GET"),
                 ("/administracao/catalogo/quizzes/novo", "POST"),
-                ("/administracao/catalogo/quizzes/importar", "GET"),
-                ("/administracao/catalogo/quizzes/importar", "POST"),
                 ("/administracao/catalogo/conteudos/1/remover", "POST"),
                 ("/administracao/catalogo/simulacoes/1/publicar", "POST"),
                 ("/administracao/catalogo/paginas/1/restaurar", "POST"),
@@ -62,20 +60,23 @@ class AdministracaoAcessoTeste(unittest.TestCase):
                 self.assertEqual(self.client.open(caminho, method=metodo).status_code, 403)
             obter.assert_not_called()
             salvar.assert_not_called()
-            importar.assert_not_called()
 
     def test_admin_sem_csrf_nao_cria_rascunho(self):
         with patch("safeclick.catalogo_admin.db.salvar_rascunho") as salvar:
             resposta = self.client.post("/administracao/catalogo/quizzes/novo",
-                                        data={"titulo": "Quiz", "estrutura": "[]"})
+                                        data={"titulo": "Quiz", "formato": "perguntas", "estrutura": "[]"})
         self.assertEqual(resposta.status_code, 400)
         salvar.assert_not_called()
 
-    def test_importacao_sem_csrf_nao_cria_rascunhos(self):
-        with patch("safeclick.catalogo_admin.db.importar_rascunhos_quiz") as importar:
-            resposta = self.client.post("/administracao/catalogo/quizzes/importar", data={"estrutura": "[]"})
-        self.assertEqual(resposta.status_code, 400)
-        importar.assert_not_called()
+    def test_catalogo_oferece_editor_e_rota_de_importacao_foi_removida(self):
+        with patch("safeclick.catalogo_admin.db.listar_itens", return_value=([], 0)):
+            pagina = self.client.get("/administracao/catalogo/quizzes")
+        self.assertEqual(pagina.status_code, 200)
+        self.assertIn('href="/administracao/catalogo/quizzes/novo"', pagina.text)
+        self.assertNotIn("Importar", pagina.text)
+        rota = "/administracao/catalogo/quizzes/importar"
+        self.assertEqual(self.client.get(rota).status_code, 404)
+        self.assertEqual(self.client.post(rota, data={"lote": (BytesIO(b"[]"), "quizzes.json")}).status_code, 404)
 
     def test_visitante_precisa_login(self):
         with self.client.session_transaction() as sessao:

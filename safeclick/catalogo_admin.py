@@ -3,12 +3,13 @@ from functools import wraps
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from psycopg import Error, errors
+from psycopg import Error, OperationalError, errors
 
 from safeclick import catalogo_admin_db as db
+from safeclick import conteudos_leitura
 from safeclick.catalogo_validacao import (
-    CANAIS, FORMATOS_QUIZ, MAX_ALTERNATIVAS, MAX_LOTE_QUIZZES, MAX_QUESTOES,
-    SECOES, DadosInvalidos, estrutura_json, html_do_texto, validar, validar_lote_quizzes,
+    CANAIS, FORMATOS_QUIZ, MAX_ALTERNATIVAS, MAX_QUESTOES,
+    SECOES, DadosInvalidos, estrutura_json, html_do_texto, validar,
 )
 
 
@@ -70,13 +71,11 @@ def _revisao():
     return int(valor)
 
 
-def _validar_formulario(formulario, campos, *, arquivo=None):
-    arquivos_esperados = {arquivo} if arquivo else set()
+def _validar_formulario(formulario, campos):
     if (
         set(request.form) != campos | {"csrf_token"}
         or any(len(request.form.getlist(nome)) != 1 for nome in request.form)
-        or set(request.files) != arquivos_esperados
-        or any(len(request.files.getlist(nome)) != 1 for nome in request.files)
+        or request.files
         or not formulario.validate_on_submit()
     ):
         raise DadosInvalidos("O formulário é inválido ou expirou. Recarregue a página e tente novamente.")
@@ -90,15 +89,13 @@ def _campos(secao):
     return {"titulo", "corpo"}
 
 
-def _ler_dados(secao):
+def _ler_campos(secao):
     dados = {"titulo": request.form["titulo"]}
     if secao == "quizzes":
         dados["formato"] = request.form["formato"]
-        dados["questoes"] = estrutura_json(request.form["estrutura"])
     elif secao == "simulacoes":
         dados.update({campo: request.form[campo] for campo in TEXTOS_SIMULACAO})
         dados["produto"] = {campo: request.form["produto_" + campo] for campo in PRODUTO}
-        dados["opcoes"] = estrutura_json(request.form["estrutura"])
     else:
         dados["corpo"] = request.form["corpo"]
     return dados
@@ -143,36 +140,6 @@ def listar(secao):
     )
 
 
-@catalogo.route("/quizzes/importar", methods=["GET", "POST"], defaults={"secao": "quizzes"})
-@_proteger_operacao
-def importar_quizzes(secao):
-    request.max_content_length = 512 * 1024
-    formulario = FlaskForm()
-    mensagem, status = None, 200
-    if request.method == "POST":
-        try:
-            _validar_formulario(formulario, set(), arquivo="lote")
-            arquivo = request.files["lote"]
-            if not (arquivo.filename or "").lower().endswith(".json"):
-                raise DadosInvalidos("Selecione um arquivo JSON de quizzes.")
-            lote = validar_lote_quizzes(arquivo.read().decode("utf-8-sig"))
-            novos = db.importar_rascunhos_quiz(current_user.id, lote)
-        except UnicodeDecodeError:
-            mensagem, status = "O arquivo JSON precisa estar em UTF-8.", 400
-        except DadosInvalidos as erro:
-            mensagem, status = str(erro), 400
-        else:
-            flash(
-                f"Rascunhos criados: {novos}. Títulos já cadastrados: {len(lote) - novos}.",
-                "administracao_sucesso",
-            )
-            return redirect(url_for(".listar", secao=secao, estado="rascunho"), code=303)
-    return render_template(
-        "administracao/importar_quizzes.html", formulario=formulario, secao=secao,
-        secoes=SECOES, max_lote=MAX_LOTE_QUIZZES, mensagem=mensagem,
-    ), status
-
-
 @catalogo.route("/<secao>/novo", methods=["GET", "POST"])
 @catalogo.route("/<secao>/<int:item_id>/editar", methods=["GET", "POST"])
 @_proteger_operacao
@@ -200,7 +167,10 @@ def editar(secao, item_id=None):
                 revisao = _revisao()
             else:
                 slug = request.form.get("slug", "")
-            dados = _ler_dados(secao)
+            dados = {**dados, **_ler_campos(secao)}
+            if secao in ("quizzes", "simulacoes"):
+                chave = "questoes" if secao == "quizzes" else "opcoes"
+                dados[chave] = estrutura_json(request.form["estrutura"])
             salvo = db.salvar_rascunho(
                 current_user.id, secao, dados, slug=slug, item_id=item_id, revisao=revisao,
             )
@@ -208,6 +178,10 @@ def editar(secao, item_id=None):
             mensagem, status = str(erro), 400
         except db.EdicaoConflitante as erro:
             mensagem, status = str(erro), 409
+        except OperationalError as erro:
+            current_app.logger.warning("Falha ao salvar rascunho (%s)", type(erro).__name__)
+            mensagem = "Não foi possível confirmar o salvamento. Confira a lista do catálogo antes de reenviar."
+            status = 503
         else:
             flash("Rascunho salvo. A publicação não foi alterada.", "administracao_sucesso")
             return redirect(url_for(".editar", secao=secao, item_id=salvo), code=303)
@@ -227,12 +201,14 @@ def editar(secao, item_id=None):
 def previa(secao, item_id):
     item = db.obter_item(secao, item_id)
     dados = item["dados"]
-    corpo = None
+    leitura = {}
     if secao in {"conteudos", "paginas"}:
         corpo = html_do_texto(dados.get("corpo", "")) if item["rascunho"] else item["texto"]
+        leitura = {"leitura": conteudos_leitura.dividir(corpo), "minutos": conteudos_leitura.minutos(corpo),
+                   "tema": conteudos_leitura.tema(item["slug"])}
     return render_template(
         "administracao/previa_catalogo.html", secao=secao, secoes=SECOES, item=item,
-        dados=dados, corpo=corpo, opcoes=_opcoes_tela(dados) if secao == "simulacoes" else [],
+        dados=dados, **leitura, opcoes=_opcoes_tela(dados) if secao == "simulacoes" else [],
         questoes=_questoes_tela(dados) if secao == "quizzes" else [],
         url_publica=_url_publica(secao, item),
     )

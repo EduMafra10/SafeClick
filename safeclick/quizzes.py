@@ -30,6 +30,14 @@ class QuizAlterado(ValueError):
     pass
 
 
+@quizzes.errorhandler(psycopg.Error)
+def consulta_indisponivel(erro):
+    current_app.logger.warning("Falha ao consultar quizzes (%s)", type(erro).__name__)
+    return render_template(
+        "erro.html", codigo=503, detalhe="Não foi possível carregar esta atividade. Tente novamente em instantes.",
+    ), 503
+
+
 @quizzes.before_request
 @exigir_perfis("usuario", "administrador")
 def verificar_acesso_quizzes():
@@ -175,7 +183,7 @@ def exibir_quiz(quiz_id):
             erro = "Este quiz está indisponível no momento."
             status = 503
 
-        elif set(request.form.keys()) != campos_esperados:
+        elif set(request.form) - campos_esperados:
             erro = "Responda todas as perguntas usando as opções apresentadas."
             status = 400
 
@@ -194,19 +202,18 @@ def exibir_quiz(quiz_id):
                     len(valores) != 1
                     or valores[0] not in alternativas_validas
                 ):
-                    erro = (
-                        "Cada pergunta deve receber uma única "
-                        "alternativa válida."
-                    )
+                    if not erro:
+                        ordem = questao["ordem"]
+                        erro = f"Escolha uma única alternativa válida na pergunta {ordem}." if valores else f"Responda a pergunta {ordem}."
                     status = 400
-                    break
+                    continue
 
                 if quiz["formato"] == "oficina":
                     cartao = alternativas_validas[valores[0]]["texto"]
                     if cartao in cartoes_usados:
                         erro = "Encaixe cada cartão em um único trecho do guia."
                         status = 400
-                        break
+                        continue
                     cartoes_usados.add(cartao)
 
                 respostas[questao["id"]] = int(valores[0])
@@ -248,7 +255,7 @@ def exibir_quiz(quiz_id):
 
                     # O redirecionamento evita reenvio ao atualizar o resultado.
                     return redirect(
-                        url_for("quizzes.exibir_resultado"),
+                        url_for("quizzes.exibir_resultado", tentativa_id=tentativa_id),
                         code=303,
                     )
 

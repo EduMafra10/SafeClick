@@ -4,8 +4,6 @@ Projeto de Conclusão de Curso de Sistemas de Informação da Universidade de Mo
 
 O SafeClick é uma plataforma web educativa voltada a estudantes do ensino médio e universitários. Seu objetivo é ajudar os usuários a reconhecer golpes digitais e adotar práticas mais seguras na internet.
 
-A versão desta etapa está reunida na branch **`entrega0911`**.
-
 ## Funcionalidades implementadas
 
 **Conta e acesso**
@@ -178,7 +176,7 @@ No teste local por HTTP, utilize `SESSION_COOKIE_SECURE=false`. Na publicação 
 
 O [guia do RF17](docs/avaliacoes.md) explica como habilitar e testar as avaliações em ambiente de teste e preparar a coleta real.
 
-O [guia de avaliações e progresso](docs/avaliacoes_progresso.md) descreve as avaliações públicas, a moderação, o progresso privado e os testes PostgreSQL. O ranking foi retirado. Em um banco já atualizado até o item 29, aplique os itens 30 e 31 antes de reiniciar esta versão. Os scripts anteriores permanecem como histórico das migrações.
+O [guia de avaliações e progresso](docs/avaliacoes_progresso.md) descreve as avaliações públicas, a moderação, o progresso privado e os testes PostgreSQL. Em um banco já atualizado até o item 29, os itens 30 a 32 completam a preparação desta versão, incluindo a política 1.5 e os termos 1.1.
 
 Se o banco já estiver preparado, confira quais scripts foram aplicados. Não repita indiscriminadamente os scripts de criação, alteração ou carga inicial.
 

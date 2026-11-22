@@ -1,11 +1,16 @@
 {% extends "administracao/base.html" %}
 {% from "componentes/_mensagem_simulacao.html" import mensagem_simulacao %}
+{% from "componentes/_icones.html" import icone as icone_site %}
+{% from "conteudos/_cena.html" import capa, figurinha, CORES %}
 {% set titulo_item = dados.get('titulo') or 'Item sem título' %}
 {% block titulo %}Prévia · {{ titulo_item }}{% endblock %}
 {% block classe_principal %}admin-editor-pagina{% endblock %}
 {% block recursos %}
-    {% set estilos = {'conteudos': 'conteudos.css', 'paginas': 'conteudos.css', 'simulacoes': 'simulacao.css', 'quizzes': 'quizzes.css'} %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/' ~ estilos[secao]) }}">
+    {% set estilos = {'conteudos': ['quizzes_visual.css', 'conteudos_visual.css'], 'paginas': ['quizzes_visual.css', 'conteudos_visual.css'],
+                      'simulacoes': ['simulacao.css'], 'quizzes': ['quizzes.css', 'quizzes_visual.css']} %}
+    {% for arquivo in estilos[secao] %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/' ~ arquivo) }}">
+    {% endfor %}
 {% endblock %}
 {% block conteudo %}
     <nav class="admin-trilha" aria-label="Você está em">
@@ -30,45 +35,75 @@
     </div>
 
     <div class="admin-previa-tela" aria-label="Como o usuário vai ver">
-        <p class="admin-previa-rotulo">Como o usuário vai ver</p>
+        <p class="admin-previa-rotulo">{{ icone_site("olho", 16) }}Como o usuário vai ver</p>
 
         {% if secao in ('conteudos', 'paginas') %}
-            <article class="conteudos-artigo">
-                <header class="conteudos-artigo-cabecalho">
-                    <p class="visual-etiqueta">{{ 'Página do SafeClick' if secao == 'paginas' else 'Conteúdo educativo' }}</p>
-                    <h1>{{ titulo_item }}</h1>
-                </header>
-                <div class="conteudos-corpo">
-                    {% if corpo %}{{ corpo | safe }}{% else %}<p>O texto ainda está vazio.</p>{% endif %}
+            {% set cor = CORES.get(tema.cor, CORES.verde) %}
+            <div class="qz-pagina admin-previa-site" style="--ct-c1: {{ cor[0] }}; --ct-c2: {{ cor[1] }}">
+                <div class="ct-heroi">
+                    {{ capa(tema.icone, tema.cor) }}
+                    {{ figurinha(tema.icone, tema.cor, 'ct-fig--heroi') }}
                 </div>
-                {% if secao == 'conteudos' %}
-                    <div class="conteudos-conclusao">
-                        <p>Terminou a leitura? Registre para acompanhar no seu progresso.</p>
-                        <button class="conteudos-botao" type="button" disabled>Marcar como concluído</button>
+                <article class="ct-artigo">
+                    <div class="ct-artigo-miolo">
+                        <p class="ct-artigo-meta">
+                            <span class="ct-artigo-tipo">{{ 'Página do SafeClick' if secao == 'paginas' else 'Conteúdo educativo' }}</span>
+                            <span>{{ icone_site("relogio", 14) }}{{ minutos }} min de leitura</span>
+                            {% if leitura.topicos %}<span>{{ icone_site("topicos", 14) }}{{ leitura.topicos|length }} {{ 'tópico' if leitura.topicos|length == 1 else 'tópicos' }}</span>{% endif %}
+                        </p>
+                        <h1>{{ titulo_item }}</h1>
+                        <div class="ct-corpo">
+                            {{ leitura.introducao }}
+                            {% for t in leitura.topicos %}
+                                <h2>{{ t.titulo }}</h2>
+                                {{ t.html }}
+                            {% else %}
+                                {% if not leitura.introducao %}<p>O texto ainda está vazio.</p>{% endif %}
+                            {% endfor %}
+                        </div>
+                        {% for fonte in leitura.fontes %}
+                            <p class="ct-fonte">{{ icone_site("livro", 15) }}<span>{{ fonte }}</span></p>
+                        {% endfor %}
+                        {% if secao == 'conteudos' %}
+                            <section class="ct-concluir" aria-label="Conclusão da leitura">
+                                <p><strong>Terminou a leitura?</strong> Registre para acompanhar no seu progresso.</p>
+                                <button class="qz-botao qz-botao--menta qz-botao--pequeno" type="button" disabled>{{ icone_site("check", 15) }}Marcar como concluído</button>
+                            </section>
+                        {% endif %}
                     </div>
-                {% endif %}
-            </article>
+                </article>
+            </div>
+            <p class="admin-previa-nota">Na página real, a coluna à direita mostra o próximo conteúdo, outros conteúdos e as avaliações.</p>
 
         {% elif secao == 'simulacoes' %}
-            <div class="simulacao-pagina">
-                <header class="simulacao-introducao">
-                    <p class="visual-etiqueta">{{ dados.get('canal', '') }} · Simulação</p>
-                    <h1>{{ titulo_item }}</h1>
-                    <p class="simulacao-instrucao">Observe a mensagem. O que você faria se recebesse algo assim?</p>
+            <div class="simulacao-pagina admin-previa-site">
+                <header class="simulacao-topo">
+                    <div>
+                        <h1>{{ titulo_item }}</h1>
+                        <p class="simulacao-instrucao">Observe a mensagem. O que você faria se recebesse algo assim?</p>
+                    </div>
+                    <ol class="simulacao-etapas" aria-label="Etapas da simulação">
+                        {% for nome in ["Observe", "Escolha", "Entenda"] %}
+                            <li class="{{ 'simulacao-etapa--atual' if loop.index0 == 1 else 'simulacao-etapa--feita' if loop.index0 < 1 }}">
+                                <span aria-hidden="true">{% if loop.index0 < 1 %}{{ icone_site("check", 13) }}{% else %}{{ loop.index }}{% endif %}</span>
+                                {{ nome }}
+                            </li>
+                        {% endfor %}
+                    </ol>
                 </header>
                 <div class="simulacao-exercicio">
                     <div class="simulacao-coluna">{{ mensagem_simulacao(dados) }}</div>
-                    <div class="simulacao-decisao">
+                    <div class="simulacao-cartao simulacao-decisao">
                         <fieldset class="simulacao-alternativas" disabled>
                             <legend>O que você faria?</legend>
                             <p class="simulacao-instrucao">Escolha uma alternativa para ver a consequência.</p>
                             <div class="simulacao-opcoes">
                                 {% for opcao in opcoes %}
-                                    <label class="simulacao-opcao"><input type="radio"><span>{{ opcao.texto or 'Alternativa sem texto' }}</span></label>
+                                    <label class="simulacao-opcao"><input type="radio"><span class="simulacao-letra" aria-hidden="true">{{ "ABCDEFGH"[loop.index0] }}</span><span>{{ opcao.texto or 'Alternativa sem texto' }}</span></label>
                                 {% endfor %}
                             </div>
                         </fieldset>
-                        <button class="simulacao-botao" type="button" disabled>Ver consequência</button>
+                        <button class="simulacao-botao" type="button" disabled>Ver consequência {{ icone_site("seta", 16) }}</button>
                     </div>
                 </div>
 
@@ -80,21 +115,19 @@
                         {% for opcao in opcoes %}
                             {% set tipo = 'segura' if opcao.segura else 'risco' %}
                             <li class="simulacao-opcao simulacao-escolhida simulacao-escolhida--{{ tipo }}">
-                                <div class="simulacao-escolhida-texto">
-                                    <span class="simulacao-marcador" aria-hidden="true"></span>
-                                    <span>{{ opcao.texto or 'Alternativa sem texto' }}</span>
-                                </div>
-                                <div class="simulacao-retorno">
-                                    <p class="simulacao-veredito">{{ 'Escolha segura' if opcao.segura else 'Escolha de risco' }}</p>
-                                    <p>{{ opcao.consequencia }}</p>
-                                    <p class="simulacao-porque">{{ opcao.explicacao }}</p>
-                                </div>
+                                <p class="simulacao-veredito">
+                                    <span class="simulacao-veredito-icone" aria-hidden="true">{{ icone_site("check" if opcao.segura else "alerta", 17) }}</span>
+                                    {{ 'Escolha segura' if opcao.segura else 'Escolha de risco' }}
+                                </p>
+                                <p class="simulacao-escolhida-texto">{{ "ABCDEFGH"[loop.index0] }} · {{ opcao.texto or 'Alternativa sem texto' }}</p>
+                                <p>{{ opcao.consequencia }}</p>
+                                <p class="simulacao-porque">{{ opcao.explicacao }}</p>
                             </li>
                         {% endfor %}
                     </ul>
                     <div>
                         {% if marcas %}{{ mensagem_simulacao(dados, marcas) }}{% endif %}
-                        <aside class="simulacao-sinais">
+                        <aside class="simulacao-cartao simulacao-sinais">
                             <h2>Sinais de risco nesta mensagem</h2>
                             <ol>
                                 {% for sinal in pistas %}<li>{{ sinal }}</li>{% else %}<li>Nenhum sinal informado.</li>{% endfor %}
@@ -106,44 +139,60 @@
 
         {% else %}
             {% set oficina = dados.get('formato') == 'oficina' %}
-            <div class="quizzes-responder">
-                <div class="quizzes-introducao quizzes-cartao">
-                    <p class="quizzes-etiqueta">{{ 'Oficina SafeClick' if oficina else 'Teste seus conhecimentos' }}</p>
-                    <h1>{{ titulo_item }}</h1>
-                    <p>{% if oficina %}Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez. Pode haver cartões que ficam sem uso.
-                       {% else %}Selecione uma alternativa por pergunta. Todas as perguntas são obrigatórias.{% endif %}</p>
-                </div>
-                {% if oficina and questoes %}
-                    <section class="quizzes-cartao quizzes-banco-cartoes">
-                        <h2>Cartões do guia</h2>
-                        <ul>{% for cartao in questoes[0].alternativas %}<li>{{ cartao.get('texto') }}</li>{% endfor %}</ul>
-                    </section>
-                {% endif %}
-                <div class="quizzes-perguntas">
-                    {% for questao in questoes %}
-                        <div class="quizzes-cartao">
-                            {% if oficina %}
-                                <p class="quizzes-enunciado">
-                                    <span class="quizzes-etiqueta">Trecho {{ loop.index }} de {{ questoes|length }}</span>
-                                    {{ questao.get('enunciado') or 'Trecho sem texto' }}
-                                </p>
-                                <select class="quizzes-encaixe" disabled aria-label="Cartão do trecho {{ loop.index }}">
-                                    <option>Escolha um cartão</option>
-                                </select>
+            <div class="qz-pagina admin-previa-site">
+                {% if oficina %}
+                    <section class="qz-mesa">
+                        <div class="qz-mesa-cabecalho">
+                            <div>
+                                <h1>{{ titulo_item }}</h1>
+                                <p>Associe um cartão a cada trecho para montar o guia. Cada cartão pode ser usado uma vez. Pode haver cartões que ficam sem uso.</p>
+                            </div>
+                            <span class="qz-mesa-contagem">{{ questoes|length }} trechos</span>
+                        </div>
+                        <ol class="qz-vagas" role="list">
+                            {% for questao in questoes %}
                                 {% set correta = questao.alternativas|selectattr('correta')|first %}
-                                <p class="admin-previa-gabarito"><strong>Cartão correto:</strong> {{ correta.texto if correta else 'nenhum marcado' }}
-                                    {% if questao.get('explicacao') %}<br><strong>No resultado:</strong> {{ questao.explicacao }}{% endif %}</p>
-                            {% else %}
-                            <fieldset class="quizzes-pergunta" disabled>
+                                <li class="qz-vaga">
+                                    <p class="qz-vaga-trecho">
+                                        <small>Trecho {{ loop.index }} de {{ questoes|length }}</small>
+                                        {{ questao.get('enunciado') or 'Trecho sem texto' }}
+                                    </p>
+                                    <select class="qz-encaixe" disabled aria-label="Cartão do trecho {{ loop.index }}">
+                                        <option>Escolha um cartão</option>
+                                    </select>
+                                    <p class="admin-previa-gabarito"><strong>Cartão correto:</strong> {{ correta.texto if correta else 'nenhum marcado' }}
+                                        {% if questao.get('explicacao') %}<br><strong>No resultado:</strong> {{ questao.explicacao }}{% endif %}</p>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                        {% if questoes %}
+                            <div class="qz-banco">
+                                <h2>Cartões do guia</h2>
+                                <ul role="list">{% for cartao in questoes[0].alternativas %}<li>{{ cartao.get('texto') }}</li>{% endfor %}</ul>
+                            </div>
+                        {% endif %}
+                    </section>
+                    <p class="admin-previa-nota">O cartão correto e a explicação aparecem só aqui na prévia. O usuário vê depois de enviar.</p>
+                {% else %}
+                    <header class="qz-topo">
+                        <div>
+                            <h1>{{ titulo_item }}</h1>
+                            <p>Selecione uma alternativa por pergunta. Todas as perguntas são obrigatórias.</p>
+                        </div>
+                    </header>
+                    <div class="qz-perguntas">
+                        {% for questao in questoes %}
+                            <fieldset class="qz-cartao qz-pergunta" disabled>
                                 <legend>
-                                    <span class="quizzes-etiqueta">{{ 'Trecho' if oficina else 'Pergunta' }} {{ loop.index }} de {{ questoes|length }}</span>
-                                    {{ questao.get('enunciado') or 'Enunciado pendente' }}
+                                    <span class="qz-chip">Pergunta {{ loop.index }} de {{ questoes|length }}</span>
+                                    <span class="qz-enunciado">{{ questao.get('enunciado') or 'Enunciado pendente' }}</span>
                                 </legend>
-                                <div class="quizzes-opcoes">
+                                <div class="qz-opcoes">
                                     {% for alternativa in questao.alternativas %}
-                                        <label class="quizzes-opcao{{ ' admin-previa-correta' if alternativa.get('correta') }}">
+                                        <label class="qz-opcao{{ ' admin-previa-correta' if alternativa.get('correta') }}">
                                             <input type="radio">
-                                            <span><strong>{{ 'ABCDEFGH'[loop.index0] }}.</strong> {{ alternativa.get('texto') or 'Alternativa vazia' }}</span>
+                                            <span class="qz-letra" aria-hidden="true">{{ 'ABCDEFGH'[loop.index0] }}</span>
+                                            <span>{{ alternativa.get('texto') or 'Alternativa vazia' }}</span>
                                         </label>
                                     {% endfor %}
                                 </div>
@@ -151,15 +200,10 @@
                                     <p class="admin-previa-gabarito"><strong>No resultado:</strong> {{ questao.explicacao }}</p>
                                 {% endif %}
                             </fieldset>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <p class="quizzes-cartao">Este quiz ainda não possui perguntas.</p>
-                    {% endfor %}
-                </div>
-                {% if oficina %}
-                    <p class="admin-previa-nota">O cartão correto e a explicação aparecem só aqui na prévia. O usuário vê depois de enviar.</p>
-                {% else %}
+                        {% else %}
+                            <p class="qz-cartao">Este quiz ainda não possui perguntas.</p>
+                        {% endfor %}
+                    </div>
                     <p class="admin-previa-nota">A alternativa destacada em verde é a correta. O usuário só vê isso depois de enviar.</p>
                 {% endif %}
             </div>

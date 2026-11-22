@@ -12,6 +12,7 @@ def listar_conteudos(secao="conteudos"):
                 c.id,
                 c.slug,
                 c.titulo,
+                c.texto,
                 cc.concluido_em IS NOT NULL AS concluido
             FROM public.conteudos AS c
             LEFT JOIN public.conclusoes_conteudo AS cc

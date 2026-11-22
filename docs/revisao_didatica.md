@@ -93,7 +93,7 @@ O número é o ID da conta administradora **desse banco**. A permissão é confe
 
 Se o comando detectar alteração posterior da equipe, revise o material pelo editor administrativo e atualize os dados e a matriz após a revisão. Não substitua os hashes para forçar uma publicação sem conferir a diferença.
 
-Os dois arquivos de quizzes também são aceitos em **Gestão de conteúdo → Quizzes → Importar rascunhos**. O importador preserva títulos existentes; ele não atualiza os quizzes já cadastrados. Para esses casos, use o editor ou a manutenção descrita acima. Não reaplique as cargas SQL iniciais sobre o catálogo em uso.
+Para cadastrar ou editar uma atividade pela interface, abra **Gestão de conteúdo → Quizzes**. Use **Novo quiz** para criar um rascunho ou abra uma atividade existente. Os arquivos da revisão são utilizados pela manutenção local descrita acima.
 
 ## Verificação
 

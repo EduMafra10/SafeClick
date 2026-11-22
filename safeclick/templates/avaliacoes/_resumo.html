@@ -1,13 +1,30 @@
-{% from 'avaliacoes/_componentes.html' import distribuicao_notas, comentario_publico %}
-<div class="participacao-resumo">
-    {% if resumo.total %}<p><strong>{{ ('%.1f'|format(resumo.media)).replace('.', ',') }} de 5</strong> · {{ resumo.total }} {{ 'avaliação pública' if resumo.total == 1 else 'avaliações públicas' }}</p>
-    {% else %}<p>Esta atividade ainda não tem avaliações compartilhadas publicamente.</p>{% endif %}
-    <p class="participacao-nota">Somente notas autorizadas pelos autores. Avaliação de utilidade não é nota de desempenho.</p>
-    {{ distribuicao_notas(resumo) }}
-    <ul class="participacao-comentarios" role="list">
-        {% for item in comentarios %}<li>
-            {{ comentario_publico(item) }}
-        </li>{% else %}<li>Ainda não há comentários públicos aprovados para esta atividade.</li>{% endfor %}
-    </ul>
-    {% if request.endpoint == 'avaliacoes.resumo_publico' %}<a class="visual-botao visual-botao--secundario" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id) }}">Abrir todas as avaliações desta atividade <span aria-hidden="true">→</span></a>{% endif %}
+{% from 'avaliacoes/_componentes.html' import estrelas_publicas %}
+{% from 'componentes/_icones.html' import icone %}
+{# Bloco que o participacao.js coloca no fim do conteúdo e do quiz. #}
+<div class="participacao-resumo av-bloco{{ '' if resumo.total else ' av-bloco--vazio' }}">
+    {% if resumo.total %}
+        {% set media = ('%.1f'|format(resumo.media)).replace('.', ',') %}
+        <div class="av-bloco-media">
+            <b>{{ media }}</b>
+            {{ estrelas_publicas(resumo.media|round|int, 15, media ~ ' de 5') }}
+            <small>{{ resumo.total }} {{ 'nota compartilhada' if resumo.total == 1 else 'notas compartilhadas' }}</small>
+        </div>
+        <div class="av-bloco-ultimo">
+            {% if comentarios %}
+                <p class="av-bloco-rotulo">Comentário mais recente</p>
+                <p class="av-bloco-texto">“{{ comentarios[0].comentario }}”</p>
+            {% else %}
+                <p class="av-bloco-rotulo">Ainda sem comentários aprovados</p>
+                <p class="av-bloco-texto">Por enquanto, os participantes compartilharam só a nota.</p>
+            {% endif %}
+        </div>
+        <a class="av-bloco-botao" href="{{ url_for('avaliacoes.detalhe_publico', tipo=tipo, item_id=atividade.id) }}">Ver avaliações{{ icone("seta", 15) }}</a>
+    {% else %}
+        <span class="av-bloco-icone" aria-hidden="true">{{ icone("estrela", 22) }}</span>
+        <div>
+            <p class="av-bloco-titulo">Esta atividade ainda não tem avaliações compartilhadas publicamente.</p>
+            <p class="av-bloco-texto">Ao terminar, você pode dar uma nota e escolher se ela aparece aqui, sem seu nome. Avaliação de utilidade não é nota de desempenho.</p>
+        </div>
+        <a class="av-bloco-botao" href="{{ url_for('avaliacoes.publicas') }}">Ver todas as avaliações{{ icone("seta", 15) }}</a>
+    {% endif %}
 </div>

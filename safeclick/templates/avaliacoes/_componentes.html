@@ -1,3 +1,4 @@
+{% from "componentes/_icones.html" import icone %}
 {% macro distribuicao_notas(resumo) -%}
 {% if resumo.total and resumo.distribuicao %}
 <figure class="avaliacoes-distribuicao" aria-label="Distribuição das notas">
@@ -18,5 +19,47 @@
 <article class="participacao-comentario-publico">
     <p><strong>Participante sem identificação</strong> · {{ item.nota }} de 5 · <time>{{ item.data }}</time></p>
     <p class="participacao-texto">{{ item.comentario }}</p>
+</article>
+{%- endmacro %}
+
+{% macro estrelas_publicas(nota, tamanho=16, rotulo=none) -%}
+<span class="av-estrelas" role="img" aria-label="{{ rotulo or (nota ~ ' de 5') }}">
+    {%- for i in range(5) %}<span class="{{ 'av-estrela--on' if i < nota else '' }}">{{ icone("estrela", tamanho) }}</span>{% endfor -%}
+</span>
+{%- endmacro %}
+
+{% macro barras_publicas(resumo) -%}
+{% if resumo.total and resumo.distribuicao %}
+<ul class="av-barras" role="list" aria-label="Distribuição das notas">
+    {% for nota in range(5, 0, -1) %}
+    {% set quantidade = resumo.distribuicao[nota - 1] %}
+    <li>
+        <span class="av-barras-nota">{{ icone("estrela", 12) }}{{ nota }}</span>
+        <meter class="av-medidor" min="0" max="{{ resumo.total }}" value="{{ quantidade }}" aria-label="Nota {{ nota }} de 5, {{ quantidade }} de {{ resumo.total }} avaliações">{{ quantidade }}</meter>
+        <span aria-hidden="true">{{ quantidade }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{%- endmacro %}
+
+{# O ícone é sorteado a partir do próprio comentário: não tem relação com quem escreveu. #}
+{% macro comentario_anonimo(item) -%}
+{% set chaves = (icones_perfil or {})|list|sort %}
+{% set semente = (item.comentario or '')|length * 7 + (item.nota or 0) * 3 + ((item.data or '')|replace('/', '')|int(0)) %}
+<article class="av-comentario-publico">
+    <div class="av-quem">
+        {% if chaves %}
+            {% set personagem = icones_perfil[chaves[semente % (chaves|length)]] %}
+            <span class="av-avatar" aria-hidden="true"><svg viewBox="0 0 64 64" width="42" height="42" focusable="false"><rect width="64" height="64" fill="{{ personagem.fundo }}"/>{{ personagem.desenho|safe }}</svg></span>
+        {% else %}
+            <span class="av-avatar av-avatar--neutro" aria-hidden="true">{{ icone("usuario", 18) }}</span>
+        {% endif %}
+        <p><strong>Participante anônimo</strong><small>Comentário moderado</small></p>
+    </div>
+    <div>
+        <p class="av-linha">{{ estrelas_publicas(item.nota) }}<time class="qz-nota">{{ item.data }}</time></p>
+        <p class="av-comentario">{{ item.comentario }}</p>
+    </div>
 </article>
 {%- endmacro %}

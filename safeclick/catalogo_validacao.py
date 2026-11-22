@@ -129,6 +129,8 @@ def validar(secao, dados, *, publicar=False):
             ]
             if publicar and (len(alternativas) < 2 or sum(a["correta"] for a in alternativas) != 1):
                 raise DadosInvalidos(f"Pergunta {numero}: informe pelo menos duas alternativas e marque exatamente uma correta.")
+            if publicar and len({a["texto"] for a in alternativas}) != len(alternativas):
+                raise DadosInvalidos(f"Pergunta {numero}: use textos diferentes para cada alternativa.")
             comentadas = sum(bool(a["explicacao"]) for a in alternativas)
             if publicar and 0 < comentadas < len(alternativas):
                 raise DadosInvalidos(f"Pergunta {numero}: explique cada alternativa antes de publicar.")

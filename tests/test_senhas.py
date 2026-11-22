@@ -81,7 +81,7 @@ class LaboratorioSenhasTeste(unittest.TestCase):
         for painel in ("painel-analisador", "painel-gerador", "painel-desafio"):
             with self.subTest(painel=painel):
                 self.assertEqual(elementos.por_id[painel]["role"], "tabpanel")
-        for texto in ("Analisador", "Gerador", "Qual vazou mais?", "laboratorio.js",
+        for texto in ("Analisar uma ideia", "Gerar senha", "Qual vazou mais?", "laboratorio.js",
                       "palavras_senha.js", "gerador_senhas.js", "desafio_senhas.js"):
             with self.subTest(texto=texto):
                 self.assertIn(texto, html)

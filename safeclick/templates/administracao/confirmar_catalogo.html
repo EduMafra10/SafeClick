@@ -14,7 +14,7 @@
         <p>{{ explicacao }}</p>
         <div class="admin-acoes">
             <button class="admin-botao{% if acao == 'remover' %} admin-confirmar-remocao{% endif %}" type="submit"
-                    {% if mensagem and request.method == 'GET' %}disabled{% endif %}>Confirmar {{ rotulo|lower }}</button>
+                    {% if mensagem %}disabled{% endif %}>Confirmar {{ rotulo|lower }}</button>
             {% if item.estado != 'removida' %}
                 <a class="admin-link" href="{{ url_for('administracao.catalogo.editar', secao=secao, item_id=item.id) }}">Cancelar e voltar à edição</a>
             {% else %}

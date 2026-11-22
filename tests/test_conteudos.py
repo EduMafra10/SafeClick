@@ -153,8 +153,8 @@ class RotasConteudosTeste(unittest.TestCase):
 
     def test_lista_indica_conteudos_concluidos(self):
         html = self.client.get("/conteudos/").get_data(as_text=True)
-        self.assertEqual(html.count("✓ Concluído"), 1)
-        self.assertIn("Ler novamente →", html)
+        self.assertEqual(html.count('class="ct-selo ct-selo--lido"'), 1)
+        self.assertIn("Ler de novo: Phishing", html)
 
     def test_concluir_registra_para_o_usuario_da_sessao(self):
         resposta = self.client.post(
@@ -199,3 +199,40 @@ class RotasConteudosTeste(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LeituraTeste(unittest.TestCase):
+    TEXTO = (
+        '<h3>O que é</h3>\n<p>Primeira frase do tópico. Segunda frase.</p>\n'
+        '<h3>O que fazer</h3>\n<ul>\n<li><strong>Troque</strong> a senha.</li>\n</ul>\n'
+        '<p class="conteudos-pratique"><strong>Pratique:</strong> <a href="/laboratorio-senhas/">laboratório</a></p>\n'
+        '<p class="conteudos-fonte">Fontes: CERT.br.</p>'
+    )
+
+    def test_divide_os_topicos_e_separa_as_fontes(self):
+        from safeclick.conteudos_leitura import dividir
+        partes = dividir(self.TEXTO)
+        self.assertEqual([t["titulo"] for t in partes["topicos"]], ["O que é", "O que fazer"])
+        self.assertIn('class="conteudos-pratique"', partes["topicos"][-1]["html"])
+        self.assertNotIn("conteudos-fonte", partes["topicos"][-1]["html"])
+        self.assertEqual(partes["fontes"], ["Fontes: CERT.br."])
+
+    def test_texto_novo_do_editor_mantem_todos_os_destaques_no_lugar(self):
+        from safeclick.conteudos_leitura import dividir
+        from safeclick.texto_formatado import html_do_texto
+        texto = html_do_texto(
+            "Abertura do texto.\n\n> Primeiro destaque\n\n## Parte um\n\nTexto.\n\n> Segundo destaque\n\n"
+            "Depois do destaque.\n\n## Parte dois\n\n- item\n\nFonte: Site A.\n\nFontes: Site B."
+        )
+        partes = dividir(texto)
+        self.assertIn("Primeiro destaque", partes["introducao"])
+        um = partes["topicos"][0]["html"]
+        self.assertLess(um.index("Segundo destaque"), um.index("Depois do destaque"))
+        self.assertEqual(partes["fontes"], ["Fonte: Site A.", "Fontes: Site B."])
+
+    def test_cartao_resume_a_primeira_frase(self):
+        from safeclick.conteudos_leitura import cartao
+        item = cartao({"slug": "vazamento-de-dados", "titulo": "Vazamento", "texto": self.TEXTO})
+        self.assertEqual(item["resumo"], "Primeira frase do tópico.")
+        self.assertEqual((item["icone"], item["topicos"], item["minutos"]), ("alerta", 2, 1))
+        self.assertEqual(cartao({"slug": "novo", "titulo": "Novo"})["icone"], "livro")
