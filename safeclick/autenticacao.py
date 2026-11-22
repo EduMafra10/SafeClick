@@ -49,6 +49,10 @@ autenticacao = Blueprint("autenticacao", __name__)
 _HASH_LOGIN = generate_password_hash(secrets.token_urlsafe(32), method="scrypt")
 
 
+class LimiteCadastro(Exception):
+    pass
+
+
 def _registrar_falha_login(etapa, motivo, usuario_id=None):
     # Registra a etapa e o motivo sem guardar dados informados no formulário.
     registrar_evento(
@@ -84,6 +88,9 @@ def cadastro():
     # valida os campos, o aceite e o token CSRF antes de gravar no banco
     elif formulario.validate_on_submit():
         try:
+            # várias pessoas na mesma rede (sala de aula) cabem com folga neste limite
+            if not permitir_tentativa("cadastro_ip", request.remote_addr or "desconhecido", 20):
+                raise LimiteCadastro
             criar_usuario(
                 formulario.nome.data,
                 formulario.email.data,
@@ -96,6 +103,9 @@ def cadastro():
                 "Os termos mudaram. Leia a versão atual e marque o aceite novamente."
             )
             status = 400
+        except LimiteCadastro:
+            erro = "Muitos cadastros seguidos a partir desta rede. Aguarde cinco minutos e tente novamente."
+            status = 429
         except UniqueViolation:
             formulario.email.errors.append(
                 "Não foi possível usar este e-mail. Confira os dados informados"

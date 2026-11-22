@@ -56,6 +56,19 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         self.criar_patch = patch("safeclick.autenticacao.criar_usuario", return_value=11)
         self.criar = self.criar_patch.start()
         self.addCleanup(self.criar_patch.stop)
+        self.limite_patch = patch("safeclick.autenticacao.permitir_tentativa", return_value=True)
+        self.limite = self.limite_patch.start()
+        self.addCleanup(self.limite_patch.stop)
+
+    def test_limite_de_cadastros_por_rede(self):
+        dados = self.dados()
+        self.limite.return_value = False
+        resposta = self.client.post("/cadastro", data=dados)
+        self.assertEqual(resposta.status_code, 429)
+        self.assertIn("Muitos cadastros seguidos", resposta.get_data(as_text=True))
+        self.criar.assert_not_called()
+        self.assertEqual(self.limite.call_args.args[0], "cadastro_ip")
+        self.assertEqual(self.limite.call_args.args[2], 20)
 
     def dados(self):
         pagina = self.client.get("/cadastro")
