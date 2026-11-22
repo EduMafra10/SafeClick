@@ -100,26 +100,3 @@ def reservar_tentativa_mfa(token):
             """,
             (token_hash,)
         ).fetchone()
-
-
-def concluir_login_pendente(token):
-    token_hash = _hash_token(token)
-    if token_hash is None:
-        return None
-
-    # chamada somente após a aprovacao do segundo fator
-    with conectar_banco() as conexao:
-        registro = conexao.execute(
-            """
-            UPDATE public.logins_pendentes
-            SET concluido_em = CURRENT_TIMESTAMP
-            WHERE token_hash = %s
-              AND expira_em > CURRENT_TIMESTAMP
-              AND concluido_em IS NULL
-              AND tentativas BETWEEN 1 AND 5
-            RETURNING usuario_id
-            """,
-            (token_hash,),
-        ).fetchone()
-
-    return registro["usuario_id"] if registro is not None else None

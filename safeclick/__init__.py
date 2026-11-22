@@ -34,6 +34,21 @@ from flask_wtf.csrf import generate_csrf
 
 REPOSITORIO = "https://github.com/EduMafra10/SafeClick"
 
+# tudo vem do próprio site; o estilo inline cobre os atributos style dos templates
+POLITICA_CONTEUDO = "; ".join((
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "worker-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'self'",
+))
+
 
 def create_app():
     app = Flask(__name__)
@@ -81,6 +96,8 @@ def create_app():
         resposta.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
         resposta.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         resposta.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        if resposta.mimetype == "text/html":
+            resposta.headers.setdefault("Content-Security-Policy", POLITICA_CONTEUDO)
         if request.is_secure:
             resposta.headers.setdefault("Strict-Transport-Security", "max-age=31536000")
         return resposta
