@@ -48,13 +48,13 @@
                         </p>
                     </div>
                     <div class="admin-acoes">
-                        <a class="admin-link" href="{{ url_for('administracao.catalogo.previa', secao=secao, item_id=item.id) }}">Visualizar</a>
+                        <a class="admin-acao" href="{{ url_for('administracao.catalogo.previa', secao=secao, item_id=item.id) }}">Visualizar</a>
                         {% if item.estado != 'removida' %}
-                            <a class="admin-link" href="{{ url_for('administracao.catalogo.editar', secao=secao, item_id=item.id) }}">Editar</a>
+                            <a class="admin-acao admin-acao--principal" href="{{ url_for('administracao.catalogo.editar', secao=secao, item_id=item.id) }}">Editar</a>
                             {% set publico = url_publica(secao, item) %}
-                            {% if publico %}<a class="admin-link" href="{{ publico }}">Abrir no site</a>{% endif %}
+                            {% if publico %}<a class="admin-acao" href="{{ publico }}">Abrir no site</a>{% endif %}
                         {% else %}
-                            <a class="admin-link" href="{{ url_for('administracao.catalogo.confirmar', secao=secao, item_id=item.id, acao='restaurar') }}">Restaurar</a>
+                            <a class="admin-acao admin-acao--principal" href="{{ url_for('administracao.catalogo.confirmar', secao=secao, item_id=item.id, acao='restaurar') }}">Restaurar</a>
                         {% endif %}
                     </div>
                 </li>

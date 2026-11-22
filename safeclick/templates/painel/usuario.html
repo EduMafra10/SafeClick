@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lateral.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/painel.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/calendario.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/conquistas.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/participacao.css') }}">
     <script src="{{ url_for('static', filename='js/participacao.js') }}" defer></script>
@@ -18,6 +19,7 @@
     <script src="{{ url_for('static', filename='js/lateral.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/vendor/chart.umd.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/painel.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/calendario.js') }}" defer></script>
 </head>
 <body class="site-visual pagina-lateral">
     <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
@@ -85,11 +87,11 @@
                     <form class="painel-datas-form" method="get" action="{{ url_for('painel.exibir') }}" data-espera>
                         <label>
                             De
-                            <input type="date" name="inicio" value="{{ filtro.inicio or '' }}" min="2020-01-01" max="{{ filtro.hoje }}">
+                            <input type="date" name="inicio" value="{{ filtro.inicio or '' }}" min="2020-01-01" max="{{ filtro.hoje }}" data-calendario data-calendario-antes="fim">
                         </label>
                         <label>
                             Até
-                            <input type="date" name="fim" value="{{ filtro.fim or '' }}" min="2020-01-01" max="{{ filtro.hoje }}">
+                            <input type="date" name="fim" value="{{ filtro.fim or '' }}" min="2020-01-01" max="{{ filtro.hoje }}" data-calendario data-calendario-apos="inicio">
                         </label>
                         <button class="painel-botao" type="submit">Filtrar</button>
                     </form>

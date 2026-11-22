@@ -1,5 +1,6 @@
 {% extends "administracao/base.html" %}
 {% from "administracao/_campos_catalogo.html" import campo, alternativa, pergunta %}
+{% from "componentes/_icones.html" import icone as icone_site %}
 {% set nomes = {
     'conteudos': ('Novo conteúdo', 'Editar conteúdo', 'Escreva o texto, confira a prévia e publique quando estiver pronto.'),
     'paginas': ('Nova página', 'Editar página', 'Páginas fixas do site, como “Sobre o projeto”.'),
@@ -124,7 +125,7 @@
             {% endif %}
 
             {% if secao == 'simulacoes' %}
-                {% set icones = {'email': '✉', 'sms': '💬', 'conversa': '👥', 'loja': '🛒'} %}
+                {% set icones = {'email': 'envelope', 'sms': 'mensagem', 'conversa': 'conversa', 'loja': 'sacola'} %}
                 <section class="admin-bloco">
                     <h2><i>2</i> Onde o golpe chega</h2>
                     <fieldset class="admin-canais">
@@ -133,7 +134,7 @@
                             <label>
                                 <input type="radio" name="tipo" value="{{ chave }}" required
                                        {% if dados.get('tipo') == chave %}checked{% endif %}>
-                                <span aria-hidden="true">{{ icones.get(chave, '•') }}</span>
+                                <span aria-hidden="true">{{ icone_site(icones.get(chave, 'mensagem'), 22) }}</span>
                                 {{ rotulo.replace(' fictício', '').replace(' fictícia', '') }}
                             </label>
                         {% endfor %}
@@ -241,7 +242,7 @@
                     <li class="admin-checklist-dica">Confira a prévia antes de publicar</li>
                 </ul>
             </section>
-            <a class="admin-link admin-voltar-lista" href="{{ url_for('administracao.catalogo.listar', secao=secao) }}">← Voltar à lista</a>
+            <a class="admin-acao admin-voltar-lista" href="{{ url_for('administracao.catalogo.listar', secao=secao) }}">← Voltar à lista</a>
         </aside>
     </div>
 {% endblock %}

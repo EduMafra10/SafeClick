@@ -125,9 +125,9 @@ class EditorCatalogoTeste(unittest.TestCase):
     def test_previa_do_conteudo_usa_o_layout_do_site(self):
         self.obter.return_value = self.item({"titulo": "Golpe do QR", "corpo": "## Como se proteger\n- Confira o nome"})
         html = self.client.get("/administracao/catalogo/conteudos/30/previa").get_data(as_text=True)
-        self.assertIn("css/conteudos.css", html)
-        self.assertIn('class="conteudos-artigo"', html)
-        self.assertIn("<h3>Como se proteger</h3>", html)
+        self.assertIn("css/conteudos_visual.css", html)
+        self.assertIn('class="ct-artigo"', html)
+        self.assertIn("<h2>Como se proteger</h2>", html)
         self.assertIn("<li>Confira o nome</li>", html)
 
     def test_previa_da_simulacao_mostra_mensagem_e_resultados(self):
@@ -152,9 +152,10 @@ class EditorCatalogoTeste(unittest.TestCase):
         }]}
         self.obter.return_value = self.item(dados)
         html = self.client.get("/administracao/catalogo/quizzes/30/previa").get_data(as_text=True)
-        self.assertIn("css/quizzes.css", html)
+        self.assertIn("css/quizzes_visual.css", html)
         self.assertIn("Pergunta 1 de 1", html)
-        self.assertRegex(html, r'admin-previa-correta">\s*<input type="radio">\s*<span><strong>B\.</strong> Frase longa')
+        self.assertRegex(html, r'admin-previa-correta">\s*<input type="radio">\s*'
+                               r'<span class="qz-letra" aria-hidden="true">B</span>\s*<span>Frase longa')
 
     def test_oficina_tem_regra_ajuda_e_previa_propria(self):
         html = self.client.get("/administracao/catalogo/quizzes/novo").get_data(as_text=True)

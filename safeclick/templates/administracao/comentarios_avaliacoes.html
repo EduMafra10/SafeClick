@@ -1,5 +1,7 @@
 {% extends 'administracao/base.html' %}
 {% from 'componentes/tipo_atividade.html' import tipo_atividade %}
+{% from 'avaliacoes/_componentes.html' import estrelas_publicas %}
+{% from 'componentes/_icones.html' import icone as icone_site %}
 {% block titulo %}Comentários de avaliações{% endblock %}
 {% block recursos %}<link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_admin.css') }}">{% endblock %}
 {% block classe_principal %}admin-avaliacoes{% endblock %}
@@ -27,33 +29,41 @@
 </form>
 <p class="avaliacoes-admin-total" role="status"><strong>{{ total }}</strong> {{ 'avaliação encontrada' if total == 1 else 'avaliações encontradas' }}</p>
 <ul class="avaliacoes-admin-lista">
+{% set cores = {'conteudo': 'verde', 'quiz': 'azul', 'oficina': 'roxo'} %}
 {% for item in itens %}
-    <li class="avaliacoes-admin-cartao">
+    <li class="avaliacoes-admin-cartao avaliacoes-admin-comentario">
         <div class="avaliacoes-admin-cartao-cabecalho">
             <div>
-                <p class="avaliacoes-admin-tipo">{{ tipo_atividade(item.tipo, item.formato) }}</p>
+                <span class="avaliacoes-admin-tipo avaliacoes-admin-tipo--{{ cores['oficina' if item.formato == 'oficina' else item.tipo] }}">{{ tipo_atividade(item.tipo, item.formato) }}</span>
                 <h2>{{ item.titulo }}</h2>
-                <p class="avaliacoes-admin-meta">Conta #{{ item.usuario_id }} · <strong>{{ item.nota }} de 5</strong> · {{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</p>
-                {% if item.data_avaliacao %}<p class="avaliacoes-admin-meta">Atualizada em {{ item.data_avaliacao }}</p>{% endif %}
+                <p class="avaliacoes-admin-linha">
+                    <span class="avaliacoes-admin-estrelas">{{ estrelas_publicas(item.nota, 15) }}<strong>{{ item.nota }} de 5</strong></span>
+                    <span class="avaliacoes-admin-visibilidade">{{ icone_site('olho' if item.publicar_nota else 'olho-off', 14) }}{{ 'Nota pública' if item.publicar_nota else 'Nota privada' }}</span>
+                    <span>{{ icone_site('usuario', 14) }}Conta #{{ item.usuario_id }}</span>
+                    {% if item.data_avaliacao %}<span>{{ icone_site('relogio', 14) }}Atualizada em {{ item.data_avaliacao }}</span>{% endif %}
+                </p>
             </div>
             <span class="avaliacoes-admin-estado avaliacoes-admin-estado--{{ item.moderacao }}">{{ {'pendente':'Aguardando moderação','aprovada':'Publicado','rejeitada':'Publicação bloqueada','nao_solicitada':'Privado'}[item.moderacao] }}</span>
         </div>
-        <p class="avaliacoes-admin-texto">{{ item.comentario or 'Esta avaliação não possui comentário.' }}</p>
+        <p class="avaliacoes-admin-texto{{ ' avaliacoes-admin-texto--vazio' if not item.comentario }}">{{ item.comentario or 'Esta avaliação não possui comentário.' }}</p>
+        <div class="avaliacoes-admin-rodape">
         {% if item.publicar_comentario and item.publicada %}
+            <p class="avaliacoes-admin-ajuda">O autor autorizou a publicação sem identificação.</p>
             <div class="avaliacoes-admin-acoes">
-                {% if item.moderacao != 'aprovada' %}<a class="admin-botao" href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='aprovar') }}" aria-label="Revisar para publicar: {{ item.titulo }}">Revisar para publicar</a>{% endif %}
                 {% if item.moderacao != 'rejeitada' %}<a class="admin-botao-secundario admin-botao-perigo" href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='ocultar') }}" aria-label="Bloquear publicação: {{ item.titulo }}">Bloquear publicação</a>{% endif %}
+                {% if item.moderacao != 'aprovada' %}<a class="admin-botao" href="{{ url_for('moderacao_avaliacoes.confirmar',tipo=item.tipo,item_id=item.item_id,autor_id=item.usuario_id,acao='aprovar') }}" aria-label="Revisar para publicar: {{ item.titulo }}">Revisar para publicar</a>{% endif %}
             </div>
-        {% elif not item.publicada %}<p class="avaliacoes-admin-ajuda">A atividade está fora do catálogo público. O comentário não pode ser publicado.</p>
-        {% else %}<p class="avaliacoes-admin-ajuda">O autor manteve este comentário privado.</p>{% endif %}
+        {% elif not item.publicada %}<p class="avaliacoes-admin-ajuda">{{ icone_site('alerta', 14) }}A atividade está fora do catálogo público. O comentário não pode ser publicado.</p>
+        {% else %}<p class="avaliacoes-admin-ajuda">{{ icone_site('cadeado', 14) }}O autor manteve este comentário privado.</p>{% endif %}
+        </div>
     </li>
 {% else %}
     <li class="avaliacoes-admin-vazio"><h2>Nenhuma avaliação por aqui</h2><p>Não há avaliações disponíveis para o filtro escolhido. Comentários antigos continuam privados até atualização pelo autor.</p></li>
 {% endfor %}
 </ul>
-<p class="avaliacoes-admin-ajuda">Somente comentários autorizados pelo autor podem ser publicados. Revise o texto antes de confirmar qualquer decisão.</p>
+<p class="avaliacoes-admin-ajuda avaliacoes-admin-ajuda--final">Somente comentários autorizados pelo autor podem ser publicados. Revise o texto antes de confirmar qualquer decisão.</p>
 <nav class="avaliacoes-admin-paginacao" aria-label="Páginas de avaliações">
-    {% if pagina > 1 %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina-1,estado=estado,ordem=ordem) }}">← Anterior</a>{% endif %}
+    {% if pagina > 1 %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina-1,estado=estado,ordem=ordem) }}">← Anterior</a>{% else %}<span></span>{% endif %}
     <span>Página {{ pagina }}</span>
     {% if pagina * 20 < total %}<a class="admin-botao-secundario" href="{{ url_for('moderacao_avaliacoes.listar',pagina=pagina+1,estado=estado,ordem=ordem) }}">Próxima →</a>{% endif %}
 </nav>

@@ -155,17 +155,18 @@
 }
 
 .painel-datas-form input {
+    width: 100%;
     min-height: 42px;
     padding: 0 10px;
-    border: 1px solid var(--visual-borda);
-    border-radius: 9px;
+    border: 1.5px solid #cfd9d6;
+    border-radius: 11px;
     background: var(--visual-superficie);
     color: var(--visual-texto);
     font: inherit;
     font-size: 14px;
 }
 
-.painel-datas-form button {
+.painel-datas-form > button {
     grid-column: 1 / -1;
 }
 

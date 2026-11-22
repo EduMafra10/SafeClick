@@ -1,24 +1,76 @@
 {% extends "quizzes/base.html" %}
+{% from "componentes/_icones.html" import icone %}
 {% block titulo %}Meu guia de revisão | SafeClick{% endblock %}
+{% block recursos %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quizzes_guia.css') }}">
+{% endblock %}
 {% block conteudo %}
-    <nav class="quizzes-navegacao" aria-label="Navegação dos quizzes">
-        <a href="{{ url_for('quizzes.listar_quizzes') }}">← Voltar aos quizzes</a>
-    </nav>
-    <header class="quizzes-introducao">
-        <p class="quizzes-etiqueta">Oficina SafeClick</p>
-        <h1>Meu guia de revisão</h1>
-        <p>Reveja os encaixes e as explicações da última tentativa de cada atividade concluída.</p>
-    </header>
-    <ul class="quizzes-grade quizzes-lista">
-        {% for pagina in paginas %}
-            <li class="quizzes-cartao quizzes-tema">
-                <h2>{{ pagina.titulo }}</h2>
-                <p>{{ pagina.pontuacao }} de {{ pagina.total_questoes }} trechos com encaixe correto.</p>
-                <a class="quizzes-botao" href="{{ url_for('quizzes.exibir_resultado', tentativa_id=pagina.id) }}"
-                   aria-label="Rever resultado: {{ pagina.titulo }}">Rever resultado →</a>
-            </li>
+    {% set ns = namespace(certos=0, total=0, pendentes=0) %}
+    {% for p in paginas %}
+        {% set ns.certos = ns.certos + p.pontuacao %}
+        {% set ns.total = ns.total + p.total_questoes %}
+        {% if p.pontuacao < p.total_questoes %}{% set ns.pendentes = ns.pendentes + 1 %}{% endif %}
+    {% endfor %}
+    <div class="qz-pagina">
+        <nav class="qz-migalha" aria-label="Navegação dos quizzes">
+            <a href="{{ url_for('quizzes.listar_quizzes') }}">Quizzes</a><span aria-hidden="true">/</span><span>Meu guia de revisão</span>
+        </nav>
+        <header class="qz-topo">
+            <div>
+                <h1>Meu guia de revisão</h1>
+                <p>Reveja os encaixes e as explicações da última tentativa de cada oficina concluída.</p>
+            </div>
+            <a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('quizzes.listar_quizzes') }}#oficina">{{ icone("cartas", 15) }}Ver oficinas</a>
+        </header>
+
+        {% if paginas %}
+            <section class="qz-cartao gr-numeros" aria-label="Resumo da revisão">
+                <div>
+                    <h2>Oficinas concluídas</h2>
+                    <p class="gr-numero">{{ paginas|length }}</p>
+                    <p class="qz-nota">Última tentativa de cada uma</p>
+                </div>
+                <div>
+                    <h2>Trechos com encaixe correto</h2>
+                    <p class="gr-numero">{{ ns.certos }} <span>de {{ ns.total }}</span></p>
+                    <progress max="{{ ns.total }}" value="{{ ns.certos }}" aria-label="Trechos com encaixe correto">{{ ns.certos }} de {{ ns.total }}</progress>
+                </div>
+                <div>
+                    <h2>Para revisar</h2>
+                    <p class="gr-numero">{{ ns.pendentes }}</p>
+                    <p class="qz-nota">{{ 'Oficinas com algum encaixe errado' if ns.pendentes else 'Tudo certo nas últimas tentativas' }}</p>
+                </div>
+            </section>
+
+            <section class="qz-cartao gr-lista" aria-label="Oficinas para rever">
+                <ol role="list">
+                    {% for completa in (false, true) %}
+                        {% for pagina in paginas if (pagina.pontuacao >= pagina.total_questoes) == completa %}
+                        <li class="gr-item">
+                            <span class="qz-tema qz-tema--{{ 'verde' if completa else 'roxo' }}" aria-hidden="true">{{ icone("check" if completa else "cartas", 19) }}</span>
+                            <div class="gr-texto">
+                                <h2>{{ pagina.titulo }}</h2>
+                                <p>{{ pagina.pontuacao }} de {{ pagina.total_questoes }} trechos com encaixe correto.</p>
+                                <span class="gr-trechos" aria-hidden="true">
+                                    {%- for i in range(pagina.total_questoes) %}<i class="{{ 'gr-certo' if i < pagina.pontuacao }}"></i>{% endfor -%}
+                                </span>
+                            </div>
+                            <span class="qz-selo{{ ' qz-selo--ok' if completa }}">{{ '✓ Tudo certo' if completa else 'Para revisar' }}</span>
+                            <a class="qz-botao qz-botao--pequeno {{ 'qz-botao--claro' if completa else 'qz-botao--escuro' }}"
+                               href="{{ url_for('quizzes.exibir_resultado', tentativa_id=pagina.id) }}"
+                               aria-label="Rever resultado: {{ pagina.titulo }}">Rever resultado{{ icone("seta", 14) }}</a>
+                        </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ol>
+            </section>
         {% else %}
-            <li class="quizzes-cartao">Conclua uma atividade da Oficina SafeClick para começar seu guia.</li>
-        {% endfor %}
-    </ul>
+            <section class="qz-cartao gr-vazio">
+                <span class="qz-tema qz-tema--roxo" aria-hidden="true">{{ icone("cartas", 22) }}</span>
+                <h2>Conclua uma atividade da Oficina SafeClick para começar seu guia.</h2>
+                <p>Cada oficina concluída aparece aqui com os encaixes e as explicações para rever.</p>
+                <a class="qz-botao qz-botao--escuro qz-botao--pequeno" href="{{ url_for('quizzes.listar_quizzes') }}#oficina">Ver oficinas{{ icone("seta", 14) }}</a>
+            </section>
+        {% endif %}
+    </div>
 {% endblock %}

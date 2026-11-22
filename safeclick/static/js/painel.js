@@ -2,12 +2,12 @@
     const datas = document.querySelector("[data-datas]");
     if (datas) {
         document.addEventListener("click", (evento) => {
-            if (datas.open && !datas.contains(evento.target)) {
+            if (datas.open && evento.target.isConnected && !datas.contains(evento.target)) {
                 datas.open = false;
             }
         });
         document.addEventListener("keydown", (evento) => {
-            if (evento.key === "Escape" && datas.open) {
+            if (evento.key === "Escape" && datas.open && !evento.defaultPrevented) {
                 datas.open = false;
                 datas.querySelector("summary").focus();
             }

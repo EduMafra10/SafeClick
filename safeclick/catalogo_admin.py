@@ -6,6 +6,7 @@ from flask_wtf import FlaskForm
 from psycopg import Error, errors
 
 from safeclick import catalogo_admin_db as db
+from safeclick import conteudos_leitura
 from safeclick.catalogo_validacao import (
     CANAIS, FORMATOS_QUIZ, MAX_ALTERNATIVAS, MAX_LOTE_QUIZZES, MAX_QUESTOES,
     SECOES, DadosInvalidos, estrutura_json, html_do_texto, validar, validar_lote_quizzes,
@@ -227,12 +228,14 @@ def editar(secao, item_id=None):
 def previa(secao, item_id):
     item = db.obter_item(secao, item_id)
     dados = item["dados"]
-    corpo = None
+    leitura = {}
     if secao in {"conteudos", "paginas"}:
         corpo = html_do_texto(dados.get("corpo", "")) if item["rascunho"] else item["texto"]
+        leitura = {"leitura": conteudos_leitura.dividir(corpo), "minutos": conteudos_leitura.minutos(corpo),
+                   "tema": conteudos_leitura.tema(item["slug"])}
     return render_template(
         "administracao/previa_catalogo.html", secao=secao, secoes=SECOES, item=item,
-        dados=dados, corpo=corpo, opcoes=_opcoes_tela(dados) if secao == "simulacoes" else [],
+        dados=dados, **leitura, opcoes=_opcoes_tela(dados) if secao == "simulacoes" else [],
         questoes=_questoes_tela(dados) if secao == "quizzes" else [],
         url_publica=_url_publica(secao, item),
     )

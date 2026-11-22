@@ -3,7 +3,7 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from safeclick.sessoes import exigir_perfis
 import logging
-from . import conteudos_db
+from . import conteudos_db, conteudos_leitura
 
 conteudos_bp = Blueprint("conteudos", __name__, url_prefix="/conteudos")
 paginas_bp = Blueprint("paginas", __name__, url_prefix="/paginas")
@@ -34,7 +34,9 @@ def detalhe_pagina(slug):
         return render_template("conteudos/indisponivel.html"), 503
     if pagina is None:
         abort(404)
-    return render_template("conteudos/detalhe.html", conteudo=pagina, pagina_editorial=True)
+    return render_template("conteudos/detalhe.html", conteudo=pagina, pagina_editorial=True,
+                           leitura=conteudos_leitura.dividir(pagina.get("texto")),
+                           tema=conteudos_leitura.tema(None), minutos=conteudos_leitura.minutos(pagina.get("texto")))
 
 
 @conteudos_bp.route("/")
@@ -44,7 +46,7 @@ def listar():
     except Exception:
         logging.exception("Falha em consultar os conteúdos")
         return render_template("conteudos/indisponivel.html"), 503
-    return render_template("conteudos/listar.html", conteudos=conteudos)
+    return render_template("conteudos/listar.html", conteudos=[conteudos_leitura.cartao(c) for c in conteudos])
 
 
 @conteudos_bp.route("/<slug>")
@@ -58,8 +60,25 @@ def detalhe(slug):
         abort(404)
     # Formulário vazio: serve só para gerar o token CSRF do botão
     return render_template(
-        "conteudos/detalhe.html", conteudo=conteudo, formulario=FlaskForm()
+        "conteudos/detalhe.html", conteudo=conteudo, formulario=FlaskForm(),
+        leitura=conteudos_leitura.dividir(conteudo.get("texto")),
+        tema=conteudos_leitura.tema(conteudo.get("slug")),
+        minutos=conteudos_leitura.minutos(conteudo.get("texto")),
+        **_vizinhos(slug, conteudo.get("proxima_referencia")),
     )
+
+
+def _vizinhos(atual, proximo, quantidade=6):
+    # Próximo conteúdo e sugestões da lateral; sem eles a página continua funcionando
+    try:
+        lista = [conteudos_leitura.cartao(c) for c in conteudos_db.listar_conteudos()]
+    except Exception:
+        logging.warning("Sem sugestões de leitura para %s", atual)
+        return {"proximo": None, "outros": []}
+    seguinte = next((c for c in lista if c["slug"] == proximo), None)
+    outros = [c for c in lista if c["slug"] not in (atual, proximo)]
+    outros.sort(key=lambda c: bool(c.get("concluido")))
+    return {"proximo": seguinte, "outros": outros[:quantidade]}
 
 
 @conteudos_bp.post("/<slug>/concluir")

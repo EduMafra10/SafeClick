@@ -1,3 +1,11 @@
 {% extends 'quizzes/base.html' %}
 {% block titulo %}Avaliações indisponíveis | SafeClick{% endblock %}
-{% block conteudo %}<section class="quizzes-cartao" role="alert"><h1>Avaliações indisponíveis</h1><p>Não foi possível carregar os dados agora. Tente novamente em instantes.</p><a class="quizzes-botao quizzes-botao-secundario" href="{{ url_for('avaliacoes.publicas') }}">Voltar às avaliações</a></section>{% endblock %}
+{% block conteudo %}
+    <div class="qz-pagina">
+        <section class="qz-cartao" role="alert">
+            <h1>Avaliações indisponíveis</h1>
+            <p>Não foi possível carregar os dados agora. Tente novamente em instantes.</p>
+            <p class="qz-acoes"><a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('avaliacoes.publicas') }}">Voltar às avaliações</a></p>
+        </section>
+    </div>
+{% endblock %}

@@ -1,0 +1,266 @@
+/* Minha conta no visual com menu lateral */
+.cv-perfil {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px 32px;
+    padding: 26px 30px;
+    border-radius: 24px;
+    background: var(--qz-tinta);
+    color: #fff;
+}
+
+.cv-perfil-quem {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-width: 0;
+}
+
+.cv-avatar {
+    border: 4px solid rgba(255, 255, 255, 0.16);
+    box-sizing: content-box;
+}
+
+.qz-pagina .cv-perfil h2 {
+    color: var(--qz-menta);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.qz-pagina .cv-perfil-nome {
+    margin-top: 2px;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.qz-pagina .cv-perfil-email {
+    color: var(--qz-claro);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.cv-perfil-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.cv-perfil-acoes form {
+    margin: 0;
+}
+
+.qz-pagina .cv-perfil-dica {
+    margin-top: 8px;
+    color: var(--qz-claro);
+    font-size: 12.5px;
+    opacity: 0.85;
+}
+
+.cv-grade {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 18px;
+}
+
+.cv-cartao {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 22px 24px;
+}
+
+.cv-form-nome {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.cv-cartao-topo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.cv-cartao-icone {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #e3f1e9;
+    color: var(--visual-verde);
+}
+
+.qz-pagina .cv-cartao-topo h2 {
+    font-size: 17px;
+}
+
+.qz-pagina .cv-cartao-topo p {
+    color: var(--visual-secundario);
+    font-size: 13px;
+}
+
+.cv-cartao form {
+    margin: 0;
+}
+
+.cv-cartao .conta-campo {
+    margin-bottom: 14px;
+}
+
+.cv-dica {
+    display: block;
+    margin-top: 4px;
+    color: var(--visual-secundario);
+    font-size: 12.5px;
+    font-weight: 400;
+}
+
+.cv-fim {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: 6px;
+}
+
+.cv-linha:last-child {
+    padding-bottom: 0;
+}
+
+.cv-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-top: 1px solid var(--qz-borda);
+}
+
+.cv-linha > div {
+    min-width: 0;
+}
+
+.cv-linha form {
+    margin: 0;
+}
+
+.cv-linha strong {
+    display: block;
+    font-size: 15px;
+}
+
+.cv-linha span:not(.cv-selo) {
+    display: block;
+    margin-top: 2px;
+    color: var(--visual-secundario);
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+.cv-linha .qz-botao {
+    flex: none;
+    white-space: nowrap;
+}
+
+.cv-selo {
+    flex: none;
+    padding: 5px 12px;
+    border-radius: 99px;
+    background: #fbeadb;
+    color: #9a4f1c;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cv-selo--ativa {
+    background: #e3f1e9;
+    color: var(--visual-verde);
+}
+
+.cv-documentos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.cv-documento {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--qz-borda);
+    border-radius: 14px;
+    color: var(--qz-tinta);
+    text-decoration: none;
+}
+
+.cv-documento:hover {
+    background: #f6f8f7;
+}
+
+.cv-documento:focus-visible {
+    outline: 3px solid var(--visual-foco, #2a718a);
+    outline-offset: 2px;
+}
+
+.cv-documento > span {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #f1f4f3;
+}
+
+.cv-documento strong {
+    display: block;
+    font-size: 15px;
+}
+
+.cv-documento small {
+    color: var(--visual-secundario);
+    font-size: 13px;
+}
+
+.cv-documento > svg:last-child {
+    margin-left: auto;
+    color: var(--visual-secundario);
+}
+
+.cv-linha--perigo strong {
+    color: #a33a2c;
+}
+
+.qz-botao.cv-perigo {
+    color: #a33a2c;
+}
+
+@media (max-width: 900px) {
+    .cv-grade,
+    .cv-documentos {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .cv-perfil {
+        padding: 22px 18px;
+    }
+
+    .cv-linha {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

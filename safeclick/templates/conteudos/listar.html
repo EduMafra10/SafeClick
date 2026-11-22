@@ -1,106 +1,81 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% include "componentes/_favicon.html" %}
-    <title>Conteúdos educativos | SafeClick</title>
+{% extends 'quizzes/base.html' %}
+{% from 'componentes/_icones.html' import icone %}
+{% from 'conteudos/_cena.html' import figurinha %}
+{% block titulo %}Conteúdos educativos | SafeClick{% endblock %}
+{% block recursos %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos_visual.css') }}">
+{% endblock %}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navegacao.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/visual_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/conteudos.css') }}">
-
-    <script src="{{ url_for('static', filename='js/navegacao.js') }}" defer></script>
-</head>
-<body class="site-visual">
-    <a class="visual-pular" href="#conteudo">Pular para o conteúdo</a>
-
-    {% include "componentes/cabecalho.html" %}
-
+{% block conteudo %}
     {% set concluidos = conteudos|selectattr("concluido")|list|length %}
     {% set total = conteudos|length %}
-
-    <main id="conteudo" class="visual-container conteudos-conteudo" tabindex="-1">
-        <header class="conteudos-introducao">
+    {% set proxima = (conteudos|rejectattr("concluido")|list or [none])|first %}
+    <div class="qz-pagina">
+        <header class="qz-topo">
             <div>
-                <p class="visual-etiqueta">Conteúdos</p>
-
-                <h1>Entenda os golpes<br>antes de cair neles.</h1>
-
-                <p class="conteudos-descricao">
-                    Escolha um tema para começar a leitura. Ao terminar, marque como
-                    concluído para acompanhar no seu progresso.
-                </p>
-                {% if config.AVALIACOES_ATIVAS %}
-                    <p><a class="conteudos-botao conteudos-botao-secundario" href="{{ url_for('avaliacoes.publicas', tipo='conteudo') }}">Consultar avaliações dos conteúdos <span aria-hidden="true">→</span></a></p>
-                {% endif %}
+                <h1>Conteúdos</h1>
+                <p>Leituras curtas sobre os golpes mais comuns. Ao terminar, marque como concluído para acompanhar no seu progresso.</p>
             </div>
-
-            {% if total %}
-                <div class="conteudos-progresso">
-                    <p class="conteudos-progresso-texto">
-                        <strong>{{ concluidos }}</strong> de {{ total }}
-                        {{ "conteúdo lido" if total == 1 else "conteúdos lidos" }}
-                    </p>
-                    <progress class="conteudos-progresso-barra" max="{{ total }}" value="{{ concluidos }}"
-                              aria-label="Conteúdos concluídos">{{ concluidos }} de {{ total }}</progress>
-                </div>
-            {% endif %}
+            <nav class="ct-topo-acoes" aria-label="Mais sobre os conteúdos">
+                {% if config.AVALIACOES_ATIVAS %}
+                    <a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('avaliacoes.publicas', tipo='conteudo') }}">{{ icone("estrela", 15) }}Avaliações dos conteúdos</a>
+                {% endif %}
+                <a class="qz-botao qz-botao--claro qz-botao--pequeno" href="{{ url_for('paginas.listar_paginas') }}">{{ icone("livro", 15) }}Páginas do SafeClick</a>
+            </nav>
         </header>
 
-        <div class="conteudos-organizacao">
-            {% if conteudos %}
-                <ol class="conteudos-lista" aria-label="Conteúdos disponíveis" role="list">
-                    {% for c in conteudos %}
-                        <li class="conteudos-item{% if c.concluido %} conteudos-item--concluido{% endif %}">
-                            <span class="conteudos-numero" aria-hidden="true">
-                                {{ "%02d"|format(loop.index) }}
-                            </span>
+        {% if total %}
+            <section class="ct-palco" aria-labelledby="ct-proxima">
+                {% if proxima %}
+                    {{ figurinha(proxima.icone, proxima.cor, 'ct-fig--grande') }}
+                    <div>
+                        <p class="ct-palco-rotulo">Próxima leitura</p>
+                        <h2 id="ct-proxima">{{ proxima.titulo }}</h2>
+                        {% if proxima.resumo %}<p class="ct-palco-resumo">{{ proxima.resumo }}</p>{% endif %}
+                        <p class="ct-meta">
+                            <span>{{ icone("relogio", 14) }}{{ proxima.minutos }} min de leitura</span>
+                            {% if proxima.topicos %}<span>{{ icone("topicos", 14) }}{{ proxima.topicos }} {{ 'tópico' if proxima.topicos == 1 else 'tópicos' }}</span>{% endif %}
+                        </p>
+                        <a class="qz-botao qz-botao--menta" href="{{ url_for('conteudos.detalhe', slug=proxima.slug) }}">Começar leitura{{ icone("seta", 16) }}</a>
+                    </div>
+                {% else %}
+                    {{ figurinha('check', 'verde', 'ct-fig--grande') }}
+                    <div>
+                        <p class="ct-palco-rotulo">Tudo lido</p>
+                        <h2 id="ct-proxima">Você leu todos os conteúdos.</h2>
+                        <p class="ct-palco-resumo">Revise quando quiser e pratique nas simulações e nos quizzes.</p>
+                        <a class="qz-botao qz-botao--menta" href="{{ url_for('simulacoes.listar') }}">Ir para as simulações{{ icone("seta", 16) }}</a>
+                    </div>
+                {% endif %}
+                <div class="ct-progresso">
+                    <p><strong>{{ concluidos }}</strong> de {{ total }} {{ "lido" if total == 1 else "lidos" }}</p>
+                    <progress max="{{ total }}" value="{{ concluidos }}" aria-label="Conteúdos concluídos">{{ concluidos }} de {{ total }}</progress>
+                    <p class="ct-progresso-dica">Cada leitura leva poucos minutos. Depois, pratique nas <a href="{{ url_for('simulacoes.listar') }}">simulações</a> e nos <a href="{{ url_for('quizzes.listar_quizzes') }}">quizzes</a>.</p>
+                </div>
+            </section>
 
-                            <div>
-                                {% if c.concluido %}
-                                    <span class="conteudos-card-selo">✓ Concluído</span>
-                                {% endif %}
-
-                                <h2>{{ c.titulo }}</h2>
-
-                                <a class="conteudos-card-link"
-                                   href="{{ url_for('conteudos.detalhe', slug=c.slug) }}"
-                                   aria-label="{{ 'Ler novamente' if c.concluido else 'Ler conteúdo' }}: {{ c.titulo }}">
-                                    {{ "Ler novamente →" if c.concluido else "Ler conteúdo →" }}
-                                </a>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ol>
-            {% else %}
-                <p class="conteudos-vazio">Nenhum conteúdo publicado ainda.</p>
-            {% endif %}
-
-            <aside class="conteudos-orientacao" aria-labelledby="titulo-orientacao">
-                <h2 id="titulo-orientacao">Como aproveitar melhor.</h2>
-
-                <ol class="conteudos-passos" role="list">
-                    <li>
-                        <strong>Leia</strong>
-                        <p>Entenda como o golpe funciona e quais são os sinais.</p>
+            <ol class="ct-estante" role="list" aria-label="Conteúdos disponíveis">
+                {% for c in conteudos %}
+                    <li class="ct-livro ct-livro--{{ c.cor }}">
+                        {{ figurinha(c.icone, c.cor, 'ct-fig--canto') }}
+                        {% if c.concluido %}
+                            <span class="ct-selo ct-selo--lido">{{ icone("check", 12) }}Lido</span>
+                        {% elif proxima and c.slug == proxima.slug %}
+                            <span class="ct-selo ct-selo--proxima">Próxima leitura</span>
+                        {% endif %}
+                        <h2>{{ c.titulo }}</h2>
+                        {% if c.resumo %}<p>{{ c.resumo }}</p>{% endif %}
+                        <div class="ct-livro-pe">
+                            <span class="ct-meta">{{ icone("relogio", 14) }}{{ c.minutos }} min</span>
+                            <a class="qz-botao {{ 'qz-botao--claro' if c.concluido else 'qz-botao--escuro' }} qz-botao--pequeno"
+                               href="{{ url_for('conteudos.detalhe', slug=c.slug) }}"
+                               aria-label="{{ 'Ler de novo' if c.concluido else 'Ler' }}: {{ c.titulo }}">{{ 'Ler de novo' if c.concluido else 'Ler' }}{{ icone("seta", 14) }}</a>
+                        </div>
                     </li>
-                    <li>
-                        <strong>Marque</strong>
-                        <p>Registre a leitura no seu progresso.</p>
-                    </li>
-                    <li>
-                        <strong>Pratique</strong>
-                        <p>Teste o que aprendeu nas
-                            <a href="{{ url_for('simulacoes.listar') }}">simulações</a> e nos
-                            <a href="{{ url_for('quizzes.listar_quizzes') }}">quizzes</a>.</p>
-                    </li>
-                </ol>
-                <p><a class="conteudos-card-link" href="{{ url_for('paginas.listar_paginas') }}">Páginas do SafeClick →</a></p>
-            </aside>
-        </div>
-    </main>
-
-    {% include "conteudos/_rodape.html" %}
-</body>
-</html>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p class="qz-cartao ct-vazio">Nenhum conteúdo publicado ainda.</p>
+        {% endif %}
+    </div>
+{% endblock %}

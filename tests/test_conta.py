@@ -136,21 +136,21 @@ class ContaRotasTeste(unittest.TestCase):
     def postar(self, caminho, **campos):
         return self.client.post(caminho, data={"csrf_token": self.token(), **campos})
 
-    def test_pagina_mostra_secoes_e_menu_do_cabecalho(self):
+    def test_pagina_mostra_secoes_e_menu_lateral(self):
         resposta = self.client.get("/conta/")
         html = resposta.get_data(as_text=True)
         self.assertEqual(resposta.status_code, 200)
         self.assertEqual(resposta.headers["Cache-Control"], "no-store")
         for texto in ("Meu perfil", "Segurança da conta", "Privacidade", "✓ Ativa", "Agora: 2 outras sessões",
-                      "Versão 1.0 aceita em 02/11/2026", 'href="/conta/">Minha conta', 'value="raposa"', "Fale com o suporte"):
+                      "Versão 1.0 aceita em 02/11/2026", 'href="/conta/" aria-current="page"', 'value="raposa"', "Fale com o suporte"):
             self.assertIn(texto, html)
         self.assertIn('value="Ana Souza"', html)
         self.assertEqual(self.buscar.call_args.args[0], 7)
 
-    def test_cabecalho_mostra_o_personagem_escolhido(self):
+    def test_menu_lateral_mostra_o_personagem_escolhido(self):
         self.usuario.icone = "coruja"
         html = self.client.get("/conta/").get_data(as_text=True)
-        self.assertIn(ICONES["coruja"]["fundo"], html.split("site-conta-botao", 1)[1][:600])
+        self.assertIn(ICONES["coruja"]["fundo"], html.split("lateral-avatar", 1)[1][:600])
 
     def test_salvar_nome(self):
         with patch("safeclick.conta.conta_db.atualizar_nome") as atualizar:

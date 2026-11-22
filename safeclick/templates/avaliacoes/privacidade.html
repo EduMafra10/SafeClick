@@ -1,10 +1,20 @@
 {% extends 'quizzes/base.html' %}
 {% block titulo %}Avaliações e privacidade | SafeClick{% endblock %}
+{% block recursos %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacoes_publicas.css') }}">
+{% endblock %}
 {% block conteudo %}
-<article class="quizzes-cartao">
-    <p class="quizzes-etiqueta">Suas escolhas</p>
-    <h1>Avaliações e privacidade</h1>
-    <p>Aviso de publicação: {{ versao }}.</p>
+<div class="qz-pagina">
+<nav class="qz-migalha" aria-label="Navegação">
+    <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a><span aria-hidden="true">/</span><span>Avaliações e privacidade</span>
+</nav>
+<header class="qz-topo">
+    <div>
+        <h1>Avaliações e privacidade</h1>
+        <p>Aviso de publicação: {{ versao }}.</p>
+    </div>
+</header>
+<article class="qz-cartao av-aviso-texto">
     <h2>Como utilizamos sua avaliação</h2>
     <p>A nota de utilidade e o comentário ficam vinculados à sua conta para edição, exclusão e prevenção de duplicidade. Novas avaliações enviadas com este aviso podem ser consultadas pela equipe administrativa para melhorar os materiais. Comentários antigos permanecem privados até que você os atualize pelo novo formulário.</p>
     <h2>Compartilhamento opcional</h2>
@@ -15,4 +25,5 @@
     <p>Retire a autorização pelo formulário ou use <a href="{{ url_for('avaliacoes.minhas') }}">Minhas avaliações</a> para manter sua avaliação privada ou excluí-la, inclusive se a atividade sair do catálogo. As mudanças retiram os dados das consultas seguintes do sistema, mas não apagam cópias feitas por terceiros.</p>
     <p>Ao solicitar exclusão da conta, a exibição pública é retirada. Ao concluir a exclusão, as avaliações são eliminadas. O histórico mínimo de auditoria segue a política do projeto. Consulte seus direitos, o responsável e o canal de atendimento na <a href="{{ url_for('privacidade.politica') }}">Política de Privacidade</a>.</p>
 </article>
+</div>
 {% endblock %}

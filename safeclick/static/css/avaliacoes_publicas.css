@@ -723,3 +723,37 @@
         justify-self: stretch;
     }
 }
+
+/* aviso de participação */
+.av-aviso-texto {
+    display: grid;
+    gap: 0;
+    padding: 30px 34px;
+}
+
+.qz-pagina .av-aviso-texto h2 {
+    margin: 26px 0 8px;
+    font-size: 19px;
+}
+
+.qz-pagina .av-aviso-texto h2:first-child {
+    margin-top: 0;
+}
+
+.qz-pagina .av-aviso-texto p {
+    margin: 0 0 12px;
+    color: #20414b;
+    font-size: 16px;
+    line-height: 1.75;
+}
+
+.av-aviso-texto a {
+    color: var(--visual-verde);
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .av-aviso-texto {
+        padding: 22px 18px;
+    }
+}
