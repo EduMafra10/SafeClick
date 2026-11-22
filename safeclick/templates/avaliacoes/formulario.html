@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block conteudo %}
-    {% set rotulos = dict(formulario.nota.choices) %}
+    {% set rotulos = formulario.rotulos_nota %}
     <div class="qz-pagina">
         <nav class="qz-migalha" aria-label="Voltar à atividade">
             <a class="av-voltar" href="{{ voltar }}">{{ icone("voltar", 14) }}Voltar à atividade</a>
@@ -60,8 +60,8 @@
                     <legend>{{ formulario.nota.label.text }}</legend>
                     <div class="av-estrelas-campo">
                         {% for opcao in formulario.nota %}
-                            <label class="av-estrela-opcao" title="{{ opcao.label.text }}">
-                                {{ opcao(required=true, class_='avaliacoes-somente-leitor') }}{{ icone("estrela", 26) }}<span class="avaliacoes-somente-leitor">{{ opcao.label.text }}</span>
+                            <label class="av-estrela-opcao" title="{{ rotulos[opcao.data] }}">
+                                {{ opcao(required=true, class_='avaliacoes-somente-leitor') }}{{ icone("estrela", 26) }}<span class="avaliacoes-somente-leitor">{{ rotulos[opcao.data] }}</span>
                             </label>
                         {% endfor %}
                         <span class="av-nota-rotulo" data-nota-saida aria-hidden="true">{{ rotulos.get(formulario.nota.data, 'Escolha de 1 a 5') }}</span>

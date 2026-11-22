@@ -44,7 +44,7 @@
             </div>
         {% else %}
             {{ campo('texto', 'Texto da alternativa', item.get('texto', ''), 500, 0, true, oculto=true) }}
-            {{ campo('explicacao', 'Comentário', item.get('explicacao', ''), 800, 0, true, dica='opcional, aparece no resultado') }}
+            {{ campo('explicacao', 'Comentário', item.get('explicacao', ''), 800, 0, true, dica='opcional; se usar, comente todas as alternativas desta pergunta') }}
         {% endif %}
     </fieldset>
 {% endmacro %}

@@ -16,19 +16,17 @@
             </div>
         </header>
 
-        {% set avaliadas = itens|selectattr('total')|list %}
-        {% if not erro and avaliadas %}
-            {% set notas = avaliadas|sum(attribute='total') %}
-            {% set soma = namespace(valor=0) %}
-            {% for item in avaliadas %}{% set soma.valor = soma.valor + item.media * item.total %}{% endfor %}
-            {% set media = soma.valor / notas %}
+        {% if not erro and itens and itens[0].notas_filtradas %}
+            {% set notas = itens[0].notas_filtradas %}
+            {% set media = itens[0].media_geral %}
+            {% set avaliadas = itens|selectattr('total')|list %}
             {% set destaque = (avaliadas|sort(attribute='total', reverse=true)|sort(attribute='media', reverse=true))|first %}
             {% set desta_pagina = ' nesta página' if total > 20 else '' %}
-            <section class="qz-cartao av-numeros" aria-label="Resumo das avaliações{{ desta_pagina }}">
+            <section class="qz-cartao av-numeros" aria-label="Resumo das avaliações públicas">
                 <div>
                     <h2>Atividades com avaliações</h2>
-                    <p class="av-numero">{{ avaliadas|length }}{% if not desta_pagina %} <span class="av-de">de {{ total }}</span>{% endif %}</p>
-                    <p class="qz-nota">{{ 'Nesta página' if desta_pagina else 'Conteúdos, quizzes e oficinas' }}</p>
+                    <p class="av-numero">{{ itens[0].atividades_avaliadas }} <span class="av-de">de {{ total }}</span></p>
+                    <p class="qz-nota">Atividades nos filtros atuais</p>
                 </div>
                 <div>
                     <h2>Média geral</h2>
@@ -38,8 +36,12 @@
                 </div>
                 <div class="av-destaque">
                     <h2>Mais bem avaliada{{ desta_pagina }}</h2>
-                    <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=destaque.tipo, item_id=destaque.id) }}">{{ destaque.titulo }}</a>
-                    <p class="qz-nota">{{ tipo_atividade(destaque.tipo, destaque.formato) }} · {{ ('%.1f'|format(destaque.media)).replace('.', ',') }} de 5</p>
+                    {% if destaque %}
+                        <a href="{{ url_for('avaliacoes.detalhe_publico', tipo=destaque.tipo, item_id=destaque.id) }}">{{ destaque.titulo }}</a>
+                        <p class="qz-nota">{{ tipo_atividade(destaque.tipo, destaque.formato) }} · {{ ('%.1f'|format(destaque.media)).replace('.', ',') }} de 5</p>
+                    {% else %}
+                        <p class="qz-nota">Nenhuma atividade avaliada nesta página.</p>
+                    {% endif %}
                 </div>
             </section>
         {% endif %}

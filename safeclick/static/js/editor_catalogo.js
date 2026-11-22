@@ -26,6 +26,37 @@ if (editor) {
         }
     }
 
+    function estruturaAlterada() {
+        atualizar();
+        editor.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    editor.querySelector("[data-repetir-cartoes]")?.addEventListener("click", () => {
+        const perguntas = itens(editor.querySelector('[data-lista="questao"]'));
+        const listaDe = pergunta => pergunta.querySelector('[data-lista="alternativa"]');
+        const textoDe = alternativa => campo(alternativa, "texto").value.trim();
+        const banco = perguntas.length ? itens(listaDe(perguntas[0])).map(textoDe) : [];
+        if (perguntas.length < 2 || banco.length < 2 || banco.includes("") || new Set(banco).size !== banco.length) {
+            aviso.textContent = "Crie pelo menos dois trechos e preencha cartões diferentes no primeiro.";
+            window.alert(aviso.textContent);
+            return;
+        }
+        if (!window.confirm("Repetir os cartões do primeiro trecho? Cartões substituídos perderão o comentário e a marcação.")) return;
+        const modelo = editor.querySelector('[data-modelo="alternativa"]');
+        for (const pergunta of perguntas.slice(1)) {
+            const lista = listaDe(pergunta);
+            const existentes = new Map(itens(lista).map(a => [textoDe(a), a]));
+            const ordenadas = banco.map(texto => {
+                const alternativa = existentes.get(texto) || modelo.content.firstElementChild.cloneNode(true);
+                campo(alternativa, "texto").value = texto;
+                return alternativa;
+            });
+            lista.replaceChildren(...ordenadas);
+        }
+        estruturaAlterada();
+        aviso.textContent = "Cartões repetidos. Confira o gabarito de cada trecho.";
+    });
+
     editor.addEventListener("click", evento => {
         const botao = evento.target.closest("[data-editor-acao]");
         if (!botao || botao.disabled) return;
@@ -35,7 +66,7 @@ if (editor) {
             if (itens(lista).length >= Number(lista.dataset.limite)) return;
             const modelo = editor.querySelector('[data-modelo="' + botao.dataset.tipo + '"]');
             lista.append(modelo.content.cloneNode(true));
-            atualizar();
+            estruturaAlterada();
             lista.lastElementChild.querySelector("[data-campo]").focus();
             aviso.textContent = "Item adicionado.";
             return;
@@ -50,7 +81,7 @@ if (editor) {
             if (preenchido && !window.confirm("Remover este item do rascunho?")) return;
             const vizinho = item.nextElementSibling || item.previousElementSibling;
             item.remove();
-            atualizar();
+            estruturaAlterada();
             const adicionar = [...editor.querySelectorAll('[data-editor-acao="adicionar"]')]
                 .find(controle => listaPara(controle) === lista);
             (vizinho?.querySelector("[data-campo]") || adicionar)?.focus();
@@ -61,7 +92,7 @@ if (editor) {
             } else if (acao === "descer" && item.nextElementSibling) {
                 lista.insertBefore(item.nextElementSibling, item);
             }
-            atualizar();
+            estruturaAlterada();
             (botao.disabled ? item.querySelector("[data-campo]") : botao).focus();
             aviso.textContent = "Ordem atualizada.";
         }
@@ -107,4 +138,5 @@ if (editor) {
 
     atualizar();
     atualizarProduto();
+    document.querySelector('[data-salvar-estrutura]').disabled = false;
 }

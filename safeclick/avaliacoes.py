@@ -18,19 +18,20 @@ LIMITE_COMENTARIO = 500
 
 
 class FormularioAvaliacao(FlaskForm):
+    rotulos_nota = {
+        "1": "1 · Nada útil",
+        "2": "2 · Pouco útil",
+        "3": "3 · Moderadamente útil",
+        "4": "4 · Útil",
+        "5": "5 · Muito útil",
+    }
     aviso_versao = HiddenField(default=VERSAO_AVISO)
     publicar_nota = BooleanField('Incluir minha nota na média pública.', default=False)
     publicar_comentario = BooleanField('Enviar meu comentário para publicação sem meu nome, após moderação.', default=False)
     maior_de_idade = BooleanField('Declaro ter 18 anos ou mais para compartilhar publicamente.', default=False)
     nota = RadioField(
         "Quanto esta atividade ajudou você a entender o tema?",
-        choices=[
-            ("1", "1 · Nada útil"),
-            ("2", "2 · Pouco útil"),
-            ("3", "3 · Moderadamente útil"),
-            ("4", "4 · Útil"),
-            ("5", "5 · Muito útil"),
-        ],
+        choices=list(rotulos_nota),
         validators=[InputRequired(message="Escolha uma nota de 1 a 5.")],
     )
     comentario = TextAreaField(

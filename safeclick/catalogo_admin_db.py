@@ -156,37 +156,6 @@ def _auditar(conexao, usuario_id, secao, item_id, evento, versao=None):
     )
 
 
-def _inserir_rascunho_quiz(conexao, usuario_id, dados):
-    item_id = conexao.execute(
-        "INSERT INTO public.catalogo_quizzes (rascunho) VALUES (%s) RETURNING id",
-        (Jsonb(dados),),
-    ).fetchone()["id"]
-    _auditar(conexao, usuario_id, "quizzes", item_id, "criado")
-    return item_id
-
-
-def importar_rascunhos_quiz(usuario_id, lote):
-    with conectar_banco() as conexao:
-        _exigir_administrador(conexao, usuario_id)
-        # Evita duplicatas ao reenviar o lote ou cadastrar em paralelo pelo editor.
-        conexao.execute("SET LOCAL lock_timeout = '5s'")
-        conexao.execute("LOCK TABLE public.catalogo_quizzes IN SHARE ROW EXCLUSIVE MODE")
-        titulos = {
-            titulo.casefold()
-            for linha in conexao.execute("""
-                SELECT c.rascunho->>'titulo' AS rascunho, q.titulo AS publicado
-                FROM public.catalogo_quizzes AS c
-                LEFT JOIN public.quizzes AS q ON q.id = c.versao_publicada_id
-                WHERE c.removido_em IS NULL
-            """)
-            for titulo in linha.values() if titulo
-        }
-        novos = [dados for dados in lote if dados["titulo"].casefold() not in titulos]
-        for dados in novos:
-            _inserir_rascunho_quiz(conexao, usuario_id, dados)
-    return len(novos)
-
-
 def salvar_rascunho(usuario_id, secao, dados, *, slug=None, item_id=None, revisao=None):
     tabela = _origem(secao)[0]
     dados = validar(secao, dados)
@@ -198,7 +167,10 @@ def salvar_rascunho(usuario_id, secao, dados, *, slug=None, item_id=None, revisa
             _exigir_administrador(conexao, usuario_id)
             if item_id is None:
                 if secao == "quizzes":
-                    return _inserir_rascunho_quiz(conexao, usuario_id, dados)
+                    registro = conexao.execute(
+                        "INSERT INTO public.catalogo_quizzes (rascunho) VALUES (%s) RETURNING id",
+                        (Jsonb(dados),),
+                    )
                 elif secao == "simulacoes":
                     registro = conexao.execute(
                         """

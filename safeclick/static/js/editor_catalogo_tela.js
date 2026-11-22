@@ -98,10 +98,17 @@
             const perguntas = itens(formulario, "questao");
             r.perguntas = perguntas.length > 0 && perguntas.every(
                 p => preenchido(campo(p, "enunciado")) && preenchido(campo(p, "explicacao")));
-            r.alternativas = perguntas.length > 0 && perguntas.every(
-                p => itens(p, "alternativa").filter(a => preenchido(campo(a, "texto"))).length >= 2);
+            r.alternativas = perguntas.length > 0 && perguntas.every(p => {
+                const textos = cartoes(p);
+                return textos.length >= 2 && !textos.includes("") && new Set(textos).size === textos.length;
+            });
             r.corretas = perguntas.length > 0 && perguntas.every(
                 p => itens(p, "alternativa").filter(a => campo(a, "correta").checked).length === 1);
+            r.comentarios = perguntas.length > 0 && perguntas.every(p => {
+                const alternativas = itens(p, "alternativa");
+                const comentadas = alternativas.filter(a => preenchido(campo(a, "explicacao"))).length;
+                return comentadas === 0 || comentadas === alternativas.length;
+            });
             r.oficina = oficinaValida(perguntas);
         } else if (secao === "simulacoes") {
             const opcoes = itens(formulario, "opcao");
@@ -127,33 +134,6 @@
         }
     }
 
-    // ---------- oficina: repetir os cartões do primeiro trecho ----------
-    formulario.querySelector("[data-repetir-cartoes]")?.addEventListener("click", () => {
-        const perguntas = itens(formulario, "questao");
-        const banco = cartoes(perguntas[0] || formulario).filter(Boolean);
-        if (perguntas.length < 2 || banco.length < 2) {
-            window.alert("Preencha os cartões do 1º trecho e crie pelo menos mais um trecho.");
-            return;
-        }
-        if (!window.confirm("Os outros trechos vão receber os mesmos cartões do 1º trecho. Continuar?")) return;
-        const modelo = formulario.querySelector('[data-modelo="alternativa"]');
-        for (const pergunta of perguntas.slice(1)) {
-            const lista = pergunta.querySelector('[data-lista="alternativa"]');
-            const marcada = itens(pergunta, "alternativa").find(a => campo(a, "correta").checked);
-            const correta = marcada ? campo(marcada, "texto").value.trim() : "";
-            while (itens(pergunta, "alternativa").length < banco.length) lista.append(modelo.content.cloneNode(true));
-            while (itens(pergunta, "alternativa").length > banco.length) lista.lastElementChild.remove();
-            itens(pergunta, "alternativa").forEach((alternativa, indice) => {
-                campo(alternativa, "texto").value = banco[indice];
-                campo(alternativa, "correta").checked = banco[indice] === correta;
-                alternativa.querySelector(":scope > legend [data-numero]").textContent = indice + 1;
-                alternativa.querySelector('[data-editor-acao="subir"]').disabled = indice === 0;
-                alternativa.querySelector('[data-editor-acao="descer"]').disabled = indice === banco.length - 1;
-            });
-        }
-        marcarAlteracao();
-    });
-
     // ---------- alterações não salvas ----------
     const alterado = document.querySelector("[data-alterado]");
     let mudou = false;
@@ -166,9 +146,6 @@
 
     formulario.addEventListener("input", marcarAlteracao);
     formulario.addEventListener("change", marcarAlteracao);
-    formulario.addEventListener("click", evento => {
-        if (evento.target.closest("[data-editor-acao]")) setTimeout(marcarAlteracao);
-    });
     formulario.addEventListener("submit", () => {
         mudou = false;
     });

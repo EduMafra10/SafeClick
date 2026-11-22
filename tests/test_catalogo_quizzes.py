@@ -58,7 +58,7 @@ class CatalogoQuizzesTeste(unittest.TestCase):
         with self.assertRaisesRegex(DadosInvalidos, "cartão correto diferente"):
             validar("quizzes", self.oficina, publicar=True)
 
-    def test_importacao_valida_os_dois_formatos_e_normaliza_o_titulo(self):
+    def test_lote_didatico_valida_os_dois_formatos_e_normaliza_o_titulo(self):
         self.quiz["titulo"] = "  Proteção de contas  "
         lote = validar_lote_quizzes(json.dumps([self.quiz, self.oficina]))
 
@@ -66,7 +66,7 @@ class CatalogoQuizzesTeste(unittest.TestCase):
         self.assertEqual([item["formato"] for item in lote], ["perguntas", "oficina"])
         self.assertEqual(len(lote[1]["questoes"]), 2)
 
-    def test_importacao_recusa_titulo_repetido_e_identifica_item_invalido(self):
+    def test_lote_didatico_recusa_titulo_repetido_e_identifica_item_invalido(self):
         repetido = self.quiz | {"titulo": "  PROTEÇÃO DE CONTAS  "}
         with self.assertRaisesRegex(DadosInvalidos, "mais de um item com o título"):
             validar_lote_quizzes(json.dumps([self.quiz, repetido]))
@@ -74,3 +74,10 @@ class CatalogoQuizzesTeste(unittest.TestCase):
         self.oficina["questoes"].pop()
         with self.assertRaisesRegex(DadosInvalidos, "Item 2 do lote.*pelo menos dois trechos"):
             validar_lote_quizzes(json.dumps([self.quiz, self.oficina]))
+
+    def test_alternativas_iguais_apos_remover_espacos_so_sao_permitidas_no_rascunho(self):
+        alternativas = self.quiz["questoes"][0]["alternativas"]
+        alternativas[1]["texto"] = "  " + alternativas[0]["texto"] + "  "
+        self.assertEqual(len(validar("quizzes", self.quiz)["questoes"]), 1)
+        with self.assertRaisesRegex(DadosInvalidos, "Pergunta 1: use textos diferentes"):
+            validar("quizzes", self.quiz, publicar=True)

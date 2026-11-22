@@ -151,7 +151,7 @@ class QuizzesTeste(unittest.TestCase):
                 })
 
                 self.assertEqual(resposta.status_code, 303)
-                self.assertEqual(resposta.location, "/quizzes/resultado")
+                self.assertEqual(resposta.location, "/quizzes/resultado/31")
                 gravacoes = self.conexao.execute.call_args_list[4:]
                 self.assertEqual([consulta.args[1] for consulta in gravacoes], [
                     (7, 19, pontos, 2, token, 19), (31, 11, 41), (31, 12, int(ultima_escolha)),
@@ -188,6 +188,24 @@ class QuizzesTeste(unittest.TestCase):
         self.assertEqual(resposta.status_code, 400)
         self.assertIn("Encaixe cada cartão em um único trecho", resposta.text)
         self.auditar.assert_not_called()
+
+    def test_envio_parcial_mantem_respostas_validas_depois_da_pergunta_ausente(self):
+        _, token = self.abrir_quiz()
+        self.preparar_formulario()
+        resposta = self.cliente.post(self.rota, data={"token_envio": token, "questao_12": "44"})
+        self.assertEqual(resposta.status_code, 400)
+        self.assertIn("Responda a pergunta 1", resposta.text)
+        self.assertRegex(resposta.text, r'name="questao_12" value="44"\s+checked')
+        self.auditar.assert_not_called()
+
+    def test_indisponibilidade_nas_consultas_mostra_503(self):
+        self.conexao.execute.side_effect = Error("detalhe interno")
+        for rota in ("/quizzes/", self.rota, "/quizzes/guia", "/quizzes/resultado/31"):
+            with self.subTest(rota=rota):
+                resposta = self.cliente.get(rota)
+                self.assertEqual(resposta.status_code, 503)
+                self.assertIn("Tente novamente", resposta.text)
+                self.assertNotIn("detalhe interno", resposta.text)
 
     def test_token_invalido_e_formulario_de_versao_antiga_sao_recusados(self):
         _, token = self.abrir_quiz()

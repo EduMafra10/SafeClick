@@ -66,6 +66,13 @@ class AvaliacoesTeste(unittest.TestCase):
         self.assertEqual(resposta.status_code, 303)
         self.salvar.assert_called_once_with(self.conexao, "conteudo", 7, 42, 5, "á" * 500)
 
+    def test_estrelas_mantem_os_rotulos_e_a_nota_da_avaliacao_anterior(self):
+        self.buscar.return_value["nota"] = 4
+        resposta = self.cliente.get(self.rota)
+        for rotulo in ("1 · Nada útil", "2 · Pouco útil", "3 · Moderadamente útil", "4 · Útil", "5 · Muito útil"):
+            self.assertIn(f'title="{rotulo}"', resposta.text)
+        self.assertIn('data-nota-saida aria-hidden="true">4 · Útil</span>', resposta.text)
+
     def test_navegacao_entre_atividades_sem_enviar_avaliacao(self):
         for rota, referencia, destino, lista, rotulo, rotulo_lista in (
             (self.rota, "revisar", "/conteudos/revisar", "/conteudos/", "Próximo conteúdo", "Ver todos os conteúdos"),

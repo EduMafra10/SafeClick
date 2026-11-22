@@ -12,10 +12,10 @@
 {% block titulo %}{{ titulo_pagina }} · {{ secoes[secao] }}{% endblock %}
 {% block classe_principal %}admin-editor-pagina{% endblock %}
 {% block recursos %}
-    <script src="{{ url_for('static', filename='js/editor_catalogo_tela.js') }}" defer></script>
     {% if secao in ('quizzes', 'simulacoes') %}
         <script src="{{ url_for('static', filename='js/editor_catalogo.js') }}" defer></script>
     {% endif %}
+    <script src="{{ url_for('static', filename='js/editor_catalogo_tela.js') }}" defer></script>
 {% endblock %}
 
 {% macro barra_formatacao() %}
@@ -110,9 +110,9 @@
             {% if secao == 'quizzes' %}
                 <section class="admin-bloco">
                     <h2><i>2</i> Perguntas</h2>
-                    <p class="admin-bloco-ajuda">De 1 a {{ max_questoes }} perguntas, cada uma com 2 a {{ max_alternativas }} alternativas e uma resposta correta.</p>
+                    <p class="admin-bloco-ajuda">Para publicar, preencha o enunciado e a explicação de cada pergunta. Use de 2 a {{ max_alternativas }} alternativas distintas e marque uma correta. O limite é de {{ max_questoes }} perguntas por quiz.</p>
                     <div class="admin-oficina-ajuda" data-so-oficina>
-                        <p>Na oficina, cada pergunta é um trecho do guia. Todos os trechos usam os mesmos cartões, e cada trecho tem um cartão correto diferente.</p>
+                        <p>Na oficina, crie de 2 a {{ max_alternativas }} trechos. Todos usam os mesmos cartões, e cada trecho tem um cartão correto diferente.</p>
                         <button class="admin-botao-icone" type="button" data-repetir-cartoes>Repetir os cartões do 1º trecho nos outros</button>
                     </div>
                     <div class="admin-itens-editor" data-lista="questao" data-limite="{{ max_questoes }}">
@@ -195,7 +195,8 @@
                     {% endif %}
                 </p>
                 <p class="admin-painel-alterado" data-alterado hidden>Há alterações não salvas.</p>
-                <button class="admin-botao admin-botao-largo" type="submit" form="editor-catalogo">Salvar rascunho</button>
+                <button class="admin-botao admin-botao-largo" type="submit" form="editor-catalogo"
+                        {% if secao in ('quizzes', 'simulacoes') %}data-salvar-estrutura disabled{% endif %}>Salvar rascunho</button>
                 {% if item %}
                     <a class="admin-botao-contorno admin-botao-largo" href="{{ url_for('administracao.catalogo.previa', secao=secao, item_id=item.id) }}">Ver como o usuário vai ver</a>
                 {% endif %}
@@ -228,8 +229,9 @@
                         <li data-regra="texto">Texto escrito</li>
                     {% elif secao == 'quizzes' %}
                         <li data-regra="perguntas">Perguntas com enunciado e explicação</li>
-                        <li data-regra="alternativas">Pelo menos duas alternativas em cada pergunta</li>
+                        <li data-regra="alternativas">Todas as alternativas preenchidas e distintas, com pelo menos duas por pergunta</li>
                         <li data-regra="corretas">Uma resposta correta em cada pergunta</li>
+                        <li data-regra="comentarios">Comentários em todas as alternativas da pergunta ou em nenhuma</li>
                         <li data-regra="oficina" hidden>Oficina: mesmos cartões em todos os trechos, com um correto diferente em cada</li>
                     {% else %}
                         <li data-regra="resumo">Resumo preenchido</li>

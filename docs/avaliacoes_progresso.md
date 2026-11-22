@@ -8,9 +8,10 @@ Em banco já preparado até a política 1.3, aplique:
 
 1. `sql/remover_ranking.sql`: elimina apenas a tabela de preferências do recurso removido e atualiza o gatilho de exclusão de conta. Preserva avaliações, tentativas e a visão `resultados_validos_atividades`, utilizada pelo progresso privado.
 2. `sql/registrar_politica_1_4_avaliacoes.sql`: registra a política 1.4, retira as referências à classificação pública e direciona o aviso para `/avaliacoes/privacidade`. As políticas anteriores e as referências legais permanecem arquivadas.
-3. Reinicie o Flask. Para permitir novas avaliações e consulta pública, mantenha `AVALIACOES_ATIVAS=true`. O progresso, o aviso e os controles de retirada/exclusão da própria avaliação continuam disponíveis independentemente da coleta de novas avaliações.
+3. Execute `sql/registrar_politica_1_5_termos_1_1.sql` para disponibilizar a política 1.5 e os termos 1.1 esperados pelo site.
+4. Reinicie o Flask. Para permitir novas avaliações e consulta pública, mantenha `AVALIACOES_ATIVAS=true`. O progresso, o aviso e os controles de retirada/exclusão da própria avaliação continuam disponíveis independentemente da coleta de novas avaliações.
 
-Em um banco novo, siga toda a ordem de scripts do README. Migrações antigas são preservadas como histórico e devem ser seguidas pela migração de remoção. Não reaplique uma migração antiga isoladamente depois da retirada. O aviso das avaliações mantém a versão `participacao-2026-11-v1`: sua finalidade e suas opções não foram ampliadas. A política atual é a 1.4.
+Em um banco novo, siga toda a ordem de scripts do README. O aviso de compartilhamento de avaliações permanece na versão `participacao-2026-11-v1`.
 
 ```powershell
 .\.venv\Scripts\python.exe -m flask --app safeclick run
