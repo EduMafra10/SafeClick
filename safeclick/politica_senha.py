@@ -1,11 +1,8 @@
-"""Complementa a política de senha (15 a 128 caracteres, sem regras de composição)
-recusando senhas triviais, como recomenda a OWASP. A mesma regra roda em static/js/politica_senha.js."""
 import re
 import unicodedata
 
 MINIMO = 15
 MAXIMO = 128
-# palavras que não deixam a senha mais difícil de adivinhar
 OBVIAS = ("senha", "password", "safeclick", "qwerty", "admin", "brasil", "teste", "abc", "123")
 SEQUENCIAS = ("abcdefghijklmnopqrstuvwxyz", "0123456789", "qwertyuiop", "asdfghjkl", "zxcvbnm")
 
@@ -46,7 +43,6 @@ def usa_dados_pessoais(senha, nome=None, email=None):
 
 
 def problema_senha(senha, nome=None, email=None):
-    """Devolve a mensagem do problema ou None. O tamanho é conferido pelo próprio formulário."""
     if not isinstance(senha, str) or not MINIMO <= len(senha) <= MAXIMO:
         return None
     if usa_dados_pessoais(senha, nome, email):

@@ -18,7 +18,6 @@ def iniciar_login_pendente(usuario_id, senha_hash_verificado):
     token = secrets.token_urlsafe(32)
 
     with conectar_banco() as conexao:
-        # serializa o inicio de logins para a mesma conta
         usuario = conexao.execute(
             """
             SELECT id, senha_hash
@@ -34,7 +33,6 @@ def iniciar_login_pendente(usuario_id, senha_hash_verificado):
         ):
             return None
 
-        # uma nova janela só irá comecar apos expiracao ou login concluido
         conexao.execute(
             """
             DELETE FROM public.logins_pendentes
@@ -86,7 +84,6 @@ def reservar_tentativa_mfa(token):
     if token_hash is None:
         return None
 
-    # essa funcao conta o envio antes de consultar a twilio
     with conectar_banco() as conexao:
         return conexao.execute(
             """

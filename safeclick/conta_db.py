@@ -1,4 +1,3 @@
-"""Dados da página "Minha conta": perfil, ícone, troca de senha e sessões."""
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from safeclick.auditoria_db import registrar_evento
@@ -67,10 +66,8 @@ def atualizar_icone(usuario_id, icone):
 
 
 def trocar_senha(usuario_id, senha_atual, nova_senha, sessao_atual):
-    """Confere a senha atual, grava a nova e encerra as outras sessões."""
     if not isinstance(nova_senha, str) or not 15 <= len(nova_senha) <= 128 or not nova_senha.strip():
         raise ValueError("Use uma senha com 15 a 128 caracteres.")
-    # o hash é calculado antes de travar a conta, porque o scrypt é lento
     novo_hash = generate_password_hash(nova_senha, method="scrypt")
 
     with conectar_banco() as conexao:
@@ -88,7 +85,6 @@ def trocar_senha(usuario_id, senha_atual, nova_senha, sessao_atual):
             detalhes = {"sessoes_encerradas": encerradas}
         else:
             detalhes = {"motivo": "senha_atual_incorreta"}
-        # a tentativa errada também fica na auditoria, por isso o erro só sai depois de gravar
         registrar_evento(
             usuario_id=usuario_id, evento="usuario.senha_alterada", resultado="sucesso" if correta else "falha",
             recurso_tipo="usuario", recurso_id=usuario_id, detalhes=detalhes, conexao=conexao,

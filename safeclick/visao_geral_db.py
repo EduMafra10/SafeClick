@@ -1,4 +1,3 @@
-
 from datetime import timedelta
 
 from safeclick.db import conectar_banco
@@ -38,7 +37,6 @@ _CONTAS = f"""
         count(*) FILTER (WHERE mfa_fator_sid IS NOT NULL AND mfa_confirmado_em IS NULL) AS autenticador_pendente
     FROM public.usuarios
     WHERE perfil = 'usuario'
-    -- contas excluídas ou aguardando a exclusão não entram no total (RF16)
       AND excluida_em IS NULL
       AND exclusao_solicitada_em IS NULL
 """
@@ -51,7 +49,6 @@ _POR_DIA = f"""
     GROUP BY dia, tipo
 """
 
-# primeira escolha de cada usuário em cada cenário, dentro do período
 _SIMULACOES = f"""
     WITH primeiras AS (
         SELECT DISTINCT ON (t.usuario_id, v.simulacao_id)
@@ -89,7 +86,6 @@ _QUIZZES = f"""
     LIMIT 5
 """
 
-# só entram questões com respostas suficientes para a porcentagem fazer sentido
 MINIMO_RESPOSTAS_QUESTAO = 3
 
 _QUESTOES = f"""
@@ -139,7 +135,6 @@ _SEGURANCA = """
     GROUP BY evento
 """
 
-# só eventos de acesso e de conta; o restante fica na auditoria completa
 _ULTIMOS_EVENTOS = """
     SELECT criado_em, evento, resultado
     FROM public.logs_auditoria
@@ -179,7 +174,6 @@ def buscar_visao_geral(dias, hoje, *, incluir_avaliacoes=False):
     parametros = {"inicio": inicio.isoformat()}
 
     with conectar_banco() as conexao:
-        # Todos os cartões usam o mesmo retrato do banco, inclusive as avaliações.
         conexao.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
         contas = conexao.execute(_CONTAS, parametros).fetchone()
         ativos = conexao.execute(_ATIVOS, parametros).fetchone()["ativos"]

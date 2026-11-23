@@ -44,7 +44,6 @@
     text-transform: uppercase;
 }
 
-/* Painel azul-marinho */
 
 .autenticacao-apresentacao {
     position: sticky;
@@ -121,7 +120,6 @@ a.autenticacao-marca:focus-visible {
     pointer-events: none;
 }
 
-/* Painel do login: celular com a simulação */
 
 .autenticacao-apresentacao-simulacao {
     padding-bottom: 0;
@@ -275,7 +273,6 @@ a.autenticacao-marca:focus-visible {
     filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
 }
 
-/* Painel do cadastro: os três passos */
 
 .autenticacao-apresentacao-passos .autenticacao-chamada .autenticacao-serif {
     max-width: 9em;
@@ -327,7 +324,6 @@ a.autenticacao-marca:focus-visible {
     font-size: 15px;
 }
 
-/* Área do formulário */
 
 .autenticacao-acesso {
     display: flex;
@@ -687,7 +683,6 @@ a.autenticacao-marca:focus-visible {
     background-color: #833d28;
 }
 
-/* Telas menores */
 
 @media (max-height: 820px) and (min-width: 901px) {
     .autenticacao-apresentacao {

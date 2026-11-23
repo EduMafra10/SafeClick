@@ -49,7 +49,6 @@ class CadastroTermosHTTPTeste(unittest.TestCase):
         self.buscar_patch = patch("safeclick.autenticacao.buscar_termos", return_value=DOCUMENTO)
         self.buscar = self.buscar_patch.start()
         self.addCleanup(self.buscar_patch.stop)
-        # as leis citadas tambem vem do banco; aqui a consulta e simulada
         self.referencias_patch = patch("safeclick.privacidade.buscar_referencias", return_value=[])
         self.referencias_patch.start()
         self.addCleanup(self.referencias_patch.stop)
@@ -255,7 +254,6 @@ class CadastroTermosTransacaoTeste(unittest.TestCase):
         self.assertIn("INSERT INTO public.usuarios", chamadas[0].args[0])
         self.assertIn("INSERT INTO public.aceites_termos", chamadas[1].args[0])
         self.assertEqual(chamadas[1].args[1], (11, "1.1"))
-        # aceito_em vem do DEFAULT do banco, nao de um valor enviado pelo navegador.
         self.assertNotIn("aceito_em", chamadas[1].args[0])
         eventos = self.mocks["auditar"].call_args_list
         self.assertEqual([c.kwargs["evento"] for c in eventos], ["usuario.cadastrado", "termo.aceito"])

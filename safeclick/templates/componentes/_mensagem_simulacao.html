@@ -1,4 +1,3 @@
-{# Cartão da mensagem fictícia, usado na simulação e na prévia do administrador. #}
 {% macro _pista(marcas, alvo) %}{% for numero in marcas.get(alvo, []) %}<span class="simulacao-pista"><span class="simulacao-oculto">Sinal </span>{{ numero }}</span>{% endfor %}{% endmacro %}
 
 {% macro _marcada(marcas, alvo) %}{{ ' mensagem-marcada' if alvo in marcas }}{% endmacro %}

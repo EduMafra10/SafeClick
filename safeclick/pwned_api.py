@@ -8,11 +8,10 @@ URL_PWNED_PASSWORDS = "https://api.pwnedpasswords.com/range/"
 
 
 class ServicoSenhasIndisponivel(RuntimeError):
-    """A consulta externa não pôde ser concluída com segurança."""
+    pass
 
 
 def consultar_prefixo_senha(prefixo):
-    """Consulta somente os cinco primeiros caracteres de um hash SHA-1."""
     if not isinstance(prefixo, str) or not re.fullmatch(
         r"[A-Fa-f0-9]{5}", prefixo
     ):

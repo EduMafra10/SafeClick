@@ -1,4 +1,3 @@
-{# Ícone de perfil: personagem escolhido ou as iniciais do nome. #}
 {% macro icone_perfil(chave, nome, tamanho=38, classe='') %}
     {% set personagem = icones_perfil.get(chave) if chave else none %}
     {% if personagem %}

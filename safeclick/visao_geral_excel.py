@@ -1,4 +1,3 @@
-"""Exporta os indicadores da Visão geral em uma planilha do Excel (.xlsx)."""
 import io
 from datetime import timedelta
 
@@ -29,14 +28,12 @@ class _Aba:
         self.linha = 1
         for coluna, largura in larguras.items():
             aba.column_dimensions[coluna].width = largura
-        # na impressão, a tabela cabe na largura da folha
         aba.sheet_properties.pageSetUpPr.fitToPage = True
         aba.page_setup.fitToWidth = 1
         aba.page_setup.fitToHeight = 0
 
     def celula(self, coluna, valor, formato=None):
         celula = self.aba.cell(row=self.linha, column=coluna, value=valor)
-        # texto que começa com "=" seria lido como fórmula pelo Excel
         if isinstance(valor, str) and valor.startswith("="):
             celula.data_type = "s"
         if formato:

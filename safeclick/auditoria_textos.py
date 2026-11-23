@@ -143,7 +143,6 @@ def eventos_da_categoria(categoria):
 
 
 def opcoes_de_filtro():
-    """Grupos do campo "Evento": [(categoria, rótulo, [(evento, título), ...]), ...]."""
     grupos = []
     for chave, rotulo in CATEGORIAS.items():
         eventos = sorted(
@@ -281,7 +280,6 @@ def descrever_detalhes(evento, detalhes, recurso_tipo=None, recurso_id=None):
         if versao:
             frases.append(f"Versão {versao}")
 
-    # Qualquer informação que não tenha tradução aparece como "chave: valor".
     for chave, valor in detalhes.items():
         frases.append(f"{_legivel(chave).capitalize()}: {valor}")
 

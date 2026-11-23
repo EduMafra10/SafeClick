@@ -7,7 +7,6 @@
         campo.value = token;
     }
 
-    // retira o token da barra de enderecos depois de preencher o form
     if (window.location.hash) {
         window.history.replaceState(null, '', window.location.pathname + window.location.search);
     }

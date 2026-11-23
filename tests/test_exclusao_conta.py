@@ -46,7 +46,6 @@ AMBIENTE = {
 
 
 class BancoExclusaoTeste(unittest.TestCase):
-    """Confere as consultas sem acessar o banco real."""
 
     def setUp(self):
         self.conexao = MagicMock()
@@ -244,7 +243,6 @@ class RotaBase(unittest.TestCase):
 
 
 class RotaExclusaoTeste(RotaBase):
-    """Página Minha conta → Excluir minha conta."""
 
     def setUp(self):
         self.preparar_app()
@@ -411,7 +409,6 @@ class RotaExclusaoTeste(RotaBase):
 
 
 class RotaReativacaoTeste(RotaBase):
-    """Página pública aberta pelo link do e-mail."""
 
     def setUp(self):
         self.preparar_app()
@@ -477,7 +474,6 @@ class RotaReativacaoTeste(RotaBase):
 
 
 class LoginContaAgendadaTeste(RotaBase):
-    """Quem está nos 30 dias e tenta entrar recebe um link novo, mas não entra."""
 
     def setUp(self):
         self.preparar_app()
@@ -543,7 +539,6 @@ def conta_admin(**alteracoes):
 
 
 class ContasDbExclusaoTeste(unittest.TestCase):
-    """Lista por situação e exclusão de administrador no banco, sem banco real."""
 
     def setUp(self):
         self.conexao = MagicMock()
@@ -576,7 +571,6 @@ class ContasDbExclusaoTeste(unittest.TestCase):
             self.assertIn("LEFT JOIN public.contas_excluidas AS guardado", consulta)
             self.assertIn("guardado.descartar_em > CURRENT_TIMESTAMP", consulta)
             self.assertIn("usuarios.excluida_em IS NOT NULL", consulta)
-            # conta excluída não tem nome nem e-mail: a busca usa o e-mail guardado
             self.assertIn("guardado.email_guardado ILIKE %(padrao)s", consulta)
         self.assertIn("exclusao_solicitada_em + '30 days'::interval AS exclusao_marcada_para", lista.args[0])
 
@@ -656,7 +650,6 @@ class ContasDbExclusaoTeste(unittest.TestCase):
 
 
 class AdministracaoExclusaoTeste(unittest.TestCase):
-    """Telas da administração: filtro de situação e exclusão de outro administrador."""
 
     def substituir(self, alvo, **argumentos):
         substituicao = patch(alvo, **argumentos)

@@ -1,4 +1,3 @@
-"""Confere ou publica a revisão pelo serviço existente de gestão do catálogo."""
 import hashlib
 import json
 import sys
@@ -48,7 +47,6 @@ def carregar_revisao():
 
 
 def decidir(alvo, item, publicado):
-    """Evita sobrescrever edições ou publicar itens retirados pela equipe."""
     dados = alvo['dados']
     if publicado is None and not alvo.get('sha256_anterior') and item['estado'] == 'rascunho':
         if item['rascunho'] == dados:
@@ -103,7 +101,6 @@ def planejar(alvos):
 
 
 def aplicar(plano, administrador_id):
-    # Confere o responsável antes da primeira gravação.
     with conectar_banco() as conexao:
         catalogo._exigir_administrador(conexao, administrador_id)
     total = 0
@@ -128,11 +125,10 @@ def aplicar(plano, administrador_id):
     return total
 
 
-@click.command()
+@click.command(help="Sem --aplicar, mostra o plano e não grava nada.")
 @click.option('--aplicar', 'gravar', is_flag=True, help='Salvar e publicar pelo serviço de gestão.')
 @click.option('--administrador-id', type=click.IntRange(min=1), help='Conta responsável pelas ações de gestão.')
 def main(gravar, administrador_id):
-    """Sem --aplicar, mostra o plano e não grava nada."""
     if gravar and administrador_id is None:
         raise click.UsageError('Informe --administrador-id para registrar o responsável na auditoria.')
     load_dotenv(RAIZ / '.env')

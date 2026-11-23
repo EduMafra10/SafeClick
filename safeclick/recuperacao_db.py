@@ -22,7 +22,6 @@ def criar_recuperacao(email):
     token = secrets.token_urlsafe(32)
 
     with conectar_banco() as conexao:
-        # organiza as solicitacoes simultaneas para a mesma conta
         usuario = conexao.execute(
             """
             SELECT id, nome, email
@@ -36,7 +35,6 @@ def criar_recuperacao(email):
         if usuario is None:
             return None
 
-        # uma nova solicitacao substitui o token anterior
         conexao.execute(
             """
             INSERT INTO public.recuperacoes_senha (
@@ -56,7 +54,6 @@ def criar_recuperacao(email):
             (usuario["id"], _hash_token(token)),
         )
 
-    # o token original fica disponivel apenas para montar o link do e-mail
     return {
         "usuario_id": usuario["id"],
         "nome": usuario["nome"],
@@ -89,7 +86,6 @@ def cancelar_recuperacao(token):
         return False
 
     with conectar_banco() as conexao:
-        # cancela somente este token, preservando uma solicitacao mais recente
         registro = conexao.execute(
             """
             DELETE FROM public.recuperacoes_senha
@@ -115,11 +111,9 @@ def redefinir_senha(token, nova_senha):
     ):
         raise ValueError("Informe uma senha válida com 15 a 128 caracteres.")
 
-    # calcula o hash antes de bloquear registros no banco
     senha_hash = generate_password_hash(nova_senha, method="scrypt")
 
     with conectar_banco() as conexao:
-        # bloqueia primeiro a conta, como no inicio do login
         usuario = conexao.execute(
             """
             SELECT usuario.id, usuario.nome, usuario.email
@@ -137,7 +131,6 @@ def redefinir_senha(token, nova_senha):
         if usuario is None:
             return None
 
-        # confere novamente e marca o token como usado na mesma operacao
         recuperacao = conexao.execute(
             """
             UPDATE public.recuperacoes_senha
@@ -163,7 +156,6 @@ def redefinir_senha(token, nova_senha):
             (senha_hash, usuario["id"]),
         )
 
-        # encerra as sessoes existentes e as tentativas de login pendentes
         conexao.execute(
             "DELETE FROM public.sessoes_autenticadas WHERE usuario_id = %s",
             (usuario["id"],),
@@ -173,7 +165,6 @@ def redefinir_senha(token, nova_senha):
             (usuario["id"],),
         )
 
-        # registra a acao sem incluir senha, hash ou token no log
         registrar_evento(
             usuario_id=usuario["id"],
             evento="usuario.senha_redefinida",

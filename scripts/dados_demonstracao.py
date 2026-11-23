@@ -1,4 +1,3 @@
-
 import random
 import secrets
 import sys
@@ -30,7 +29,6 @@ def _email(nome):
 
 
 def _momento(agora, sorteio, dias):
-    # mais atividade nos dias recentes, como numa turma que começou a usar a plataforma
     atras = int(dias * sorteio.random() ** 1.6)
     return agora - timedelta(days=atras, hours=sorteio.randint(0, 12), minutes=sorteio.randint(0, 59))
 
@@ -78,7 +76,6 @@ def criar(conexao, agora):
         raise click.ClickException("Publique ao menos um conteúdo, um quiz e uma simulação antes.")
 
     sorteio = random.Random(2026)
-    # cada questão tem uma dificuldade fixa, para algumas aparecerem como as que mais erram
     dificuldade = {q: sorteio.uniform(0.35, 0.92) for quiz in quizzes for q in quiz["questoes"]}
     cuidado = {s["identificador"]: sorteio.uniform(0.35, 0.8) for s in simulacoes}
     senha = generate_password_hash(secrets.token_urlsafe(32), method="scrypt")

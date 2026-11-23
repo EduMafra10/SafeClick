@@ -1,4 +1,3 @@
-// Janelas de "Minha conta" e destaque da seção no menu.
 (() => {
     for (const botao of document.querySelectorAll("[data-abrir]")) {
         botao.addEventListener("click", () => document.getElementById(botao.dataset.abrir)?.showModal());

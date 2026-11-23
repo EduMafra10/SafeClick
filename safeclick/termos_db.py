@@ -2,7 +2,7 @@ from safeclick.db import conectar_banco
 
 
 class TermosDesatualizados(ValueError):
-    """O formulario se refere a uma versao diferente da oferecida no cadastro."""
+    pass
 
 
 def buscar_termos(versao, *, conexao=None):
@@ -81,7 +81,6 @@ def registrar_aceite_termos(usuario_id, versao, *, aceitou):
         ).fetchone()
 
         if registro is None:
-            # Esta conta ja aceitou a mesma versao.
             return False
 
         registrar_evento(

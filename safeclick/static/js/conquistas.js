@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
         atual += 1;
 
         if (atual >= avisos.length) {
-            // espera a animação de saída antes de remover os avisos da página
             setTimeout(() => caixa.remove(), 400);
             return;
         }

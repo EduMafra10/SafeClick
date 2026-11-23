@@ -87,7 +87,6 @@ _RESUMO_CONTEUDOS = """
 
 
 def _percentual(parte, total):
-    # Evita divisão por zero: sem atividades, não existe percentual.
     if not total:
         return None
     return round(100 * parte / total)

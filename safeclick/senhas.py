@@ -69,8 +69,6 @@ def pagina():
     return render_template("laboratorio_senhas.html", formulario=FlaskForm())
 
 
-# ---------- Desafio "Qual vazou mais?" ----------
-
 def _formato_invalido(campos):
 
     return bool(
@@ -82,7 +80,6 @@ def _formato_invalido(campos):
 
 
 def _obter_contagem(senha):
-    """Busca no cache; se não tiver, consulta a API e registra na auditoria."""
     quantidade = contagem_em_cache(senha)
     if quantidade is not None:
         return quantidade

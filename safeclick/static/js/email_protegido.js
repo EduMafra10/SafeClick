@@ -30,7 +30,6 @@
 
         const bloco = formulario.closest("[data-email-usuario]");
         const usuario = bloco.dataset.emailUsuario;
-        // Ocultar não consulta o servidor; mostrar de novo gera outro registro na auditoria.
         if (bloco.dataset.revelado) {
             trocar(usuario, null);
             return;

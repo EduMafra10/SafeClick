@@ -1,7 +1,5 @@
-// Nada do que a pessoa digita sai do navegador: a análise roda em um Web Worker.
 
 (() => {
-    // ---------- Abas ----------
     const listaAbas = document.querySelector(".lab-abas");
     if (!listaAbas) return;
 
@@ -41,7 +39,6 @@
         });
     });
 
-    // Preenche a trilha dos controles deslizantes até o valor escolhido.
     document.querySelectorAll('.lab-ajuste-linha input[type="range"]').forEach((controle) => {
         const pintar = () => {
             const minimo = Number(controle.min);
@@ -57,7 +54,6 @@
     document.getElementById("aviso-javascript")?.remove();
     selecionar(inicial);
 
-    // ---------- Analisador ----------
     const area = document.querySelector(".lab-analisador");
     const campo = document.getElementById("senha-analise");
     const mostrar = document.getElementById("mostrar-senha");

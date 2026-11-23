@@ -45,7 +45,6 @@
     white-space: nowrap;
 }
 
-/* topo */
 .lab-topo {
     display: flex;
     flex-wrap: wrap;
@@ -105,7 +104,6 @@
     gap: 20px;
 }
 
-/* palco escuro: a ação principal de cada ferramenta */
 .lab-palco {
     padding: 30px 32px 32px;
     border-radius: 22px;
@@ -159,7 +157,6 @@
     color: inherit;
 }
 
-/* botões táteis: afundam ao apertar */
 .lab-botao {
     display: inline-flex;
     justify-content: center;
@@ -214,7 +211,6 @@
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
 }
 
-/* analisador */
 .lab-campo-senha {
     display: flex;
     align-items: center;
@@ -368,7 +364,6 @@
     color: #ffffff;
 }
 
-/* cartões claros abaixo do palco */
 .lab-duas {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -487,7 +482,6 @@
     font-size: 12.5px;
 }
 
-/* gerador */
 .lab-senha-gerada {
     display: flex;
     flex-wrap: wrap;
@@ -635,7 +629,6 @@
     border-top: 1px solid var(--lab-borda);
 }
 
-/* controle deslizante tátil: a parte preenchida vem de --pct (laboratorio.js) */
 .lab-ajuste-linha input[type="range"] {
     height: 28px;
     margin: 0;
@@ -782,7 +775,6 @@
     outline-offset: 2px;
 }
 
-/* desafio */
 .lab-desafio-inicio {
     display: flex;
     flex-wrap: wrap;
@@ -961,7 +953,6 @@
     color: #833d28;
 }
 
-/* sem JavaScript, os painéis aparecem um embaixo do outro */
 .lab-conteudo [hidden] {
     display: none;
 }
@@ -1032,7 +1023,6 @@
     }
 }
 
-/* desafio: rodadas e dicas abaixo do jogo */
 .lab-desafio-extra {
     align-items: stretch;
 }

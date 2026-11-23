@@ -1,4 +1,3 @@
-"""Toda página do SafeClick mostra os links da Política de Privacidade e dos Termos de Uso."""
 import os
 from pathlib import Path
 from unittest.mock import patch

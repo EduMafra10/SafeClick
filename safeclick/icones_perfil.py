@@ -1,10 +1,3 @@
-"""Personagens que o usuário pode escolher como ícone de perfil.
-
-Os desenhos são SVG fixos do próprio SafeClick (viewBox 0 0 64 64).
-O banco guarda só a chave; a lista de chaves precisa bater com
-sql/adicionar_icone_usuarios.sql.
-"""
-
 ICONES = {
     "robo": {
         "nome": "Robô",

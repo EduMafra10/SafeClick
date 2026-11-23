@@ -1,5 +1,3 @@
-# Testes das páginas de LGPD. Não acessam o banco de dados.
-# Executar: .\.venv\Scripts\python.exe -m pytest tests
 import os
 from datetime import date
 from pathlib import Path
@@ -33,7 +31,6 @@ def cliente():
     os.environ.setdefault("SECRET_KEY", "chave-somente-para-testes")
     app = create_app()
     app.config["TESTING"] = True
-    # As paginas usam os documentos arquivados; o teste continua sem banco real.
     termos = _documento(app, "privacidade/termos.html")
     politica = _documento(app, "privacidade/politica.html")
     with patch("safeclick.privacidade.buscar_termos", return_value=termos), \
@@ -68,7 +65,6 @@ def test_termos_apontam_para_a_politica(cliente):
 
 
 def test_canal_de_privacidade_foi_preenchido():
-    # o canal precisa funcionar de verdade: troque os valores PREENCHER em privacidade.py
     assert "PREENCHER" not in DOCUMENTOS["email_privacidade"]
     assert "PREENCHER" not in DOCUMENTOS["encarregado"]
 
@@ -88,7 +84,6 @@ def test_politica_inexistente_404_e_banco_indisponivel_503(cliente):
 
 
 def test_versao_da_politica_esta_no_script_do_banco():
-    # A versão atual deve ter uma migração própria, preservando as anteriores.
     raiz = Path(__file__).resolve().parents[1] / "sql"
     script = (raiz / "registrar_politica_1_5_termos_1_1.sql").read_text(encoding="utf-8")
     assert f"VALUES ('{VERSAO_POLITICA}', DATE" in script

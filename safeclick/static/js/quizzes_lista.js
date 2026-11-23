@@ -1,4 +1,3 @@
-// Abas "Quizzes" e "Oficina" da lista. Sem JavaScript as duas listas aparecem uma embaixo da outra.
 (() => {
     const grupo = document.querySelector("[data-quiz-abas]");
     if (!grupo) return;

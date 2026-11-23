@@ -1,4 +1,3 @@
-/* Logs de auditoria */
 .auditoria-conteudo {
     --auditoria-azul: #28638d;
     --auditoria-laranja: #b8621f;
@@ -24,7 +23,6 @@
     font-size: 18px;
 }
 
-/* resumo */
 .auditoria-resumo {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -59,7 +57,6 @@
 .auditoria-resumo--falha .auditoria-resumo-valor { color: var(--auditoria-laranja); }
 .auditoria-resumo--negado .auditoria-resumo-valor { color: var(--auditoria-vermelho); }
 
-/* filtros */
 .auditoria-filtros-cartao {
     display: grid;
     gap: 16px;
@@ -184,7 +181,6 @@
     font-weight: 600;
 }
 
-/* tabela */
 .auditoria-tabela {
     background: var(--visual-superficie);
     border: 1px solid var(--visual-borda);
@@ -218,7 +214,6 @@
     background: #fbfcfa;
 }
 
-/* faixa colorida à esquerda destaca falhas e acessos negados */
 .auditoria-linha--falha td:first-child { box-shadow: inset 3px 0 var(--auditoria-laranja); }
 .auditoria-linha--negado td:first-child { box-shadow: inset 3px 0 var(--auditoria-vermelho); }
 
@@ -339,7 +334,6 @@ a.auditoria-nome:hover {
     }
 }
 
-/* celular: cada registro vira um cartão */
 @media (max-width: 760px) {
     .auditoria-conteudo {
         padding-block: 32px 48px;

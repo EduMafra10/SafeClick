@@ -55,13 +55,11 @@ class ReaceiteTermosTeste(unittest.TestCase):
         self.app = create_app()
         self.app.config.update(TESTING=True, WTF_CSRF_ENABLED=True)
         self.client = self.app.test_client()
-        # O teste de aceite usa um cenário fictício, sem consultar o banco real.
         cenario = deepcopy(CENARIOS["conta_bloqueada"])
         cenario.update(tipo="email", versao_id=101, versao=1)
         self.substituir(patch(
             "safeclick.simulacoes.buscar_simulacao_publicada", return_value=cenario
         ))
-        # A página inicial agora é o painel de progresso; os dados dele também são fictícios.
         self.substituir(patch(
             "safeclick.painel.buscar_painel_usuario", return_value=PAINEL_FICTICIO
         ))

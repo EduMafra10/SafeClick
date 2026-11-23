@@ -1,4 +1,3 @@
-/* Minhas avaliações: faixa de números + uma linha por avaliação */
 .av-link {
     display: inline-flex;
     align-items: center;
@@ -29,7 +28,6 @@
     color: #d9952f;
 }
 
-/* faixa de números */
 .av-numeros {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr);
@@ -120,7 +118,6 @@
     background: var(--visual-verde);
 }
 
-/* lista */
 .av-lista {
     padding: 0 28px;
 }

@@ -38,7 +38,6 @@ LISTA = [
 
 
 class ConsultaConquistasTeste(unittest.TestCase):
-    """Confere as consultas sem acessar o banco real."""
 
     def setUp(self):
         self.conexao = MagicMock()
@@ -62,7 +61,6 @@ class ConsultaConquistasTeste(unittest.TestCase):
         self.assertIn("INSERT INTO public.conquistas_usuario", consulta)
         self.assertIn("ON CONFLICT DO NOTHING", consulta)
         self.assertIn("m.valor >= c.meta", consulta)
-        # todas as contagens são do próprio usuário
         self.assertEqual(consulta.count("usuario_id = %(usuario_id)s"), 7)
         self.registrar.assert_called_once_with(
             7, 'conquista.concedida', 'sucesso', recurso_tipo='conquista',
@@ -112,7 +110,7 @@ class ScriptConquistasTeste(unittest.TestCase):
         self.assertEqual(len(linhas), 8)
         self.assertEqual(len(set(codigos)), 8)
         for codigo in ("primeiro-conteudo", "primeiro-quiz", "cinco-acertos"):
-            self.assertIn(codigo, codigos)  # as três conquistas do RF15
+            self.assertIn(codigo, codigos)
         for _, criterio, _, _ in linhas:
             with self.subTest(criterio=criterio):
                 self.assertIn(f"('{criterio}', (", consulta)
@@ -132,7 +130,6 @@ PAINEL = {
 
 
 class RotasBase(unittest.TestCase):
-    """Prepara o site com o banco substituído por respostas fixas."""
 
     def substituir(self, substituicao):
         resultado = substituicao.start()
@@ -172,10 +169,8 @@ class RotasBase(unittest.TestCase):
 
 
 class AvisoConquistasTeste(RotasBase):
-    """Confere quando o aviso de conquista aparece nas páginas."""
 
     def concluir(self):
-        # o token CSRF vem do formulário "Sair da conta", presente em toda página
         html = self.client.get("/conteudos/").get_data(as_text=True)
         token = re.search(r'name="csrf_token" type="hidden" value="([^"]+)"', html).group(1)
         return self.client.post("/conteudos/phishing/concluir", data={"csrf_token": token})
@@ -243,7 +238,6 @@ class AvisoConquistasTeste(RotasBase):
 
 
 class PainelConquistasTeste(RotasBase):
-    """Seção "Suas conquistas" no painel de progresso."""
 
     def setUp(self):
         super().setUp()

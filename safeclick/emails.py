@@ -23,7 +23,6 @@ def conectar_smtp():
 
     try:
         with smtplib.SMTP(servidor, porta, timeout=10) as conexao:
-            # protege a conexao antes de enviar as credenciais
             conexao.ehlo()
             conexao.starttls(context=ssl.create_default_context())
             conexao.ehlo()
@@ -68,7 +67,6 @@ def enviar_email(destinatario, assunto, texto, html=None):
 @with_appcontext
 def verificar_email():
     try:
-        # verifica a conexao e a autenticacao sem enviar mensagens
         with conectar_smtp():
             pass
     except RuntimeError as erro:

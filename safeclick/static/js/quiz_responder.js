@@ -1,4 +1,3 @@
-// Mostra uma pergunta por vez com o mapa ao lado. O formulário continua o mesmo e é enviado de uma vez no final.
 (() => {
     const formulario = document.querySelector("[data-quiz-formulario]");
     const perguntas = [...document.querySelectorAll("[data-quiz-pergunta]")];

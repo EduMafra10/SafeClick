@@ -1,4 +1,3 @@
-// No celular, o menu da área administrativa começa fechado.
 (() => {
     const menu = document.querySelector(".admin-menu");
     const telaPequena = window.matchMedia("(max-width: 960px)");

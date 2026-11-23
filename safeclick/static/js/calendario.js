@@ -1,5 +1,3 @@
-// Calendário próprio para os campos de data marcados com data-calendario.
-// O campo visível aceita dd/mm/aaaa; um campo oculto envia a data no formato AAAA-MM-DD.
 (() => {
     const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho",
         "agosto", "setembro", "outubro", "novembro", "dezembro"];
@@ -28,7 +26,6 @@
     function montar(original) {
         const minimo = original.min || "";
         const maximo = original.max || "";
-        // data-calendario-apos="inicio" / data-calendario-antes="fim" ligam os dois campos de um período.
         const apos = original.dataset.calendarioApos;
         const antes = original.dataset.calendarioAntes;
         const formulario = original.form;
@@ -227,7 +224,6 @@
             }
         });
 
-        // O foco some por um instante quando o mês é redesenhado; só fecha se ele saiu de fato.
         caixa.addEventListener("focusout", () => {
             setTimeout(() => {
                 if (!painel.hidden && !caixa.contains(document.activeElement)) fechar(false);

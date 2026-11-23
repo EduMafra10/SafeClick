@@ -1,5 +1,3 @@
-// Gerador de senhas do Laboratório.
-// Tudo acontece no navegador: nenhuma senha gerada é enviada ao servidor.
 
 (() => {
     const painel = document.getElementById("painel-gerador");
@@ -24,9 +22,9 @@
 
     
     const GRUPOS = {
-        maiusculas: { caixa: document.getElementById("incluir-maiusculas"), caracteres: "ABCDEFGHJKLMNPQRSTUVWXYZ" }, // sem I e O
-        minusculas: { caixa: document.getElementById("incluir-minusculas"), caracteres: "abcdefghijkmnopqrstuvwxyz" }, // sem l
-        numeros: { caixa: document.getElementById("incluir-numeros"), caracteres: "23456789" },                       // sem 0 e 1
+        maiusculas: { caixa: document.getElementById("incluir-maiusculas"), caracteres: "ABCDEFGHJKLMNPQRSTUVWXYZ" },
+        minusculas: { caixa: document.getElementById("incluir-minusculas"), caracteres: "abcdefghijkmnopqrstuvwxyz" },
+        numeros: { caixa: document.getElementById("incluir-numeros"), caracteres: "23456789" },
         simbolos: { caixa: document.getElementById("incluir-simbolos"), caracteres: "!@#$%&*?-_=+" },
     };
     const caixas = Object.values(GRUPOS).map((grupo) => grupo.caixa);

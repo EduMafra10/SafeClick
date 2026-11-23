@@ -1,4 +1,3 @@
-// Desafio "Qual vazou mais?" do Laboratório de senhas.
 
 (() => {
     const painel = document.getElementById("painel-desafio");
@@ -26,18 +25,16 @@
     const historico = document.getElementById("historico-desafio");
 
     const numero = new Intl.NumberFormat("pt-BR");
-    let rodadaAtual = null;   // dados da rodada exibida
-    let ultimaResposta = null; // resposta do servidor à última escolha
+    let rodadaAtual = null;
+    let ultimaResposta = null;
 
     function mostrarEtapa(etapa) {
         for (const elemento of [inicio, rodada, resultado, final]) {
             elemento.hidden = elemento !== etapa;
         }
-        // O número da rodada e o placar ficam visíveis durante a partida.
         progresso.hidden = etapa !== rodada && etapa !== resultado;
     }
 
-    // Lista "Suas rodadas": uma linha por rodada, preenchida conforme a partida avança.
     function linhaDaRodada(numeroDaRodada) {
         return historico?.children[numeroDaRodada - 1] ?? null;
     }

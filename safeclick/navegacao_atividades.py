@@ -1,4 +1,3 @@
-# As consultas principais fornecem o item atual e a versão publicada do quiz.
 PROXIMO_CONTEUDO = """
     (
         SELECT seguinte.slug
@@ -11,7 +10,6 @@ PROXIMO_CONTEUDO = """
     ) AS proxima_referencia
 """
 
-# A lista de quizzes apresenta primeiro as perguntas e depois as oficinas.
 PROXIMO_QUIZ = """
     (
         SELECT seguinte.id

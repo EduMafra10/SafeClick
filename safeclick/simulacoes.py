@@ -34,7 +34,6 @@ def listar():
     return render_template("lista_simulacoes.html", cenarios=cenarios)
 
 
-# Preserva o endereço e o nome de rota já utilizados pelo sistema.
 @simulacoes.route("/conta-bloqueada", methods=["GET", "POST"])
 def conta_bloqueada():
     return _processar_cenario("conta-bloqueada")

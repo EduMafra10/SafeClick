@@ -12,18 +12,16 @@ PRAZO_EMAIL = "6 months"
 
 
 class ContaJaExcluida(Exception):
-    """A conta não existe mais, já foi excluída ou já está aguardando a exclusão."""
+    pass
 
 
 def _hash_token(token):
-    """Mesmo formato dos links de recuperação de senha: só o hash vai para o banco."""
     if not isinstance(token, str) or not re.fullmatch(r"[A-Za-z0-9_-]{43}", token):
         return None
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
 def buscar_dados_exclusao(usuario_id):
-    """Busca o que precisa ser conferido antes de excluir a conta."""
     with conectar_banco() as conexao:
         return conexao.execute(
             """
@@ -31,7 +29,6 @@ def buscar_dados_exclusao(usuario_id):
                 usuario.senha_hash,
                 usuario.mfa_identidade,
                 usuario.mfa_fator_sid,
-                -- o último administrador não pode sair, senão ninguém mais administra o site
                 usuario.perfil = 'administrador' AND NOT EXISTS (
                     SELECT 1
                     FROM public.usuarios AS outro
@@ -50,7 +47,6 @@ def buscar_dados_exclusao(usuario_id):
 
 
 def registrar_recusa(usuario_id, motivo):
-    """Registra na auditoria um pedido de exclusão que não foi adiante."""
     with conectar_banco() as conexao:
         registrar_evento(
             usuario_id=usuario_id,
@@ -64,7 +60,6 @@ def registrar_recusa(usuario_id, motivo):
 
 
 def _salvar_link(conexao, usuario_id):
-    """Cria o link de reativação; um novo link substitui o anterior."""
     token = secrets.token_urlsafe(32)
     conexao.execute(
         """
@@ -83,11 +78,6 @@ def _salvar_link(conexao, usuario_id):
 
 
 def agendar_exclusao(usuario_id):
-    """Desativa a conta na hora e abre o prazo de 30 dias para o titular se arrepender.
-
-    Tudo acontece em uma transação: se algo falhar, nada muda (RN64).
-    Devolve o e-mail, o nome, a data da exclusão definitiva (DD/MM/AAAA) e o token do link.
-    """
     with conectar_banco() as conexao:
         conta = conexao.execute(
             """
@@ -119,7 +109,6 @@ def agendar_exclusao(usuario_id):
             (usuario_id, PRAZO_ARREPENDIMENTO),
         ).fetchone()
 
-        # encerra o acesso em todos os dispositivos e invalida links pendentes (RN66)
         conexao.execute(
             "DELETE FROM public.sessoes_autenticadas WHERE usuario_id = %s", (usuario_id,)
         )
@@ -145,10 +134,6 @@ def agendar_exclusao(usuario_id):
 
 
 def gerar_novo_link(usuario_id):
-    """Gera outro link para quem ainda está no prazo (usado quando a pessoa tenta entrar).
-
-    Devolve None se a conta não estiver aguardando a exclusão ou se o prazo já acabou.
-    """
     with conectar_banco() as conexao:
         dados = conexao.execute(
             """
@@ -171,11 +156,6 @@ def gerar_novo_link(usuario_id):
 
 
 def reativar_conta(token, senha):
-    """Reativa a conta quando o link é válido e a senha confere.
-
-    Devolve None para link inválido, {"senha_incorreta": True, ...} para senha errada
-    e {"email": ...} quando a conta volta a ficar ativa.
-    """
     token_hash = _hash_token(token)
     if token_hash is None:
         return None
@@ -214,7 +194,6 @@ def reativar_conta(token, senha):
             "UPDATE public.usuarios SET exclusao_solicitada_em = NULL WHERE id = %s",
             (conta["id"],),
         )
-        # o link é de uso único
         conexao.execute(
             "DELETE FROM public.reativacoes_conta WHERE usuario_id = %s", (conta["id"],)
         )
@@ -231,12 +210,6 @@ def reativar_conta(token, senha):
 
 
 def aplicar_prazos(conexao=None):
-    """Conclui as exclusões cujo prazo de 30 dias acabou e descarta os e-mails vencidos.
-
-    Não há agendador no projeto: a função é chamada no login, no cadastro,
-    na reativação e na gestão de contas. Com uma conexão, entra na transação de quem chamou.
-    Devolve os números das contas anonimizadas.
-    """
     if conexao is None:
         with conectar_banco() as nova_conexao:
             return aplicar_prazos(nova_conexao)
@@ -251,7 +224,6 @@ def aplicar_prazos(conexao=None):
             FOR UPDATE SKIP LOCKED
         ),
         guardadas AS (
-            -- o e-mail vai para a tabela separada, com data para ser descartado
             INSERT INTO public.contas_excluidas (usuario_id, email_guardado, descartar_em)
             SELECT id, email, CURRENT_TIMESTAMP + %(prazo_email)s::interval
             FROM vencidas
@@ -261,7 +233,6 @@ def aplicar_prazos(conexao=None):
             DELETE FROM public.reativacoes_conta
             WHERE usuario_id IN (SELECT id FROM vencidas)
         )
-        -- fica só o número da conta, o perfil e as datas
         UPDATE public.usuarios AS usuario
         SET nome = NULL,
             email = NULL,
@@ -295,10 +266,6 @@ def aplicar_prazos(conexao=None):
 
 
 def desvincular_autenticador(usuario_id):
-    """Usado quando a Twilio já removeu o fator, mas o pedido de exclusão falhou.
-
-    Assim o próximo login pede para configurar o aplicativo de novo.
-    """
     with conectar_banco() as conexao:
         conexao.execute(
             """

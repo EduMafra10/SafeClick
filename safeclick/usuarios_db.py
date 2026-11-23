@@ -23,7 +23,6 @@ def buscar_usuario_por_email(email):
 def criar_usuario(nome, email, senha, *, aceitou_termos, versao_termos):
     from safeclick.privacidade import VERSAO_TERMOS
 
-    # A verificacao no servidor tambem protege chamadas fora do formulario.
     if aceitou_termos is not True:
         raise ValueError("O aceite dos Termos de Uso é obrigatório.")
     if versao_termos != VERSAO_TERMOS:
@@ -32,7 +31,6 @@ def criar_usuario(nome, email, senha, *, aceitou_termos, versao_termos):
     nome = nome.strip()
     email = email.strip().lower()
 
-    # gera o hash antes de abrir a conexao, a senha original nao vai para o banco
     senha_hash = generate_password_hash(senha, method="scrypt")
 
     with conectar_banco() as conexao:
@@ -59,7 +57,6 @@ def criar_usuario(nome, email, senha, *, aceitou_termos, versao_termos):
             conexao=conexao,
         )
 
-        # Conta, aceite e auditoria sao confirmados ou desfeitos juntos.
         aceite = conexao.execute(
             """
             INSERT INTO public.aceites_termos (usuario_id, versao_termos)

@@ -1,6 +1,5 @@
 BEGIN;
 
--- Preserva avaliações, respostas e a visão usada pelo progresso privado.
 CREATE OR REPLACE FUNCTION public.limpar_participacao_conta() RETURNS trigger
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -23,7 +22,6 @@ CREATE TRIGGER participacao_conta_privacidade
 AFTER UPDATE OF exclusao_solicitada_em,excluida_em ON public.usuarios
 FOR EACH ROW EXECUTE FUNCTION public.limpar_participacao_conta();
 
--- Remove somente a preferência da funcionalidade descontinuada.
 DROP TABLE IF EXISTS public.preferencias_ranking;
 
 COMMIT;

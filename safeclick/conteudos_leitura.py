@@ -1,10 +1,8 @@
-"""Prepara o texto dos conteúdos para a lista e para a página de leitura."""
 import math
 import re
 
 from markupsafe import Markup
 
-# Ícone e cor de cada tema; conteúdo novo usa o padrão.
 TEMAS = {
     "phishing": ("anzol", "ambar"),
     "protecao-de-senhas": ("chave", "verde"),
@@ -55,7 +53,6 @@ def cartao(conteudo):
 
 
 def dividir(texto):
-    """Separa a introdução, os tópicos (cada <h3>) e as fontes; os destaques ficam no lugar."""
     texto = texto or ""
     fontes = [Markup(f.strip()) for f in FONTE.findall(texto)]
     partes = TITULO.split(FONTE.sub("", texto))

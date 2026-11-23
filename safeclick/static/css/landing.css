@@ -142,7 +142,6 @@ html[data-tema="escuro"] .landing .botao.escuro {
     box-shadow: none;
 }
 
-/* Cabeçalho */
 
 .landing .topo {
     position: relative;
@@ -222,7 +221,6 @@ html:not(.js) .landing .controles {
     display: none;
 }
 
-/* Abertura */
 
 .landing .hero {
     position: relative;
@@ -282,7 +280,6 @@ html[data-tema="escuro"] .landing .anzol {
     margin: 0;
 }
 
-/* Celulares ilustrativos */
 
 .landing .fone {
     position: absolute;
@@ -474,7 +471,6 @@ html[data-tema="escuro"] .landing .fone {
     filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
 }
 
-/* Como funciona */
 
 .landing .secao {
     padding-top: 150px;
@@ -730,7 +726,6 @@ html[data-tema="escuro"] .landing .lista li {
     color: #27684f;
 }
 
-/* Senhas */
 
 .landing .senhas {
     display: grid;
@@ -846,7 +841,6 @@ html[data-tema="escuro"] .landing .lista li {
     font-size: 13px;
 }
 
-/* Proteção */
 
 .landing .protecao h2 {
     max-width: 12em;
@@ -879,7 +873,6 @@ html[data-tema="escuro"] .landing .lista li {
     font-size: 14px;
 }
 
-/* Sobre */
 
 .landing .sobre {
     display: grid;
@@ -929,7 +922,6 @@ html[data-tema="escuro"] .landing .lista li {
     font-weight: 600;
 }
 
-/* Chamada final e rodapé */
 
 .landing .chamada {
     display: grid;
@@ -1025,7 +1017,6 @@ html[data-tema="escuro"] .landing .horizonte {
     font-size: 13px;
 }
 
-/* Telas menores */
 
 @media (max-width: 1100px) {
     .landing .hero {

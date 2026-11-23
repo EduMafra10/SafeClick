@@ -1,4 +1,3 @@
-"""Página inicial pública e favicon (o redirecionamento de quem já entrou fica em test_painel e test_visao_geral)."""
 import os
 import re
 import unittest

@@ -1,6 +1,5 @@
 BEGIN;
 
--- Avaliações anteriores continuam privadas e sem autorização de publicação.
 ALTER TABLE public.avaliacoes_conteudo
     ADD COLUMN IF NOT EXISTS publicar_nota BOOLEAN NOT NULL DEFAULT FALSE,
     ADD COLUMN IF NOT EXISTS publicar_comentario BOOLEAN NOT NULL DEFAULT FALSE,
@@ -53,7 +52,6 @@ CREATE INDEX IF NOT EXISTS avaliacoes_conteudo_publicas_idx
 CREATE INDEX IF NOT EXISTS avaliacoes_quiz_publicas_idx
     ON public.avaliacoes_quiz (catalogo_id, atualizada_em DESC) WHERE publicar_nota;
 
--- Recalcula quizzes a partir das respostas e da edição efetivamente respondida.
 CREATE OR REPLACE VIEW public.resultados_validos_atividades AS
 WITH gabaritos AS (
     SELECT q.id, q.quiz_id, COUNT(a.id) AS alternativas,
@@ -104,7 +102,6 @@ SELECT usuario_id, 'laboratorio', 'laboratorio:qual-vazou-mais', NULL::integer, 
 FROM public.desafios_senha
 WHERE total_rodadas = 5 AND acertos BETWEEN 0 AND 5 AND btrim(token_partida) <> '';
 
--- Retira a exposição imediatamente; a exclusão definitiva também elimina avaliações.
 CREATE OR REPLACE FUNCTION public.limpar_participacao_conta() RETURNS trigger
 LANGUAGE plpgsql AS $$
 BEGIN

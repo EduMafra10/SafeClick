@@ -2,10 +2,8 @@
 max-line-length = 150
 exclude = .git,.venv,venv,__pycache__,public,.pytest_cache
 per-file-ignores =
-    # dados dos cenários e desenhos SVG em linhas únicas
+    safeclick/catalogo_validacao.py:F401
     safeclick/cenarios_simulacao.py:E501
     safeclick/icones_perfil.py:E501
-    # SQL de preparação do banco de teste em linhas únicas
     tests/test_participacao_postgres.py:E501
-    # os scripts ajustam o sys.path antes de importar o pacote
     scripts/*.py:E402

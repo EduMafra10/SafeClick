@@ -13,7 +13,6 @@ from safeclick.sessoes import Usuario
 
 
 def painel(**alteracoes):
-    """Monta um retorno de buscar_painel_usuario para os testes de rota."""
     dados = {
         "conteudos": {"concluidos": 1, "total": 2, "percentual": 50},
         "quizzes": {"tentativas": 2, "quizzes_diferentes": 1, "percentual_acertos": 40},
@@ -46,7 +45,6 @@ PAINEL_VAZIO = painel(
 
 
 class ConsultaPainelTeste(unittest.TestCase):
-    """Testa os cálculos do painel sem acessar o banco real."""
 
     def setUp(self):
         self.conexao = MagicMock()
@@ -162,7 +160,6 @@ class ConsultaPainelTeste(unittest.TestCase):
 
 
 class RotaPainelTeste(unittest.TestCase):
-    """Testa a página /painel/ com o banco substituído por respostas fixas."""
 
     def substituir(self, substituicao):
         resultado = substituicao.start()

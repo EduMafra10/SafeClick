@@ -32,7 +32,6 @@
     outline-offset: 2px;
 }
 
-/* topo */
 .simulacao-topo {
     display: flex;
     flex-wrap: wrap;
@@ -124,7 +123,6 @@
     background: var(--sim-menta);
 }
 
-/* colunas */
 .simulacao-exercicio {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
@@ -162,7 +160,6 @@
     background: #ffffff;
 }
 
-/* mensagem */
 .simulacao-mensagem {
     min-width: 0;
     border: 1px solid var(--sim-borda);
@@ -240,7 +237,6 @@
     overflow-wrap: anywhere;
 }
 
-/* A chamada fictícia é texto, sem clique ou envio de dados. */
 .mensagem-chamada {
     justify-self: start;
     margin-top: 6px;
@@ -253,7 +249,6 @@
     letter-spacing: 0.02em;
 }
 
-/* SMS e conversa: balões em vez de corpo de e-mail */
 .mensagem--entrega-sms .mensagem-corpo,
 .mensagem--falso-conhecido .mensagem-corpo {
     gap: 10px;
@@ -284,7 +279,6 @@
     background: #a85a24;
 }
 
-/* Loja: vitrine do produto com preço anterior e preço anunciado */
 .mensagem-produto {
     display: flex;
     justify-content: center;
@@ -335,7 +329,6 @@
     background: #6a4c93;
 }
 
-/* marcações do resultado */
 .mensagem-marcada:not(.mensagem-chamada) {
     border-radius: 4px;
     background: #fde7d3;
@@ -361,7 +354,6 @@
     box-shadow: 0 0 0 3px #f6c9a3;
 }
 
-/* decisão */
 .simulacao-decisao h2,
 .simulacao-alternativas legend {
     padding: 0;
@@ -494,7 +486,6 @@
     background: #edf3f5;
 }
 
-/* resultado */
 .simulacao-escolhida {
     display: grid;
     gap: 8px;
@@ -629,7 +620,6 @@
     white-space: nowrap;
 }
 
-/* prévia do administrador */
 .simulacao-introducao {
     margin-bottom: 20px;
 }
@@ -646,7 +636,6 @@
         grid-template-columns: minmax(0, 1fr);
     }
 
-    /* no celular, a resposta vem logo depois da mensagem e os sinais ficam por último */
     .simulacao-coluna {
         display: contents;
     }

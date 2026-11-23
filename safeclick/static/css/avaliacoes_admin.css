@@ -1,4 +1,3 @@
-/* Gestão de avaliações no visual novo: médias, comentários e moderação. */
 .admin-avaliacoes {
     --av-tinta: #173b45;
     --av-borda: #dce5e3;
@@ -13,7 +12,6 @@
     max-width: 72ch;
 }
 
-/* abas + atalhos */
 .avaliacoes-admin-atalhos {
     display: flex;
     flex-wrap: wrap;
@@ -95,7 +93,6 @@
     height: 16px;
 }
 
-/* botões */
 .admin-avaliacoes .admin-botao,
 .admin-avaliacoes .admin-botao-secundario {
     display: inline-flex;
@@ -135,7 +132,6 @@
     background: #8c3131;
 }
 
-/* números do topo */
 .avaliacoes-admin-indicadores {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -224,7 +220,6 @@
     flex: none;
 }
 
-/* lista */
 .avaliacoes-admin-lista {
     display: grid;
     gap: 14px;
@@ -279,7 +274,6 @@
     margin-top: 4px;
 }
 
-/* médias */
 .avaliacoes-admin-estatistica {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 150px minmax(220px, 300px);
@@ -402,7 +396,6 @@
     background: var(--visual-verde);
 }
 
-/* filtros dos comentários */
 .avaliacoes-admin-filtros {
     display: flex;
     flex-wrap: wrap;
@@ -442,7 +435,6 @@
     outline-offset: 2px;
 }
 
-/* cartão de comentário */
 .avaliacoes-admin-cartao-cabecalho {
     display: flex;
     flex-wrap: wrap;
@@ -614,7 +606,6 @@
     font-weight: 600;
 }
 
-/* revisão de um comentário */
 .avaliacoes-admin-revisao-grade {
     display: grid;
     grid-template-columns: minmax(0, 1fr) clamp(280px, 26vw, 360px);

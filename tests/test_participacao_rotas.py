@@ -1,4 +1,3 @@
-"""Permissões, consentimento e renderização sem conectar ao banco do site."""
 import re
 from contextlib import nullcontext
 from decimal import Decimal

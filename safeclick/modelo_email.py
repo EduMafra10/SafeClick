@@ -2,10 +2,6 @@ from flask import current_app
 
 
 def montar_email(etiqueta, titulo, paragrafos, botao=None, aviso=None):
-    """Devolve (texto, html) de um e-mail do sistema no modelo minimalista.
-
-    botao: (rótulo, endereço); aviso: (destaque, texto).
-    """
     suporte = current_app.config.get("SUPORTE_EMAIL")
     partes = ["Olá!", *paragrafos]
     if botao:

@@ -71,7 +71,6 @@ def _executar(app, funcao, argumentos):
 def _agendar(funcao, *argumentos):
     if not _VAGAS.acquire(blocking=False):
         return False
-    # na Vercel a função congela depois da resposta, então o e-mail sai antes dela
     if os.environ.get("VERCEL"):
         _executar(current_app._get_current_object(), funcao, argumentos)
         return True
@@ -90,7 +89,6 @@ def _enviar_recuperacao(email, endereco_pagina):
     if dados is None:
         return
 
-    # O fragmento #token nao e enviado nos enderecos das requisicoes HTTP
     link = f"{endereco_pagina}#token={dados['token']}"
     try:
         texto, html = montar_email(

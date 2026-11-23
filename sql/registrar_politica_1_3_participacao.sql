@@ -6,7 +6,6 @@ DO $$ BEGIN
     END IF;
 END $$;
 
--- Arquiva outra versão; os documentos anteriormente aceitos não são alterados.
 INSERT INTO public.versoes_politica (versao,vigente_desde,conteudo_html)
 SELECT '1.3', DATE '2026-11-15',
     replace(replace(replace(conteudo_html,

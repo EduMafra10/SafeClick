@@ -17,12 +17,10 @@ from safeclick.privacidade import VERSAO_POLITICA, VERSAO_TERMOS
 from safeclick.recuperacao import _agendar
 from safeclick.sessoes import exigir_perfis, hash_sessao_atual
 
-# rota da exclusão de conta (exclusao_conta.py)
 ENDPOINT_EXCLUSAO = "exclusao_conta.excluir"
 
 
 conta = Blueprint("conta", __name__, url_prefix="/conta")
-# disponível em todos os templates, inclusive nas macros importadas
 conta.record_once(lambda estado: estado.app.jinja_env.globals.update(icones_perfil=ICONES))
 
 
@@ -38,7 +36,6 @@ class FormularioIcone(FlaskForm):
 
 
 class FormularioSenha(FlaskForm):
-    # as senhas mantêm exatamente os caracteres digitados
     senha_atual = PasswordField("Senha atual", validators=[
         DataRequired(message="Informe a sua senha atual."),
         Length(max=128, message="A senha informada é muito longa."),

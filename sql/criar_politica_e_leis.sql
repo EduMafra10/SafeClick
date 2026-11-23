@@ -1,6 +1,5 @@
 BEGIN;
 
--- versoes publicadas da politica de privacidade (mesmo formato de versoes_termos)
 CREATE TABLE public.versoes_politica (
     versao TEXT PRIMARY KEY
         CHECK (versao = btrim(versao) AND versao <> ''),
@@ -10,11 +9,9 @@ CREATE TABLE public.versoes_politica (
 );
 
 
--- leis, resolucoes e artigos citados nos documentos
 CREATE TABLE public.referencias_legais (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     norma TEXT NOT NULL CHECK (btrim(norma) <> ''),
-    -- artigo ou inciso; fica vazio quando o documento cita a norma inteira
     dispositivo TEXT CHECK (dispositivo IS NULL OR btrim(dispositivo) <> ''),
     assunto TEXT NOT NULL CHECK (btrim(assunto) <> ''),
     url TEXT CHECK (url IS NULL OR url LIKE 'https://%'),
@@ -22,7 +19,6 @@ CREATE TABLE public.referencias_legais (
 );
 
 
--- quais leis cada versao dos termos cita
 CREATE TABLE public.termos_referencias (
     versao_termos TEXT NOT NULL
         REFERENCES public.versoes_termos (versao) ON DELETE CASCADE,
@@ -34,7 +30,6 @@ CREATE TABLE public.termos_referencias (
 );
 
 
--- quais leis cada versao da politica cita
 CREATE TABLE public.politica_referencias (
     versao_politica TEXT NOT NULL
         REFERENCES public.versoes_politica (versao) ON DELETE CASCADE,

@@ -13,7 +13,6 @@ def permitir_tentativa(acao, identificador, limite):
         hashlib.sha256,
     ).hexdigest()
 
-    # confirma a tentiva antes de verificar a senha ou consultar a api
     with conectar_banco() as conexao:
         conexao.execute(
             """

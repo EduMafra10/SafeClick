@@ -1,4 +1,3 @@
-"""Integração opcional em banco PostgreSQL local dedicado, nunca na conexão do site."""
 import json
 import os
 import unittest
@@ -57,7 +56,6 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         if info.get('host') not in {'127.0.0.1', 'localhost'} or info.get('dbname') != 'safeclick_participacao_test':
             raise RuntimeError('Os testes de integração exigem o banco local safeclick_participacao_test.')
         cls.c = psycopg.connect(CONEXAO, row_factory=dict_row, autocommit=True)
-        # O banco dedicado deve estar vazio. Não apaga tabelas de outras execuções.
         if cls.c.execute("SELECT to_regclass('public.usuarios') AS tabela").fetchone()['tabela'] is not None:
             cls.c.close()
             raise RuntimeError('Use um banco de integração vazio.')
@@ -115,7 +113,7 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
     def test_conclusao_no_catalogo_exige_tentativa_completa_valida_da_propria_conta(self):
         self.tentativa(2)
         self.tentativa(1, completa=False)
-        self.tentativa(1, pontuacao=0)  # Pontuação incompatível com as respostas.
+        self.tentativa(1, pontuacao=0)
         self.assertFalse(self.consultar_catalogo()[0]['concluido'])
         self.assertTrue(self.consultar_catalogo(2)[0]['concluido'])
         self.tentativa(1, acertos=0)
@@ -227,7 +225,6 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
 
     def test_avaliacoes_anteriores_continuam_privadas_apos_reexecutar_migracao(self):
         self.c.execute("INSERT INTO avaliacoes_conteudo(usuario_id,conteudo_id,nota,comentario) VALUES(1,11,5,'Antigo privado')")
-        # Os comandos de controle de transação são retirados só para o teste com rollback.
         sql = (RAIZ / 'sql/adicionar_avaliacoes_publicas_ranking.sql').read_text(encoding='utf-8').replace('BEGIN;', '').replace('COMMIT;', '')
         self.c.execute(sql)
         self.c.execute((RAIZ / 'sql/remover_ranking.sql').read_text(encoding='utf-8').strip().removeprefix('BEGIN;').removesuffix('COMMIT;'))
@@ -367,7 +364,6 @@ class ParticipacaoPostgresTeste(unittest.TestCase):
         for conteudo in range(50, 71):
             avaliacoes_db.salvar_avaliacao(self.c, 'conteudo', 1, conteudo, 1, None,
                                            publicar_nota=True, maior_de_idade=True, aviso_versao=VERSAO_AVISO)
-        # Vinte e uma notas 1, uma nota 4 e uma nota 5. A nota privada fica fora.
         avaliacoes_db.salvar_avaliacao(self.c, 'conteudo', 2, 11, 5, None, publicar_nota=True, maior_de_idade=True, aviso_versao=VERSAO_AVISO)
         avaliacoes_db.salvar_avaliacao(self.c, 'conteudo', 4, 11, 1, None, aviso_versao=VERSAO_AVISO)
         for pagina in (1, 2):

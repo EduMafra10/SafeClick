@@ -6,7 +6,6 @@ from safeclick.politica_senha import problema_senha
 
 
 def limpar_texto(valor):
-    # remove espaços das extremidades de nome e email
     return valor.strip() if valor else ""
 
 
@@ -39,7 +38,6 @@ class FormularioCadastro(FlaskForm):
         ],
     )
 
-    # a senha mantem exatamente os caracteres digitados, incluindo os espacos
     senha = PasswordField(
         "Senha",
         validators=[
@@ -104,7 +102,6 @@ class FormularioLogin(FlaskForm):
         ],
     )
 
-    # preserva a senha digitada para conferir com o hash salvo
     senha = PasswordField(
         "Senha",
         validators=[
@@ -117,7 +114,6 @@ class FormularioLogin(FlaskForm):
 
 
 class FormularioMFA(FlaskForm):
-    # mantem o código como texto para preservar zeros no inicio
     codigo = StringField(
         "Código do autenticador",
         validators=[
@@ -165,7 +161,6 @@ class FormularioRecuperarSenha(FlaskForm):
 
 
 class FormularioRedefinirSenha(FlaskForm):
-    # preserva todos os caracteres da senha, incluindo os espacos
     senha = PasswordField(
         "Nova senha",
         validators=[
@@ -226,7 +221,6 @@ class FormularioAceiteTermos(FlaskForm):
 
 
 class FormularioRespostaDesafio(FlaskForm):
-    # Usado pelo desafio "Qual vazou mais?" do Laboratório de senhas.
     escolha = HiddenField(
         validators=[AnyOf(["0", "1"], message="Escolha uma das duas senhas.")],
     )

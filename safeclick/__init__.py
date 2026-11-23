@@ -1,4 +1,3 @@
-
 import os
 
 from flask import Flask, redirect, render_template, request, send_from_directory, session, url_for
@@ -34,7 +33,6 @@ from flask_wtf.csrf import generate_csrf
 
 REPOSITORIO = "https://github.com/EduMafra10/SafeClick"
 
-# tudo vem do próprio site; o estilo inline cobre os atributos style dos templates
 POLITICA_CONTEUDO = "; ".join((
     "default-src 'self'",
     "script-src 'self'",
@@ -55,7 +53,6 @@ def create_app():
 
     app.config.update(carregar_configuracao())
 
-    # na Vercel o IP do usuário chega pelo proxy
     if os.environ.get("VERCEL"):
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
@@ -106,7 +103,6 @@ def create_app():
     def exibir_erro(erro):
         if erro.code in (None, 413) or erro.code < 400 or request.path.startswith("/laboratorio-senhas/desafio"):
             return erro
-        # mantém a mensagem própria da rota, quando ela existir
         detalhe = erro.description if erro.description != type(erro).description else None
         resposta = erro.get_response()
         resposta.set_data(render_template("erro.html", codigo=erro.code, detalhe=detalhe))
