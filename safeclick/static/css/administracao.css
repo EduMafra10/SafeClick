@@ -1,4 +1,3 @@
-/* ---------- Estrutura da área administrativa ---------- */
 .admin-vg-atualizacao {
     display: flex;
     align-items: center;
@@ -632,7 +631,6 @@ a.admin-botao {
     }
 }
 
-/* Painel e editor do catálogo */
 .admin-info-item {
     display: flex;
     flex-wrap: wrap;
@@ -848,7 +846,6 @@ a.admin-botao {
 }
 
 
-/* Contas */
 .admin-estado--autenticador-ativo {
     color: #21543d;
     background: #eaf3ed;
@@ -889,7 +886,6 @@ a.admin-botao {
     margin: 0 0 16px;
     padding-left: 20px;
 }
-/* ---------- Visão geral ---------- */
 .admin-vg {
     color: var(--visual-texto);
 }
@@ -1279,7 +1275,6 @@ a.admin-botao {
     }
 }
 
-/* listas da gestão em formato de tabela compacta */
 .admin-lista-itens {
     gap: 0;
     overflow: hidden;
@@ -1307,7 +1302,6 @@ a.admin-botao {
     min-height: 36px;
 }
 
-/* ---------- Editor do catálogo ---------- */
 .admin-corpo:has(.admin-editor-pagina) {
     background: linear-gradient(to right, var(--visual-superficie) 256px, #f6f8f7 256px);
 }
@@ -1475,7 +1469,6 @@ a.admin-botao {
     border-radius: 0 6px 6px 0;
 }
 
-/* texto com formatação */
 .admin-formatacao {
     display: flex;
     flex-wrap: wrap;
@@ -1535,7 +1528,6 @@ a.admin-botao {
     margin: 0;
 }
 
-/* escolhas em cartões: formato do quiz e canal da simulação */
 .admin-opcoes-cartao,
 .admin-canais {
     display: grid;
@@ -1637,7 +1629,6 @@ a.admin-botao {
     display: block;
 }
 
-/* perguntas e alternativas */
 .admin-editor .admin-subbloco {
     position: relative;
     padding: 16px 18px 4px;
@@ -1812,7 +1803,6 @@ a.admin-botao {
     background: #fbfcfb !important;
 }
 
-/* coluna lateral */
 .admin-editor-lateral {
     position: sticky;
     top: 24px;
@@ -2010,7 +2000,6 @@ a.admin-botao {
     }
 }
 
-/* ---------- Prévia do catálogo ---------- */
 .admin-previa-barra {
     display: flex;
     flex-wrap: wrap;
@@ -2193,7 +2182,6 @@ a.admin-botao {
     }
 }
 
-/* e-mail mascarado com botão para ver o completo */
 .admin-email {
     display: inline-flex;
     align-items: center;
@@ -2244,7 +2232,6 @@ a.admin-botao {
     display: block;
 }
 
-/* ações de cada conta como botões */
 .admin-acoes .admin-acao {
     display: inline-flex;
     align-items: center;
@@ -2296,7 +2283,6 @@ a.admin-botao {
     gap: 8px;
 }
 
-/* listas suspensas dos filtros (contas, catálogo, auditoria, avaliações) */
 .admin-corpo .auditoria-filtros input:not([type="checkbox"]),
 .admin-corpo .auditoria-filtros select,
 .admin-corpo .auditoria-filtros-acoes .auditoria-botao {
@@ -2380,7 +2366,6 @@ a.admin-botao {
     }
 }
 
-/* ---------- Editor no visual novo ---------- */
 .admin-editor-grade {
     grid-template-columns: minmax(0, 1fr) clamp(300px, 24vw, 360px);
     gap: 24px;
@@ -2532,7 +2517,6 @@ a.admin-botao {
     border-radius: 10px;
 }
 
-/* botões e campos da área administrativa no visual novo */
 .admin-botao {
     border: 0;
     border-radius: 12px;
@@ -2598,7 +2582,6 @@ a.admin-botao {
     border-radius: 0 0 11px 11px;
 }
 
-/* telas de confirmação (contas e catálogo): cartão largo e botões táteis */
 .admin-formulario {
     max-width: none;
     margin-top: 28px;
@@ -2674,7 +2657,6 @@ a.admin-botao {
     box-shadow: 0 4px 0 #5e2219;
 }
 
-/* visão geral no visual novo */
 .admin-vg h1 {
     font-size: clamp(28px, 3vw, 38px);
     font-weight: 700;
@@ -2880,7 +2862,6 @@ a.admin-botao {
     }
 }
 
-/* ícone de perfil (personagem ou iniciais) também nas telas do ADM */
 .admin-corpo .perfil-icone {
     display: inline-grid;
     flex: none;
@@ -2900,7 +2881,6 @@ a.admin-botao {
     line-height: 1;
 }
 
-/* celular: editor em uma coluna e menu do ADM recolhido */
 @media (max-width: 1100px) {
     .admin-editor-grade {
         grid-template-columns: minmax(0, 1fr);

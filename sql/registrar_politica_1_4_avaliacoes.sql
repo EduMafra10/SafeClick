@@ -1,6 +1,5 @@
 BEGIN;
 
--- Registra outro documento; não altera versões anteriores.
 DO $$
 DECLARE documento text;
 BEGIN

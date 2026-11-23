@@ -9,7 +9,6 @@ from safeclick.db import conectar_banco
 
 
 def importar_cenarios_iniciais():
-    """Importa os quatro cenários existentes sem sobrescrever cadastros."""
     tipos = {
         "conta_bloqueada": "email",
         "entrega_sms": "sms",
@@ -91,7 +90,6 @@ _CONSULTA_PUBLICADAS = """
 
 
 def _preparar_cenario_publicado(registro):
-    """Adapta o documento do banco ao formato utilizado pelas páginas."""
     conteudo = registro["conteudo"]
     if not isinstance(conteudo, dict):
         raise RuntimeError("O conteúdo da simulação está inválido.")
@@ -153,7 +151,7 @@ def buscar_simulacao_publicada(slug):
 
 
 class SimulacaoAlterada(ValueError):
-    """O cenário foi atualizado ou retirado de publicação durante a resposta."""
+    pass
 
 
 def salvar_tentativa_publicada(usuario_id, slug, versao_id, opcao):
@@ -161,7 +159,6 @@ def salvar_tentativa_publicada(usuario_id, slug, versao_id, opcao):
     from safeclick.auditoria_db import registrar_evento
 
     with conectar_banco() as conexao:
-        # Mantém a publicação estável até concluir a gravação da resposta.
         registro = conexao.execute(
             _CONSULTA_PUBLICADAS
             + " AND s.slug = %s FOR SHARE OF s, v",

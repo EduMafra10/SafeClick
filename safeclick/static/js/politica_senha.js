@@ -1,4 +1,3 @@
-// Retorno da política de senha enquanto a pessoa digita. Espelha safeclick/politica_senha.py.
 (() => {
     const MINIMO = 15;
     const MAXIMO = 128;

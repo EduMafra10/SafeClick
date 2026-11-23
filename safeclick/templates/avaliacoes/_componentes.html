@@ -43,7 +43,6 @@
 {% endif %}
 {%- endmacro %}
 
-{# O ícone é sorteado a partir do próprio comentário: não tem relação com quem escreveu. #}
 {% macro comentario_anonimo(item) -%}
 {% set chaves = (icones_perfil or {})|list|sort %}
 {% set semente = (item.comentario or '')|length * 7 + (item.nota or 0) * 3 + ((item.data or '')|replace('/', '')|int(0)) %}

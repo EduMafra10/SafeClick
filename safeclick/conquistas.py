@@ -32,7 +32,6 @@ def conquistas_para_exibir():
 
     g.conquistas_novas = []
 
-    # conquistas são da jornada do aluno; o administrador não recebe avisos
     if not current_user.is_authenticated or current_user.perfil != "usuario":
         return []
 
@@ -49,7 +48,6 @@ def conquistas_para_exibir():
 
 
 def carregar_conquistas_painel(usuario_id):
-    """Libera o que faltar e devolve a lista completa para o painel (ou None se falhar)."""
     session.pop(_VERIFICAR, None)
 
     try:

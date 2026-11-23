@@ -39,7 +39,6 @@
     outline-offset: 2px;
 }
 
-/* topo */
 .painel-topo {
     display: flex;
     flex-wrap: wrap;
@@ -213,7 +212,6 @@
     color: #8a4516;
 }
 
-/* cartões */
 .painel-cartao {
     min-width: 0;
     padding: 22px 24px;
@@ -272,7 +270,6 @@
     text-align: center;
 }
 
-/* indicadores */
 .painel-numeros {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -361,7 +358,6 @@
     color: #9a4f1c;
 }
 
-/* gráficos */
 .painel-destaques {
     display: flex;
     gap: 22px;
@@ -386,7 +382,6 @@
     margin-top: 18px;
 }
 
-/* próximo passo */
 .painel-link {
     display: inline-flex;
     flex: none;
@@ -397,7 +392,6 @@
     text-decoration: none;
 }
 
-/* cores de cada tipo de atividade, iguais nos dois cartões */
 .painel-cor--quiz { --cor: #28638d; --cor-suave: #e8f0f6; }
 .painel-cor--simulacao { --cor: #27684f; --cor-suave: #e7f3ec; }
 .painel-cor--laboratorio { --cor: #c8733a; --cor-suave: #fbeee3; }
@@ -606,7 +600,6 @@
     flex: none;
 }
 
-/* desempenho por atividade: anéis com a meta de 70% */
 .painel-aneis-cartao {
     display: flex;
     flex-direction: column;
@@ -747,7 +740,6 @@
     font-size: 12.5px;
 }
 
-/* estados vazios e conquistas */
 .painel-vazio h2 {
     margin-bottom: 8px;
     font-size: 22px;

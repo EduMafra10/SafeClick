@@ -14,7 +14,6 @@ from safeclick.auditoria_db import registrar_evento
 
 
 class ErroTwilio(RuntimeError):
-    """Falha do Twilio com um tipo curto, seguro para o log (sem dados sensíveis)."""
 
     def __init__(self, mensagem, tipo, codigo=None):
         super().__init__(mensagem)
@@ -41,7 +40,6 @@ def _codigo_valido(codigo):
 
 
 def auditar_consulta_api(operacao, *, exige_codigo=False):
-    """Registra o resultado da chamada sem incluir dados enviados à Twilio."""
 
     def decorar(funcao):
         @wraps(funcao)
@@ -65,7 +63,6 @@ def auditar_consulta_api(operacao, *, exige_codigo=False):
 
 
 def _registrar_consulta_api(operacao, resultado, usuario_id=None, erro=None):
-    # usuario_id vem do login pendente: a senha da conta já foi conferida.
     detalhes = {"servico": "twilio_verify", "operacao": operacao}
     if erro is not None:
         detalhes["erro"] = getattr(erro, "tipo", "falha_inesperada")
@@ -95,7 +92,6 @@ def obter_servico_twilio():
             "configuracao_ausente",
         )
 
-    # limita o tempo que de espera da resposta da API
     cliente = Client(
         account_sid,
         auth_token,
@@ -109,7 +105,6 @@ def obter_servico_twilio():
 @with_appcontext
 def verificar_twilio():
     try:
-        # consulta o servico sem enviar codigo e sem criar algum usuario
         servico = obter_servico_twilio().fetch()
     except RuntimeError as erro:
         raise click.ClickException(str(erro)) from None
@@ -140,7 +135,6 @@ def criar_fator_totp(identidade):
             "Nao foi possivel iniciar a configuraçao do autenticador.", erro
         ) from None
 
-    # a URI sera usada para gerar o QRCode da ativaçao
     binding = fator.binding if isinstance(fator.binding, dict) else {}
     uri = binding.get("uri")
 
@@ -182,7 +176,6 @@ def validar_codigo_totp(identidade, fator_sid, codigo):
             "Nao foi possivel verificar o código do autenticador.", erro
         ) from None
 
-    # apenas um desafio aprovado comprova o segundo fator do login
     return desafio.status == "approved"
 
 

@@ -1,6 +1,5 @@
 BEGIN;
 
--- O ID público do quiz permanece estável; cada edição publicada ganha seus próprios dados.
 CREATE TABLE public.catalogo_quizzes (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     estado TEXT NOT NULL DEFAULT 'rascunho'
@@ -42,7 +41,6 @@ SELECT setval(
     EXISTS (SELECT 1 FROM public.catalogo_quizzes)
 );
 
--- O HTML e as conclusões existentes continuam nos mesmos registros.
 ALTER TABLE public.conteudos
     ADD COLUMN secao TEXT NOT NULL DEFAULT 'conteudos'
         CHECK (secao IN ('conteudos', 'paginas')),

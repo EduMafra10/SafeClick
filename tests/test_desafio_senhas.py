@@ -19,7 +19,6 @@ from safeclick.pwned_api import ServicoSenhasIndisponivel, contar_vazamentos
 from safeclick.sessoes import Usuario
 
 
-# Contagens fictícias: cada senha de exemplo recebe um número diferente.
 CONTAGENS = {senha: (indice + 1) * 1000 for indice, senha in enumerate(LISTA_SENHAS)}
 
 
@@ -37,7 +36,6 @@ class CamposHTML(HTMLParser):
 
 class ContarVazamentosTeste(unittest.TestCase):
     def test_envia_so_o_prefixo_e_encontra_o_sufixo(self):
-        # SHA-1 de "123456" = 7C4A8D09CA3762AF61E59520943DC26494F8941B
         resposta = (
             "0018A45C4D1DEF81644B54AB7F969B88D65:3\r\n"
             "D09CA3762AF61E59520943DC26494F8941B:179000000\r\n"
@@ -71,7 +69,6 @@ class RegrasDesafioTeste(unittest.TestCase):
     def test_escolha_correta(self):
         self.assertTrue(escolha_correta([10, 5], 0))
         self.assertFalse(escolha_correta([10, 5], 1))
-        # Empate: as duas respostas são aceitas.
         self.assertTrue(escolha_correta([7, 7], 0))
         self.assertTrue(escolha_correta([7, 7], 1))
 
@@ -196,7 +193,6 @@ class RotasDesafioTeste(unittest.TestCase):
     def test_partida_completa_salva_o_resultado(self):
         dados = self.iniciar()
         for numero in range(1, TOTAL_RODADAS + 1):
-            # Acerta as rodadas ímpares e erra as pares: 3 acertos no fim.
             certa = self.melhor_escolha(dados["opcoes"])
             escolha = certa if numero % 2 else 1 - certa
             resposta = self.responder(numero, escolha)
@@ -252,7 +248,6 @@ class RotasDesafioTeste(unittest.TestCase):
         self.responder(1, 0)
         self.assertEqual(self.contar.call_count, 2)
         self.assertEqual(self.auditoria.call_count, 2)
-        # Uma nova partida com as mesmas senhas não consulta a API de novo.
         with patch("safeclick.senhas.sortear_partida",
                    return_value=[[LISTA_SENHAS.index(s) for s in dados["opcoes"]]] + [[10, 11]] * 4):
             self.iniciar()

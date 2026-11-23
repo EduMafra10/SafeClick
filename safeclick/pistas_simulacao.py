@@ -1,4 +1,3 @@
-"""Liga cada sinal de risco ao trecho da mensagem em que ele aparece."""
 import re
 
 ALVOS = {
@@ -13,7 +12,6 @@ _PARAGRAFO = re.compile(r"par[aá]grafo\s*(\d{1,2})")
 
 
 def separar_pistas(sinais):
-    """Devolve os textos dos sinais e, para cada trecho marcado, os números dos sinais."""
     if isinstance(sinais, str):
         sinais = [linha.strip() for linha in sinais.splitlines() if linha.strip()]
     textos, marcas = [], {}

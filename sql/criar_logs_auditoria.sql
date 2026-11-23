@@ -1,6 +1,5 @@
 BEGIN;
 
--- Guarda as ações realizadas no sistema.
 CREATE TABLE public.logs_auditoria (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
@@ -18,7 +17,6 @@ CREATE TABLE public.logs_auditoria (
 
     detalhes JSONB NOT NULL DEFAULT '{}'::jsonb,
 
-    -- Mantém o evento caso a conta seja excluída.
     CONSTRAINT logs_auditoria_usuario_fk
         FOREIGN KEY (usuario_id)
         REFERENCES public.usuarios (id)
@@ -46,15 +44,12 @@ CREATE TABLE public.logs_auditoria (
         CHECK (jsonb_typeof(detalhes) = 'object')
 );
 
--- Facilita a consulta dos eventos mais recentes.
 CREATE INDEX logs_auditoria_data_idx
     ON public.logs_auditoria (criado_em DESC, id DESC);
 
--- Facilita a consulta por usuário.
 CREATE INDEX logs_auditoria_usuario_data_idx
     ON public.logs_auditoria (usuario_id, criado_em DESC);
 
--- Facilita a consulta por evento.
 CREATE INDEX logs_auditoria_evento_data_idx
     ON public.logs_auditoria (evento, criado_em DESC);
 

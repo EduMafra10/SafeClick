@@ -1,12 +1,9 @@
-// Recursos de tela do editor: formatação do texto, endereço automático,
-// lista "Antes de publicar" e aviso de alterações não salvas.
 (() => {
     const formulario = document.getElementById("editor-catalogo");
     if (!formulario) return;
     const secao = formulario.dataset.secao;
     const preenchido = elemento => Boolean(elemento && elemento.value.trim());
 
-    // ---------- formatação ----------
     const texto = formulario.querySelector("[data-formatavel]");
     const barra = formulario.querySelector(".admin-formatacao");
 
@@ -51,7 +48,6 @@
         texto.dispatchEvent(new Event("input", { bubbles: true }));
     });
 
-    // ---------- endereço criado a partir do título ----------
     const titulo = formulario.elements.titulo;
     const endereco = formulario.querySelector("[data-endereco]");
     let enderecoManual = preenchido(endereco);
@@ -69,7 +65,6 @@
         enderecoManual = preenchido(endereco);
     });
 
-    // ---------- antes de publicar ----------
     const itens = (raiz, tipo) => [...raiz.querySelectorAll('[data-item="' + tipo + '"]')];
     const campo = (item, nome) => item.querySelector('[data-campo="' + nome + '"]');
 
@@ -134,7 +129,6 @@
         }
     }
 
-    // ---------- alterações não salvas ----------
     const alterado = document.querySelector("[data-alterado]");
     let mudou = false;
 

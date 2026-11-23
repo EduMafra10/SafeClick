@@ -1,5 +1,3 @@
-# substituindo todo o conteúdo de sessões para o controle de sessões no safeclick
-
 import hashlib
 import secrets
 from functools import wraps
@@ -46,7 +44,6 @@ def criar_sessao(usuario_id, token_pendente):
     token = secrets.token_urlsafe(32)
 
     with conectar_banco() as conexao:
-        # coordena a abertura da sessao com a redefinicao de senha
         usuario = conexao.execute(
             """
             SELECT id FROM public.usuarios
@@ -59,7 +56,6 @@ def criar_sessao(usuario_id, token_pendente):
         if usuario is None:
             return None
 
-        # uma pendencia aprovada pode criar somente uma sessao
         pendencia = conexao.execute(
             """
             DELETE FROM public.logins_pendentes

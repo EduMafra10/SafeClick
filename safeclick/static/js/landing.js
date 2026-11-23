@@ -30,7 +30,6 @@
                 try {
                     localStorage.setItem(CHAVE, novo);
                 } catch (erro) {
-                    // sem armazenamento, o tema vale só nesta visita
                 }
                 rotularTema();
             });

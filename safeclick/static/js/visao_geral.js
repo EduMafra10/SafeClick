@@ -1,4 +1,3 @@
-// Indicadores e gráfico da Visão geral, atualizados sem recarregar a página.
 (() => {
     const painel = document.querySelector('[data-visao-geral-url]');
     if (!painel) return;

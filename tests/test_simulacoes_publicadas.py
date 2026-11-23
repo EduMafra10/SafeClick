@@ -21,7 +21,6 @@ from safeclick.simulacoes_db import (
 
 
 def versoes_no_html(html):
-    """Lê o campo oculto de versão, independentemente de espaços ou quebras de linha."""
     class LeitorVersoes(HTMLParser):
         def __init__(self):
             super().__init__()

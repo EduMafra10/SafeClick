@@ -51,7 +51,6 @@
     font-size: 15px;
 }
 
-/* destaque */
 .catalogo-destaque {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
@@ -168,7 +167,6 @@
     background: #21505d;
 }
 
-/* outros cenários */
 .catalogo-secao {
     display: flex;
     flex-wrap: wrap;

@@ -6,13 +6,11 @@
     'roxo': ('#eee8f6', '#6a4c93', '#d6cae9'),
 } %}
 
-{# Figurinha da lista: o ícone do tema num cartão inclinado #}
 {% macro figurinha(tema, cor, classe='') -%}
 {% set c = CORES.get(cor, CORES.verde) %}
 <span class="ct-fig {{ classe }}" style="--ct-c1: {{ c[0] }}; --ct-c2: {{ c[1] }}; --ct-c3: {{ c[2] }}" aria-hidden="true"><i>{{ icone(tema, 26) }}</i></span>
 {%- endmacro %}
 
-{# Ilustração do tema: uma janela com o ícone, desenhada em SVG #}
 {% macro cena(tema, cor, w=640, h=360, extra='check') -%}
 {% set c = CORES.get(cor, CORES.verde) %}
 {% set jx, jy, jw, jh = w * 0.24, h * 0.2, w * 0.52, h * 0.62 %}
@@ -38,7 +36,6 @@
 </svg>
 {%- endmacro %}
 
-{# Fundo da capa da leitura: o ícone do tema repetido como estampa #}
 {% macro capa(tema, cor) -%}
 {% set c = CORES.get(cor, CORES.verde) %}
 <svg class="ct-capa-fundo" viewBox="0 0 1100 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">

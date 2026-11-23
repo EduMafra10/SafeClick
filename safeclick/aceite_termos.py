@@ -30,7 +30,6 @@ def aceitar():
         erro = "Não foi possível consultar os termos. Tente novamente em instantes."
         status = 503
     else:
-        # Quem ja aceitou a versao atual pode continuar usando o sistema.
         if request.method == "GET" and ja_aceitou:
             return redirect(url_for("inicio"), code=303)
 
@@ -50,13 +49,11 @@ def aceitar():
                 erro = "Não foi possível registrar o aceite. Tente novamente em instantes."
                 status = 503
             else:
-                # Um aceite ja registrado tambem permite continuar, sem duplicar o registro.
                 flash("Aceite dos Termos de Uso confirmado.", "sucesso")
                 return redirect(url_for("inicio"), code=303)
         elif request.method == "POST":
             status = 400
 
-    # Uma versao diferente exige que a pessoa marque o aceite novamente.
     if request.method == "GET" or formulario.versao_termos.errors:
         formulario.versao_termos.data = VERSAO_TERMOS
         formulario.aceitou_termos.data = False

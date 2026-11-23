@@ -279,7 +279,6 @@ def alterar_publicacao(usuario_id, secao, item_id, revisao, acao):
             novo_estado, removido, evento = "arquivada", False, "restaurado"
         elif acao == "remover" and estado != "removida":
             if not versao:
-                # Cenários anteriores ao catálogo também podem ter tentativas pelo identificador.
                 tem_tentativas = secao == "simulacoes" and conexao.execute(
                     "SELECT 1 FROM public.tentativas_simulacao WHERE simulacao = %s LIMIT 1",
                     (item["identificador"],),

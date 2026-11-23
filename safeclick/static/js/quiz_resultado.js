@@ -1,4 +1,3 @@
-// Filtro "Todas" / "Para revisar" da lista de respostas.
 (() => {
     const grupo = document.querySelector("[data-resultado-filtro]");
     if (!grupo) return;

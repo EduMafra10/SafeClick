@@ -1,14 +1,3 @@
-"""Formatação simples do editor de conteúdos.
-
-O administrador escreve texto com algumas marcações e o sistema gera o HTML.
-Tudo é escapado antes; só as marcações abaixo viram tags:
-
-    ## Subtítulo
-    - item de lista
-    > destaque (caixa verde)
-    **negrito**, *itálico* e [texto do link](/endereco)
-    Um parágrafo que começa com "Fonte:" ou "Fontes:" vira a nota de fontes.
-"""
 import re
 from html import escape
 from html.parser import HTMLParser
@@ -73,7 +62,6 @@ def html_do_texto(texto):
 
 
 class _Leitor(HTMLParser):
-    """Faz o caminho inverso, para editar conteúdos que já estão publicados."""
 
     titulos = {"h1", "h2", "h3", "h4", "h5", "h6"}
     blocos = {"p", "ul", "ol", "div", "section", "table", "tr"} | titulos

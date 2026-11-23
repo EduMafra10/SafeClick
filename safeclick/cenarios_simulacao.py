@@ -1,7 +1,3 @@
-# Conteúdo fictício usado nas atividades educativas do SafeClick
-# As chaves dos cenários e das opções identificam as respostas no banco
-# Os endereços e as chamadas são textos da simulação, sem links externos
-
 CENARIOS = {
     "conta_bloqueada": {
         "slug": "conta-bloqueada",

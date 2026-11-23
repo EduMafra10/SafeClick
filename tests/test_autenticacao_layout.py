@@ -1,4 +1,3 @@
-"""Painel lateral das telas de acesso, alinhado à página inicial."""
 import os
 import unittest
 from unittest.mock import patch

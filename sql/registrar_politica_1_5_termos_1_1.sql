@@ -1,15 +1,5 @@
--- Política de Privacidade 1.5 e Termos de Uso 1.1 (16/11/2026)
--- Política: avaliações em funcionamento, consentimento só para publicá-las, seção 12 sobre avaliações
---           e remoção do texto interno que tinha ido para a versão publicada.
--- Termos: funcionalidades atuais, regras das avaliações (§6) e exclusão em Minha conta com 30 dias (§9).
---
--- Rode este script ANTES de publicar o código com VERSAO_POLITICA = "1.5" e os Termos "1.1".
--- As versões anteriores não são alteradas. O script pode ser rodado de novo sem duplicar nada,
--- mas para se outra versão 1.5 ou 1.1 já existir com um texto diferente.
--- Atenção: com os Termos 1.1, cada usuário aceita os Termos de novo no próximo acesso.
 BEGIN;
 
--- Referência nova: consentimento e revogação (usada pela Política 1.5)
 INSERT INTO public.referencias_legais (norma, dispositivo, assunto, url)
 VALUES ('Lei nº 13.709/2018 (LGPD)', 'art. 7º, I, e art. 8º',
         'Base legal: consentimento, prova do consentimento e revogação',
@@ -217,7 +207,6 @@ BEGIN
 END;
 $registrar_politica_1_5$;
 
--- Referências da 1.5: as mesmas da 1.4, com a do consentimento logo depois das bases legais
 INSERT INTO public.politica_referencias (versao_politica, referencia_id, ordem)
 SELECT '1.5', referencia_id, CASE WHEN ordem >= 3 THEN ordem + 1 ELSE ordem END
 FROM public.politica_referencias WHERE versao_politica = '1.4'
@@ -343,7 +332,6 @@ BEGIN
 END;
 $registrar_termos_1_1$;
 
--- Referências dos Termos 1.1: as mesmas da 1.0
 INSERT INTO public.termos_referencias (versao_termos, referencia_id, ordem)
 SELECT '1.1', referencia_id, ordem FROM public.termos_referencias WHERE versao_termos = '1.0'
 ON CONFLICT DO NOTHING;

@@ -1,5 +1,3 @@
-
-
 import os
 import unittest
 from html.parser import HTMLParser
@@ -87,7 +85,6 @@ class LaboratorioSenhasTeste(unittest.TestCase):
                 self.assertIn(texto, html)
 
     def test_sem_javascript_abas_ocultas_e_paineis_visiveis(self):
-        # Sem JavaScript, a pessoa vê os três painéis em sequência (nada some).
         _, _, elementos = self.abrir()
         [lista_abas] = [e for e in elementos.todos if e.get("role") == "tablist"]
         self.assertIn("hidden", lista_abas)
@@ -98,11 +95,9 @@ class LaboratorioSenhasTeste(unittest.TestCase):
     def test_campo_do_analisador_nunca_e_enviado_ao_servidor(self):
         _, html, elementos = self.abrir()
         campo = elementos.por_id["senha-analise"]
-        # Sem "name" e fora de <form>: o navegador não tem como enviar o campo.
         self.assertNotIn("name", campo)
         self.assertEqual(campo["type"], "password")
         self.assertEqual(campo["autocomplete"], "off")
-        # O único <form> da página é o "Sair" do cabeçalho; o laboratório não tem nenhum.
         conteudo = html[html.index("<main"):html.index("</main>")]
         self.assertNotIn("<form", conteudo)
         self.assertIn("forca_senha_worker.js", html)
@@ -173,7 +168,6 @@ class LaboratorioSenhasTeste(unittest.TestCase):
 
 
 class ListaPalavrasTeste(unittest.TestCase):
-    """Confere a lista usada pelo gerador de frase-senha."""
 
     def test_lista_tem_palavras_suficientes_e_simples(self):
         caminho = Path(__file__).resolve().parents[1] / "safeclick/static/js/palavras_senha.js"
@@ -181,11 +175,8 @@ class ListaPalavrasTeste(unittest.TestCase):
         bloco = texto[texto.index("`") + 1:texto.rindex("`")]
         palavras = bloco.split()
 
-        # Sem repetidas: repetir palavras diminuiria as combinações possíveis.
         self.assertEqual(len(palavras), len(set(palavras)))
-        # Cada palavra sorteada soma log2(700) ≈ 9,5 bits de aleatoriedade.
         self.assertGreaterEqual(len(palavras), 700)
-        # Só letras minúsculas sem acento: digitável em qualquer teclado.
         for palavra in palavras:
             with self.subTest(palavra=palavra):
                 self.assertRegex(palavra, r"\A[a-z]{3,11}\Z")

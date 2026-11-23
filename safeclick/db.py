@@ -5,26 +5,21 @@ from flask.cli import with_appcontext
 from psycopg.conninfo import conninfo_to_dict
 from psycopg.rows import dict_row
 
-# modos que aceitariam uma conexão sem criptografia
 SEM_TLS = {None, "disable", "allow", "prefer"}
 
 
-# serve para obter a conexao configurada na nossa aplicaçao, sem escrever credenciais no codigo
 def conectar_banco():
     database_url = current_app.config.get("DATABASE_URL")
 
-    # interrompe a operaçao se o endereço do banco nao estiver configurado corretamente
     if not database_url:
         raise RuntimeError(
             "DATABASE_URL nao está configurado, verifique o arquivo .env"
         )
 
-    # no site publicado, a conexao com o banco sempre exige TLS (RNF02)
     opcoes = {}
     if current_app.config.get("APP_ENV") == "producao" and conninfo_to_dict(database_url).get("sslmode") in SEM_TLS:
         opcoes["sslmode"] = "require"
 
-    # abre a conexao com o Postgre e permite acessar os resultados pelo nome da coluna
     return psycopg.connect(
         database_url,
         connect_timeout=10,
@@ -34,7 +29,6 @@ def conectar_banco():
 
 
 def salvar_tentativa_simulacao(usuario_id, simulacao, opcao):
-    # Importação aqui evita um ciclo entre db.py e auditoria_db.py.
     from safeclick.auditoria_db import registrar_evento
 
     with conectar_banco() as conexao:
@@ -60,23 +54,19 @@ def salvar_tentativa_simulacao(usuario_id, simulacao, opcao):
     return tentativa["id"]
 
 
-# disponibiliza a verifiçao pelo terminal com acesso a config do flask
 @click.command("verificar-banco")
 @with_appcontext
 def verificar_banco():
     try:
 
-        # consulta o nome do banco e fecha a conexao ao sair do bloco
         with conectar_banco() as conexao:
             registro = conexao.execute(
                 "SELECT current_database() AS banco"
             ).fetchone()
 
-    # apresenta uma mensagem quando faltar alguma configuraçao
     except RuntimeError as erro:
         raise click.ClickException(str(erro)) from None
 
-    # trata erros do Postgre sem exibir mensagem bruta da conexao
     except psycopg.Error:
         raise click.ClickException(
             "Nao foi possivel acessar o PostgreSQL. "

@@ -1,5 +1,3 @@
-// Mesa de cartas da oficina: escolha uma carta da mão e toque no trecho que ela completa.
-// As listas de seleção continuam no formulário e são elas que enviam as respostas.
 (() => {
     const mesa = document.querySelector("[data-oficina]");
     if (!mesa) return;

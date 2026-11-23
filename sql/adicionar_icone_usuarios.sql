@@ -1,6 +1,3 @@
--- Ícone de perfil escolhido na página "Minha conta".
--- Guarda só a chave do personagem; NULL mostra as iniciais do nome.
--- Rode uma vez no Neon antes de publicar o código que usa a coluna.
 BEGIN;
 
 ALTER TABLE public.usuarios

@@ -1,6 +1,5 @@
 {% from 'avaliacoes/_componentes.html' import estrelas_publicas %}
 {% from 'componentes/_icones.html' import icone %}
-{# Bloco que o participacao.js coloca no fim do conteúdo e do quiz. #}
 <div class="participacao-resumo av-bloco{{ '' if resumo.total else ' av-bloco--vazio' }}">
     {% if resumo.total %}
         {% set media = ('%.1f'|format(resumo.media)).replace('.', ',') %}

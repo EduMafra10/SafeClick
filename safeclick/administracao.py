@@ -164,7 +164,6 @@ def notificacoes_avaliacoes():
     return {"total": total}, 200, {"Cache-Control": "no-store"}
 
 
-# As telas antigas de simulações foram unificadas na gestão de conteúdo.
 @administracao.get("/simulacoes")
 def listar_simulacoes():
     return redirect(url_for("administracao.catalogo.listar", secao="simulacoes"), code=301)
@@ -344,7 +343,6 @@ def redefinir_autenticador(usuario_id):
                 current_app.logger.exception("Falha ao redefinir o autenticador")
                 mensagem, status = "Não foi possível redefinir agora. Nada foi alterado.", 503
             else:
-                # O banco já não aceita o aplicativo antigo; a remoção na Twilio é só limpeza.
                 try:
                     remover_fator_totp(antigo["identidade"], antigo["fator_sid"], usuario_id=usuario_id)
                 except RuntimeError:
@@ -444,7 +442,6 @@ def _avisar_conta_excluida(email):
 
 @administracao.route("/contas/<int:usuario_id>/excluir", methods=["GET", "POST"])
 def excluir_conta(usuario_id):
-    """Um administrador exclui a conta de outro administrador (RF16)."""
     request.max_content_length = 4096
     formulario = FormularioExcluirAdministrador()
 

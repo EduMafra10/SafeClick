@@ -69,7 +69,6 @@ WHERE quiz.titulo = 'Phishing: aprenda antes de clicar'
   AND questao.ordem = 1
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Phishing: aprenda antes de clicar: questão 2.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -126,7 +125,6 @@ WHERE quiz.titulo = 'Phishing: aprenda antes de clicar'
   AND questao.ordem = 2
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Phishing: aprenda antes de clicar: questão 3.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -183,7 +181,6 @@ WHERE quiz.titulo = 'Phishing: aprenda antes de clicar'
   AND questao.ordem = 3
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Phishing: aprenda antes de clicar: questão 4.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -240,7 +237,6 @@ WHERE quiz.titulo = 'Phishing: aprenda antes de clicar'
   AND questao.ordem = 4
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Phishing: aprenda antes de clicar: questão 5.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -297,7 +293,6 @@ WHERE quiz.titulo = 'Phishing: aprenda antes de clicar'
   AND questao.ordem = 5
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Proteção de senhas e contas: questão 1.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -354,7 +349,6 @@ WHERE quiz.titulo = 'Proteção de senhas e contas'
   AND questao.ordem = 1
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Proteção de senhas e contas: questão 2.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -411,7 +405,6 @@ WHERE quiz.titulo = 'Proteção de senhas e contas'
   AND questao.ordem = 2
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Proteção de senhas e contas: questão 3.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -468,7 +461,6 @@ WHERE quiz.titulo = 'Proteção de senhas e contas'
   AND questao.ordem = 3
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Proteção de senhas e contas: questão 4.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -525,7 +517,6 @@ WHERE quiz.titulo = 'Proteção de senhas e contas'
   AND questao.ordem = 4
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Proteção de senhas e contas: questão 5.
 INSERT INTO public.questoes (
     quiz_id,
     enunciado,
@@ -582,8 +573,6 @@ WHERE quiz.titulo = 'Proteção de senhas e contas'
   AND questao.ordem = 5
 ON CONFLICT (questao_id, ordem) DO NOTHING;
 
--- Confere a carga antes de confirmar a transação.
--- Não altera perguntas ou alternativas já existentes.
 DO $$
 BEGIN
     IF EXISTS (

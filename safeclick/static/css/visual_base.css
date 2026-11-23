@@ -1,4 +1,3 @@
-/* deixando o css mais moderno e arrumado */
 .site-visual {
     --visual-fundo: #f7f8f5;
     --visual-superficie: #ffffff;
@@ -46,7 +45,6 @@
     text-underline-offset: 3px;
 }
 
-/* Ações compartilhadas por conteúdos, quizzes, avaliações e progresso. */
 .visual-botao,
 .conteudos-botao,
 .quizzes-botao,
@@ -124,7 +122,6 @@
     transform: translateY(0);
 }
 
-/* reaproveita o cabeçalho e o menu da conta que já existem */
 .site-visual .site-cabecalho {
     background: var(--visual-superficie);
     color: var(--visual-texto);

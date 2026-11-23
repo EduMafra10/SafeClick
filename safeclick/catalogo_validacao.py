@@ -1,7 +1,7 @@
 import json
 import re
 
-from safeclick.texto_formatado import html_do_texto, texto_do_html  # noqa: F401
+from safeclick.texto_formatado import html_do_texto, texto_do_html
 
 
 SECOES = {
@@ -23,7 +23,7 @@ MAX_LOTE_QUIZZES = 12
 
 
 class DadosInvalidos(ValueError):
-    """Dados que podem ser corrigidos no editor."""
+    pass
 
 
 def estrutura_json(texto):
@@ -107,7 +107,6 @@ def validar_lote_quizzes(estrutura):
 
 
 def validar(secao, dados, *, publicar=False):
-    """Valida limites ao salvar e exige itens completos para publicar."""
     dados = _objeto(dados)
     titulo = _texto(dados.get("titulo", ""), 120 if secao == "simulacoes" else 150, "Título", True)
     if secao in {"conteudos", "paginas"}:

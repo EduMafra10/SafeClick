@@ -1,4 +1,3 @@
-// Leva o sumário para a lateral e marca a seção que está na tela.
 (() => {
     const sumario = document.querySelector('.privacidade-documento .privacidade-sumario');
     const lateral = document.querySelector('[data-privacidade-lateral]');

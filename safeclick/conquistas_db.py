@@ -85,13 +85,11 @@ def _formatar(linha):
         "desbloqueada": desbloqueada,
         "desbloqueada_em": linha["desbloqueada_em"],
         "meta": linha["meta"],
-        # o progresso nunca passa da meta (ex.: 7 conteúdos lidos mostra 5 de 5)
         "atual": min(linha["valor"], linha["meta"]),
     }
 
 
 def liberar_conquistas(usuario_id):
-    """Concede as conquistas atingidas e devolve as que foram liberadas agora."""
     with conectar_banco() as conexao:
         novas = conexao.execute(_LIBERAR, {"usuario_id": usuario_id}).fetchall()
         _registrar_conquistas(conexao, usuario_id, novas)
@@ -105,7 +103,6 @@ def _registrar_conquistas(conexao, usuario_id, novas):
 
 
 def liberar_e_listar_conquistas(usuario_id):
-    """Usado pelo painel: libera o que faltar e lista todas, na mesma conexão."""
     parametros = {"usuario_id": usuario_id}
 
     with conectar_banco() as conexao:

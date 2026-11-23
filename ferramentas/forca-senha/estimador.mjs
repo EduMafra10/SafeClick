@@ -3,8 +3,6 @@ import * as comum from "@zxcvbn-ts/language-common";
 import * as ingles from "@zxcvbn-ts/language-en";
 import * as portugues from "@zxcvbn-ts/language-pt-br";
 
-// Apenas análise local de padrões. A consulta de vazamentos continua separada.
-// Estas sugestões são textos fixos: nunca incluem trechos da senha digitada.
 const traducoes = {
     ...portugues.translations,
     suggestions: {
@@ -41,11 +39,6 @@ const sugestoesPermitidas = new Set(
         .map(([, mensagem]) => mensagem)
 );
 
-/**
- * Estima a dificuldade de adivinhação; não informa se houve vazamento.
- * Devolve somente nota e textos educativos, sem senha, hash ou padrões encontrados.
- * Não aplica trim/normalização: espaços e acentos fazem parte da senha.
- */
 export function avaliar(senha) {
     if (typeof senha !== "string" || senha.length > 128) {
         throw new TypeError("Informe um texto com até 128 caracteres.");
@@ -73,7 +66,5 @@ export function avaliar(senha) {
         );
     }
 
-    // O retorno original da biblioteca contém a senha e trechos dela.
-    // Ele fica restrito a esta função e não é repassado à interface.
     return { nivel, rotulo: rotulos[nivel], aviso, orientacoes };
 }

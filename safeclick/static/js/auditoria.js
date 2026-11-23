@@ -1,4 +1,3 @@
-// Envia só os filtros preenchidos, para a URL ficar limpa.
 (() => {
     const formulario = document.querySelector(".auditoria-filtros");
     if (!formulario) return;
@@ -9,7 +8,6 @@
         }
     });
 
-    // Ao voltar pela seta do navegador, os campos precisam estar ativos de novo.
     window.addEventListener("pageshow", () => {
         formulario.querySelectorAll("[disabled]").forEach((campo) => { campo.disabled = false; });
     });

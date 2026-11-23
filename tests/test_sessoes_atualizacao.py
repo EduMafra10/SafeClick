@@ -1,4 +1,3 @@
-"""Consultas automáticas não contam como interação para o prazo da sessão."""
 from contextlib import nullcontext
 from unittest.mock import Mock
 

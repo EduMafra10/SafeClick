@@ -110,7 +110,6 @@ def listar_contas(*, busca="", autenticador=None, situacao="ativas", ordem="rece
 
 
 def obter_conta(usuario_id):
-    """Só contas ativas: as excluídas e as agendadas não aceitam ações da administração."""
     with conectar_banco() as conexao:
         return conexao.execute(
             f"SELECT {_COLUNAS} FROM public.usuarios {_GUARDADO} WHERE id = %s AND {_ATIVA}",
@@ -119,11 +118,6 @@ def obter_conta(usuario_id):
 
 
 def revelar_email(administrador_id, usuario_id, tela):
-    """Devolve o e-mail completo e registra na auditoria quem viu o e-mail de quem.
-
-    Vale também para contas excluídas enquanto o e-mail ainda está guardado.
-    Sem registro, sem e-mail: os dois acontecem na mesma transação.
-    """
     with conectar_banco() as conexao:
         conta = conexao.execute(
             f"""
@@ -148,11 +142,6 @@ def revelar_email(administrador_id, usuario_id, tela):
 
 
 def redefinir_autenticador(administrador_id, usuario_id):
-    """Desvincula o autenticador, encerra as sessões e registra quem fez.
-
-    Devolve a identidade e o fator antigos para a remoção na Twilio,
-    feita depois que o banco já não aceita mais o aplicativo antigo.
-    """
     with conectar_banco() as conexao:
         conta = conexao.execute(
             """
@@ -212,7 +201,6 @@ def alterar_perfil(administrador_id, usuario_id, novo_perfil):
         raise AlteracaoDePerfilRecusada("Você não pode alterar o próprio perfil.")
 
     with conectar_banco() as conexao:
-        # trava os administradores para duas remoções simultâneas não deixarem o sistema sem nenhum
         administradores = conexao.execute(
             f"SELECT id FROM public.usuarios WHERE {_ATIVA} AND perfil = 'administrador' FOR NO KEY UPDATE"
         ).fetchall()
@@ -264,7 +252,6 @@ class ExclusaoRecusada(ValueError):
 
 
 def senha_confere(usuario_id, senha):
-    """Confere a senha de quem está pedindo uma ação sensível (a própria conta da sessão)."""
     with conectar_banco() as conexao:
         conta = conexao.execute(
             f"SELECT senha_hash FROM public.usuarios WHERE id = %s AND {_ATIVA}", (usuario_id,)
@@ -273,12 +260,6 @@ def senha_confere(usuario_id, senha):
 
 
 def excluir_administrador(administrador_id, usuario_id, motivo):
-    """Exclui de vez a conta de outro administrador (por exemplo, quem saiu da equipe).
-
-    Sem prazo de arrependimento e sem link: os dados pessoais são apagados na hora,
-    o e-mail fica guardado por 6 meses e a auditoria registra quem excluiu e por quê.
-    Devolve a identidade e o fator antigos (para a limpeza na Twilio) e o e-mail (para o aviso).
-    """
     if administrador_id == usuario_id:
         raise ExclusaoRecusada("Para excluir a sua própria conta, use Minha conta → Excluir conta.")
 

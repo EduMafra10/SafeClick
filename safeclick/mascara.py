@@ -1,6 +1,3 @@
-"""Esconde dados pessoais nas listas da administração."""
-
-# telas da administração que permitem ver o e-mail completo
 TELAS_EMAIL = {
     "contas": "Contas",
     "auditoria": "Auditoria",
@@ -11,7 +8,6 @@ TELAS_EMAIL = {
 
 
 def mascarar_email(email):
-    """Mostra só a primeira letra e o domínio (m***@gmail.com), sem revelar o tamanho."""
     if not email:
         return ""
     if "@" not in email:

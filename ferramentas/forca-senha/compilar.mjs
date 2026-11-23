@@ -21,8 +21,7 @@ await build({
     target: ["es2020"],
     tsconfigRaw: {},
     charset: "utf8",
-    legalComments: "inline",
-    banner: { js: "/*! SafeClick — estimador local baseado em zxcvbn-ts. Licenças: forca-senha.LICENSE.txt. Fonte: ferramentas/forca-senha/estimador.mjs. */" },
+    legalComments: "none",
 });
 
 const pacotes = [

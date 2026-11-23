@@ -55,7 +55,6 @@ RESULTADOS_PERMITIDOS = {
 
 
 def usuario_autenticado_id():
-    """Identifica o usuário da requisição, quando houver login."""
 
     if has_request_context() and current_user.is_authenticated:
         return int(current_user.id)
@@ -63,7 +62,6 @@ def usuario_autenticado_id():
 
 
 def _validar_evento(evento, resultado, detalhes):
-    """Valida os dados antes de gravar o evento."""
 
     if evento not in EVENTOS_PERMITIDOS:
         raise ValueError("Evento de auditoria não permitido")
@@ -86,7 +84,6 @@ def _inserir_evento(
     recurso_id,
     detalhes,
 ):
-    """Insere o evento usando uma conexão já aberta."""
 
     registro = conexao.execute(
         """
@@ -123,7 +120,6 @@ def registrar_evento(
     detalhes=None,
     conexao=None,
 ):
-    """Registra uma ação do sistema no banco de dados."""
 
     detalhes = _validar_evento(evento, resultado, detalhes)
 
@@ -153,7 +149,6 @@ def registrar_evento(
 def listar_eventos(conexao, *, pagina, por_pagina, eventos=None, excluir_eventos=None,
                    resultado=None, usuario_id=None, busca=None,
                    data_inicio=None, data_fim=None):
-    """Consulta os eventos com filtros e paginação. Devolve (registros, resumo)."""
 
     condicoes = []
     parametros = []

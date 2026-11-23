@@ -99,8 +99,6 @@ BEGIN
     VALUES ('1.0', DATE '2026-09-28', texto_termos)
     ON CONFLICT (versao) DO NOTHING;
 
-    -- Reexecutar com o mesmo documento e permitido.
-    -- Um texto diferente com o mesmo numero de versao interrompe a operacao.
     IF NOT EXISTS (
         SELECT 1
         FROM public.versoes_termos

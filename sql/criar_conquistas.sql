@@ -44,7 +44,6 @@ CREATE TABLE public.conquistas_usuario (
     CONSTRAINT conquistas_usuario_pk
         PRIMARY KEY (usuario_id, conquista_id),
 
-    -- ao excluir a conta, as conquistas dela também são apagadas
     CONSTRAINT conquistas_usuario_usuario_fk
         FOREIGN KEY (usuario_id)
         REFERENCES public.usuarios (id)

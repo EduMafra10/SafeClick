@@ -2,8 +2,8 @@
   "biblioteca": "https://github.com/zxcvbn-ts/zxcvbn",
   "compilador": "esbuild 0.28.2",
   "arquivo": "forca-senha.js",
-  "bytes": 2285450,
-  "sha256": "9c6088b4096da61449f5f821f8956d384981076728569ff1d7a4e6a1b53b3ca5",
+  "bytes": 2285309,
+  "sha256": "7adf723f0c4f2a2e9efb39791f8d89fabb03883fc517d372f722c264b5ec8147",
   "pacotes": [
     {
       "pacote": "@zxcvbn-ts/core",

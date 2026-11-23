@@ -36,7 +36,6 @@ for (const widget of document.querySelectorAll('[data-avaliacoes-url]')) {
     if (widget.tagName === 'DETAILS') {
         widget.addEventListener('toggle', () => { if (widget.open) carregar(); });
     } else if ('IntersectionObserver' in window) {
-        // Só consulta quando o bloco chega perto da tela.
         const observador = new IntersectionObserver(entradas => {
             if (entradas.some(entrada => entrada.isIntersecting)) {
                 observador.disconnect();
@@ -60,7 +59,6 @@ for (const contador of document.querySelectorAll('[data-contador]')) {
     if (!area) continue;
     area.addEventListener('input', () => { contador.textContent = `${area.value.length} de ${area.maxLength}`; });
 }
-// Confirmação no próprio lugar do botão: as ações dão lugar a uma linha com a pergunta.
 for (const formulario of document.querySelectorAll('form[data-confirmar]')) {
     formulario.addEventListener('submit', evento => {
         evento.preventDefault();

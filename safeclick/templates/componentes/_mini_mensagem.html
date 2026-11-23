@@ -1,4 +1,3 @@
-{# Miniatura decorativa da mensagem de cada cenário, usada na lista de simulações. #}
 {% from "componentes/_icones.html" import icone %}
 
 {% macro cor_canal(tipo) %}{{ {'email': 'azul', 'sms': 'ambar', 'conversa': 'verde', 'loja': 'roxo'}.get(tipo, 'azul') }}{% endmacro %}

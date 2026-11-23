@@ -58,7 +58,6 @@ def detalhe(slug):
         return render_template("conteudos/indisponivel.html"), 503
     if not conteudo:
         abort(404)
-    # Formulário vazio: serve só para gerar o token CSRF do botão
     return render_template(
         "conteudos/detalhe.html", conteudo=conteudo, formulario=FlaskForm(),
         leitura=conteudos_leitura.dividir(conteudo.get("texto")),
@@ -69,7 +68,6 @@ def detalhe(slug):
 
 
 def _vizinhos(atual, proximo, quantidade=6):
-    # Próximo conteúdo e sugestões da lateral; sem eles a página continua funcionando
     try:
         lista = [conteudos_leitura.cartao(c) for c in conteudos_db.listar_conteudos()]
     except Exception:
@@ -93,7 +91,6 @@ def concluir(slug):
         return render_template("conteudos/indisponivel.html"), 503
     if concluido is None:
         abort(404)
-    # Volta para o conteúdo por GET: atualizar a página não reenvia o formulário
     return redirect(url_for("conteudos.detalhe", slug=slug), code=303)
 
 

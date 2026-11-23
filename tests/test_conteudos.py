@@ -30,7 +30,6 @@ class CamposHTML(HTMLParser):
 
 
 class ConcluirConteudoBancoTeste(unittest.TestCase):
-    """Testa a gravação da conclusão sem acessar o banco real."""
 
     def setUp(self):
         self.conexao = MagicMock()
@@ -81,7 +80,6 @@ class ConcluirConteudoBancoTeste(unittest.TestCase):
 
 
 class RotasConteudosTeste(unittest.TestCase):
-    """Testa as páginas de conteúdo e o botão de conclusão."""
 
     def substituir(self, substituicao):
         resultado = substituicao.start()

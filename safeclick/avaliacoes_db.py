@@ -74,7 +74,6 @@ def buscar_atividade(conexao, tipo, usuario_id, referencia, *, bloquear=False):
 
 def salvar_avaliacao(conexao, tipo, usuario_id, item_id, nota, comentario, *,
                      publicar_nota=False, publicar_comentario=False, maior_de_idade=False, aviso_versao=None):
-    # Tabela e coluna vêm do mapa interno de tipos de atividade.
     _, _, tabela, coluna = _ALVOS[tipo]
     if type(nota) is not int or not 1 <= nota <= 5:
         raise ValueError('Informe uma nota inteira de 1 a 5.')
@@ -85,7 +84,6 @@ def salvar_avaliacao(conexao, tipo, usuario_id, item_id, nota, comentario, *,
     if (publicar_nota and (not maior_de_idade or aviso_versao != VERSAO_AVISO)
             or publicar_comentario and (not publicar_nota or not comentario or not comentario.strip())):
         raise ValueError('Confira a autorização de publicação e o comentário.')
-    # Serializa o envio com uma eventual desativação ou exclusão da conta.
     titular = conexao.execute('''
         SELECT id FROM public.usuarios WHERE id=%s
           AND excluida_em IS NULL AND exclusao_solicitada_em IS NULL FOR SHARE
@@ -326,7 +324,6 @@ def moderar_comentario(administrador_id, tipo, item_id, autor_id, revisao, acao)
         exigidos = ('publicada', 'conta_ativa', 'publicar_nota', 'publicar_comentario', 'maior_de_idade')
         if not item or not all(item[k] for k in exigidos) or item['aviso_versao'] != VERSAO_AVISO:
             raise ValueError('O comentário não está disponível para publicação.')
-        # A revisão impede aprovar um texto alterado depois da leitura do administrador.
         alterada = conexao.execute(f"""
             UPDATE public.{tabela} SET moderacao=%s,moderado_por=%s,moderado_em=CURRENT_TIMESTAMP,revisao=revisao+1
             WHERE usuario_id=%s AND {coluna}=%s AND revisao=%s RETURNING revisao

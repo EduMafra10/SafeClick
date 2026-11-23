@@ -22,7 +22,6 @@ def _hoje():
 
 
 def _ler_filtros():
-    """Lê os filtros da URL. Valores inválidos são ignorados e geram um aviso."""
     avisos = []
     args = request.args
 
@@ -66,7 +65,6 @@ def _ler_filtros():
         except ValueError:
             avisos.append("Use datas válidas no formato dia/mês/ano.")
 
-    # As próprias consultas à auditoria ficam ocultas, a não ser que sejam pedidas.
     mostrar_consultas = args.get("consultas") == "1"
     excluir_eventos = None if mostrar_consultas or eventos == {CONSULTAS} else {CONSULTAS}
 
@@ -74,7 +72,6 @@ def _ler_filtros():
         avisos.append("A data inicial precisa ser igual ou anterior à data final.")
         datas = {"inicio": None, "fim": None}
 
-    # Os dias são interpretados no horário de Brasília.
     data_inicio = (
         datetime.combine(datas["inicio"], time.min, tzinfo=FUSO_BRASILIA)
         if datas["inicio"] else None
@@ -126,7 +123,6 @@ def _atalhos(filtros):
 
 
 def _preparar(registro):
-    """Monta o que a tabela exibe para cada registro."""
     return {
         "quando": registro["criado_em"].astimezone(FUSO_BRASILIA),
         "usuario_id": registro["usuario_id"],
@@ -149,7 +145,6 @@ def _preparar(registro):
 @auditoria.get("/")
 @login_required
 def listar():
-    """Mostra o histórico somente para administradores."""
 
     if current_user.perfil != "administrador":
         try:

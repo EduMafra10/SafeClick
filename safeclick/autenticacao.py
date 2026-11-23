@@ -45,7 +45,6 @@ from safeclick.usuarios_db import (
 
 autenticacao = Blueprint("autenticacao", __name__)
 
-# tambem realiza a comparacao com de hash quando o email nao existe
 _HASH_LOGIN = generate_password_hash(secrets.token_urlsafe(32), method="scrypt")
 
 
@@ -54,7 +53,6 @@ class LimiteCadastro(Exception):
 
 
 def _registrar_falha_login(etapa, motivo, usuario_id=None):
-    # Registra a etapa e o motivo sem guardar dados informados no formulário.
     registrar_evento(
         usuario_id=usuario_id,
         evento="login.falha",
@@ -85,10 +83,8 @@ def cadastro():
     if not termos_disponiveis:
         erro = "Não foi possível carregar os termos para o cadastro. Tente novamente em instantes."
         status = 503
-    # valida os campos, o aceite e o token CSRF antes de gravar no banco
     elif formulario.validate_on_submit():
         try:
-            # várias pessoas na mesma rede (sala de aula) cabem com folga neste limite
             if not permitir_tentativa("cadastro_ip", request.remote_addr or "desconhecido", 20):
                 raise LimiteCadastro
             criar_usuario(
@@ -115,7 +111,6 @@ def cadastro():
             erro = "Não foi possível concluir o cadastro. Tente novamente em instantes"
             status = 503
         else:
-            # o redirecionamento evita reenviar o cadastro se atualizarem a pagina
             flash("Cadastro realizado com sucesso! Entre com seu e-mail e sua senha.", "sucesso")
             return redirect(url_for("autenticacao.login"), code=303)
     elif request.method == "POST":
@@ -194,7 +189,6 @@ def login():
                     )
                     status = 409
                 else:
-                    # guarda somente a pendencia, o usuário ainda não esta autenticado
                     session.clear()
                     session["login_pendente"] = token
 

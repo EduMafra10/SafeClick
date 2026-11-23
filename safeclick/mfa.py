@@ -37,14 +37,12 @@ def _bloquear_pendencia(token):
     token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
 
     with conectar_banco() as conexao:
-        # mantem a mesma ordem de bloqueio usado no inicio do login
         usuario = conexao.execute(
             """
             SELECT id, nome, email, perfil, mfa_identidade,
                    mfa_fator_sid, mfa_confirmado_em
             FROM public.usuarios
             WHERE id = %s
-            -- NO KEY: não impede gravar logs com a chave desta conta
             FOR NO KEY UPDATE
             """,
             (pendencia["usuario_id"],),
@@ -146,12 +144,10 @@ def configurar_autenticador(token, fator_anterior):
             (fator["sid"], usuario["id"]),
         )
 
-    # a imagem fica somente na resposta e nao vai para o cookie e nem pro nosso banco
     return {"qr_code": qr_code, "chave": chave}
 
 
 def confirmar_autenticador(token, codigo):
-    # grava a tentativa antes da chamada externa, mesmo se houver falha da API
     if reservar_tentativa_mfa(token) is None:
         raise ErroMFA(
             "Prazo ou limite de tentativas atingido. Entre novamente mais tarde.",
@@ -191,7 +187,6 @@ def confirmar_autenticador(token, codigo):
                 (usuario["id"],),
             )
 
-            # ativar o aplicativo nao abre uma sessao de login
             return None
 
         if not validar_codigo_totp(identidade, fator_sid, codigo, usuario_id=usuario["id"]):

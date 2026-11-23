@@ -196,7 +196,6 @@
     }
 }
 
-/* confirmação no lugar das ações (participacao.js) */
 .confirmar-linha {
     display: flex;
     flex-wrap: wrap;
@@ -251,7 +250,6 @@
     outline-offset: 2px;
 }
 
-/* Bloco "Avaliações desta atividade" (preenchido pelo participacao.js) */
 .av-bloco-secao {
     display: grid;
     gap: 12px;

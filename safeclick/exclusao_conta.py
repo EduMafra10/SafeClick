@@ -62,11 +62,6 @@ class FormularioReativarConta(FlaskForm):
 
 
 def concluir_exclusoes_vencidas():
-    """Aplica os prazos (30 dias e 6 meses) sem atrapalhar a página que chamou.
-
-    Se falhar, nada se perde: a conta vencida continua sem conseguir entrar
-    (o link e o login já conferem o prazo) e a limpeza acontece na próxima chamada.
-    """
     try:
         aplicar_prazos()
     except (Error, RuntimeError):
@@ -74,7 +69,6 @@ def concluir_exclusoes_vencidas():
 
 
 def _link_reativacao(token):
-    # o token vai depois do #, que o navegador não envia ao servidor nos endereços
     return f"{_base_publica()}{url_for('reativacao_conta.reativar')}#token={token}"
 
 
@@ -94,7 +88,6 @@ def _montar_link(dados, assunto, abertura):
 
 
 def _enviar_link(dados, assunto, abertura):
-    """Envia o link de reativação. Devolve False se o e-mail não saiu."""
     try:
         texto, html = _montar_link(dados, assunto, abertura)
         enviar_email(dados["email"], assunto, texto, html=html)
@@ -105,11 +98,6 @@ def _enviar_link(dados, assunto, abertura):
 
 
 def avisar_conta_agendada(usuario_id):
-    """Chamado pelo login quando a senha confere, mas a conta aguarda a exclusão.
-
-    Gera um link novo e envia por e-mail. Devolve (mensagem, status) para a tela de login,
-    ou None se o prazo já acabou (a conta deixa de existir para o login).
-    """
     dados = gerar_novo_link(usuario_id)
     if dados is None:
         return None
@@ -176,7 +164,6 @@ def excluir():
 
 
 def _tentar_excluir(usuario_id, senha):
-    """Devolve (mensagem de erro, status, None) ou (None, 200, dados) quando deu certo."""
     try:
         if not permitir_tentativa("exclusao_conta", usuario_id, 5):
             return "Muitas tentativas. Aguarde 5 minutos e tente novamente.", 429, None
@@ -220,7 +207,6 @@ def _tentar_excluir(usuario_id, senha):
     except (Error, RuntimeError):
         current_app.logger.exception("Falha ao excluir a conta %s", usuario_id)
         if conta["mfa_fator_sid"]:
-            # o fator já saiu da Twilio: o próximo login vai pedir um aplicativo novo
             try:
                 desvincular_autenticador(usuario_id)
             except (Error, RuntimeError):

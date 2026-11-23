@@ -34,7 +34,6 @@ def listar():
 @moderacao_avaliacoes.route('/<any(conteudo,quiz):tipo>/<int:item_id>/<int:autor_id>/<any(aprovar,ocultar):acao>', methods=['GET', 'POST'])
 def confirmar(tipo, item_id, autor_id, acao):
     formulario = FlaskForm()
-    # Busca somente a avaliação escolhida, evitando copiar dados de outros autores.
     try:
         with db.conectar_banco() as conexao:
             item = conexao.execute('WITH avaliacoes AS (' + db.BASE_AVALIACOES + """ )

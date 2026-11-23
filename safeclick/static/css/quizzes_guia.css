@@ -1,4 +1,3 @@
-/* Meu guia de revisão */
 .gr-numeros {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
